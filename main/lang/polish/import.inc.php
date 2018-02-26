@@ -11,5 +11,4 @@ $langSendPage = "Strona do wys&#322;ania";
 $langPageTitleModified = "Tytu&#322; strony zosta&#322; zmodyfikowany";
 $langPageAdded = "Strona dodana";
 $langAddPage = "Dodaj stron&#281;";
-$Choose = "Przegl&#261;daj";
 ?>

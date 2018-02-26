@@ -38,6 +38,7 @@ $langRefresh = "ανανέωση σελίδας";
 $langMe = "εγώ";
 $langSystemAnnouncements = "Ανακοινώσεις  Πλατφόρμας";
 $langHelpMaj = "&#914;&#959;&#942;&#952;&#949;&#953;&#945;";
+$langAdmin = " Διαχειριστής";
 $Login = "&#917;&#943;&#963;&#959;&#948;&#959;&#962;";
 $langRegisterForCourse = "Εγγραφή σε καινούριο μάθημα";
 $langUnregisterForCourse = "Τα μαθήματά μου: Διαγραφή";

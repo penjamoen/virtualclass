@@ -36,15 +36,6 @@ set_time_limit(0);
 // Display the header
 Display :: display_header(get_lang('ExportCourses').' CSV');
 
-//Actions
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_list.php">'.Display::return_icon('pixel.gif',get_lang('CourseList'), array('class' => 'toolactionplaceholdericon toolactionadmincourse')).get_lang('CourseList').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_add.php">'.Display::return_icon('pixel.gif',get_lang('AddCourse'), array('class' => 'toolactionplaceholdericon toolactioncreatecourse')).get_lang('AddCourse').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_enrolment.php">'.Display::return_icon('pixel.gif',get_lang('EnrolmentToCoursesAtRegistrationToPortal'),array('class' => 'toolactionplaceholdericon toolactionautomaticenrollment')).get_lang('EnrolmentToCoursesAtRegistrationToPortal').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_import.php">'.Display::return_icon('pixel.gif',get_lang('ImportCourses'),array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('ImportCourses').'</a>';	
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/subscribe_user2course.php">'.Display::return_icon('pixel.gif',get_lang('AddUsersToACourse'),array('class' => 'toolactionplaceholdericon toolactionaddusertocourse')).get_lang('AddUsersToACourse').'</a>';
-echo '</div>';
-
 // start the content div
 echo '<div id="content" class="maxcontent">';
 

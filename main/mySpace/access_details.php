@@ -188,9 +188,9 @@ $(function() {
 
 </script>';
 
-Display :: display_tool_header('');
+Display :: display_header('');
 echo '<div class="actions">';
-		echo '<a href="myStudents.php?student=' . Security :: remove_XSS($_GET['student']) . '&details=true&course=' . Security :: remove_XSS($_GET['course']) . '&amp;origin=' . Security :: remove_XSS($_GET['origin']) . '&amp;cidReq=' . Security :: remove_XSS($_GET['course']) . '">' . Display::return_icon('pixel.gif', get_lang('Report'), array('class' => 'toolactionplaceholdericon toolactionquizscores')). get_lang('Report') . '</a>';
+		echo '<a href="myStudents.php?student=' . Security :: remove_XSS($_GET['student']) . '&details=true&course=' . Security :: remove_XSS($_GET['course']) . '&amp;origin=' . Security :: remove_XSS($_GET['origin']) . '&amp;cidReq=' . Security :: remove_XSS($_GET['course']) . '">' . Display :: return_icon('report_32.png', get_lang('Report')) . ' ' . get_lang('Report') . '</a>';
 echo '</div>';
 echo '<div id="content">';
 $tbl_userinfo_def = Database :: get_course_table(TABLE_USER_INFO);

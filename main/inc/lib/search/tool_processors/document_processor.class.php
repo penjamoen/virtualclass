@@ -6,34 +6,9 @@ require_once dirname(__FILE__) . '/search_processor.class.php';
  * Process documents before pass it to search listing scripts
  */
 class document_processor extends search_processor {
-    
-    /**
-     * check if multisite is enable
-     * @global configuration $_configuration
-     * @param string $courseid
-     * @return bool 
-     */
-    function is_enabled_multisite($courseid){
-        //check if multisite is enable
-        global $_configuration;
-        if($_configuration['multiple_access_urls']){
-            require_once api_get_path(LIBRARY_PATH).'urlmanager.lib.php';
-            $url = new UrlManager();
-            $access_url_id = api_get_current_access_url_id();
-            $exist_relation = $url->relation_url_course_exist($courseid, $access_url_id);
-            return $exist_relation > 0 ? true : false;
-        }
-        return true;;
-    }
-    
+
     function document_processor($rows) {
-        foreach ($rows as $row_id => $row_val) {
-            $courseid = $row_val['courseid'];
-            $exist_relation = $this->is_enabled_multisite($courseid);
-            if($exist_relation) {
-                $this->rows[] = $row_val;
-            }
-        }
+        $this->rows = $rows;
     }
 
     public function process() {
@@ -49,7 +24,6 @@ class document_processor extends search_processor {
                   list($thumbnail, $image, $name, $author, $url) = $this->get_information($row_val['courseid'], $row_val['xapian_data'][SE_DATA]['doc_id']);
                   $result = array(
                       'toolid' => TOOL_DOCUMENT,
-                      'courseid' => $row_val['courseid'],
                       'score' => $row_val['score'],
                       'url' => $url,
                       'thumbnail' => $thumbnail,

@@ -32,7 +32,7 @@ $doc_url = $_GET['doc_url'];
 //change the '&' that got rewritten to '///' by mod_rewrite back to '&'
 $doc_url = str_replace('///', '&', $doc_url);
 //still a space present? it must be a '+' (that got replaced by mod_rewrite)
-//$doc_url = str_replace(' ', '+', $doc_url);
+$doc_url = str_replace(' ', '+', $doc_url);
 
 $doc_url = str_replace(array('../','\\..','\\0','..\\'),array('','','',''), $doc_url); //echo $doc_url;
 

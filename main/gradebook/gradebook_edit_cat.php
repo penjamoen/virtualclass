@@ -1,23 +1,35 @@
-<?php
+<?php // $Id:$
+/*
+==============================================================================
+	Dokeos - elearning and course management software
 
-/* For licensing terms, see /dokeos_license.txt */
+	Copyright (c) 2008 Dokeos Latinoamerica SAC
+	Copyright (c) 2006 Dokeos SPRL
+	Copyright (c) 2006 Ghent University (UGent)
+	Copyright (c) various contributors
 
-// name of the language file that needs to be included
+	For a full list of contributors, see "credits.txt".
+	The full license can be read in "license.txt".
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	See the GNU General Public License for more details.
+
+	Contact address: Dokeos, rue du Corbeau, 108, B-1030 Brussels, Belgium
+	Mail: info@dokeos.com
+==============================================================================
+*/
 $language_file = 'gradebook';
-
-// including the global dokeos file
-require_once ('../inc/global.inc.php');
-
-// including additional libraries
+//$cidReset = true;
 require_once ('../inc/global.inc.php');
 require_once ('lib/be.inc.php');
 require_once ('lib/gradebook_functions.inc.php');
 require_once ('lib/fe/catform.class.php');
-
-// Access restrictions
 api_block_anonymous_users();
 block_students();
-
 $edit_cat= isset($_GET['editcat']) ? $_GET['editcat'] : '';
 $catedit = Category :: load($edit_cat);
 $form = new CatForm(CatForm :: TYPE_EDIT, $catedit[0], 'edit_cat_form');
@@ -53,7 +65,7 @@ $interbreadcrumb[] = array (
 ));
 Display::display_tool_header(get_lang('EditCategory'));
 echo '<div class="actions">';
-echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.Security::remove_XSS($_GET['editcat']).'&'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.get_lang('Gradebook'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook').'</a>';
+echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.Security::remove_XSS($_GET['editcat']).'&'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png',get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook')).get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook').'</a>';
 echo '</div>';
 
 echo '<div id="content">';

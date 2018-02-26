@@ -35,18 +35,6 @@ api_protect_admin_script();
 // Setting the breadcrumbs
 $interbreadcrumb[] = array ("url" => 'index.php', "name" => get_lang('PlatformAdmin'));
 
-$htmlHeadXtra[] = '<script>
-    $(document).ready(function(){        
-       $("#btn-search").click(function() {
-            if ($("#search").css("display") == "none") {
-                $("#keyword").val("");
-                $("#search").show();
-            } else {
-                $("#search").hide()
-            }            
-       });
-    });
-</script>';
 // action handling
 if (isset ($_POST['action']))
 {
@@ -79,14 +67,6 @@ if (isset ($_GET['search']) && $_GET['search'] == 'advanced')
 
 	// Display the header
 	Display :: display_header($tool_name);
-
-	echo '<div class="actions">';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_add.php">'.Display::return_icon('pixel.gif',get_lang('AddCourse'), array('class' => 'toolactionplaceholdericon toolactioncreatecourse')).get_lang('AddCourse').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_enrolment.php">'.Display::return_icon('pixel.gif',get_lang('EnrolmentToCoursesAtRegistrationToPortal'),array('class' => 'toolactionplaceholdericon toolactionautomaticenrollment')).get_lang('EnrolmentToCoursesAtRegistrationToPortal').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_export.php">'.Display::return_icon('pixel.gif',get_lang('Export'),array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('Export').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_import.php">'.Display::return_icon('pixel.gif',get_lang('ImportCourses'),array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('ImportCourses').'</a>';	
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/subscribe_user2course.php">'.Display::return_icon('pixel.gif',get_lang('AddUsersToACourse'),array('class' => 'toolactionplaceholdericon toolactionaddusertocourse')).get_lang('AddUsersToACourse').'</a>';	
-	echo '</div>';
 
 	// display the tool title
 	//api_display_tool_title($tool_name);
@@ -166,16 +146,16 @@ else
 	$renderer =& $form->defaultRenderer();
 	$renderer->setElementTemplate('<span>{element}</span> ');
 	$form->addElement('text','keyword',get_lang('keyword'));
-	$form->addElement('style_submit_button', 'submit', get_lang('Search'),'style="float:none;" class="search"');
+	$form->addElement('style_submit_button', 'submit', get_lang('SearchCourse'),'style="float:none;" class="search"');
 	$form->addElement('static','search_advanced_link',null,'<a href="course_list.php?search=advanced">'.get_lang('AdvancedSearch').'</a>');
-	//$form->addElement('html','<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_add.php" style="float:right;margin-top:5px;margin-right:5px;" >'.Display::return_icon('pixel.gif',get_lang('AddCourse'), array('class' => 'toolactionplaceholdericon toolactioncreatecourse')).get_lang('AddCourse').'</a>');
+	$form->addElement('html','<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_add.php" style="float:right;margin-top:5px;margin-right:5px;" >'.Display::return_icon('course_add.png',get_lang('AddCourse')).get_lang('AddCourse').'</a>');
 	//echo '<div style="float:right;margin-top:5px;margin-right:5px;">
 	//		  <a href="'.api_get_path(WEB_CODE_PATH).'admin/course_add.php" >'.Display::return_icon('course_add.gif',get_lang('AddCourse')).get_lang('AddCourse').'</a>
 	//	 </div>';
 
-/*	echo '<div class="actions">';
+	echo '<div class="actions">';
 	$form->display();
-	echo '</div>';*/
+	echo '</div>';
 
 	// Create a sortable table with the course data
 	$table = new SortableTable('courses', 'get_number_of_courses', 'get_course_data',2);
@@ -193,7 +173,7 @@ else
 	}
 	$table->set_additional_parameters($parameters);
 	$table->set_header(0, '', false);
-	$table->set_header(1, get_lang('Code'), true, '', 'nowrap="nowrap"');
+	$table->set_header(1, get_lang('Code'));
 	$table->set_header(2, get_lang('Title'));
 	$table->set_header(3, get_lang('Language'),false,'width="50px"');
 	$table->set_header(4, get_lang('Category'));
@@ -205,24 +185,8 @@ else
 	$table->set_column_filter(8,'modify_filter');
 	$table->set_form_actions(array ('delete_courses' => get_lang('DeleteCourse')),'course');
 
-	//Actions
-	echo '<div class="actions">';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_add.php">'.Display::return_icon('pixel.gif',get_lang('AddCourse'), array('class' => 'toolactionplaceholdericon toolactioncreatecourse')).get_lang('AddCourse').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_enrolment.php">'.Display::return_icon('pixel.gif',get_lang('EnrolmentToCoursesAtRegistrationToPortal'),array('class' => 'toolactionplaceholdericon toolactionautomaticenrollment')).get_lang('EnrolmentToCoursesAtRegistrationToPortal').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_export.php">'.Display::return_icon('pixel.gif',get_lang('Export'),array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('Export').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_import.php">'.Display::return_icon('pixel.gif',get_lang('ImportCourses'),array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('ImportCourses').'</a>';	
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/subscribe_user2course.php">'.Display::return_icon('pixel.gif',get_lang('AddUsersToACourse'),array('class' => 'toolactionplaceholdericon toolactionaddusertocourse')).get_lang('AddUsersToACourse').'</a>';
-	echo '<a href="javascript:void(0)" id="btn-search">'.Display::return_icon('pixel.gif',get_lang('Search'), array('class' => 'toolactionplaceholdericon toolactionsearch')).get_lang('Search').'</a>';
-	echo '</div>';
-        
 	// start the content div
 	echo '<div id="content">';
-	echo '<div class="secondary-actions" id="search" style="'.(isset($_GET['keyword'])?'display:block;':'display:none').'">';
-	echo '<div class="secondary-actions-extra">';
-	$form->display();
-	echo '</div>';
-	echo '</div>';
-
 
 	// display the sortable table
 	$table->display();
@@ -330,7 +294,7 @@ function get_course_data($from, $number_of_items, $column, $direction)
 		/** @todo this should be done using a filter in the sortable table like we did for the sortable table. Code has apparently been written by somebody who did not understand the sortable table */
 		//place colour icons in front of courses
 		//$course[1] = get_course_visibility_icon($course[9]).'<a href="'.api_get_path(WEB_COURSE_PATH).$course[9].'/index.php">'.$course[1].'</a>';
-		$course[1] = get_course_visibility_icon($course[9]).'<a href="'.api_get_path(WEB_COURSE_PATH).$course[10].'/index.php">'.$course[1].'</a>';
+		$course[1] = get_course_visibility_icon($course[9]).'<a href="'.api_get_path(WEB_COURSE_PATH).$course[8].'/index.php">'.$course[1].'</a>';
 		$course[5] = $course[5] == SUBSCRIBE_ALLOWED ? get_lang('Yes') : get_lang('No');
 		$course[6] = $course[6] == UNSUBSCRIBE_ALLOWED ? get_lang('Yes') : get_lang('No');
 		//$course[7] = CourseManager :: is_virtual_course_from_system_code($course[7]) ? get_lang('Yes') : get_lang('No');
@@ -346,17 +310,16 @@ function get_course_data($from, $number_of_items, $column, $direction)
 function modify_filter($code,$url_params,$row)
 {
 	global $charset;
-      
 		return
-		'<a href="course_information.php?code='.$code.'">'.Display::return_icon('pixel.gif', get_lang('Info'), array('class' => 'actionplaceholdericon actioninfo')).'</a>&nbsp;&nbsp;'.
+		'<a href="course_information.php?code='.$code.'">'.Display::return_icon('synthese_view.gif', get_lang('Info')).'</a>&nbsp;&nbsp;'.
 		// This is not the preferable way to go to the homepage. But for the moment the only one because the directory is not in the $row of the sortable table and
 		// visual code or code is not necessarily identical to $code
-		'<a href="../course_home/course_home.php?cidReq='.$code.'">'.Display::return_icon('pixel.gif', get_lang('CourseHomepage'), array('class' => 'actionplaceholdericon actioncoursehome')).'</a>&nbsp;&nbsp;'. 
+		'<a href="../course_home/course_home.php?cidReq='.$code.'">'.Display::return_icon('course_home.gif', get_lang('CourseHomepage')).'</a>&nbsp;&nbsp;'. 
 		//'<a href="'.api_get_path(WEB_COURSE_PATH).$row[11].'/index.php">'.Display::return_icon('course_home.gif', get_lang('CourseHomepage')).'</a>&nbsp;'.
-		'<a href="../tracking/courseLog.php?cidReq='.$code.'">'.Display::return_icon('pixel.gif', get_lang('Tracking'), array('class' => 'actionplaceholdericon actiontracking')).'</a>&nbsp;&nbsp;'.
-		'<a href="course_edit.php?course_code='.$code.'">'.Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')).'</a>&nbsp;&nbsp;'.
-		'<a href="course_list.php?delete_course='.$code.'"  onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset))."'".')) return false;">'.Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')).'</a>&nbsp;&nbsp;'.
-		'<a href="../coursecopy/backup.php?cidReq='.$code.'">'.Display::return_icon('pixel.gif', get_lang('CreateBackup'), array('class' => 'actionplaceholdericon actionsavebackup')).'</a>&nbsp;&nbsp;';
+		'<a href="../tracking/courseLog.php?cidReq='.$code.'">'.Display::return_icon('statistics.png', get_lang('Tracking')).'</a>&nbsp;&nbsp;'.
+		'<a href="course_edit.php?course_code='.$code.'">'.Display::return_icon('edit_link.png', get_lang('Edit')).'</a>&nbsp;&nbsp;'.
+		'<a href="course_list.php?delete_course='.$code.'"  onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset))."'".')) return false;">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>&nbsp;&nbsp;'.
+		'<a href="../coursecopy/backup.php?cidReq='.$code.'">'.Display::return_icon('backup.gif', get_lang('CreateBackup')).'</a>&nbsp;&nbsp;';
 	
 }
 /**
@@ -369,16 +332,16 @@ function get_course_visibility_icon($v)
 	switch($v)
 	{
 		case 0:
-			return Display::return_icon('pixel.gif', get_lang('CourseVisibilityClosed'), array('style'=>$style, 'class' => 'actionplaceholdericon actioncourseclosedstatus'));
+			return Display::return_icon('bullet_red.gif', get_lang('CourseVisibilityClosed'), array('style'=>$style));
 			break;
 		case 1:
-			return Display::return_icon('pixel.gif', get_lang('Private'), array('style'=>$style, 'class' => 'actionplaceholdericon actionprivatestatus'));
+			return Display::return_icon('bullet_orange.gif', get_lang('Private'), array('style'=>$style));
 			break;
 		case 2:
-			return Display::return_icon('pixel.gif', get_lang('OpenToThePlatform'), array('style'=>$style, 'class' => 'actionplaceholdericon actionpublicstatus'));
+			return Display::return_icon('bullet_green.gif', get_lang('OpenToThePlatform'), array('style'=>$style));
 			break;
 		case 3:
-			return Display::return_icon('pixel.gif', get_lang('OpenToTheWorld'), array('style'=>$style, 'class' => 'actionplaceholdericon actionopentoworldstatus'));
+			return Display::return_icon('bullet_blue.gif', get_lang('OpenToTheWorld'), array('style'=>$style));
 			break;
 		default:
 			return '';

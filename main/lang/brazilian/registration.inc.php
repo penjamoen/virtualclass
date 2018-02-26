@@ -184,5 +184,4 @@ $IncorrectCaptcha = "Código de confirmação incorreto";
 $CaptchaCheck = "Código de confirmação";
 $CaptchaCheckExplanation = "Você tem que digitar o código de confirmação exibido na imagem acima";
 $CouldNotResetPassword = "Não foi possível redefinir a senha";
-$ALinkToRecoverYourPasswordHasBeenSentToYourEmailAddress = "Um link para recuperar sua senha foi enviada para seu endereço de e-mail";
 ?>

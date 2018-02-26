@@ -40,6 +40,7 @@ $langMe = "jo";
 $langSystemAnnouncements = "Anuncis del sistema";
 $langHelpMaj = "Ajuda";
 $langNotRegistered = "No registrat";
+$langAdmin = "Administració de la plataforma";
 $Login = "Accés";
 $langRegisterForCourse = "Registre pel curs";
 $langUnregisterForCourse = "Anul·lar la inscripció al curs";

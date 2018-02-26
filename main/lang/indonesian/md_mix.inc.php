@@ -7,12 +7,12 @@ $langKwHelp = "<br/> Klik tombol \'+\' untuk membuka, tombol \'-\'  untuk menutu
 $langAdvanced = "Tingkat lanjut";
 $langSearch = "Cari";
 $langSearchCrit = "Gunakan area di bawah ini kata deskripsi, satu kata per baris!";
-$langNoKeywords = "Mata kuliah ini tidak memiliki kata kunci";
+$langNoKeywords = "Mata Pelajaran ini tidak memiliki kata kunci";
 $langKwCacheProblem = "Cache Kata kunci tidak dapat dibuka";
-$langCourseKwds = "Kata kunci mata kuliah";
+$langCourseKwds = "Kata kunci mata Pelajaran";
 $langKwdsInMD = "Kata kunci digunakan dalam MD";
 $langKwdRefs = "referensi kata kunci";
-$langNonCourseKwds = "Kata kunci non-mata kuliah";
-$langKwdsUse = "Kata kunci mata kuliah (tebal = tidak digunakan)";
+$langNonCourseKwds = "Kata kunci non-mata Pelajaran";
+$langKwdsUse = "Kata kunci mata Pelajaran (tebal = tidak digunakan)";
 $langTotalMDEs = "Jumlah total item MD:";
 ?>

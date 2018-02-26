@@ -66,11 +66,9 @@ $interbreadcrumb[]=array('url' => 'index.php',"name" => get_lang('PlatformAdmin'
 $interbreadcrumb[]=array('url' => "session_list.php","name" => get_lang('SessionList'));
 
 Display::display_header($tool_name);
-?>
-<div id="content">
-   <?php 
 api_display_tool_title($tool_name);
 ?>
+
 <form method="post" action="<?php echo api_get_self(); ?>?id_session=<?php echo $id_session; ?>&sort=<?php echo $sort; ?>" onsubmit="javascript:if(!confirm('<?php echo get_lang('ConfirmYourChoice'); ?>')) return false;">
 <br />
 <?php
@@ -86,8 +84,8 @@ foreach($Courses as $key=>$enreg) {
 	$course[] = '<input type="checkbox" name="idChecked[]" value="'.$enreg['code'].'">';
 	$course[] = api_htmlentities($enreg['title'],ENT_QUOTES,$charset);
 	$course[] = '<a href="session_course_user_list.php?id_session='.$id_session.'&course_code='.$enreg['code'].'">'.$enreg['nbr_users'].' '.get_lang('Users').'</a>';
-	$course[] = '<a href="session_course_edit.php?id_session='.$id_session.'&page=session_course_list.php&course_code='.$enreg['code'].'">'.Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).'</a>
-				<a href="'.api_get_self().'?id_session='.$id_session.'&sort='.$sort.'&action=delete&idChecked[]='.$enreg['code'].'" onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset)).'\')) return false;">'.Display::return_icon('pixel.gif', get_lang('Delete'),array('class'=>'actionplaceholdericon actiondelete')).'</a>';
+	$course[] = '<a href="session_course_edit.php?id_session='.$id_session.'&page=session_course_list.php&course_code='.$enreg['code'].'">'.Display::return_icon('edit.png', get_lang('Edit')).'</a>
+				<a href="'.api_get_self().'?id_session='.$id_session.'&sort='.$sort.'&action=delete&idChecked[]='.$enreg['code'].'" onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset)).'\')) return false;">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>';
 	$tableCourses[] = $course;
 }
 echo '<form method="post" action="'.api_get_self().'">';
@@ -97,9 +95,5 @@ echo '<select name="action">
 	</select>
 	<button class="save" type="submit">'.get_lang('Ok').'</button>
 	</form>';
+Display::display_footer();
 ?>
-</div>
-   <?php 
-   Display::display_footer();
-   ?>
-

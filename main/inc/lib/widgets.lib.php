@@ -98,7 +98,7 @@ function savewidgetsinlocation() {
 	// now we loop through all the widgets and add them to the course settings table
 	foreach ( $_POST ['widget'] as $key => $value ) {
 		// we check if it is a RSS feed or not. If it is we have to retrieve the rss information from the $cached_rss
-		if (strstr(trim($value),'rss') AND trim($value)<> 'tabbedrss'){		
+		if (strstr(trim($value),'rss')){		
 			$value = $_SESSION['cached_rss'][str_replace('rss','',$value)];
 		}
 
@@ -904,7 +904,7 @@ function get_widget_location() {
 	// cache rss
 	cache_rss();
 
-	if (strstr(trim($widget),'rss') AND $widget <> 'tabbedrss'){		
+	if (strstr(trim($widget),'rss')){		
 		$widget = $_SESSION['cached_rss'][str_replace('rss','',$_GET ['widget'])];
 	}
 	

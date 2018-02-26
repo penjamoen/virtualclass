@@ -137,15 +137,4 @@ $CreateTheDocument = "Dokumentum létrehozása";
 $SharedFolder = "Megosztott mappa";
 $CreateFolder = "Mappa létrehozása";
 $TemplateImage = "Sablon ikonja";
-$Animations = "Animációk";
-$Images = "Képek";
-$Photos = "Fotók";
-$Template = "Sablonok";
-$Filename = "Fájl név";
-$TemplateTitleBiblioDescription = "Biográfia";
-$TemplateTitleGallery = "Galéria";
-$TemplateTitleGalleryDescription = "Kép galéria";
-$TemplatesGallery = "Sablon galéria";
-$OnlyAllowedUploadSwfFilesInAnimationFolder = "Csak SWF kiterjesztés&#369; fájlok";
-$Score = "Pont";
 ?>

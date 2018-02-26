@@ -40,6 +40,7 @@ $langMe = "min mem ";
 $langSystemAnnouncements = "Anoncoj ";
 $langHelpMaj = "Helpo ";
 $langNotRegistered = "Ne registrita ";
+$langAdmin = "Platformmastrumanto ";
 $Login = "Ensaluti";
 $langRegisterForCourse = "Ali&#285;i al nova kurso ";
 $langUnregisterForCourse = "Malali&#285;i al kurso ";

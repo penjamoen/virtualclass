@@ -81,7 +81,7 @@ function choose_image($file_name)
 	/* TABLES INITIALISATION */
 	if (!$type || !$image)
 	{
-		$type['word'      ] = array('doc', 'dot',  'rtf', 'mcw',  'wps', 'psw', 'docm', 'docx', 'dotm',  'dotx', 'odt');
+		$type['word'      ] = array('doc', 'dot',  'rtf', 'mcw',  'wps', 'psw', 'docm', 'docx', 'dotm',  'dotx');
 		$type['web'       ] = array('htm', 'html', 'htx', 'xml',  'xsl',  'php', 'xhtml');
 		$type['image'     ] = array('gif', 'jpg',  'png', 'bmp',  'jpeg');
 		$type['audio'     ] = array('wav', 'mid',  'mp2', 'mp3',  'midi', 'sib', 'amr', 'kar');
@@ -98,7 +98,7 @@ function choose_image($file_name)
 		$type['oo_impress'] = array('odp', 'otp', 'sxi', 'sti');
 		$type['oo_draw'   ] = array('odg', 'otg', 'sxd', 'std');
 
-	/*	$image['word'      ] = 'word.gif';
+		$image['word'      ] = 'word.gif';
 		$image['web'       ] = 'file_html.gif';
 		$image['image'     ] = 'file_image.gif';
 		$image['audio'     ] = 'file_sound.gif';
@@ -109,28 +109,14 @@ function choose_image($file_name)
 		$image['acrobat'   ] = 'file_pdf.gif';
 		$image['powerpoint'] = 'powerpoint.gif';
 		$image['flash'     ] = 'file_flash.gif';
-		$image['text'      ] = 'file_txt.gif';*/
-
-		$image['word'      ] = 'actiondocword';
-		$image['web'       ] = 'actiondocweb';
-		$image['image'     ] = 'actiondocimage';
-		$image['audio'     ] = 'actiondocaudio';
-		$image['video'     ] = 'actiondocvideo';
-		$image['excel'     ] = 'actiondocexcel';
-		$image['compressed'] = 'actiondoczip';
-		$image['code'      ] = 'actiondoccode';
-		$image['acrobat'   ] = 'actiondocpdf';
-		$image['powerpoint'] = 'actiondocpowerpoint';
-		$image['flash'     ] = 'actiondocflash';
-		$image['text'      ] = 'actiondoctext';
-
+		$image['text'      ] = 'file_txt.gif';
 		//$image['oo_writer' ] = 'word.gif';
 		//$image['oo_calc'   ] = 'excel.gif';
 		//$image['oo_impress'] = 'powerpoint.gif';
-		$image['oo_writer' ] = 'actiondocword';
-		$image['oo_calc'   ] = 'actiondocexcel';
-		$image['oo_impress'] = 'actiondocpowerpoint';
-		$image['oo_draw'   ] = 'actiondocimage';
+		$image['oo_writer' ] = 'file_oo_writer.gif';
+		$image['oo_calc'   ] = 'file_oo_calc.gif';
+		$image['oo_impress'] = 'file_oo_impress.gif';
+		$image['oo_draw'   ] = 'file_oo_draw.gif';
 	}
 
 	/* FUNCTION CORE */
@@ -148,7 +134,7 @@ function choose_image($file_name)
 		}
 	}
 
-	return 'actiondoctext';
+	return 'defaut.gif';
 }
 
 /**

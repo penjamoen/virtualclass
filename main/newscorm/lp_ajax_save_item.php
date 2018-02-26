@@ -62,9 +62,7 @@ function save_item($lp_id,$user_id,$view_id,$item_id,$score=-1,$max=-1,$min=-1,$
     }
     //$objResponse->addAlert(api_get_path(REL_CODE_PATH).'newscorm/learnpathItem.class.php');
 
-    if (!is_object($mylp)) {
-        return $return;
-    }
+
     $prereq_check = $mylp->prerequisites_match($item_id);
     if($prereq_check === true) //launch the prerequisites check and set error if needed
     {
@@ -102,6 +100,7 @@ function save_item($lp_id,$user_id,$view_id,$item_id,$score=-1,$max=-1,$min=-1,$
                 $mylpi->set_time($time);
             }
             $mylpi->force_scorm_time = true;
+            error_log('force scorm time');
         }
         else {
         	$mylpi->current_stop_time = time();

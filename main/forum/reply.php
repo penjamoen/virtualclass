@@ -190,9 +190,9 @@ if (!$_user['user_id'] AND $current_forum['allow_anonymous']==0) {
 if ($origin != 'learnpath') {
 	echo '<div class="actions">';
 	echo '<span style="float:right;">'.search_link().'</span>';
-	echo '<a href="index.php?gradebook='.$gradebook.'">'.Display::return_icon('pixel.gif', get_lang('BackToForumOverview'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackToForumOverview').'</a>';
-	echo '<a href="viewforum.php?forum='.Security::remove_XSS($_GET['forum']).'&amp;gidReq='.$_SESSION['toolgroup'].'">'.Display::return_icon('pixel.gif', get_lang('BackToForum'), array('class' => 'toolactionplaceholdericon toolactionforum')).get_lang('BackToForum').'</a>';
-	echo '<a href="viewthread.php?forum='.Security::remove_XSS($_GET['forum']).'&amp;gradebook='.$gradebook.'&amp;thread='.Security::remove_XSS($_GET['thread']).'">'.Display::return_icon('pixel.gif',get_lang('BackToThread'), array('class' => 'toolactionplaceholdericon toolactionsinvite')).get_lang('BackToThread').'</a>';
+	echo '<a href="index.php?gradebook='.$gradebook.'">'.Display::return_icon('go-previous.png',get_lang('BackToForumOverview')).' '.get_lang('BackToForumOverview').'</a>';
+	echo '<a href="viewforum.php?forum='.Security::remove_XSS($_GET['forum']).'&amp;gidReq='.$_SESSION['toolgroup'].'">'.Display::return_icon('forum.png',get_lang('BackToForum')).' '.get_lang('BackToForum').'</a>';
+	echo '<a href="viewthread.php?forum='.Security::remove_XSS($_GET['forum']).'&amp;gradebook='.$gradebook.'&amp;thread='.Security::remove_XSS($_GET['thread']).'">'.Display::return_icon('forumthread_new.png',get_lang('BackToThread')).' '.get_lang('BackToThread').'</a>';
 	echo '</div>';
 } else {
 	echo '<div style="height:15px">&nbsp;</div>';

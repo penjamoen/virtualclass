@@ -164,7 +164,7 @@ echo '</table></div>';
 	echo	"</div> ";
 }*/
 
-if (api_is_allowed_to_edit(null,true) && !api_is_course_coach())
+if (api_is_allowed_to_edit(null,true) && !api_is_coach())
 {
 echo '<div class="section main_activity"><span class="sectiontitle">'.get_lang('CourseAdminOnly').'</span><table>';
 show_tools(TOOL_COURSE_ADMIN);
@@ -194,7 +194,7 @@ echo '</table></div>';
 		</div>-->
 	<?php
 //}
-if (api_is_platform_admin() && api_is_allowed_to_edit(null,true) && !api_is_course_coach())
+if (api_is_platform_admin() && api_is_allowed_to_edit(null,true) && !api_is_coach())
 {
 echo '<div class="section main_activity"><span class="sectiontitle">'.get_lang('PlatformAdminOnly').'</span><table>';
 show_tools(TOOL_PLATFORM_ADMIN);

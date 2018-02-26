@@ -30,7 +30,6 @@ $langLinkURL = "URL povezave";
 $langWelcomeToOnlineConf = "Dobrodošli v <b>konferenci v živo</b>";
 $langNoLinkAvailable = "Nobene povezave ni na voljo";
 $langChat_reset_by = "resetiraj klepetalnico";
-$langAdmin = "Admin platforme";
 $OrFile = "Ali datoteka";
 $langCallSent = "Poziv na razgovor je bil odposlan. Počakaj na potrditev ali zavrnitev svojega klica.";
 $langChatDenied = "Tvoj klic je klicoči zavrnil.";
@@ -60,7 +59,4 @@ $AskPermissionSpeak = "Prošnja po dovoljenju za govor";
 $GiveTheFloorTo = "Prepusti govor";
 $Pause = "Premor";
 $Stop = "Stop";
-$IsInTheChatRightNow = "se je pravkar pridružil(a)";
-$AnInvitationHasBeenSentTo = "Povabilo je bilo osposlano k";
-$DeclinedYourInvitation = "je zavrnil(a) tvoje povabilo";
 ?>

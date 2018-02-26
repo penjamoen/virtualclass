@@ -18,7 +18,7 @@ $labelPolyMenu = "Close polygon";
 $triesleft = "Attempts left";
 $exeFinished = "Now click on the VALIDATE button";
 $nextAnswer = "Question: &done=done";
-$delineation = "Contour";
+$delineation = "Delineation";
 $labelDelineationMenu = "Close delineation";
-$oar = "Avoid";
+$oar = "Area at risk";
 ?>

@@ -109,9 +109,9 @@ if (Database::num_rows($result_formateurs) > 0) {
 		$data[$user_id]["email"] = $email;
 
 		if ($is_western_name_order) {
-			echo '<tr class="'.$css_class.'"><td>'.$firstname.'</td><td>'.$lastname.'</td><td><a href="mailto:'.$email.'">'.$email.'</a></td><td><a href="course.php?user_id='.$user_id.'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a></td><td><a href="student.php?user_id='.$user_id.'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a></td></tr>';
+			echo '<tr class="'.$css_class.'"><td>'.$firstname.'</td><td>'.$lastname.'</td><td><a href="mailto:'.$email.'">'.$email.'</a></td><td><a href="course.php?user_id='.$user_id.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a></td><td><a href="student.php?user_id='.$user_id.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a></td></tr>';
 		} else {
-			echo '<tr class="'.$css_class.'"><td>'.$lastname.'</td><td>'.$firstname.'</td><td><a href="mailto:'.$email.'">'.$email.'</a></td><td><a href="course.php?user_id='.$user_id.'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a></td><td><a href="student.php?user_id='.$user_id.'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a></td></tr>';
+			echo '<tr class="'.$css_class.'"><td>'.$lastname.'</td><td>'.$firstname.'</td><td><a href="mailto:'.$email.'">'.$email.'</a></td><td><a href="course.php?user_id='.$user_id.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a></td><td><a href="student.php?user_id='.$user_id.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a></td></tr>';
 		}
 	}
 } else {

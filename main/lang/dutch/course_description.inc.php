@@ -3,17 +3,17 @@ for more information: see languages.txt in the lang folder.
 */
 $langCourseProgram  = "Beschrijving";
 $langThisCourseDescriptionIsEmpty  = "Deze cursus heeft nog geen beschrijving.";
-$langEditCourseProgram  = "Beschrijving creëren of wijzigen.";
-$QuestionPlan  = "Help";
-$langInfo2Say  = "Informatie voor gebruikers";
+$langEditCourseProgram  = "Beschrijving aanmaken of aanpassen.";
+$QuestionPlan  = "Vraag voor de lesgever";
+$langInfo2Say  = "Informatie voor de studenten";
 $langOuAutreTitre  = "Titel";
-$langNewBloc  = "Agenda";
+$langNewBloc  = "Andere (vrij in te vullen)";
 $langAddCat  = "Categorie toevoegen";
 $langAdd  = "Toevoegen";
-$langValid  = "Valide";
+$langValid  = "Ok";
 $langBackAndForget  = "Annuleren";
-$CourseDescriptionUpdated = "De beschrijving is bijgewerkt";
-$CourseDescriptionDeleted = "De beschrijving is verwijderd";
-$CourseDescriptionIntro = "Om een beschrijving te creëren, klik op de koptekst en vul het veld in.<br><br>Klik op OK om ver te gaan.";
+$CourseDescriptionUpdated = "De cursusbeschrijving is bijgewerkt";
+$CourseDescriptionDeleted = "De cursusbeschrijving is verwijderd";
+$CourseDescriptionIntro = "Om een cursusbeschrijving aan te maken, klik op de hoofding en vul het juiste veld in.<br><br>Klik op OK of vul een andere hoofding in.";
 $langSaveDescription = "Beschrijving opslaan";
 ?>

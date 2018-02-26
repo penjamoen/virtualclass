@@ -9,7 +9,7 @@
 */
 
 // name of the language file that needs to be included
-$language_file = array('registration','admin','userInfo');
+$language_file = array('registration','admin');
 
 // including the global Dokeos file
 include ('../inc/global.inc.php');
@@ -43,7 +43,7 @@ if ($_POST['keyword'])
 }
 
 // Display the header
-Display :: display_tool_header($tool_name, "User");
+Display :: display_header($tool_name, "User");
 
 // Display the tool title
 // api_display_tool_title($tool_name);
@@ -449,8 +449,7 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 								AND field_values.field_id = '".Database::escape_string($field_identification[0])."' 
 								AND field_values.field_value = '".Database::escape_string($field_identification[1])."'";
 					} else	{
-						//$sql .=	"WHERE cu.user_id IS NULL AND access_url_id= $url_access_id "; - Why where, I changed it by AND?
-						$sql .=	"AND cu.user_id IS NULL AND access_url_id= $url_access_id ";
+						$sql .=	"WHERE cu.user_id IS NULL AND access_url_id= $url_access_id ";
 					}		
 
 				}
@@ -494,7 +493,7 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 					  </a></center>';
 		}
 		else{
-			$photo = '<center>'.Display::return_icon('pixel.gif','',array('class' => 'actionplaceholdericon actionunknown')).'</center>';
+			$photo = '<center><img src="'.api_get_path(WEB_IMG_PATH).'unknown.png" style="width:22px"></center>';
 		}
 		$session_name = UserManager::get_user_last_session_name_in_course($user[0], $_SESSION['_course']['id']);
 		$status = "";
@@ -503,10 +502,10 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 		}
 		else{
 			if ($user[4] == 1) {
-				$status = '<div style="text-align:center;">'.Display::return_icon('pixel.gif',get_lang('Trainer'),array('class' => 'actionplaceholdericon actiontrainer')).'</div>';
+				$status = '<div style="text-align:center;"><img src="'.api_get_path(WEB_IMG_PATH).'00trainer.png" /></div>';
 			}
 			else{
-				$status = '<div style="text-align:center;">'.Display::return_icon('pixel.gif',get_lang('User'),array('class' => 'actionplaceholdericon actionuser')).'</div>';
+				$status = '<div style="text-align:center;"><img src="'.api_get_path(WEB_IMG_PATH).'02user.png" /></div>';
 			}
 		}
 		array_unshift($user, $photo);
@@ -586,14 +585,14 @@ $sort_by_first_name = api_sort_by_first_name();
 // Build search-form
 echo '<div class="actions">';
 
-$actions .= '<a href="user.php">'.Display::return_icon('pixel.gif', get_lang('Back'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('Back').'</a>';
+$actions .= '<a href="user.php">'.Display::return_icon('go_previous_32.png',get_lang('Back')).' '.get_lang('Back').'</a>';
 if ($_GET['keyword'] AND !empty($_GET['keyword']))
 {
-	$actions .= '<a href="subscribe_user.php?type='.Security::remove_XSS($_GET['type']).'">'.Display::return_icon('pixel.gif',get_lang('ClearSearchResults'),array('class' => 'actionplaceholdericon actionclean')).get_lang('ClearSearchResults').'</a>';
+	$actions .= '<a href="subscribe_user.php?type='.Security::remove_XSS($_GET['type']).'">'.Display::return_icon('clean_group.gif').' '.get_lang('ClearSearchResults').'</a>';
 }
 if ($_GET['subscribe_user_filter_value'] AND !empty($_GET['subscribe_user_filter_value']))
 {
-	$actions .= '<a href="subscribe_user.php?type='.Security::remove_XSS($_GET['type']).'">'.Display::return_icon('pixel.gif',get_lang('ClearSearchResults'),array('class' => 'actionplaceholdericon actionclean')).get_lang('ClearFilterResults').'</a>';
+	$actions .= '<a href="subscribe_user.php?type='.Security::remove_XSS($_GET['type']).'">'.Display::return_icon('clean_group.gif').' '.get_lang('ClearFilterResults').'</a>';
 }
 if (api_get_setting('ProfilingFilterAddingUsers') == 'true') {
 	display_extra_profile_fields_filter();

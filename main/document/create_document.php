@@ -1,5 +1,4 @@
 <?php
-
 /* For licensing terms, see /dokeos_license.txt */
 
 /**
@@ -17,7 +16,7 @@ $language_file = array('document','gradebook');
 $help_content = 'createdocument';
 
 // include the global Dokeos file
-require_once '../inc/global.inc.php';
+include ('../inc/global.inc.php');
 
 // include additional libraries
 require_once api_get_path(LIBRARY_PATH).'fileUpload.lib.php';
@@ -36,28 +35,170 @@ define('DOKEOS_DOCUMENT', true);
 
 $_SESSION['whereami'] = 'document/create';
 // Add additional javascript, css
+$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
 $htmlHeadXtra[] = '<script type="text/javascript">
   $(document).ready(function(){
-    $(".row").attr("style","padding:0px;");
+		$(".row").attr("style","padding:0px;");
   });
 </script> ';
+$htmlHeadXtra[]='<script>
+	
+function InnerDialogLoaded()
+{
+	/*
+	var B=new window.frames[0].FCKToolbarButton(\'Templates\',window.frames[0].FCKLang.Templates);
+	return B.ClickFrame();
+	*/
+
+	var isIE  = (navigator.appVersion.indexOf(\'MSIE\') != -1) ? true : false ;
+	var EditorFrame = null ;
+
+	if ( !isIE )
+	{
+		EditorFrame = window.frames[0] ;
+	}
+	else
+	{
+		// For this dynamic page window.frames[0] enumerates frames in a different order in IE.
+		// We need a sure method to locate the frame that contains the online editor.
+		for ( var i = 0, n = window.frames.length ; i < n ; i++ )
+		{
+			if ( window.frames[i].location.toString().indexOf(\'InstanceName=content\') != -1 )
+			{
+				EditorFrame = window.frames[i] ;
+			}
+		}
+	}
+
+	if ( !EditorFrame )
+	{
+		return null ;
+	}
+
+	var B = new EditorFrame.FCKToolbarButton(\'Templates\', EditorFrame.FCKLang.Templates);		
+	return B.ClickFrame();
+};	
+
+	var temp=false;
+	var temp2=false;
+	var use_document_title='.api_get_setting('use_document_title').';
+	var load_default_template = '. ((isset($_POST['submit']) || empty($_SERVER['QUERY_STRING'])) ? 'false' : 'true' ) .';
+
+	function launch_templates()
+	{		
+		//document.getElementById(\'frmModel\').style.display="block";				
+		//document.getElementById(\'content___Frame\').width=\'70%\'; 		
+		//window.frames[0].FCKToolbarItems.GetItem("Template").Click;
+	}
+
+	function FCKeditor_OnComplete( editorInstance )
+	{
+		editorInstance.Events.AttachEvent( \'OnSelectionChange\', check_for_title ) ;
+		//document.getElementById(\'frmModel\').innerHTML = "<iframe style=\'height: 525px; width: 180px;\' scrolling=\'no\' frameborder=\'0\' src=\''.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/fckdialogframe.html \'>";
+	}
+
+	function check_for_title()
+	{
+		if(temp==true){
+			// This functions shows that you can interact directly with the editor area
+			// DOM. In this way you have the freedom to do anything you want with it.
+	
+			// Get the editor instance that we want to interact with.
+			var oEditor = FCKeditorAPI.GetInstance(\'content\') ;
+	
+			// Get the Editor Area DOM (Document object).
+			var oDOM = oEditor.EditorDocument ;
+	
+			var iLength ;
+			var contentText ;
+			var contentTextArray;
+			var bestandsnaamNieuw = "";
+			var bestandsnaamOud = "";
+	
+			// The are two diffent ways to get the text (without HTML markups).
+			// It is browser specific.
+	
+			if( document.all )		// If Internet Explorer.
+			{
+				contentText = oDOM.body.innerText ;
+			}
+			else					// If Gecko.
+			{
+				var r = oDOM.createRange() ;
+				r.selectNodeContents( oDOM.body ) ;
+				contentText = r.toString() ;
+			}
+
+			var index=contentText.indexOf("/*<![CDATA");
+			contentText=contentText.substr(0,index);			
+
+			// Compose title if there is none
+			contentTextArray = contentText.split(\' \') ;
+			var x=0;
+			for(x=0; (x<5 && x<contentTextArray.length); x++)
+			{
+				if(x < 4)
+				{
+					bestandsnaamNieuw += contentTextArray[x] + \' \';
+				}
+				else
+				{
+					bestandsnaamNieuw += contentTextArray[x];
+				}
+			}
+			
+		// comment see FS#3335
+		//	if(document.getElementById(\'title_edited\').value == "false")
+		//	{
+		//		document.getElementById(\'filename\').value = bestandsnaamNieuw;
+		//		if(use_document_title){
+		//			document.getElementById(\'title\').value = bestandsnaamNieuw;
+		//		}
+		//	}
+		
+		}
+		temp=true;
+	}
+
+	function trim(s)
+	{
+	 while(s.substring(0,1) == \' \') {
+	  s = s.substring(1,s.length);
+	 }
+	 while(s.substring(s.length-1,s.length) == \' \') {
+	  s = s.substring(0,s.length-1);
+	 }
+	 return s;
+	}
+
+	function check_if_still_empty()
+	{
+		if(trim(document.getElementById(\'filename\').value) != "")
+		{
+			document.getElementById(\'title_edited\').value = "true";
+		}
+	}
+
+</script>';
 
 if (isset($_REQUEST['certificate'])) {
-    $nameTools = get_lang('CreateCertificate');	
+	$nameTools = get_lang('CreateCertificate');	
 } else {
-    $nameTools = get_lang('CreateDocument');	
+	$nameTools = get_lang('CreateDocument');	
 }
+
 
 $fck_attribute['Width'] = '100%';
 $fck_attribute['Height'] = '600';
 
 $fck_attribute['Config']['FullPage'] = true;
 if(!api_is_allowed_to_edit()){
-    $fck_attribute['Config']['UserStatus'] = 'student';
-    $fck_attribute['ToolbarSet'] = 'Documents_Student';
+	$fck_attribute['Config']['UserStatus'] = 'student';
+	$fck_attribute['ToolbarSet'] = 'Documents_Student';
 } else {
-    $fck_attribute['ToolbarSet'] = 'Documents';
+	$fck_attribute['ToolbarSet'] = 'Documents';
 }
+
 
 /*
 -----------------------------------------------------------
@@ -72,36 +213,43 @@ $dir = isset($_GET['dir']) ? Security::remove_XSS($_GET['dir']) : Security::remo
 ==============================================================================
 */
 
-if (api_is_in_group()) {
-    $group_properties = GroupManager::get_group_properties($_SESSION['_gid']);
+if (api_is_in_group())
+{
+	$group_properties = GroupManager::get_group_properties($_SESSION['_gid']);
 }
 
-if (strstr($dir, '..')) {
-    $dir = '/';
+if (strstr($dir, '..'))
+{
+	$dir = '/';
 }
 
-if ($dir[0] == '.') {
-    $dir = substr($dir, 1);
+if ($dir[0] == '.')
+{
+	$dir = substr($dir, 1);
 }
 
-if ($dir[0] != '/') {
-    $dir = '/'.$dir;
+if ($dir[0] != '/')
+{
+	$dir = '/'.$dir;
 }
 
-if ($dir[strlen($dir) - 1] != '/') {
-    $dir .= '/';
+if ($dir[strlen($dir) - 1] != '/')
+{
+	$dir .= '/';
 }
 
 // Configuration for the FCKEDITOR
 $doc_tree= explode('/', $dir);
 $count_dir = count($doc_tree) -2; // "2" because at the begin and end there are 2 "/"
 // Level correction for group documents.
-if (!empty($group_properties['directory'])) {
+if (!empty($group_properties['directory']))
+{
 	$count_dir = $count_dir > 0 ? $count_dir - 1 : 0;
 }
 $relative_url='';
 
-for($i=0;$i<($count_dir);$i++) {
+for($i=0;$i<($count_dir);$i++)
+{
 	$relative_url.='../';	
 }
 
@@ -123,23 +271,14 @@ $html_editor_config = array(
 	'BaseHref' => api_get_path('WEB_COURSE_PATH').$_course['path'].'/document'.$dir
 );
 
-$filepath = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document'.$dir;
+$filepath = api_get_path('SYS_COURSE_PATH').$_course['path'].'/document'.$dir;
+
 if (!is_dir($filepath)) {
-    $filepath = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document/';
-    $dir = '/';
+	$filepath = api_get_path('SYS_COURSE_PATH').$_course['path'].'/document/';
+	$dir = '/';
 }
 
-// create css folder if it doesn't exist
-$perm = api_get_setting('permissions_for_new_directories');
-$perm = octdec(!empty($perm)?$perm:'0770');
-$css_folder = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document/css'; 
-if (!is_dir($css_folder)) {
-        mkdir($css_folder);
-        chmod($css_folder, $perm);
-        $doc_id = add_document($_course, '/css', 'folder', 0, 'css');
-        api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'FolderCreated', $_user['user_id']);
-        api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id']);
-}
+
 
 //I'm in the certification module?  
 $is_certificate_mode = false;
@@ -162,7 +301,7 @@ if (!$is_certificate_mode) {
 			api_not_allowed(true);
 		}	
 	}
-	$interbreadcrumb[] = array ("url" => "./document.php?curdirpath=".Security::remove_XSS($_GET['dir']).$req_gid, "name" => get_lang('Documents'));
+	$interbreadcrumb[] = array ("url" => "./document.php?curdirpath=".urlencode($_GET['dir']).$req_gid, "name" => get_lang('Documents'));
 } else {
 	$interbreadcrumb[]= array (	'url' => '../gradebook/'.$_SESSION['gradebook_dest'], 'name' => get_lang('Gradebook'));	
 }
@@ -186,8 +325,16 @@ if (isset ($group)) {
 	$display_dir = implode('/', $display_dir);
 }
 
+/*$htmlHeadXtra[] = '<script type="text/javascript">
+function callTplGallery()
+{	
+	var title = document.create_document.title.value;
+	document.location.href = "template_gallery.php?doc=N&filename="+title;
+}
+</script>';*/
+
 // Create a new form
-$form = new FormValidator('create_document','post',api_get_self().'?'.api_get_cidreq().'&dir='.Security::remove_XSS($_GET['dir']).'&selectcat='.Security::remove_XSS($_GET['selectcat']));
+$form = new FormValidator('create_document','post',api_get_self().'?'.api_get_cidreq().'&dir='.Security::remove_XSS(urlencode($_GET['dir'])).'&selectcat='.Security::remove_XSS($_GET['selectcat']));
 
 // form title
 //$form->addElement('header', '', $nameTools);
@@ -303,138 +450,136 @@ if(isset($_REQUEST['tplid'])) {
 	$table_template = Database::get_main_table(TABLE_MAIN_TEMPLATES);	
 	$table_document = Database::get_course_table(TABLE_DOCUMENT, $_course['dbName']);
 	$user_id = api_get_user_id();
-        
+	$js = '';
+	if (api_get_setting('show_glossary_in_documents') != 'none') { 
+  $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>'.PHP_EOL;
+		if (api_get_setting('show_glossary_in_documents') == 'ismanual') {	
+			$js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"/>';
+		} else {
+   $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"/>'.PHP_EOL;
+			$js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_automatic.js"/>';
+		}
+	}
 	// setting some paths
 	$img_dir = api_get_path(REL_CODE_PATH).'img/';
 	$default_course_dir = api_get_path(REL_CODE_PATH).'default_course_document/';
 
-        // update templates.css in course
-	$css_name = api_get_setting('stylesheets');                
-        if (file_exists(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css')) {
-            $template_content = str_replace('../../img/', api_get_path(REL_CODE_PATH).'img/', file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css'));
-            $template_content = str_replace('images/', api_get_path(REL_CODE_PATH).'css/'.$css_name.'/images/', $template_content);            
-            file_put_contents($css_folder.'/templates.css', $template_content);
-        }	
-        	
-        if (!isset($_REQUEST['tmpltype'])) {
-		if ($_REQUEST['tplid'] <> 0) {
+	$css_name = api_get_setting('stylesheets');
+	$template_css = ' <style type="text/css">'.str_replace('../../img/',api_get_path(REL_CODE_PATH).'img/',file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/default.css')).'</style>';
+	if(file_exists(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css'))
+	{
+		$template_css .= ' <style type="text/css">'.str_replace('../../img/',api_get_path(REL_CODE_PATH).'img/',file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css')).'</style>';
+	}
+	$template_css = str_replace('images/',api_get_path(REL_CODE_PATH).'css/'.$css_name.'/images/',$template_css);
+
+	
+	if(!isset($_REQUEST['tmpltype']))
+	{
+		if($_REQUEST['tplid'] <> 0)
+		{
 			$query = 'SELECT content,title FROM '.$table_sys_template.' WHERE id='.Database::escape_string(Security::remove_XSS($_REQUEST['tplid']));
+		//	echo $query;
 			$result = api_sql_query($query,__FILE__,__LINE__);
-			while($obj = Database::fetch_object($result)) {
-                            $valcontent = $obj->content;
-                            $title = $obj->title;
-			}
-                                               
-                        // add css inside document content
-                        $template_css = '';
-                        if (strpos($valcontent, '/css/templates.css') === false) {
-                            $template_css = '<link rel="stylesheet" href="'.api_get_path(WEB_COURSE_PATH).$_course['path'].'/document/css/templates.css" type="text/css" />';
-                        }
-                        
-			$valcontent =  str_replace('{CSS}',$template_css, $valcontent);     
-                        
-                        // add js inside document content
-                        $js = '';                        
-                        if (strpos($valcontent, '/javascript/jquery.highlight.js') === false) { 
-                            $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
-                            $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'jwplayer/jwplayer.js" language="javascript"></script>'.PHP_EOL;
-                            if (api_get_setting('show_glossary_in_documents') != 'none') {                                                                
-                                if (api_get_setting('show_glossary_in_documents') == 'ismanual') {
-                                    $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"></script>';
-                                } else {
-                                    $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"></script>';
-                                    $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_automatic.js"></script>';
-                                }
-                            }                                                
-                        } 
-                        $valcontent = str_replace('</head>',$js.'</head>',$valcontent);
+			while($obj = Database::fetch_object($result))
+					{
+						$valcontent = $obj->content;
+            $title = $obj->title;
+					}
+			$valcontent =  str_replace('{CSS}',$template_css.$js, $valcontent);      	
 			$valcontent =  str_replace('{IMG_DIR}',$img_dir, $valcontent);
 			$valcontent =  str_replace('{REL_PATH}', api_get_path(REL_PATH), $valcontent);
 			$valcontent =  str_replace('{COURSE_DIR}',$default_course_dir, $valcontent);
 			$default['content'] = $valcontent;
-                        $default['title'] = get_lang($title);
+      $default['title'] = get_lang($title);
 		}
-	} else {
+	}
+	else
+	{
 			$sql = "SELECT template.id, template.title, template.description, template.image, template.ref_doc, document.path 
 			FROM ".$table_template." template, ".$table_document." document 
 			WHERE user_id='".Database::escape_string($user_id)."'
 			AND course_code='".Database::escape_string(api_get_course_id())."'
 			AND document.id = template.ref_doc"; 
 			$result_template = api_sql_query($sql,__FILE__,__LINE__);
-			while ($row = Database::fetch_array($result_template)) {
-                            $valcontent = file_get_contents(api_get_path('SYS_COURSE_PATH').$_course['path'].'/document'.$row['path']);
-                            $title = $row['title'];
+			while ($row = Database::fetch_array($result_template))
+			{
+				$valcontent = file_get_contents(api_get_path('SYS_COURSE_PATH').$_course['path'].'/document'.$row['path']);
+        $title = $row['title'];
 			}
 			$default['content'] = $valcontent;
-                        $default['title'] = $title;
+      $default['title'] = $title;
 	}	
 }
-if(!empty($_REQUEST['filename'])) {
-		$default['title'] = Security::remove_XSS($_REQUEST['filename']);
+if(!empty($_REQUEST['filename']))
+{
+		$default['title'] = $_REQUEST['filename'];
 }
 $form->setDefaults($default);
 
+// HTML
+/*
+$form->addElement('html','<div id="frmModel" style="display:block; height:525px; width:240px; position:absolute; top:115px; left:1px;"></div>');
+*/
+
 // If form validates -> save the new document
 if ($form->validate()) {
-    $values = $form->exportValues();
-    $readonly = isset($values['readonly']) ? 1 : 0;
-    if (api_get_setting('use_document_title') != 'true') {
-    $normal_name = $values['filename'];
-        $clean_val = addslashes(trim($normal_name));
+	$values = $form->exportValues();
+	$readonly = isset($values['readonly']) ? 1 : 0;
+	
+	if (api_get_setting('use_document_title') != 'true') {
+		$clean_val = addslashes(trim($values['filename']));
+	} else {
+		$clean_val = addslashes(trim($values['title']));
+	}
+
+	$clean_val=Security::remove_XSS($clean_val);
+	$clean_val=replace_dangerous_char(stripslashes($clean_val));
+	$clean_val=disable_dangerous_file($clean_val);
+	$clean_val=replace_accents($clean_val);	
+	
+	
+	if (api_get_setting('use_document_title') != 'true') {
+		$values['filename']=$clean_val;
+		$values['title'] = str_replace('/','-',$values['filename']);
+		$filename = replace_accents($values['filename']);
+		$title = $values['filename'];
+	} else	{
+		$values['title']=$clean_val;
+		$values['filename'] = str_replace('/','-',$values['title']);
+		$filename = replace_accents($values['title']);
+		$title = $values['title'];
+	}
+	
+	$texte = stripslashes($values['content']);
+	$texte=Security::remove_XSS($texte,COURSEMANAGERLOWSECURITY);
+//	$title = $values['filename'];
+	if(empty($title))
+	{
+		$filename = 'Noname_'.rand(1,100);
+	}
+	$extension = 'html';
+	if (!strstr($texte, '/css/frames.css')) {
+   if (api_get_setting('show_glossary_in_documents') != 'none' && isset($_POST['is_template']) && $_POST['is_template'] == 0) {
+    $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
+    if (api_get_setting('show_glossary_in_documents') == 'ismanual') {
+     $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"></script>';
     } else {
-    $normal_name = $values['title'];
-        $clean_val = addslashes(trim($values['title']));
+     $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"></script>';
+     $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_automatic.js"></script>';
     }
-    $clean_val=Security::remove_XSS($clean_val);
-    $original_name = Security::remove_XSS($normal_name);
-    $clean_val=replace_dangerous_char(stripslashes($clean_val));
-    $clean_val=disable_dangerous_file($clean_val);
-    $clean_val=replace_accents($clean_val);	
-
-    if (api_get_setting('use_document_title') != 'true') {
-            $values['filename']=$clean_val;
-            $values['title'] = str_replace('/','-',$values['filename']);
-            $filename = replace_accents($values['filename']);
-            $title = $values['filename'];
-    } else	{
-            $values['title']=$clean_val;
-            $values['filename'] = str_replace('/','-',$values['title']);
-            $filename = replace_accents($values['title']);
-            $title = $values['title'];
-    }
-
-    $texte = stripslashes($values['content']);
-    $texte = Security::remove_XSS($texte,COURSEMANAGERLOWSECURITY);
-    if(empty($title)) {
-            $filename = 'Noname_'.rand(1,100);
-    }
-    $extension = 'html';
-    $js = '';
-    // add js path if it doesn't exist
-    if (strpos($texte, 'javascript/jquery.highlight.js') === false) {            
-        $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
-        $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'jwplayer/jwplayer.js" language="javascript"></script>'.PHP_EOL;
-        if (api_get_setting('show_glossary_in_documents') != 'none' && isset($_POST['is_template']) && $_POST['is_template'] == 0) {                
-            if (api_get_setting('show_glossary_in_documents') == 'ismanual') {
-                $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"></script>';
-            } else {
-                $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"></script>';
-                $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_automatic.js"></script>';
-            }
-        }
-    }
-
-    $template_css = '';
-    // add template css path if it doesn't exist
-    if (strpos($texte, '/css/templates.css') === false) {
-        $template_css = '<link rel="stylesheet" href="'.api_get_path(WEB_COURSE_PATH).$_course['path'].'/document/css/templates.css" type="text/css" />';            
-    }
-
-    $texte = str_replace('</head>', $template_css.$js.'</head>', $texte);
-        
-	if ($fp = @fopen($filepath.$filename.'.'.$extension, 'w')) {
+   }
+		$texte = str_replace('<head>', '<head><link rel="stylesheet" href="./css/frames.css" type="text/css" />', $js.$texte);
+	}
+	if ($fp = @ fopen($filepath.$filename.'.'.$extension, 'w')) {
 		$texte = text_filter($texte);		
-		$content = str_replace(api_get_path('WEB_COURSE_PATH'), $_configuration['url_append'].'/courses/', $texte);		 
+		$content = str_replace(api_get_path('WEB_COURSE_PATH'), $_configuration['url_append'].'/courses/', $texte);
+		// change the path of mp3 to absolute
+		// first regexp deals with ../../../ urls
+		// Disabled by Ivan Tcholakov.
+		//$content = preg_replace("|(flashvars=\"file=)(\.+/)+|","$1".api_get_path(REL_COURSE_PATH).$_course['path'].'/document/',$content);
+		//second regexp deals with audio/ urls
+		// Disabled by Ivan Tcholakov.
+		//$content = preg_replace("|(flashvars=\"file=)([^/]+)/|","$1".api_get_path(REL_COURSE_PATH).$_course['path'].'/document/$2/',$content);		 		 
 		fputs($fp, $content);
 		fclose($fp);
 		$files_perm = api_get_setting('permissions_for_new_files');
@@ -450,10 +595,10 @@ if ($form->validate()) {
 			api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id']);
 		}
 
-		if (!is_file($filepath.'css/templates.css')) {
-			//make a copy of the current css for the new document
-			copy(api_get_path(SYS_CODE_PATH).'css/'.api_get_setting('stylesheets').'/templates.css', $filepath.'css/templates.css');
-			$doc_id = add_document($_course, $dir.'css/templates.css', 'file', filesize($filepath.'css/templates.css'), 'templates.css');
+		if (!is_file($filepath.'css/frames.css')) {
+			//make a copy of the current css for the new document			
+			copy(api_get_path(SYS_CODE_PATH).'css/'.api_get_setting('stylesheets').'/frames.css', $filepath.'css/frames.css');
+			$doc_id = add_document($_course, $dir.'css/frames.css', 'file', filesize($filepath.'css/frames.css'), 'frames.css');
 			api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'DocumentAdded', $_user['user_id']);
 			api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id']);
 		}
@@ -461,7 +606,7 @@ if ($form->validate()) {
 		$file_size = filesize($filepath.$filename.'.'.$extension);
 		$save_file_path = $dir.$filename.'.'.$extension;
 
-		$document_id = add_document($_course, $save_file_path, 'file', $file_size, $original_name,null,$readonly);
+		$document_id = add_document($_course, $save_file_path, 'file', $file_size, $filename,null,$readonly);
 		if ($document_id) {
 			api_item_property_update($_course, TOOL_DOCUMENT, $document_id, 'DocumentAdded', $_user['user_id'], $to_group_id);
 			//update parent folders
@@ -478,20 +623,19 @@ if ($form->validate()) {
 				api_sql_query("UPDATE $TABLE_DOCUMENT SET".substr($ct, 1)." WHERE id = '$document_id'", __FILE__, __LINE__);
 			}
 			$dir= substr($dir,0,-1);
-			$selectcat = '';
-            // Get last 3 characters
-            $ext = substr(strrchr($save_file_path,'.'),1);
-            $ext = strtolower($ext);
+			$selectcat = '';		
+			$ext = explode(".",$save_file_path);
 			if (isset($_REQUEST['selectcat']))
 				$selectcat = "&selectcat=".Security::remove_XSS($_REQUEST['selectcat']);
-            if(api_get_setting('search_enabled')=='true' && extension_loaded('xapian')) {
-               DocumentManager::search_engine_save($document_id, $new_title, $content, $save_file_path);
-            }
-            $allowed_file_types = array('htm','html','gif','jpg','jpeg','png','bmp');
-            if (in_array($ext, $allowed_file_types)) {
-			   echo "<script>window.location.href='showinframes.php?".api_get_cidReq()."&file=".$save_file_path."&curdirpath=".$dir."';</script>";
-			} else {
-                           echo "<script>window.location.href='document.php?".api_get_cidReq()."&curdirpath='".$dir.";</script>";
+		//	header('Location: document.php?curdirpath='.urlencode($dir).$selectcat); 
+			if($ext[1] == 'htm' || $ext[1] == 'html' || $ext[1] == 'gif' || $ext[1] == 'jpg' || $ext[1] == 'jpeg' || $ext[1] == 'png')
+			{
+			//echo "<script>window.location.href='showinframes.php?".api_get_cidReq()."&file=".$save_file_path."';</script>";
+			echo "<script>window.location.href='showinframes.php?".api_get_cidReq()."&file=".$save_file_path."&curdirpath=".urlencode($dir)."';</script>";
+			}
+			else
+			{
+			echo "<script>window.location.href='document.php?curdirpath='".urlencode($dir).";</script>";
 			}
 			exit ();
 		} else {
@@ -508,6 +652,18 @@ if ($form->validate()) {
 } else {
 	// Display the header
 	Display :: display_tool_header($nameTools, "Doc");
+
+	// display tool title
+	//api_display_tool_title($nameTools);
+
+//	echo '<div class="actions">';
+	// link back to the documents overview
+/*	if ($is_certificate_mode) 
+		echo '<a href="document.php?curdirpath='.Security::remove_XSS($_GET['dir']).'&selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('back.png',get_lang('Back').' '.get_lang('To').' '.get_lang('CertificateOverview')).get_lang('Back').' '.get_lang('To').' '.get_lang('CertificateOverview').'</a>';
+	else 
+		echo '<a href="document.php?curdirpath='.Security::remove_XSS($_GET['dir']).'">'.Display::return_icon('back.png',get_lang('Back').' '.get_lang('To').' '.get_lang('DocumentsOverview')).get_lang('Back').' '.get_lang('To').' '.get_lang('DocumentsOverview').'</a>';
+	echo '</div>';*/
+	// actions
 	if (isset($_REQUEST['certificate'])) {
 		$all_information_by_create_certificate=DocumentManager::get_all_info_to_certificate();
 		$str_info='';
@@ -518,24 +674,22 @@ if ($form->validate()) {
 		echo '<div class="section_white"><div class="sectioncontent_white_bg">'.$create_certificate.': <br />'.$str_info.'</div></div>';
 	}
 	// actions
-	echo '<div class="actions">' . PHP_EOL;
-	echo '<a href="document.php?'.api_get_cidreq().'&curdirpath='.Security::remove_XSS($_GET['dir']).'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('Documents'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('Documents').'</a>' . PHP_EOL;
-	echo '<a href="template_gallery.php?'.api_get_cidreq().'&doc=N&dir='.Security::remove_XSS($_GET['dir']).'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('Templates'), array('class' => 'toolactionplaceholdericon toolactiontemplates')).' '.get_lang('Templates').'</a>' . PHP_EOL;
-	echo '</div>' . PHP_EOL;
+	echo '<div class="actions">
+		<a href="document.php?'.api_get_cidreq().'&curdirpath='.Security::remove_XSS($_GET['dir']).'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('go_previous_32.png',get_lang('Documents')).' '.get_lang('Documents').'</a>
+		<a href="template_gallery.php?'.api_get_cidreq().'&doc=N&dir='.$_GET['dir'].'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('tools_wizard_48.png',get_lang('Templates')).' '.get_lang('Templates').'</a>
+		</div>';
 
 	// start the content div
 	echo '<div id="content">';
-
 	// display the form
 	$form->display();
 
 	// close the content div
 	echo '</div>';
 
-	 // bottom actions bar
-	echo '<div class="actions">';
-	echo '</div>';
-
+ // bottom actions bar
+echo '<div class="actions">';
+echo '</div>';
 	// display the footer
 	Display::display_footer();
 }

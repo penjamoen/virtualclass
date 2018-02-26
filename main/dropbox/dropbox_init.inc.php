@@ -38,7 +38,7 @@ $language_file = "dropbox";
 //$noPHP_SELF = TRUE;
 
 // including the basic Dokeos initialisation file
-require_once("../inc/global.inc.php");
+require("../inc/global.inc.php");
 require_once(api_get_path(LIBRARY_PATH) . "security.lib.php");
 
 // the dropbox configuration parameters
@@ -240,7 +240,7 @@ if (!$_GET['view'] OR $_GET['view']=='received')
 {
 	$part='received';
 }
-elseif ($_GET['view']=='sent')
+elseif ($_GET['view']='sent')
 {
 	$part='sent';
 }
@@ -322,7 +322,7 @@ if ($_GET['view']=='sent' OR empty($_GET['view']))
 
 if ($origin != 'learnpath')
 {
-    Display::display_tool_header($nameTools,"Dropbox");
+    Display::display_header($nameTools,"Dropbox");
 }
 else // if we come from the learning path we have to include the stylesheet and the required javascripts manually.
 {

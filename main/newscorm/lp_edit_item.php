@@ -107,16 +107,6 @@ $sql_query = "SELECT * FROM $tbl_lp WHERE id = $learnpath_id";
 $result=Database::query($sql_query);
 $therow=Database::fetch_array($result);
 
-// Get item info
-$item_id = Security::remove_XSS($_GET['id']);
-
-// Get the item type
-$sql = "SELECT item_type FROM " . $tbl_lp_item . "
-		WHERE id = " . Database::escape_string($item_id);
-$rs_item = Database::query($sql,__FILE__,__LINE__);
-$row_item = Database::fetch_array($rs_item,'ASSOC');
-$item_type = $row_item['item_type'];
-
 //$admin_output = '';
 /*
 -----------------------------------------------------------
@@ -189,9 +179,9 @@ function confirmation(name)
 //echo $_SESSION['oLP']->build_action_menu();
 echo '<div class="actions">';
 $gradebook = Security::remove_XSS($_GET['gradebook']);
-echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', get_lang('Author'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('Author') . '</a>';
-echo '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&amp;gradebook='.$gradebook.'&amp;action=add_item&amp;type=step&amp;lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', get_lang('Content'),array('class'=>'toolactionplaceholdericon toolactionauthorcontent')).get_lang('Content') . '</a>';
-echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', get_lang('Scenario'),array('class'=>'toolactionplaceholdericon toolactionauthorscenario')).get_lang("Scenario") . '</a>';
+echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('go_previous_32.png', get_lang('Author')).get_lang("Author") . '</a>';
+echo '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&amp;gradebook='.$gradebook.'&amp;action=add_item&amp;type=step&amp;lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('content.png', get_lang('Content')).get_lang("Content") . '</a>';
+echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('organize.png', get_lang('Scenario')).get_lang("Scenario") . '</a>';
 echo '</div>';
 
 echo '<div id="content_with_secondary_actions">';
@@ -243,11 +233,10 @@ echo '</div>';
 
 //Bottom bar
 echo '<div class="actions">';
-
 if ($item_type != 'dokeos_chapter' && $item_type != 'chapter') {
-	echo '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;action=edit_item_prereq&amp;view=build&amp;id=' . $item_id . '&amp;lp_id=' . Security::remove_XSS($_GET['lp_id']) . '" title="' . get_lang('Prerequisites') . '">'.Display::return_icon('pixel.gif',get_lang('Prerequisites'),array('class'=>'actionplaceholdericon actionauthorprerequisites','align'=>'absbottom') ). '' . get_lang('Prerequisites') . '</a>';
+	echo '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;action=edit_item_prereq&amp;view=build&amp;id=' . $item_id . '&amp;lp_id=' . Security::remove_XSS($_GET['lp_id']) . '" title="' . get_lang('Prerequisites') . '"><img align="absbottom" alt="' . get_lang('Prerequisites') . '" src="../img/right.gif" title="' . get_lang('Prerequisites') . '" /> ' . get_lang('Prerequisites') . '</a>';
 }
-echo '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;action=delete_item&amp;view=build&amp;id=' . $item_id . '&amp;lp_id=' . Security::remove_XSS($_GET['lp_id']) . '" onclick="return confirmation(\'' . addslashes($s_title) . '\');" title="Delete the current item">'.Display::return_icon('pixel.gif',get_lang('Delete'),array('class'=>'actionplaceholdericon actiondelete','alt'=>'Delete the current item','align'=>'absbottom')).''. get_lang("Delete") . '</a>';
+echo '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;action=delete_item&amp;view=build&amp;id=' . $item_id . '&amp;lp_id=' . Security::remove_XSS($_GET['lp_id']) . '" onclick="return confirmation(\'' . addslashes($s_title) . '\');" title="Delete the current item"><img alt="Delete the current item" align="absbottom" src="../img/delete.png" title="' . get_lang("Delete") . '" /> ' . get_lang("Delete") . '</a>';
 echo '</div>';
 /*
 ==============================================================================

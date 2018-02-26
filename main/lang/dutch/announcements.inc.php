@@ -1,7 +1,7 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$Announcement = "Aankondiging";
+$Announcement = "Aankondigingen";
 $langAnnEmpty = "Alle aankondigingen zijn verwijderd.";
 $AnnouncementModified = "De aankondiging is gewijzigd.";
 $AnnouncementAdded = "De aankondiging is toegevoegd.";

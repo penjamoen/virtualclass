@@ -68,15 +68,15 @@ echo '</div>';
 function lp_upload_quiz_actions() {
  $lp_id = Security::remove_XSS($_GET['lp_id']);
  $return = "";
- $return.= '<a href="exercice.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', get_lang('List'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('List').'</a>';
- $return.= '<a href="exercise_admin.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', get_lang('NewEx'), array('class' => 'toolactionplaceholdericon toolactionnewquiz'))  . get_lang('NewEx') . '</a>';
+ $return.= '<a href="exercice.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('go_previous_32.png', get_lang('List')) . get_lang('List') . '</a>';
+ $return.= '<a href="exercise_admin.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('new_quiz.png', get_lang('NewEx')) . get_lang('NewEx') . '</a>';
  return $return;
 }
 
 function lp_upload_quiz_secondary_actions() {
  $lp_id = Security::remove_XSS($_GET['lp_id']);
  $return.= '';
- $return.='<a href="exercice.php?show=result&' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang('Tracking'), array('class' => 'actionplaceholdericon actiontracking')) . get_lang('Tracking') . '</a>';
+ $return.='<a href="exercice.php?show=result&' . api_get_cidreq() . '">' . Display :: return_icon('reporting32.png', get_lang('Tracking')) . get_lang('Tracking') . '</a>';
  return $return;
 }
 

@@ -58,23 +58,23 @@ $author_lang_var = api_convert_encoding(get_lang('Author'), $charset, api_get_sy
 $content_lang_var = api_convert_encoding(get_lang('Content'), $charset, api_get_system_encoding());
 $scenario_lang_var = api_convert_encoding(get_lang('Scenario'), $charset, api_get_system_encoding());
 $publication_lang_var = api_convert_encoding(get_lang('Publication'), $charset, api_get_system_encoding());
-$export_lang_var = api_convert_encoding(get_lang('Export'), $charset, api_get_system_encoding());
-
 // actions link
 echo '<div class="actions">';
 $gradebook = Security::remove_XSS($_GET['gradebook']);
-echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', $author_lang_var, array('class' => 'toolactionplaceholdericon toolactionback')).$author_lang_var . '</a>';
-echo '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&amp;gradebook='.$gradebook.'&amp;action=add_item&amp;type=step&amp;lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', $content_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorcontent')).$content_lang_var . '</a>';
-echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', $scenario_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorscenario')).$scenario_lang_var . '</a>';
-echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=edit&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', $publication_lang_var, array('class' => 'toolactionplaceholdericon toolsettings')).$publication_lang_var . '</a>';
+echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('go_previous_32.png', $author_lang_var).$author_lang_var . '</a>';
+echo '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&amp;gradebook='.$gradebook.'&amp;action=add_item&amp;type=step&amp;lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('content.png', $content_lang_var).$content_lang_var . '</a>';
+echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('organize.png', $scenario_lang_var).$scenario_lang_var . '</a>';
+echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=edit&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('publication_setup.png', $publication_lang_var).$publication_lang_var . '</a>';
 /*   Export  */
 if($_SESSION['oLP']->get_type()==1){
     $dsp_disk =
-        "<a href='".api_get_self()."?".api_get_cidreq()."&action=export&lp_id=".$_SESSION['oLP']->lp_id ."'>" .Display::return_icon('pixel.gif', $export_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorexport')).$export_lang_var.
+        "<a href='".api_get_self()."?".api_get_cidreq()."&action=export&lp_id=".$_SESSION['oLP']->lp_id ."'>" .
+            "<img src=\"../img/save_32.png\" border=\"0\" title=\"".get_lang('Export')."\">" .get_lang('Export').
         "</a>";
 }elseif($_SESSION['oLP']->get_type()==2){
     $dsp_disk =
-        "<a href='".api_get_self()."?".api_get_cidreq()."&action=export&lp_id=".$_SESSION['oLP']->lp_id ."&export_name=".replace_dangerous_char($_SESSION['oLP']->get_name(),'strict').".zip'>" .Display::return_icon('pixel.gif', $export_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorexport')).$export_lang_var.
+        "<a href='".api_get_self()."?".api_get_cidreq()."&action=export&lp_id=".$_SESSION['oLP']->lp_id ."&export_name=".replace_dangerous_char($_SESSION['oLP']->get_name(),'strict').".zip'>" .
+            "<img src=\"../img/save_32.png\" border=\"0\" title=\"".get_lang('Export')."\">" .get_lang('Export').
         "</a>";
 }
 echo $dsp_disk;
@@ -218,7 +218,7 @@ $onlyimages_lang_var = api_convert_encoding(get_lang('OnlyImagesAllowed'), $char
 $form->addRule('lp_preview_image', $onlyimages_lang_var, 'filetype', array ('jpg', 'jpeg', 'png', 'gif'));
 
 // Search terms (only if search is activated)
-if (api_get_setting('search_enabled') === 'true' && extension_loaded('xapian'))
+if (api_get_setting('search_enabled') === 'true')
 {
 	$specific_fields = get_specific_field_list();
 	foreach ($specific_fields as $specific_field) {
@@ -250,18 +250,6 @@ $defaults['lp_name'] = Security::remove_XSS(api_convert_encoding($_SESSION['oLP'
 $defaults['lp_author'] = Security::remove_XSS(api_convert_encoding($_SESSION['oLP']->get_author(), $charset, api_get_system_encoding()));
 $defaults['enable_debug'] = $_SESSION['oLP']->scorm_debug;
 
-//get the keyword
-$searchkey = new SearchEngineManager();
-$keyword = $searchkey->getKeyWord(TOOL_LEARNPATH, $_SESSION['oLP']->lp_id);
-
-$defaults['search_terms'] = $keyword;
-if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian')) {
-    //TODO: include language file
-    $form -> addElement('html','<input type="hidden" name="index_document" value="1"/>'.
-     '<input type="hidden" name="language" value="' . api_get_setting('platformLanguage') . '"/>');
-    $form-> addElement('textarea','search_terms',get_lang('SearchKeywords'),array('cols'=>65));
-}
-
 //Submit button
 $savelp_lang_var = api_convert_encoding(get_lang('SaveLPSettings'), $charset, api_get_system_encoding());
 $form->addElement('style_submit_button', 'Submit',$savelp_lang_var,'class="save"');
@@ -270,8 +258,6 @@ $form->addElement('style_submit_button', 'Submit',$savelp_lang_var,'class="save"
 //Hidden fields
 $form->addElement('hidden', 'action', 'update_lp');
 $form->addElement('hidden', 'lp_id', $_SESSION['oLP']->get_id());
-
-
 
 $form->setDefaults($defaults);
 echo '<div id="content_with_secondary_actions">';

@@ -772,21 +772,9 @@ if (isset($cidReset) && $cidReset) { // course session data refresh requested or
 		if ($_configuration['tracking_enabled'] && !isset($_SESSION['login_as'])) {
 			$course_tracking_table = Database :: get_statistic_table(TABLE_STATISTIC_TRACK_E_COURSE_ACCESS);
 			$time = api_get_datetime();
-                        $course_code=$_course['sysCode'];
 			//We select the last record for the current course in the course tracking table
-			//$sql="SELECT course_access_id FROM $course_tracking_table WHERE user_id=".intval($_user ['user_id'])." ORDER BY login_course_date DESC LIMIT 0,1";
-                        if (isset($_configuration['session_lifetime'])) {
-                           $session_lifetime    = $_configuration['session_lifetime'];
-                         } else {
-                            $session_lifetime    = 3600;
-                         }
-                        $sql="SELECT course_access_id FROM $course_tracking_table
-                        WHERE user_id=".intval($_user ['user_id'])."
-                        AND course_code='$course_code' 
-                        AND login_course_date > now() - INTERVAL $session_lifetime SECOND
-                        ORDER BY login_course_date DESC LIMIT 0,1";
-                        
-                        $result=api_sql_query($sql,__FILE__,__LINE__);
+			$sql="SELECT course_access_id FROM $course_tracking_table WHERE user_id=".intval($_user ['user_id'])." ORDER BY login_course_date DESC LIMIT 0,1";
+			$result=api_sql_query($sql,__FILE__,__LINE__);
 			if (Database::num_rows($result)>0) {
 				$i_course_access_id = Database::result($result,0,0);
 
@@ -857,7 +845,6 @@ if ((isset($uidReset) && $uidReset) || (isset($cidReset) && $cidReset)) { // ses
 
 				api_session_register('_courseUser');
 			}
-
 			if (empty($is_courseAdmin)) { // this user has no status related to this course
 				// is it the session coach or the session admin ?
 
@@ -878,6 +865,7 @@ if ((isset($uidReset) && $uidReset) || (isset($cidReset) && $cidReset)) { // ses
 
 				$result = Database::query($sql,__FILE__,__LINE__);
 				$row = Database::store_result($result);
+
 				if (	array_key_exists(0, $row) &&	($row[0]['id_coach']==$_user['user_id'])	) {
 					$_courseUser['role'] = 'Professor';
 					$is_courseMember     = true;
@@ -940,22 +928,13 @@ if ((isset($uidReset) && $uidReset) || (isset($cidReset) && $cidReset)) { // ses
 								}
 							}
 						} else {
-							// For test this to do this :
-							// 1. Edit a training from admin portal
-							// 2. Change the the course visibility to : Private access (course reachable by people on the users list only)
-							// 3. remove the "if" condition below
-							// 4. Now is impossible to access to course even if you are a course member
-							// Bug fixed : Feature #7162 - restored 1.8 behavior for the portals migration
-
-							if (!$is_courseMember) {// if the user is not member of the course then we are removing all the user credentials
-								//unregister user
-								$is_courseMember     = false;
-								$is_courseTutor      = false;
-								$is_courseAdmin      = false;
-								$is_sessionAdmin     = false;
-								api_session_unregister('_courseUser'); 
-								//$_course['visibility'] = 0; this depends the
-							}
+							//unregister user
+							$is_courseMember     = false;
+							$is_courseTutor      = false;
+							$is_courseAdmin      = false;
+							$is_sessionAdmin     = false;
+							api_session_unregister('_courseUser'); 
+							//$_course['visibility'] = 0; this depends the 
 						}
 
 					}
@@ -1098,26 +1077,23 @@ if ((!empty($_SESSION['force_password_change']) && $_SESSION['force_password_cha
  */
 function update_login_counter($user_id, $value=''){
 	if ($value == ''){
-		$sql = "UPDATE ".Database :: get_main_table(TABLE_MAIN_USER)." SET login_counter = login_counter+1, login_failed_counter = 0 WHERE user_id='".Database::escape_string($user_id)."'";
+		$sql = "UPDATE ".Database :: get_main_table(TABLE_MAIN_USER)." SET login_counter = login_counter+1, login_failed = 0 WHERE user_id='".Database::escape_string($user_id)."'";
 	} else {
-		$sql = "UPDATE ".Database :: get_main_table(TABLE_MAIN_USER)." SET login_counter = 0, login_failed_counter = 0 WHERE user_id='".Database::escape_string($user_id)."'";
+		$sql = "UPDATE ".Database :: get_main_table(TABLE_MAIN_USER)." SET login_counter = 0, login_failed = 0 WHERE user_id='".Database::escape_string($user_id)."'";
 	}
 	$result = Database::query($sql, __FILE__, __LINE__);
 	reset_failed_login_counter($user_id);
 }
 
 function reset_failed_login_counter($user_id){
-	$sql = "UPDATE ".Database :: get_main_table(TABLE_MAIN_USER)." SET login_failed_counter = 0 WHERE user_id='".Database::escape_string($user_id)."'";
+	$sql = "UPDATE ".Database :: get_main_table(TABLE_MAIN_USER)." SET login_failed = 0 WHERE user_id='".Database::escape_string($user_id)."'";
 	$result = Database::query($sql, __FILE__, __LINE__);
 }
 
 /**
  * This function is called whenever the login fails for whatever reason
- * @param string The Url where user will be redirect on a login failed
- * @param boolean If true allow to increment the login_failed counter in the user table
- * @param string The username
  */
-function login_failed($redirect_url, $increasefailedcounter=false, $username=''){
+function login_failed($redirect_url, $increasefailedcounter, $username){
 		$loginFailed = true;
 		api_session_unregister('_uid');
 
@@ -1125,7 +1101,7 @@ function login_failed($redirect_url, $increasefailedcounter=false, $username='')
 		if ($increasefailedcounter == true and $username <> ''){
 			if (api_get_setting('login_fail_lock') > 0){
 				// get the current number of failed logins of this user
-				$sql = "SELECT login_failed_counter, user_id, email, firstname, lastname FROM ".Database :: get_main_table(TABLE_MAIN_USER)." WHERE username = '".Database::escape_string($username)."'";
+				$sql = "SELECT login_failed, user_id, email, firstname, lastname FROM ".Database :: get_main_table(TABLE_MAIN_USER)." WHERE username = '".Database::escape_string($username)."'";
 				$result = Database::query($sql, __FILE__, __LINE__);
 				$row = Database::fetch_array($result, "ASSOC");
 
@@ -1144,12 +1120,12 @@ function login_failed($redirect_url, $increasefailedcounter=false, $username='')
 				}
 
 				// increment the login_failed
-				$sql = "UPDATE ".Database :: get_main_table(TABLE_MAIN_USER)." SET login_failed_counter = login_failed_counter+1 WHERE username = '".Database::escape_string($username)."'";
+				$sql = "UPDATE ".Database :: get_main_table(TABLE_MAIN_USER)." SET login_failed = login_failed+1 WHERE username = '".Database::escape_string($username)."'";
 				$result = Database::query($sql, __FILE__, __LINE__);
            
 				
 				// lock the account if the number of allowed failed logins is reached (and the account is not admin)
-				if ($row['login_failed_counter'] >= api_get_setting('login_fail_lock')){
+				if ($row['login_failed'] >= api_get_setting('login_fail_lock')){
 					$sql = "UPDATE ".Database :: get_main_table(TABLE_MAIN_USER)." SET active = 0 WHERE username = '".Database::escape_string($username)."'";
 					$result = Database::query($sql, __FILE__, __LINE__);
 

@@ -1149,8 +1149,4 @@ $Trainings = "Tečaji";
 $AddUsersToTrainings = "Dodaj uporabnike v tečaj(e)";
 $AddLearners = "Dodaj tečajnike";
 $ManageClasses = "Upravljaj razrede";
-$CreatePageFromATemplate = "Nova stran";
-$HomePage = "Domača stran";
-$GroupDeleted = "Skupina je bila odstranjena";
-$CannotDeleteGroup = "Ne morem odstraniti skupine";
 ?>

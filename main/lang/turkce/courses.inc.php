@@ -81,6 +81,4 @@ $Expand = "Geni&#351;let";
 $Collapse = "Daralt";
 $CourseDetails = "Kurs detaylar&#305;";
 $GroupPendingInvitations = "Bekleyen Grup Davetleri";
-$Compose = "Olu&#351;tur";
-$DefaultCategory = "Varsay&#305;lan Kategori";
 ?>

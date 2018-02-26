@@ -76,8 +76,6 @@ Display :: display_header($tool_name);
 
 set_time_limit(0);
 
-echo '<div id="content">';
-
 $form = new FormValidator('import_classes');
 $form->addElement('file', 'import_file', get_lang('ImportCSVFileLocation'));
 $form->addElement('style_submit_button', 'submit', get_lang('Import'), 'class="save"');
@@ -115,8 +113,6 @@ $form->display();
  </pre>
 </blockquote>
 <?php
-
-echo '</div>';
 
 // Displaying the footer.
 Display :: display_footer();

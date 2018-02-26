@@ -106,8 +106,8 @@ if ($isCoach || api_is_platform_admin() || $_user['status'] == DRH) {
 
 	echo '
 		  <div class="actions" align="right">
-			<a href="javascript: void(0);" onclick="javascript: window.print();">'.Display::return_icon('pixel.gif',get_lang('Print'), array('class' => 'toolactionplaceholdericon toolactionprint32')).'&nbsp;'.get_lang('Print').'</a>
-			<a href="'.api_get_self().'?export=csv">'.Display::return_icon('pixel.gif',get_lang('ExportAsXLS'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')).'&nbsp;'.get_lang('ExportAsCSV').'</a>
+			<a href="javascript: void(0);" onclick="javascript: window.print();"><img align="absbottom" src="../img/printmgr.gif">&nbsp;'.get_lang('Print').'</a>
+			<a href="'.api_get_self().'?export=csv"><img align="absbottom" src="../img/excel.gif">&nbsp;'.get_lang('ExportAsCSV').'</a>
 		  </div><div id="content"><div align="left" ><h4>'.$title.'</h4></div><div class="clear"></div>';
 
 	if (isset($_GET['id_coach'])) {
@@ -235,9 +235,9 @@ if ($isCoach || api_is_platform_admin() || $_user['status'] == DRH) {
 			}
 
 			if (isset($_GET['id_coach']) && intval($_GET['id_coach']) != 0) {
-				$row[] = '<a href="myStudents.php?student='.$student_id.'&id_coach='.$coach_id.'&id_session='.Security::remove_XSS($_GET['id_session']).'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a>';
+				$row[] = '<a href="myStudents.php?student='.$student_id.'&id_coach='.$coach_id.'&id_session='.$_GET['id_session'].'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a>';
 			} else {
-				$row[] = '<a href="myStudents.php?student='.$student_id.'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a>';
+				$row[] = '<a href="myStudents.php?student='.$student_id.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a>';
 			}
 
 			$all_datas[] = $row;

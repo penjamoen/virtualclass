@@ -4,7 +4,7 @@ for more information: see languages.txt in the lang folder.
 $NewNote = "Nouvelle note";
 $Note = "Note";
 $NoteDeleted = "Note supprimée";
-$NoteUpdated = "Note enregistrée";
+$NoteUpdated = "Note mise à jour";
 $NoteCreated = "Note créée";
 $YouMustWriteANote = "Veuillez écrire une note";
 $SaveNote = "Enregistrer cette note";

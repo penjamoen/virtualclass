@@ -188,7 +188,7 @@ if (api_is_allowed_to_edit(null,true))
 
 // work with data post askable by admin of  course
 
-if ($is_platformAdmin && api_is_allowed_to_edit(null,true) && !api_is_course_coach())
+if ($is_platformAdmin && api_is_allowed_to_edit(null,true) && !api_is_coach())
 {
 	// Show message to confirm that a tools must be hide  from aivailable tools
 	// visibility 0,1->2
@@ -258,7 +258,7 @@ echo '</table></div>';
 	echo 	"</td>\n</tr>\n";
 }*/
 
-if (api_is_allowed_to_edit(null,true) && !api_is_course_coach())
+if (api_is_allowed_to_edit(null,true) && !api_is_coach())
 {
 echo '<div class="section main_activity"><span class="sectiontitle">'.get_lang('CourseAdminOnly').'</span><table>';
 showtools2('courseAdmin');
@@ -286,7 +286,7 @@ echo '</table></div>';
 
 echo	"</table></div>\n";*/
 
-if ($is_platformAdmin && api_is_allowed_to_edit(null,true) && !api_is_course_coach())
+if ($is_platformAdmin && api_is_allowed_to_edit(null,true) && !api_is_coach())
 {
 echo '<div class="section main_activity"><span class="sectiontitle">'.get_lang('PlatformAdminOnly').'</span><table>';
 showtools2('platformAdmin');

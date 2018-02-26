@@ -39,6 +39,6 @@ $langCsvExplain = "File tsb harusnya seperti ini : <blockquote><pre> <b>URL</b>;
 $langLinkUpdated = "Link telah di-update";
 $langAll_Link_Deleted = "Link telah dihapus";
 $langOnHomepage = "Tampilkan link di homepage";
-$langShowLinkOnHomepage = "Tampilkan link dalam bentuk ikon di homepage mata kuliah";
+$langShowLinkOnHomepage = "Tampilkan link dalam bentuk ikon di homepage mata Pelajaran";
 $langCsvImport = "import CSV";
 ?>

@@ -293,7 +293,7 @@ if ( api_is_allowed_to_edit()) {
 
 	// the action links
 	//$actions .= '<a href="user.php?'.api_get_cidreq().'&action=export&amp;type=csv">'.Display::return_icon('csv.gif', get_lang('ExportAsCSV')).'&nbsp;'.get_lang('ExportAsCSV').'</a> ';
-	$actions .= '<a href="subscribe_user.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('AddLearners'), array('class' => 'toolactionplaceholdericon tooladdlearner')).get_lang("AddLearners").'</a> ';
+	$actions .= '<a href="subscribe_user.php?'.api_get_cidreq().'">'.Display::return_icon('addLearners.png',get_lang("AddLearners")).'&nbsp;'.get_lang("AddLearners").'</a> ';
 	//$actions .= "<a href=\"subscribe_user.php?".api_get_cidreq()."&type=teacher\">".Display::return_icon('add_teacher_big.gif', get_lang("SubscribeUserToCourseAsTeacher"))."&nbsp;".get_lang("SubscribeUserToCourseAsTeacher")."</a> ";
 	//$actions .= "<a href=\"../group/group.php?".api_get_cidreq()."\">".Display::return_icon('classes32.png', get_lang("ManageClasses"))."&nbsp;".get_lang("ManageClasses")."</a>";
 	if (api_get_setting('use_session_mode') == 'false') {
@@ -441,8 +441,7 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 								  </a></center>';
 					}
 					else{
-					//	$photo = '<center><img src="'.api_get_path(WEB_IMG_PATH).'unknown.png" '.$user_profile['style'].'></center>';
-						$photo = '<center>'.Display::return_icon('pixel.gif','',array('class' => 'actionplaceholdericon actionunknown')).'</center>';
+						$photo = '<center><img src="'.api_get_path(WEB_IMG_PATH).'unknown.png" '.$user_profile['style'].'></center>';
 					}
 				} else {
 					$photo = '<center><img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'" title="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'" /></center>';
@@ -464,13 +463,13 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 				}
 				else{
 					if (CourseManager::is_course_teacher($user_id, $_SESSION['_course']['id'])) {
-						$temp[] = '<div style="text-align:center;"><a href="user.php?'.api_get_cidreq().'&action=makeTeacherStudent&user_id='.$user_id.'">'.Display::return_icon('pixel.gif',get_lang('Trainer'),array('class' => 'actionplaceholdericon actiontrainer')).'</a></div>';
+						$temp[] = '<div style="text-align:center;"><a href="user.php?'.api_get_cidreq().'&action=makeTeacherStudent&user_id='.$user_id.'"><img src="'.api_get_path(WEB_IMG_PATH).'00trainer.png" /></a></div>';
 					}
 					elseif($is_course_coach){
-						$temp[] = '<div style="text-align:center;">'.Display::return_icon('pixel.gif',get_lang('Coach'),array('class' => 'actionplaceholdericon actioncoach')).'</div>';
+						$temp[] = '<div style="text-align:center;"><img src="'.api_get_path(WEB_IMG_PATH).'01coach.png" /></div>';
 					}
 					else{
-						$temp[] = '<div style="text-align:center;"><a href="user.php?'.api_get_cidreq().'&action=makeStudentTeacher&user_id='.$user_id.'">'.Display::return_icon('pixel.gif',get_lang('User'),array('class' => 'actionplaceholdericon actionuser')).'</a></div>';
+						$temp[] = '<div style="text-align:center;"><a href="user.php?'.api_get_cidreq().'&action=makeStudentTeacher&user_id='.$user_id.'"><img src="'.api_get_path(WEB_IMG_PATH).'02user.png" /></a></div>';
 					}
 				}
 
@@ -548,7 +547,7 @@ function modify_filter($user_id) {
 	$result="<div style='text-align: center'>";
 
 	if ($is_allowed_to_track) {
-		$result .= '<a href="../mySpace/myStudents.php?'.api_get_cidreq().'&student='.$user_id.'&amp;details=true&amp;course='.$_course['id'].'&amp;origin=user_course&amp;id_session='.$_SESSION["id_session"].'" title="'.get_lang('Tracking').'"  >'.Display::return_icon('pixel.gif',get_lang('Tracking'),array('class' => 'actionplaceholdericon actiontracking')).'</a>&nbsp;';
+		$result .= '<a href="../mySpace/myStudents.php?'.api_get_cidreq().'&student='.$user_id.'&amp;details=true&amp;course='.$_course['id'].'&amp;origin=user_course&amp;id_session='.$_SESSION["id_session"].'" title="'.get_lang('Tracking').'"  ><img border="0" alt="'.get_lang('Tracking').'" src="../img/statistics.png" /></a>&nbsp;';
 	}
 	$result .= "</div>";
 	return $result;
@@ -592,7 +591,7 @@ echo '</div>';
 
 // secondary actions
 if (api_is_allowed_to_edit()) {	
-	echo '<div class="actions"><a href="user.php?'.api_get_cidreq().'&action=export&amp;type=csv">'.Display::return_icon('pixel.gif',get_lang('Export'),array('class' => 'actionplaceholdericon actionexport')).'&nbsp;'.get_lang('Export').'</a></div>';
+	echo '<div class="actions"><a href="user.php?'.api_get_cidreq().'&action=export&amp;type=csv">'.Display::return_icon('go_blue_down.png', get_lang('Export')).'&nbsp;'.get_lang('Export').'</a></div>';
 }
 
 if (!empty($_GET['keyword']) && !empty($_GET['submit'])) {

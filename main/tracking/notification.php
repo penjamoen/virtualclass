@@ -106,7 +106,7 @@ $view = (isset($_REQUEST['view']) ? $_REQUEST['view'] : '');
 $nameTools = get_lang('Tracking');
 
 // display the header
-Display::display_tool_header($nameTools, 'Tracking');
+Display::display_header($nameTools, 'Tracking');
 
 // getting all the students of the course
 $a_students = CourseManager :: get_student_list_from_course_code($_course['id'], true, (empty($_SESSION['id_session']) ? null : $_SESSION['id_session']));
@@ -119,9 +119,9 @@ $nbStudents = count($a_students);
 */
 
 echo '<div class="actions">';
-echo '<a href="learners.php?'.api_get_cidreq().'&studentlist=true">'.Display::return_icon('pixel.gif', get_lang('Students'), array('class' => 'toolactionplaceholdericon toolactionadminusers')).get_lang('Students').'</a>';
-echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&export=csv&'.$addional_param.'">'.Display::return_icon('pixel.gif', get_lang('ExportAsXLS'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('ExportAsXLS').'</a>';
-echo '<a href="javascript: void(0);" onclick="javascript: window.print();">'.Display::return_icon('pixel.gif', get_lang('Print'), array('class' => 'toolactionplaceholdericon toolactionprint32')).get_lang('Print').'</a>';
+echo '<a href="learners.php?'.api_get_cidreq().'&studentlist=true">'.Display::return_icon('adminUsers.png', get_lang('Students')).get_lang('Students').'</a>';
+echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&export=csv&'.$addional_param.'">'.Display::return_icon('excel_32.png',get_lang('ExportAsXLS')).get_lang('ExportAsXLS').'</a>';
+echo '<a href="javascript: void(0);" onclick="javascript: window.print();">'.Display::return_icon('print32.png',get_lang('Print')).get_lang('Print').'</a>';
 echo '</div>';
 
 // start the content div
@@ -200,8 +200,8 @@ echo '<div id="content">';
 		$table -> set_header(8, get_lang('FirstLogin'), false, 'align="center"');
 		$table -> set_header(9, get_lang('LatestLogin'), false, 'align="center"');
 		$table -> set_header(10, get_lang('Details'),false);
-		//$html_table = $table->get_table_html();
-       $table->display();
+		$html_table = $table->get_table_html();
+  echo $html_table;
 
 
 	} else {
@@ -249,11 +249,11 @@ echo '<div id="content">';
 // close the content div
 echo '</div>';
 echo '<div class="actions">';
-$return = '<a href="courseLog.php?'.api_get_cidreq().'&studentlist=resources">'.Display::return_icon('pixel.gif', get_lang('Traffic'), array('class' => 'actionplaceholdericon actionquota')).get_lang('Traffic').'</a>';
-$return .= '<a href="../exercice/exercice.php?'.api_get_cidreq().'&reporting=true&page=notification&show=result">'.Display::return_icon('pixel.gif', get_lang('Quiz'), array('class' => 'actionplaceholdericon actionstudentviewquiz')).get_lang('Quiz').'</a>';
-$return .= '<a href="notification.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('Notification'), array('class' => 'actionplaceholdericon actionannouncement')).get_lang('Notification').'</a>';
-$return .= '<a href="profiling.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('Profiling'), array('class' => 'actionplaceholdericon actioncoach')).get_lang('Profiling').'</a>';
-echo $return;
+	$return = '<a href="courseLog.php?'.api_get_cidreq().'&studentlist=resources">'.Display::return_icon('diskquota.png', get_lang('Traffic')).' '.get_lang('Traffic').'</a>';
+	$return .= '<a href="../exercice/exercice.php?'.api_get_cidreq().'&reporting=true&page=notification&show=result">'.Display::return_icon('quiz_22.png', get_lang('Quiz')).' '.get_lang('Quiz').'</a>';
+ $return .= '<a href="notification.php?'.api_get_cidreq().'">'.Display::return_icon('announcement_22.png', get_lang('Notification')).' '.get_lang('Notification').'</a>';
+	$return .= '<a href="profiling.php?'.api_get_cidreq().'">'.Display::return_icon('01coach.png', get_lang('Profiling')).' '.get_lang('Profiling').'</a>';
+ echo $return;
 echo '</div>';
 // display the footer
 Display::display_footer();

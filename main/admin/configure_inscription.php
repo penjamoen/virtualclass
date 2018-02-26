@@ -25,7 +25,6 @@ require_once (api_get_path(LIBRARY_PATH).'usermanager.lib.php');
 require_once (api_get_path(CONFIGURATION_PATH).'profile.conf.php');
 require_once(api_get_path(INCLUDE_PATH).'lib/mail.lib.inc.php');
 require_once(api_get_path(INCLUDE_PATH).'lib/legal.lib.php');
-require_once (api_get_path(LIBRARY_PATH).'language.lib.php');
 
 // Load terms & conditions from the current lang
 if (get_setting('allow_terms_conditions')=='true') {	
@@ -82,19 +81,14 @@ if(!empty($action)){
 }
 
 $lang = ''; //el for "Edit Language"
-/*if(!empty($_SESSION['user_language_choice'])) {
+if(!empty($_SESSION['user_language_choice'])) {
 	$lang=$_SESSION['user_language_choice'];
 } elseif(!empty($_SESSION['_user']['language'])) {
 	$lang=$_SESSION['_user']['language'];
 } else {
 	$lang=get_setting('platformLanguage');
-}*/
-$count_lang_availables = LanguageManager::count_available_languages();
-if(!empty($_SESSION['user_language_choice']) && $count_lang_availables > 1) {
-        $lang=$_SESSION['user_language_choice'];
-}else {
-        $lang=api_get_setting('platformLanguage');
 }
+
 // ----- Ensuring availability of main files in the corresponding language -----
 if ($_configuration['multiple_access_urls']==true) {
 	$access_url_id = api_get_current_access_url_id();										 
@@ -194,7 +188,7 @@ if(!empty($action)) {
 Display :: display_header($tool_name);
 echo '<div class="actions">';
 echo '<div class="float_l">';
-echo '<a href="'.api_get_self().'?action=edit_top">'.Display::return_icon('pixel.gif', get_lang("Edit"), array('class' => 'toolactionplaceholdericon tooledithome')).get_lang('Edit').'</a>';
+echo '<a href="'.api_get_self().'?action=edit_top">'.Display::return_icon('edit_32.png', get_lang('Edit')).get_lang('Edit').'</a>';
 echo '</div>';
 echo '<div class="float_r">';
 //Form of language

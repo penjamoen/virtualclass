@@ -268,21 +268,17 @@ Display::display_header($tool_name);
 // api_display_tool_title($tool_name);
 
 if($add_type == 'multiple') {
-	$link_add_type_unique = '<a href="'.api_get_self().'?id_session='.$id_session.'&add='.Security::remove_XSS($_GET['add']).'&add_type=unique">'.Display::return_icon('pixel.gif',get_lang('SessionAddTypeUnique'), array('class' => 'toolactionplaceholdericon toolactionsingle')).get_lang('SessionAddTypeUnique').'</a>';
-	$link_add_type_multiple = Display::return_icon('pixel.gif',get_lang('SessionAddTypeMultiple'), array('class' => 'toolactionplaceholdericon toolactionmultiple')).get_lang('SessionAddTypeMultiple').' ';
+	$link_add_type_unique = '<a href="'.api_get_self().'?id_session='.$id_session.'&add='.Security::remove_XSS($_GET['add']).'&add_type=unique">'.Display::return_icon('single.gif').get_lang('SessionAddTypeUnique').'</a>';
+	$link_add_type_multiple = Display::return_icon('multiple.gif').get_lang('SessionAddTypeMultiple').' ';
 } else {
-	$link_add_type_unique = Display::return_icon('pixel.gif',get_lang('SessionAddTypeUnique'), array('class' => 'toolactionplaceholdericon toolactionsingle')).get_lang('SessionAddTypeUnique').'&nbsp;&nbsp;&nbsp;';
-	$link_add_type_multiple = '<a href="'.api_get_self().'?id_session='.$id_session.'&add='.Security::remove_XSS($_GET['add']).'&add_type=multiple">'.Display::return_icon('pixel.gif',get_lang('SessionAddTypeMultiple'), array('class' => 'toolactionplaceholdericon toolactionmultiple')).'</a>';
+	$link_add_type_unique = Display::return_icon('single.gif').get_lang('SessionAddTypeUnique').'&nbsp;&nbsp;&nbsp;';
+	$link_add_type_multiple = '<a href="'.api_get_self().'?id_session='.$id_session.'&add='.Security::remove_XSS($_GET['add']).'&add_type=multiple">'.Display::return_icon('multiple.gif').get_lang('SessionAddTypeMultiple').'</a>';
 }
 
 
 // the form header
 $session_info = SessionManager::fetch($id_session);
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/catalogue_management.php">' . Display::return_icon('pixel.gif',get_lang('Catalogue'), array('class' => 'toolactionplaceholdericon toolactioncatalogue')) . get_lang('Catalogue') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/topic_list.php">' . Display :: return_icon('pixel.gif', get_lang('Topics'),array('class' => 'toolactionplaceholdericon toolactiontopic')) . get_lang('Topics') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/programme_list.php">' . Display :: return_icon('pixel.gif', get_lang('Programmes'),array('class' => 'toolactionplaceholdericon toolactionprogramme')) . get_lang('Programmes') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_list.php">' . Display :: return_icon('pixel.gif', get_lang('SessionList'),array('class' => 'toolactionplaceholdericon toolactionsession')) . get_lang('Sessions') . '</a>';
 echo $link_add_type_unique.$link_add_type_multiple;
 echo '</div>';
 

@@ -1,14 +1,14 @@
 /*------------Header------------*/
 #courseHeader
 {
-	background:url('images/bg_header.gif') repeat-x 0 0 #D6D6D6;
+	background:url('../../img/navigation/bg_header.gif') repeat-x 0 0 #D6D6D6;
 	height:46px;
 	position:relative;
 	z-index: 0;
 }
 #courseHeaderFullScreen
 {
-  background:url('images/bg_header.gif') repeat-x 0 0 #D6D6D6;
+  background:url('../../img/navigation/bg_header.gif') repeat-x 0 0 #D6D6D6;
   height:21px;
   position:relative;
   z-index: 0;
@@ -21,7 +21,7 @@
 #courseHeader #courseTitle
 {
 	position:relative;
-	background:url('images/bg_title_l.gif') no-repeat;
+	background:url('../../img/navigation/bg_title_l.gif') no-repeat;
 	float:left;
 	height:46px;
 	width:600px;
@@ -43,7 +43,7 @@
 {
 	position:relative;
 	float:left;
-	background:url('images/bg_title_r.gif') no-repeat right 0;
+	background:url('../../img/navigation/bg_title_r.gif') no-repeat right 0;
 	height:46px;
 	top:0;
 	width:100px;
@@ -62,7 +62,7 @@
 #courseHeader #right
 {
 	position:relative;
-	background:url('images/bg_header.gif')repeat-x 0 0;
+	background:url('../../img/navigation/bg_header.gif')repeat-x 0 0;
 	float:left;
 	height:46px;
 	width:120px;
@@ -140,7 +140,7 @@ html>body #learningPathMain {		/* not read by IE6 as min-height */
 
 /*------------ToggleMenu------------*/
 #courseToggleMenu		{
-  background:url('images/bg_menu.png');
+  background:url('../../img/navigation/bg_menu.png');
   border:solid 1px #fff;
   border-radius:5px; padding:10px 10px 5px;
   position:absolute;

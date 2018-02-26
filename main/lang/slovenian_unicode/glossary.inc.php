@@ -28,5 +28,4 @@ $NewTerm = "Nov termin";
 $Definition = "Definicija";
 $AddDefinition = "Nova definicija";
 $SaveDefinition = "Shrani definicijo";
-$ThereAreNoDefinitionsHere = "Trenutno ni nobene definicije";
 ?>

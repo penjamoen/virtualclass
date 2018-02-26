@@ -33,7 +33,6 @@ class CourseBuilder
 	 * The course
 	 */
 	var $course;
-	
 	/**
 	 * Create a new CourseBuilder
 	 */

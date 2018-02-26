@@ -1,21 +1,16 @@
 <?php
-/* For licensing terms, see /dokeos_license.txt */
-
-/**
-* @package dokeos.main
-*/
-
-// include global Dokeos file
 require_once './main/inc/global.inc.php';
-
-// Additional libraries
-require_once api_get_path(LIBRARY_PATH).'usermanager.lib.php';
+$libpath = api_get_path(LIBRARY_PATH);
+require_once $libpath.'usermanager.lib.php';
 
 // additional stylesheets 
-$htmlHeadXtra[] = '<link type="text/css" href="'.api_get_path(WEB_CODE_PATH).'css/'.api_get_setting('stylesheets').'/widgets.css" rel="stylesheet" />';
+$htmlHeadXtra[] = '<link type="text/css" href="'.api_get_path(WEB_PATH).'main/course_home/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />';
+$htmlHeadXtra[] = '<link type="text/css" href="'.api_get_path(WEB_PATH).'main/course_home/css/dokeos/jquery-ui-1.7.2.custom.css" rel="stylesheet" />';
+$htmlHeadXtra[] = '<link type="text/css" href="'.api_get_path(WEB_PATH).'main/course_home/css/dokeos/styles.css" rel="stylesheet" />';
 
 // additional javascript files
-$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.form.js"></script>';
+$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_PATH).'main/course_home/js/jquery.form.js"></script>';
+//$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_PATH).'main/inc/lib/javascript/jScrollPane.js"></script>';
 $htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_PATH).'main/inc/lib/javascript/widget.js.php"></script>';
 
 // this is the main function to get the course list
@@ -38,9 +33,6 @@ if (api_get_setting('go_to_course_after_login') == 'true') {
 // Display header
 Display::display_header();
 
-// start content div
-echo '<div id="content">';
-
 // include additional libraries
 require_once './main/inc/lib/widgets.lib.php';
 
@@ -61,9 +53,6 @@ if (file_exists($custom_layout_file) and in_array(api_get_setting('widget_homepa
 {
 	include($custom_layout_file);
 }
-
-// end content div
-echo '</div>';
 
 // Display footer
 Display::display_footer();

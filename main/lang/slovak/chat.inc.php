@@ -30,7 +30,6 @@ $langLinkURL = "URL odkaz";
 $langWelcomeToOnlineConf = "Vitajte na <b>Online Konferencii</b>";
 $langNoLinkAvailable = "Žiadny odkaz";
 $langChat_reset_by = "reštartova&#357;  Pokec";
-$langAdmin = "Administrátor platformy";
 $OrFile = "Alebo súbor";
 $langCallSent = "Pozvanie na chat hovor bolo poslané. &#268;akám na potvrdenie od vášho partnera.";
 $langChatDenied = "Volaný zamietol Váš hovor.";

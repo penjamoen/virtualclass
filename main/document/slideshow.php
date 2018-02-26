@@ -21,15 +21,16 @@ require '../inc/global.inc.php';
 require_once 'slideshow.inc.php';
 require_once api_get_path(LIBRARY_PATH) . 'document.lib.php';
 
-global $_user;
-
 // variable initialisation
 $noPHP_SELF = true;
 $path = Security::remove_XSS($_GET['curdirpath']);
 $pathurl = urlencode($path);
-// Get slide ID
 $slide_id = Security::remove_XSS($_GET['slide_id']);
-// Get sys course path
+if ($path <> '/') {
+	$folder = $path.'/';
+} else {
+	$folder = '/';
+}
 $sys_course_path = api_get_path(SYS_COURSE_PATH);
 
 // Database table definitions
@@ -64,52 +65,30 @@ if (isset($_GET['set_invisible']) || isset($_GET['set_visible'])) {
 // Displaying the header
 Display :: display_tool_header(get_lang('Documents'));
 
-// Check if folder exists, admin with the course copy tool sometimes copy only files and no folders
-$count_if_folder_exists = DocumentManager::check_if_folder_exists($path);
+
 // loading the slides from the session
-if(((isset($_GET['slide_id'])) && $count_if_folder_exists > 0) || $path=='/') {
-    // These paths will be used in the sql query
-    if ($path=='/') {
-       $like_path = $path."%";
-       $not_like_path = $path."%/%";
-    } else {
-       $like_path = $path."/%";
-       $not_like_path = $path."/%/%"; 
-    }
- // Sql query for get the results
- if (api_is_allowed_to_edit ()) { // Teacher
-	  $sql = "SELECT * FROM $tbl_documents doc,$propTable prop WHERE doc.id = prop.ref AND prop.tool = '".TOOL_DOCUMENT."' AND doc.filetype = 'file' AND doc.path LIKE '".$like_path."' AND doc.path NOT LIKE '".$not_like_path."' AND prop.lastedit_type !='DocumentDeleted'";
- } else { // Student
-	  $sql = "SELECT * FROM $tbl_documents doc,$propTable prop WHERE doc.id = prop.ref AND prop.tool = '".TOOL_DOCUMENT."' AND doc.filetype = 'file' AND doc.path LIKE '".$like_path."' AND doc.path NOT LIKE '".$not_like_path."' AND prop.visibility = 1 AND prop.lastedit_type !='DocumentDeleted'";
- }
-
-    // Sql query for get mindmap items
-    if ($path == '/mindmaps') {
-            $path = $path.'/';
-            $sql1 = "(SELECT distinct(title) AS title,path,size,id,display_order FROM $tbl_documents doc,$propTable prop WHERE doc.id = prop.ref AND prop.tool = '".TOOL_DOCUMENT."' AND doc.filetype = 'file' AND doc.path LIKE '".$like_path."' AND doc.path NOT LIKE '".$not_like_path."' AND prop.visibility = 1 AND prop.to_user_id IS NULL)";
-            $sql2 = "(SELECT distinct(title) AS title,path,size,id,display_order FROM $tbl_documents doc,$propTable prop WHERE doc.id = prop.ref AND prop.tool = '".TOOL_DOCUMENT."' AND doc.filetype = 'file' AND doc.path LIKE '".$like_path."' AND doc.path NOT LIKE '".$not_like_path."' AND prop.visibility = 1  AND prop.insert_user_id = ".$_user['user_id'] . ")";
-            $sql = $sql1." UNION ".$sql2." ORDER BY display_order";
-    }
-
-    $result = api_sql_query($sql,__FILE__,__LINE__);
-    $image_files_only = array();
-    while($row = Database::fetch_array($result)) {		
-            // Only show files of type image(jpg,bmp,gif,png,jpeg)
-            $allowed_image_types = array('jpg','bmp','jpeg','gif','png','tif');
-            // Get last 3 characters
-            $ext = substr(strrchr($row['path'],'.'),1);
-            $ext = strtolower($ext);
-            // Only allowed images will be shown in the slider
-            if (in_array($ext, $allowed_image_types)) {
-            $image_files_only[] = array('path' => $row['path'],'size'=> $row['size'], 'file' => $row['title'], 'id' => $row['id']);// Add path + size
-            $index_image_files_only[] = $row['id'];
-                if ($row['id'] == intval($_GET['slide_id'])){
-                    $current_slide_path = $row['path'];
-                }
-           }
-    }
+/*
+if (isset($_SESSION["image_files_only"])) {
+	$image_files_only = $_SESSION["image_files_only"];
 }
-
+$total_slides = count($image_files_only);
+*/
+$total_slides = 0;
+if($total_slides == 0 || (isset($_GET['slide_id']))){
+ if (api_is_allowed_to_edit ()) { // Teacher
+	  $sql = "SELECT * FROM $tbl_documents doc,$propTable prop WHERE doc.id = prop.ref AND prop.tool = '".TOOL_DOCUMENT."' AND doc.filetype = 'file' AND doc.path LIKE '".$path."/%' AND doc.path NOT LIKE '".$path."/%/%' AND prop.lastedit_type !='DocumentDeleted'";
+ } else { // Student
+	  $sql = "SELECT * FROM $tbl_documents doc,$propTable prop WHERE doc.id = prop.ref AND prop.tool = '".TOOL_DOCUMENT."' AND doc.filetype = 'file' AND doc.path LIKE '".$path."/%' AND doc.path NOT LIKE '".$path."/%/%' AND prop.visibility = 1 AND prop.lastedit_type !='DocumentDeleted'";
+ }
+	$result = api_sql_query($sql,__FILE__,__LINE__);
+	$image_files_only = array();
+	while($row = Database::fetch_array($result))
+	{		
+		$image_files_only[] = $row['title'];
+		$index_image_files_only[] = $row['id'];
+	}
+}
+$total_slides = count($image_files_only);
 // calculating the current slide, next slide, previous slide and the number of slides
 if ($slide_id <> "all") {
 	if ($slide_id) {
@@ -144,25 +123,46 @@ $row = Database::fetch_array($result);
 $visibility_icon = ($row['visibility']==0)?'closedeye_tr':'dokeoseyeopen22';
 $visibility_command = ($row['visibility']==0)?'set_visible':'set_invisible';
 $visibility_title = ($row['visibility']==0)?'UnPublished':'Published';
+
 ?>
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function MM_openBrWindow(theURL,winName,features) { //v2.0
+  window.open(theURL,winName,features);
+}
+//-->
+</script>
 
 <?php
 // Actions
 echo '<div class="actions">';
-echo '<a href="document.php?'.api_get_cidReq().'">'.Display::return_icon('pixel.gif', get_lang('Documents'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('Documents').'</a>';
-echo '<a href="mediabox.php?'.api_get_cidreq().'&curdirpath='.$pathurl.'">'.Display::return_icon('pixel.gif', get_lang('Mediabox'), array('class' => 'toolactionplaceholdericon toolactionmediabox')).' '.get_lang('Mediabox').'</a>';
+echo '<a href="mediabox.php?'.api_get_cidReq().'">'.Display::return_icon('go_previous_32.png',get_lang('Documents')).' '.get_lang('Documents').'</a>';
 if(api_is_allowed_to_edit()) {
-	echo '<a href="document.php?'.api_get_cidreq().'&action=exit_slideshow&curdirpath='.$pathurl.'">'.Display::return_icon('pixel.gif', get_lang('ListView'), array('class' => 'toolactionplaceholdericon toolactionlist')).' '.get_lang('ListView').'</a>';
+	echo '<a href="mediabox.php?'.api_get_cidreq().'&curdirpath='.$pathurl.'">'.Display::return_icon('mediaplayer.png',get_lang('Mediabox')).' '.get_lang('Mediabox').'</a>';
+	echo '<a href="document.php?'.api_get_cidreq().'&action=exit_slideshow&curdirpath='.$pathurl.'">'.Display::return_icon('listview.png',get_lang('ListView')).' '.get_lang('ListView').'</a>';
 }
 
 // The image gallery is allowed for the students
 if ($slide_id <> "all") {
-	echo '<a href="slideshow.php?'.api_get_cidreq().'&slide_id=all&curdirpath='.$pathurl.'">'.Display::return_icon('pixel.gif', get_lang('Gallery'), array('class' => 'toolactionplaceholdericon toolactiongallery')).' '.get_lang('Gallery').'</a>';
+  echo '<a href="slideshow.php?'.api_get_cidreq().'&slide_id=all&curdirpath='.$pathurl.'">'.Display::return_icon('gallery.png',get_lang('Gallery')).' '.get_lang('Gallery').'</a>';
 }
 
 if (api_is_allowed_to_edit()) {
-	echo '<a href="upload.php?'.api_get_cidReq().'&path='.$pathurl.'">'.Display::return_icon('pixel.gif', get_lang('UplUpload'), array('class' => 'toolactionplaceholdericon toolactionupload')).' '.get_lang('UplUpload').'</a>';
+	/*
+	else {
+		echo '<a href="slideshow.php?'.api_get_cidreq().'&curdirpath='.$pathurl.'">'.Display::return_icon('slideshow.png',get_lang('Slideshow')).' '.get_lang('Slideshow').'</a>';
+	}*/
+	echo '<a href="upload.php?'.api_get_cidReq().'&path='.$pathurl.'">'.Display::return_icon('up.png',get_lang('UplUpload')).' '.get_lang('UplUpload').'</a>';
+	//echo '<a href="document.php?'.api_get_cidreq().'&curdirpath='.$pathurl.'&'.$visibility_command.'='.$row['id'].'">'.Display::return_icon($visibility_icon.'png',get_lang('ChangeVisibility')).' '.get_lang('ChangeVisibility').'</a>';
 }
+/*
+if ($slide_id <> "all") {
+	echo '<a href="slideshow.php?slide_id=all&curdirpath='.$pathurl.'">'.Display::return_icon('thumbnails.png',get_lang('_show_thumbnails')).' '.get_lang('_show_thumbnails').'</a>';
+} else {
+	Display::display_icon('thumbnails_na.png',get_lang('_show_thumbnails')).' '.get_lang('_show_thumbnails').'</a>';
+}
+*/
+//echo '<a href="slideshowoptions.php?curdirpath='.$pathurl.'">'.Display::return_icon('access_tool.gif',get_lang('_set_slideshow_options')).' '.get_lang('_set_slideshow_options').'</a>';
 echo '</div>';
 
 // Feedback messages
@@ -178,16 +178,9 @@ if (isset($_GET['msg']) ) {
 	}	
 }
 
-// Mediabox folders
-$mediabox_folders = array('images','mascot','photos','animations','mindmaps');
-$real_folder_name = substr($path,1);
 // start the content div
 echo '<div id="content">';
-// Display message if folder doesn't exists
-if ($count_if_folder_exists == 0 && in_array($real_folder_name, $mediabox_folders)) {
-	$message_exists = get_lang('DoesNotExistsTheFolder').' : <strong>'.$real_folder_name.'</strong>';
-	echo '<div class="confirmation-message rounded">'.$message_exists.'</div>';
-} else {
+
 // display the tool title
 //api_display_tool_title(get_lang('TemplateGallery'));
 
@@ -218,44 +211,56 @@ if ($_SESSION["image_resizing"] == "resizing") {
 	$image_width = $source_width;
 	$image_height = $source_height;
 }
+
 // =======================================================================
 //						THUMBNAIL VIEW
 // =======================================================================
 // this is for viewing all the images in the slideshow as thumbnails.
 $image_tag = array ();
 if ($slide_id == "all") {
+//	$thumbnail_width = 100;
+//	$thumbnail_height = 100;
 	$thumbnail_width = 200;
 	$thumbnail_height = 150;
 	$row_items = 4;
-        $count_index = 0;
+ $count_index = 0;
 	if (is_array($image_files_only)) {
 		foreach ($image_files_only as $index => $one_image_file) {
-			$image = $sys_course_path.$_course['path']."/document".$one_image_file['path'];
+			$image = $sys_course_path.$_course['path']."/document".$folder.$one_image_file;
 			if (file_exists($image)) {
+			/*	$image_height_width = resize_image($image, $thumbnail_width, $thumbnail_height, 1);
+
+				$image_height = $image_height_width[0];
+				$image_width = $image_height_width[1];*/
+
 				list($twidth,$theight) = getimagesize($image);
 				
-				if($twidth > 200 || $theight > 150) {
-				  $image_height_width = resize_image($image, $thumbnail_width, $thumbnail_height, 1);
+				if($twidth > 200 || $theight > 150)
+				{
+				$image_height_width = resize_image($image, $thumbnail_width, $thumbnail_height, 1);
 				
-				  $image_height = $image_height_width[0];
-				  $image_width = $image_height_width[1];	
-				} else {
-				  $image_height = $theight;
-				  $image_width = $twidth;
+				$image_height = $image_height_width[0];
+				$image_width = $image_height_width[1];	
+				}
+				else
+				{
+				$image_height = $theight;
+				$image_width = $twidth;
 				}
 
 				if ($path and $path !== "/") {
-					$doc_url = $one_image_file['path'];
+					$doc_url = $path."/".$one_image_file;
 				} else {
-					$doc_url = $path.$one_image_file['path'];
+					$doc_url = $path.$one_image_file;
 				}
-				$image_tag[] = "<img src='download.php?doc_url=".$doc_url."' border='0' width='".$image_width."' height='".$image_height."' title='".$one_image_file['file']."'>";
-                                $image_index_tag[] = $one_image_file['id'];
+				$image_tag[] = "<img src='download.php?doc_url=".$doc_url."' border='0' width='".$image_width."' height='".$image_height."' title='".$one_image_file."'>";
+    $image_index_tag[] = $index_image_files_only[$index];
 			}
-                                $count_index++;
+   $count_index++;
 		} // foreach ($image_files_only as $one_image_file)
 	}
 } // if ($slide_id=="all")
+
 // creating the table
 $html_table='';
 $i = 0;
@@ -285,7 +290,8 @@ echo '<div class="clear">&nbsp;</div>';
 // =======================================================================
 // this is for viewing all the images in the slideshow one at a time.
 if ($slide_id !== "all") {
-	$image = $sys_course_path.$_course['path']."/document".$current_slide_path;
+	$image = $sys_course_path.$_course['path']."/document".$folder.$image_files_only[$slide];
+
 	if (file_exists($image)) {
 
 		if (!isset($_REQUEST['linkfile'])) {
@@ -302,8 +308,8 @@ if ($slide_id !== "all") {
 		$visibility_icon = ($row['visibility']==0)?'closedeye_tr':'dokeoseyeopen22';
 		$visibility_command = ($row['visibility']==0)?'set_visible':'set_invisible';
 
-		$image = $sys_course_path.$_course['path']."/document".$row['path'];
-
+		$image = $sys_course_path.$_course['path']."/document".$folder.$title;
+		
 		$image_height_width = resize_image($image, $target_width, $target_height);
 
 		$image_height = $image_height_width[0];
@@ -321,7 +327,7 @@ if ($slide_id !== "all") {
 
 	/*	echo '<div class="section">';
 			echo '<br/><div class="sectiontitle overflow_h" style="width:35%">';*/
-			echo '<div>';
+			echo '<div class="quiz_content_actions">';
 			echo '<div style="width:50%;padding-left:230px;">';
 			if ($previous_slide > 0) {
 				echo '<div class="float_l sectiontitleleft"><a href="slideshow.php?'.api_get_cidreq().'&slide_id='.$previous_slide.'&amp;curdirpath='.$pathurl.'">';
@@ -342,7 +348,9 @@ if ($slide_id !== "all") {
 				echo "<div class='float_l sectiontitleright'><a href='slideshow.php?".api_get_cidreq()."&slide_id=".$next_slide."&curdirpath=$pathurl'>";
 					echo '<img style="vertical-align:middle; margin:10px 0;" src="'.api_get_path(WEB_IMG_PATH).'nextbig.png" alt="">';
 				echo '</a></div>';
-			} else {
+			}
+			else
+			{
 				echo "<div class='float_l sectiontitleright'>";
 					echo '<img style="vertical-align:middle; margin:5px 0;" src="'.api_get_path(WEB_IMG_PATH).'nextbig.png" alt="">';
 				echo '</div>';
@@ -350,25 +358,31 @@ if ($slide_id !== "all") {
 			
 		echo '	</div>';
 
-                if ($width > 930) {
-                    $style = 'width:930px;';
-                }
-		echo '	<div class="sectioncontent" style="overflow: hidden; text-align:center;">';
-		echo "<a href='download.php?doc_url=".$row['path']."' target='_blank' ><img src='download.php?doc_url=".$row['path']."' alt='".$title."' border='0'".$height_width_tags." style='margin:10px 0;".$style."' /></a>";
+		if($height <= 300) { 
+			$style= 'height:330px;';
+		} else 	{
+			$style= 'height:530px;';
+		}
+		echo '	<div class="sectioncontent" style="'./*$style.*/' text-align:center;">';
+		echo "<img src='download.php?doc_url=".$row['path']."' alt='".$title."' border='0'".$height_width_tags." style='margin:10px 0;' >";
 		echo '	</div>';
 
+		$aux= explode(".", htmlspecialchars($image_files_only[$slide]));
+	    $ext= $aux[count($aux)-1];			
 		echo '<div class="sectionfooter" style="text-align:center;">';	
 			echo '<div style="margin:0 10px 10px 0">'.$title_without_extension." - ".get_lang('Size').': '.$width.'px x '.$height.'px</div>';
-			if(api_is_allowed_to_edit()) {	
+			if(api_is_allowed_to_edit())
+			{			
 				$url_path = $path;			
-				$forcedownload_link='document.php?action=download&id='.$row['path'];
+				$req_gid = '/'.$title;
+				$forcedownload_link='document.php?action=download&id='.$url_path.$req_gid;
 				$img_style = "margin:0 5px 20px 5px;";
 			// delete
-				echo '<a style="'.$img_style.'" href="document.php?'.api_get_cidreq().'&curdirpath='.$pathurl.'&delete='.urlencode($row['path']).'&slide_id='.$slide_id.'" onclick="return confirmation(\''.basename($path).'\');">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actiondelete')).'</a>';
+				echo '<a style="'.$img_style.'" href="document.php?'.api_get_cidreq().'&curdirpath='.$pathurl.'&delete='.urlencode($row['path']).'&slide_id='.$next_slide.'" onclick="return confirmation(\''.basename($path).'\');"><img src="../img/delete.png"></a>';
 			// visible or not
 				echo '<a style="'.$img_style.'" href="slideshow.php?'.api_get_cidreq().'&curdirpath='.$pathurl.'&amp;'.$visibility_command.'='.$row['id'].'&slide_id='.$slide_id.'"><img src="../img/'.$visibility_icon.'.png" border="0" title="'.get_lang('Visible').'" alt="" /></a>';
 			// download
-				echo '<a style="'.$img_style.'" href="'.$forcedownload_link.'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon forcedownload','style'=>'vertical-align:top;','alt'=>'')).'</a>';
+				echo '<a style="'.$img_style.'" href="'.$forcedownload_link.'"><img style="vertical-align:top;" src="'.api_get_path(WEB_IMG_PATH).'go-jump.png" alt=""></a>';
 				
 			}
 		echo '	</div>';
@@ -378,7 +392,7 @@ if ($slide_id !== "all") {
 		Display::display_warning_message(get_lang('FileNotFound'));
 	}
 } // if ($slide_id!=="all")
-}
+
 // close the content div
 echo '</div>';
 

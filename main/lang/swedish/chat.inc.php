@@ -30,7 +30,6 @@ $langLinkURL = "Länka URL";
 $langWelcomeToOnlineConf = "Välkommen till <b>Onlinekonferens</b>";
 $langNoLinkAvailable = "Ingen tillgänglig länk";
 $langChat_reset_by = "återställt chatt";
-$langAdmin = "Plattformsadministratör";
 $OrFile = "Eller fil";
 $langCallSent = "Chattanrop har skickats. Väntar på godkännande från din partner.";
 $langChatDenied = "Ditt anrop har blivit avvisat av din partner.";

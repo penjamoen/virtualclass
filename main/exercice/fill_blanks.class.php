@@ -115,8 +115,6 @@ if (!class_exists('FillBlanks')):
 			else {
 			  selection = oEditor.EditorWindow.getSelection();
 			}	
-			if(selection == "")
-				return;
 			var new_selection = "[<u>"+selection+"</u>]&nbsp;&nbsp;";
 			var final_text = new_selection.replace(" </u>","</u>");			
 		    oEditor.InsertHtml(final_text);
@@ -154,7 +152,9 @@ if (!class_exists('FillBlanks')):
 
 					if(blank_str == "[]")
 					{
-						return;				
+						alert("No Empty Blank");
+						blank_str = "LOREMIPSUM";
+						oEditor.InsertHtml(blank_str); 						
 					}
 					
 					if(document.getElementById("weighting["+i+"]"))
@@ -186,34 +186,34 @@ if (!class_exists('FillBlanks')):
 	$form->addElement('html', '<div style="float:right;padding-right:25px;"><img style="cursor: pointer;" src="../img/SmallFormFilled.png" alt="" onclick="lowlineform()" />&nbsp;<img style="cursor: pointer;" src="../img/BigFormClosed.png" alt="" onclick="highlineform()" /></div>');
 
    // Main container
-   $form->addElement('html', '<div id="leftcontainer" class="quiz_answer_small_squarebox">');
+   $form->addElement('html', '<div style="float:left;width:55%">');
    // answer
-// $form->addElement('html', '<div class="row" ><div class="label"></div><div class="formw">' . get_lang('TypeTextBelow') . ', ' . get_lang('And') . ' ' . get_lang('UseTagForBlank') . '</div></div>');
-   $form->addElement('html', '<div align="right"><img src="../img/smallbrackets.png" onclick="Addfillup()" alt="'.get_lang('Addblank').'" title="'.get_lang('Addblank').'"></div>');
-// $form -> addElement ('html_editor', 'answer', '<img src="../img/fill_field.png">','id="answer" cols="122" rows="6" onkeyup="javascript: updateBlanks(this);"', array('ToolbarSet' => 'TestQuestionDescription', 'Width' => '100%', 'Height' => '250'));
-// $form -> addElement ('html_editor', 'answer', get_lang('FillTheBlanks'),'id="answer" cols="122" rows="6" onkeyup="javascript: updateBlanks(this);"', array('ToolbarSet' => 'TestQuestionDescription', 'Width' => '100%', 'Height' => '250'));
+//   $form->addElement('html', '<div class="row" ><div class="label"></div><div class="formw">' . get_lang('TypeTextBelow') . ', ' . get_lang('And') . ' ' . get_lang('UseTagForBlank') . '</div></div>');
+	$form->addElement('html', '<div align="right"><img src="../img/smallbrackets.png" onclick="Addfillup()" alt="'.get_lang('Addblank').'" title="'.get_lang('Addblank').'">&nbsp;<img src="../img/bigbrackets.png" onclick="Addfillup()" alt="'.get_lang('Addblank').'" title="'.get_lang('Addblank').'"></div>');
+   //$form -> addElement ('html_editor', 'answer', '<img src="../img/fill_field.png">','id="answer" cols="122" rows="6" onkeyup="javascript: updateBlanks(this);"', array('ToolbarSet' => 'TestQuestionDescription', 'Width' => '100%', 'Height' => '250'));
+   //$form -> addElement ('html_editor', 'answer', get_lang('FillTheBlanks'),'id="answer" cols="122" rows="6" onkeyup="javascript: updateBlanks(this);"', array('ToolbarSet' => 'TestQuestionDescription', 'Width' => '100%', 'Height' => '250'));
    $form->addElement('html_editor', 'answer', get_lang('FillTheBlanks'), 'id="answer" cols="122" rows="6" onkeyup="javascript: updateBlanks(this);"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '100%', 'Height' => '250'));
    $form->addRule('answer', get_lang('GiveText'), 'required');
    $form->addRule('answer', get_lang('DefineBlanks'), 'regex', '/\[.*\]/');
 
    //added multiple answers
-// $form -> addElement ('checkbox','multiple_answer','', get_lang('FillInBlankSwitchable'));
+   //$form -> addElement ('checkbox','multiple_answer','', get_lang('FillInBlankSwitchable'));
    $form->addElement('html', '<br />');
    $form->addElement('html', '<div id="blanks_weighting"></div>');
    $form->addElement('html', '</div>');
 
   // Feedback container
    $form->addElement('html', '<div id="feedback_container" style="float:left;width:100%">');
-// $form->addElement('html', '<br /><br />');
+//   $form->addElement('html', '<br /><br />');
    $form->addElement('html', '<div style="float:left;width:50%;">' . get_lang('FeedbackIfTrue'));
-// $form->addElement('textarea', 'comment[1]', null, 'id="comment[1]" cols="55" rows="1"');
-   $form->add_html_editor('comment[1]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => '40px'));
+//   $form->addElement('textarea', 'comment[1]', null, 'id="comment[1]" cols="55" rows="1"');
+	$form->add_html_editor('comment[1]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => '40px'));
    $form->addElement('html', '</div>');
 
    $form->addElement('html', '<div style="float:right;text-align:right">');
    $form->addElement('html', '<div style="float:left;text-align:left">' . get_lang('FeedbackIfFalse'));
-// $form->addElement('textarea', 'comment[2]', null, 'id="comment[2]" cols="55" rows="1"');
-   $form->add_html_editor('comment[2]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => '40px'));
+//   $form->addElement('textarea', 'comment[2]', null, 'id="comment[2]" cols="55" rows="1"');
+	$form->add_html_editor('comment[2]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => '40px'));
    $form->addElement('html', '</div></div>');
    $form->addElement('html', '<div style="float:right;text-align:left">');
    // setting the save button here and not in the question class.php

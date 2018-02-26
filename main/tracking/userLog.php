@@ -108,7 +108,7 @@ td {border-bottom: thin dashed gray;}
 /*]]>*/
 </style>";
 
-Display::display_tool_header($nameTools, 'Tracking');
+Display::display_header($nameTools,"Tracking");
 
 /*
 -----------------------------------------------------------

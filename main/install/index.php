@@ -30,12 +30,12 @@ if ( !function_exists('version_compare') || version_compare( phpversion(), '5', 
 			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<style type="text/css" media="screen, projection"> 
 	/*<![CDATA[*/
-	@import "../css/dokeos2_tablet/default.css";
+	@import "../css/dokeos2_orange/default.css";
 	/*]]>*/
 	</style> 
 	<style type="text/css" media="print"> 
 	/*<![CDATA[*/
-	@import "../css/dokeos2_tablet/print.css";
+	@import "../css/dokeos2_orange/print.css";
 	/*]]>*/
 	</style> 	
 		</head>
@@ -56,7 +56,7 @@ if ( !function_exists('version_compare') || version_compare( phpversion(), '5', 
 			<div id="header2">
 				<div class="headerinner">
 					<ul id="dokeostabs">
-						<li id="current"><span><a href="#"><div>Installation</div></a></span></li>
+						<li id="current"><span>Installation</span></li>
 						<li><span><a href="../../documentation/installation_guide.html">Installation guide</a></span></li>
 					</ul>
 					<div style="clear: both;" class="clear"> </div>
@@ -175,8 +175,6 @@ error_reporting(E_COMPILE_ERROR | E_ERROR | E_CORE_ERROR);
 $update_from_version_6=array('1.6','1.6.1','1.6.2','1.6.3','1.6.4','1.6.5');
 //upgrading from any subversion of 1.8 avoids the additional step of upgrading from 1.6
 $update_from_version_8=array('1.8','1.8.2','1.8.3','1.8.4','1.8.5','1.8.6','1.8.6.1');
-//upgrading from any subversion of 2.0 avoids the additional step of upgrading from 1.6
-$update_from_version_20=array('2.0');
 $my_old_version = '';
 $tmp_version = get_config_param('dokeos_version');
 if(!empty($_POST['old_version'])) {
@@ -189,7 +187,7 @@ elseif(!empty($dokeos_version)) //variable coming from installedVersion, normall
 	$my_old_version = $dokeos_version;
 }
 
-$new_version = '2.1';
+$new_version = '2.0';
 $new_version_stable = true;
 $new_version_major = true;
 $new_version_package = 'free';
@@ -217,52 +215,46 @@ if(!empty($_POST['updatePath']))
 	$proposedUpdatePath = $_POST['updatePath'];
 }
 
-if ($_POST['step2_install'] || $_POST['step2_update_8'] || $_POST['step2_update_6'] || $_POST['step2_update_20']) {
+if ($_POST['step2_install'] || $_POST['step2_update_8'] || $_POST['step2_update_6']) {
 	if ($_POST['step2_install']) {
 		$installType='new';
 
 		$_POST['step2']=1;
 	} else {
 		$installType='update';
-		if($_POST['step2_update_8']) {
+		if($_POST['step2_update_8'])
+		{
 			$emptyUpdatePath = false;
-			if(empty($_POST['updatePath'])) {
+			if(empty($_POST['updatePath']))
+			{
 				$proposedUpdatePath = $_SERVER['DOCUMENT_ROOT'];
-			} else {
+			}
+			else
+			{
 				$proposedUpdatePath = $_POST['updatePath'];
 			}
-			if(substr($proposedUpdatePath,-1) != '/') {
+			if(substr($proposedUpdatePath,-1) != '/')
+			{
 				$proposedUpdatePath.='/';
 			}
-			if(file_exists($proposedUpdatePath)) {
-				if(in_array($my_old_version,$update_from_version_8)) {
+			if(file_exists($proposedUpdatePath))
+			{
+				if(in_array($my_old_version,$update_from_version_8))
+				{
 					$_POST['step2']=1;
-				} else {
+				}
+				else
+				{
 					$badUpdatePath=true;
 				}
-			} else {
+			}
+			else
+			{
 				$badUpdatePath=true;
 			}
-		}elseif($_POST['step2_update_20']) {
-			$emptyUpdatePath = false;
-			if(empty($_POST['updatePath'])) {
-				$proposedUpdatePath = $_SERVER['DOCUMENT_ROOT'];
-			} else {
-				$proposedUpdatePath = $_POST['updatePath'];
-			}
-			if(substr($proposedUpdatePath,-1) != '/') {
-				$proposedUpdatePath.='/';
-			}
-			if(file_exists($proposedUpdatePath)) {
-				if(in_array($my_old_version,$update_from_version_20)) {
-					$_POST['step2']=1;
-				} else {
-					$badUpdatePath=true;
-				}
-			} else {
-				$badUpdatePath=true;
-			}
-		} else { //step2_update_6, presumably
+		}
+		else //step2_update_6, presumably
+		{
 			if(empty($_POST['updatePath']))
 			{
 				$_POST['step1']=1;
@@ -310,7 +302,7 @@ else
 	$updateFromConfigFile=$_GET['updateFromConfigFile'];
 }
 
-if(($installType=='update' && in_array($my_old_version,$update_from_version_8)) || ($installType=='update' && in_array($my_old_version,$update_from_version_20)))
+if($installType=='update' && in_array($my_old_version,$update_from_version_8))
 {
 	include_once '../inc/conf/configuration.php';
 }
@@ -405,11 +397,11 @@ if (!$_POST)
 {
 	$current_step=1;
 }
-elseif (!empty($_POST['language_list']) or !empty($_POST['step1']) or ((!empty($_POST['step2_update_8']) or (!empty($_POST['step2_update_6'])) or (!empty($_POST['step2_update_20'])))  && ($emptyUpdatePath or $badUpdatePath)))
+elseif (!empty($_POST['language_list']) or !empty($_POST['step1']) or ((!empty($_POST['step2_update_8']) or (!empty($_POST['step2_update_6'])))  && ($emptyUpdatePath or $badUpdatePath)))
 {
 	$current_step=2;
 }
-elseif (!empty($_POST['step2']) or (!empty($_POST['step2_update_8']) or (!empty($_POST['step2_update_6'])) or (!empty($_POST['step2_update_20']))))
+elseif (!empty($_POST['step2']) or (!empty($_POST['step2_update_8']) or (!empty($_POST['step2_update_6'])) ))
 {
 	$current_step=3;
 }
@@ -444,33 +436,26 @@ if ($encryptPassForm=='1' ) {
 
 	<style type="text/css" media="screen, projection"> 
 	/*<![CDATA[*/
-	@import "../css/dokeos2_tablet/default.css";
+	@import "../css/dokeos2_orange/default.css";
+	@import "../css/dokeos2_orange/course.css";
 	/*]]>*/
 	</style> 
 	<style type="text/css" media="print"> 
 	/*<![CDATA[*/
-	@import "../css/dokeos2_tablet/print.css";
+	@import "../css/dokeos2_orange/print.css";
 	/*]]>*/
 	</style> 	
 	<script type="text/javascript" src="../inc/lib/javascript/jquery-1.4.2.min.js" language="javascript"></script>
 	<script type="text/javascript" >
 		  function check_mysql_connection()
 		  {
-              
-			if ($('#singleDb1').attr('checked')==false) {
-               get_database_mode = 2;
-			} else if($('#singleDb1').attr('checked')==true){
-               get_database_mode = 1;
-			}
 		  	$.post("mysql-check.php",
 		  			{
 		  				connection_test : true,
 						database_host	: $("#dbHostForm").val(),
 						database_user	: $("#dbUsernameForm").val(),
 						database_pass	: $("#dbPassForm").val(),
-						database_prefix : $("#dbPrefixForm").val(),
-                        database_mode   : get_database_mode,
-                        main_database   : $("#dbNameForm").val()
+						database_prefix : $("#dbPrefixForm").val()
 		  			},
 		  			function (data) {
 						// display the feedback data of the mysql check
@@ -478,7 +463,7 @@ if ($encryptPassForm=='1' ) {
 
 						// if the feedback message contains a div with class confirmation-message then we may continue
 						// else the next button needs to be disabled
-						if (data.indexOf('class="warning-message-install"') > 1){
+						if (data.indexOf('class="confirmation-message"') > 1){
 							$("#submitbuttonstep4").removeAttr('disabled');
 						} else {
 							$("#submitbuttonstep4").attr('disabled','disabled');
@@ -486,8 +471,8 @@ if ($encryptPassForm=='1' ) {
 		  			}
 		  		);
 		  }
+
 		$(document).ready( function() {
-          
 			 //checked
 			if ($('#singleDb1').attr('checked')==false) {
 					$('#dbStatsForm').removeAttr('disabled');
@@ -500,6 +485,7 @@ if ($encryptPassForm=='1' ) {
 					$('#dbStatsForm').attr('value','dokeos_main');
 					$('#dbUserForm').attr('value','dokeos_main');
 			}
+
 			//Allow dokeos install in IE
 			$("button").click(function() {
 				$("#is_executable").attr("value",$(this).attr("name"));
@@ -590,8 +576,8 @@ if ($encryptPassForm=='1' ) {
 	<div id="header2">
 		<div class="headerinner">
 			<ul id="dokeostabs">
-				<li id="current"><a href="#"><div><span>Installation</span></div></a></li>
-				<li><a href="../../documentation/installation_guide.html"><div><span>Installation guide</span></div></a></span></li>
+				<li id="current"><span>Installation</span></li>
+				<li><span><a href="../../documentation/installation_guide.html">Installation guide</a></span></li>
 			</ul>
 			<div style="clear: both;" class="clear"> </div>
 		</div>
@@ -780,7 +766,7 @@ elseif($_POST['step5'])
 	//STEP 6 : LAST CHECK BEFORE INSTALL
 ?>
 
-	<h2 class="warning-title"><?php echo display_step_sequence().get_lang('LastCheck'); ?></h2>
+	<h2><?php echo display_step_sequence().get_lang('LastCheck'); ?></h2>
 
 	<?php echo get_lang('HereAreTheValuesYouEntered');?>
 	<br />
@@ -845,7 +831,7 @@ elseif($_POST['step5'])
 
 
 	<?php if($installType == 'new'): ?>
-	<div class="warning-message-install">
+	<div style="background-color:#FFFFFF">
 	<p align="left"><b>
 	<?php echo get_lang('Warning');?> !<br />
 	<?php echo get_lang('TheInstallScriptWillEraseAllTables');?>
@@ -911,9 +897,6 @@ elseif($_POST['step6'])
             case '1.8.6.1':
                 include('update-db-1.8.6.1-2.0.inc.php');
                 include('update-files-1.8.6.1-2.0.inc.php');
-            case '2.0':
-                include('update-db-2.0-2.1.inc.php');
-                include('update-files-2.0-2.1.inc.php');
             default:
 				break;
 		}
@@ -927,7 +910,7 @@ elseif($_POST['step6'])
 	//STEP 1 : REQUIREMENTS
 	//make sure that proposed path is set, shouldn't be necessary but...
 	if(empty($proposedUpdatePath)){$proposedUpdatePath = $_POST['updatePath'];}
-	display_requirements($installType, $badUpdatePath, $proposedUpdatePath, $update_from_version_8, $update_from_version_6, $update_from_version_20);
+	display_requirements($installType, $badUpdatePath, $proposedUpdatePath, $update_from_version_8, $update_from_version_6);
 } else {
 	//start screen
 	display_language_selection();

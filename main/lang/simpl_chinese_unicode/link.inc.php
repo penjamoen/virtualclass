@@ -1,7 +1,6 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$LinkMoved = "链接已经被移动";
 $langLinkName = "链接名称";
 $langLinkAdd = "添加链接";
 $langLinkAdded = "链接已添加。";
@@ -22,8 +21,6 @@ $langAllCategoryDel = "删除所有分类及其链接";
 $langGiveURL = "请输入链接网址";
 $langGiveCategoryName = "请输入分类名称";
 $langNoCategory = "无分类";
-$showall = "打开所有分类";
-$shownone = "关闭所有分类";
 $langListDeleted = "列表已删除";
 $langAddLink = "添加链接";
 $langDelList = "删除链接";
@@ -42,17 +39,4 @@ $langAll_Link_Deleted = "链接已删除";
 $langOnHomepage = "主页中显示";
 $langShowLinkOnHomepage = "在课程主页将链接显示为一个图标";
 $langCsvImport = "导入-CSV";
-$General = "常规";
-$SearchFeatureDoIndexLink = "索引链接标题和描述";
-$langSaveLink = "确认";
-$langSaveCategory = "保存分类";
-$BackToLinksOverview = "返回到链接总览";
-$AddTargetOfLinkOnHomepage = "添加的课程的URL到主页上";
-$Url = "链接";
-$Objective = "目标";
-$FolderName = "文件夹名";
-$Fold = "折叠";
-$Unfold = "展开";
-$ThereAreNoLinksInThisFolder = "文件夹中没有链接";
-$IntegrateLinkInCourse = "集成链接到模块中";
 ?>

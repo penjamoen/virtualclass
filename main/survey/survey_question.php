@@ -104,7 +104,7 @@ echo '<script>function survey_print()
 // actions bar
 echo '<div id="headerdiv" style="display:;">';
 echo '<div class="actions">';
-echo '<a href="survey.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.strtolower(get_lang('Survey')), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackTo').' '.strtolower(get_lang('Survey')).'</a>';
+echo '<a href="survey.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('go_previous_32.png',get_lang('BackTo').' '.strtolower(get_lang('Survey'))).' '.get_lang('BackTo').' '.strtolower(get_lang('Survey')).'</a>';
 echo '<a href="javascript:survey_print()">'.Display::return_icon('print32.png',get_lang('Survey')).' '.get_lang('Print').'</a>';
 echo '</div>';
 echo '</div>';

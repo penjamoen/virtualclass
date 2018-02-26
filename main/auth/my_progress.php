@@ -111,7 +111,7 @@ foreach ($courses as $enreg) {
 		<?php echo $last_connection; ?>
   	</td>
   	<td align='center'>
-		<a href="<?php echo api_get_self(); ?>?course=<?php echo $enreg['code']; ?>"> <?php Display::display_icon('pixel.gif', get_lang('Details'),array('class'=>'actionplaceholdericon actionstatisticsdetails')); ?> </a>
+		<a href="<?php echo api_get_self(); ?>?course=<?php echo $enreg['code']; ?>"> <?php Display::display_icon('media_playback_start_22.png', get_lang('Details')); ?> </a>
   	</td>
 </tr>
 <?php

@@ -19,7 +19,6 @@ $questionId    = Security::remove_XSS($_GET['modifyAnswers']);
 
 $objQuestion = Question::read($questionId);
 $TBL_ANSWERS   = Database::get_course_table(TABLE_QUIZ_ANSWER);
-$answer_type   = $objQuestion->selectType();
 $documentPath  = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document';
 $picturePath   = $documentPath.'/images';
 $pictureName   = $objQuestion->selectPicture();
@@ -32,13 +31,7 @@ $courseCode = $_course['sysCode'];
 $coursePath = $_course['path'];
 
 // Query db for answers
-if ($answer_type==HOT_SPOT_DELINEATION) {
- 	$sql = "SELECT id, answer, hotspot_coordinates, hotspot_type, ponderation FROM $TBL_ANSWERS WHERE question_id = '".Database::escape_string($questionId)."' AND hotspot_type = 'delineation' ORDER BY id";		
-}
-else
-{
-	$sql = "SELECT id, answer, hotspot_coordinates, hotspot_type, ponderation FROM $TBL_ANSWERS WHERE question_id = '".Database::escape_string($questionId)."' ORDER BY id";
-}
+$sql = "SELECT id, answer, hotspot_coordinates, hotspot_type, ponderation FROM $TBL_ANSWERS WHERE question_id = '".Database::escape_string($questionId)."' ORDER BY id";
 $result = api_sql_query($sql,__FILE__,__LINE__);
 
 // Init

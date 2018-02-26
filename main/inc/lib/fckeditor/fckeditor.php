@@ -284,7 +284,7 @@ class FCKeditor
 	 * @link http://drupal.org/
 	 */
 	private function to_js( $var ) {
-		switch (gettype($var)) {
+		switch ( gettype( $var ) ) {
 			case 'boolean' :
 				return $var ? 'true' : 'false' ; // Lowercase necessary!
 			case 'integer' :
@@ -482,6 +482,7 @@ class FCKeditor
 		$use_advanced_filemanager = api_get_setting('advanced_filemanager') == 'true';
 		// Let javascripts "know" which file manager has been chosen.
 		$config['AdvancedFileManager'] = $use_advanced_filemanager;
+
 		if (api_is_in_course()) {
 			if (!api_is_in_group()) {
 				// 1. We are inside a course and not in a group.
@@ -536,8 +537,6 @@ class FCKeditor
 			$config['VideoBrowserURL'] = $base_path.'/editor/plugins/ajaxfilemanager/ajaxfilemanager.php';
 			// for video (flv)
 			$config['MediaBrowserURL'] = $base_path.'/editor/plugins/ajaxfilemanager/ajaxfilemanager.php';
-                        // for video files (flv)
-			$config['VideoFilesBrowserURL'] = $base_path.'/editor/plugins/ajaxfilemanager/ajaxfilemanager.php';
 			// for links (any resource type)
 			$config['LinkBrowserURL'] = $base_path.'/editor/plugins/ajaxfilemanager/ajaxfilemanager.php';
 		} else {
@@ -551,8 +550,6 @@ class FCKeditor
 			$config['VideoBrowserURL'] = $base_path.'editor/filemanager/browser/default/browser.html?Type=Video&Connector='.$base_path.'editor/filemanager/connectors/php/connector.php';
 			// for video (flv)
 			$config['MediaBrowserURL'] = $base_path.'editor/filemanager/browser/default/browser.html?Type=Video/flv&Connector='.$base_path.'editor/filemanager/connectors/php/connector.php';
-                        // for video files (flv)
-			$config['VideoFilesBrowserURL'] = $base_path.'editor/filemanager/browser/default/browser.html?Type=videofiles&Connector='.$base_path.'editor/filemanager/connectors/php/connector.php';
 			// for links (any resource type)
 			$config['LinkBrowserURL'] = $base_path.'editor/filemanager/browser/default/browser.html?Type=File&Connector='.$base_path.'editor/filemanager/connectors/php/connector.php';
 		}
@@ -567,8 +564,6 @@ class FCKeditor
 		$config['MP3UploadURL'] = $base_path.'editor/filemanager/connectors/php/upload.php?Type=MP3';
 		// for video
 		$config['VideoUploadURL'] = $base_path.'editor/filemanager/connectors/php/upload.php?Type=Video';
-                // for all videos
-                $config['VideoFilesUploadURL'] = $base_path.'editor/filemanager/connectors/php/upload.php?Type=videofiles';
 		// for video (flv)
 		$config['MediaUploadURL'] = $base_path.'editor/filemanager/connectors/php/upload.php?Type=Video/flv';
 		// for links (any resource type)
@@ -584,10 +579,6 @@ class FCKeditor
 	private function & get_media_configuration() {
 		$config['FlashPlayerAudio'] = api_get_path(TO_REL, FLASH_PLAYER_AUDIO);
 		$config['FlashPlayerVideo'] = api_get_path(TO_REL, FLASH_PLAYER_VIDEO);
-                $config['ScriptJwPlayer']           = api_get_path(WEB_CODE_PATH).'inc/lib/fckeditor/editor/plugins/videoPlayer/jwplayer.min.js';
-                $config['SWFJwPlayer']              = api_get_path(WEB_CODE_PATH).'inc/lib/fckeditor/editor/plugins/videoPlayer/player.swf';
-                $config['SkinPathJwPlayer']         = api_get_path(WEB_CODE_PATH).'inc/lib/fckeditor/editor/plugins/videoPlayer/skins/';
-                $config['VideosFilesPathJwPlayer']  = api_get_path(WEB_COURSE_PATH).api_get_course_path().'/document/video/';
 		$config['ScriptSWFObject'] = api_get_path(TO_REL, SCRIPT_SWFOBJECT);
 		$config['ScriptASCIIMathML'] = api_get_path(TO_REL, SCRIPT_ASCIIMATHML);
 		return $config;
@@ -661,6 +652,7 @@ class FCKeditor
 		$scheme = isset($parsed['scheme']) ? $parsed['scheme'] : 'http';
 		$host = $parsed['host'];
 		$port = isset($parsed['port']) ? $parsed['port'] : ($scheme == 'http' ? 80 : ($scheme == 'https' ? 443 : -1 ));
+
 		$file_exists = false;
 		$fp = @fsockopen($host, $port, $errno, $errstr, $timeout);
 		if ($fp) {

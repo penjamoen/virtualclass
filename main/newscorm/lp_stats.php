@@ -26,6 +26,11 @@ if (isset($_GET['student_id'])) {
 	$student_id = intval($_GET['student_id']);
 }
 
+//The two following variables have to be declared by the includer script
+//$lp_id = $_SESSION['oLP']->get_id();
+//$list = $_SESSION['oLP']->get_flat_ordered_items_list($lp_id);
+//$user_id = $_user['user_id'];
+//$stats_charset = $_SESSION['oLP']->encoding
 if(!isset($origin))
 	$origin = '';
 if($origin != 'tracking') {
@@ -35,6 +40,12 @@ if($origin != 'tracking') {
 		$lp_charset = api_get_setting('platform_charset');
 	}
 	$charset = $lp_charset;
+	//$w = $tablewidth -20;
+	$htmlHeadXtra[] = ''.'<style type="text/css" media="screen, projection">
+		/*<![CDATA[*/
+		@import "../css/public_admin/scorm.css";
+		/*]]>*/
+	</style>';
 	include_once ('../inc/reduced_header.inc.php');
 	echo '<body>';
 } else {
@@ -63,7 +74,7 @@ if (!empty($_GET['fs']) && strcmp($_GET['fs'], 'true') == 0) {
 $extend_all_link = '';
 $extend_all = 0;
 if ($origin == 'tracking') {
-	$url_suffix = '&cidReq='.Security::remove_XSS($_GET['course']).'&course=' . Security::remove_XSS($_GET['course']) . '&student_id=' . $student_id . '&lp_id=' . Security::remove_XSS($_GET['lp_id']) . '&origin=' . Security::remove_XSS($_GET['origin']).$from_link;
+	$url_suffix = '&course=' . Security::remove_XSS($_GET['course']) . '&student_id=' . $student_id . '&lp_id=' . Security::remove_XSS($_GET['lp_id']) . '&origin=' . Security::remove_XSS($_GET['origin']).$from_link;
 } else {
 	$url_suffix = '';
 }
@@ -207,7 +218,7 @@ if (is_array($list) && count($list) > 0){
 			if (!empty($inter_num)) {
 				$extend_link = '<a href="' . api_get_self() . '?action=stats&fold_id=' . $my_item_id . $url_suffix . '"><img src="../img/visible.gif" alt="'.api_convert_encoding(get_lang('HideAttemptView'), $lp_charset, $dokeos_charset).'" title="'.api_convert_encoding(get_lang('HideAttemptView'), $lp_charset, $dokeos_charset).'"  border="0"></a>' . "\n";
 			}
-			$title = api_trunc_str($row['mytitle'], 50);
+			$title = $row['mytitle'];
 
 			if (empty ($title)) {
 				$title = rl_get_resource_name(api_get_course_id(), $lp_id, $row['myid']);
@@ -467,7 +478,7 @@ if (is_array($list) && count($list) > 0){
 			//$time_for_total = $subtotal_time;
 			//$time = learnpathItem :: get_scorm_time('js', $subtotal_time);
 			$scoIdentifier = $row['myid'];
-			$title = api_trunc_str($row['mytitle'], 50);
+			$title = $row['mytitle'];
 
 			// selecting the exe_id from stats attempts tables in order to look the max score value
 			if ($origin != 'tracking') {
@@ -752,16 +763,12 @@ if (!empty($a_my_id)) {
 	$my_course_id = '';
 	if ($origin == 'tracking') {
 		$my_studen_id = $student_id;
-		$my_course_id = Security::remove_XSS($_GET['course']);
+		$my_course_id = Database::escape_string($_GET['course']);
 	} else {
 		$my_studen_id = intval(api_get_user_id());
-		$my_course_id = api_get_course_id();
-	}     
-        if (!empty($my_studen_id) && !empty($my_course_id)) {
-            $total_score = Tracking::get_avg_student_score($my_studen_id, $my_course_id, array(intval($_GET['lp_id'])), api_get_session_id(), false, false);            
-        } else {
-            $total_score = 0;
-        } 
+		$my_course_id = Database::escape_string(api_get_course_id());
+	}
+	$total_score = Tracking::get_avg_student_score($my_studen_id, $my_course_id, $a_my_id);
 } else {
 	$total_score = 0;
 }

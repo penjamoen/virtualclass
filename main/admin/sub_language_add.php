@@ -1,6 +1,6 @@
 <?php
 /* For licensing terms, see /dokeos_license.txt */
-// OK AVANTA.....
+
 /**
 * @package dokeos.admin
 */
@@ -189,7 +189,7 @@ if (ckeck_if_is_parent_of_sub_language ($parent_id)===true && isset($_GET['actio
 }
 
 Display :: display_header($language_name);
-echo '<div id="content">';
+
 if (isset($_POST['SubmitAddNewLanguage'])) {
 	$original_name=$_POST['original_name'];
 	$english_name=$_POST['english_name'];
@@ -203,13 +203,13 @@ if (isset($_POST['SubmitAddNewLanguage'])) {
 	foreach ($check_information as $index_information => $value_information) {
 		$allow_insert_info=false;
 		if ($index_information=='original_name') {
-			echo get_lang('AlreadyExists').' "'.get_lang('OriginalName').'" '.'('.$original_name.')';
+			Display::display_error_message(get_lang('AlreadyExists').' "'.get_lang('OriginalName').'" '.'('.$original_name.')');
 		}
 		if ($index_information=='english_name') {
-			echo et_lang('AlreadyExists').' "'.get_lang('EnglishName').'" '.'('.$english_name.')';
+			Display::display_error_message(get_lang('AlreadyExists').' "'.get_lang('EnglishName').'" '.'('.$english_name.')');
 		}
 		if ($index_information=='isocode') {
-			echo get_lang('AlreadyExists').' "'.get_lang('PlatformCharsetTitle').'" '.'('.$isocode.')';
+			Display::display_error_message(get_lang('AlreadyExists').' "'.get_lang('PlatformCharsetTitle').'" '.'('.$isocode.')');
 		}
 		if ($index_information=='execute_add' && $value_information===true) {
 			$allow_insert_info=true;
@@ -227,17 +227,17 @@ if (isset($_POST['SubmitAddNewLanguage'])) {
 			$mkdir_result=add_directory_of_sub_language($path);
 			if ($mkdir_result===true) {
 			  	add_sub_language($original_name,$english_name,$isocode,$sublanguage_available,$parent_id);
-			  	echo get_lang('TheNewSubLanguageHasBeenAdd').$str_info;
+			  	Display::display_confirmation_message(get_lang('TheNewSubLanguageHasBeenAdd').$str_info,false);
 			} else {
-				  echo get_lang('LanguageDirectoryNotWriteableContactAdmin');
+				  Display::display_error_message(get_lang('LanguageDirectoryNotWriteableContactAdmin'));
 			}
 		} else {
 			if ($language_id_exist===false) {
-				echo get_lang('LanguageParentNotExist');
+				Display::display_error_message(get_lang('LanguageParentNotExist'));
 			}
 		}
 	} else {
-			echo get_lang('FormHasErrorsPleaseComplete');
+			Display::display_error_message(get_lang('FormHasErrorsPleaseComplete'));
 	}
 }
 if (isset($_POST['SubmitAddDeleteLanguage'])) {
@@ -246,7 +246,7 @@ if (isset($_POST['SubmitAddDeleteLanguage'])) {
 		$rs=remove_directory_of_sub_language($path);
 		if ($rs===true) {
 			SubLanguageManager::removed_sub_language($parent_id,$sub_language_id);
-			echo get_lang('TheSubLanguageHasBeenRemoved');
+			Display::display_confirmation_message(get_lang('TheSubLanguageHasBeenRemoved'));
 		}
 
 	}
@@ -280,11 +280,10 @@ if (isset($_POST['SubmitAddDeleteLanguage'])) {
 			$form->display();
 		}
 		if (isset($_GET['action']) && $_GET['action']=='definenewsublanguage') {
-			echo get_lang('TheSubLanguageForThisLanguageHasBeenAdd');
+			Display::display_normal_message(get_lang('TheSubLanguageForThisLanguageHasBeenAdd'));
 		}
 	}
 
-echo '</div>';
 /*
 ==============================================================================
 		FOOTER

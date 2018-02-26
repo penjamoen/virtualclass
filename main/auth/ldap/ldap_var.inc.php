@@ -69,5 +69,4 @@ $ldap_pass = api_get_setting('ldap_authentication_password');
 //courses inscriptions
 $ldap_session_field = api_get_setting('ldap_course_field');
 $ldap_pass_placeholder = "PLACEHOLDER";
-$ldap_update_userinfo = true;
 ?>

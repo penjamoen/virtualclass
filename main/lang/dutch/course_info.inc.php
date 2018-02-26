@@ -108,8 +108,8 @@ $ConfigChat = "Chat instellingen";
 $AllowOpenchatWindow = "Open de chat in een nieuw venster";
 $AllowOpenChatWindowActivate = "Toon chatvenster in een nieuw scherm";
 $AllowOpenChatWindowDeactivate = "Toon chatvenster in hetzelfde venster";
-$NewUserEmailAlert = "Notificatie per email aan trainer bij nieuwe zelfinschrijving ";
-$NewUserEmailAlertEnable = "Notificatie per email aan trainer bij nieuwe zelfinschrijving activeren";
-$NewUserEmailAlertToTeacharAndTutor = "Notificatie per email aan trainer en mentor bij nieuwe zelfinschrijving activeren";
-$NewUserEmailAlertDisable = "Email notificatie bij nieuwe inschrijvingen in de cursus niet activeren";
+$NewUserEmailAlert = "Melding van nieuwe zelfinschrijvingen aan de cursusbeheerder";
+$NewUserEmailAlertEnable = "Breng de cursusbeheerder op de hoogte van nieuwe zelfinschrijvingen";
+$NewUserEmailAlertToTeacharAndTutor = "Breng de cursusbeheerder en tutoren op de hoogte van nieuwe zelfinschrijvingen";
+$NewUserEmailAlertDisable = "Breng de beheerders niet op de hoogte";
 ?>

@@ -56,19 +56,19 @@ $htmlHeadXtra[] ='<script type="text/javascript">
  $(document).ready(function() {
     $(".make_visible_and_invisible_language").attr("href","javascript:void(0)");
  	$("td .make_visible_and_invisible_language").click(function () {
-		make_visible="visible_22.png";
-		make_invisible="invisible_22.png";
+		make_visible="visible.gif";
+		make_invisible="invisible.gif";
 		id_link_tool=$(this).attr("id");
 		id_img_link_tool="img"+id_link_tool;
 		path_name_of_imglinktool=$("#"+id_img_link_tool).attr("src");
-        check_if_img_tag_has_active_class = $("#"+id_img_link_tool).hasClass("actionvisible");
 		link_info_id=id_link_tool.split("linktool_");
 		link_id=link_info_id[1];
 
 		link_tool_info=path_name_of_imglinktool.split("/");
 		my_image_tool=link_tool_info[link_tool_info.length-1];
 
-		if (check_if_img_tag_has_active_class === true) {
+
+		if (my_image_tool=="visible.gif") {
 			path_name_of_imglinktool=path_name_of_imglinktool.replace(make_visible,make_invisible);
 			my_visibility=0;
 		} else {
@@ -86,12 +86,13 @@ $htmlHeadXtra[] ='<script type="text/javascript">
 			url: "../admin/languages.php",
 			data: "id="+link_id+"&visibility="+my_visibility+"&sent_http_request=1",
 			success: function(datos) {
-				if (check_if_img_tag_has_active_class === false) {
-                    $("#"+id_img_link_tool).attr("class","actionplaceholdericon actionvisible");
+
+				$("#"+id_img_link_tool).attr("src",path_name_of_imglinktool);
+
+				if (my_image_tool=="visible.gif") {
 					$("#"+id_img_link_tool).attr("alt","'.get_lang('MakeAvailable', '').'");
 					$("#"+id_img_link_tool).attr("title","'.get_lang('MakeAvailable', '').'");
 				} else {
-                    $("#"+id_img_link_tool).attr("class","actionplaceholdericon actioninvisible");
 					$("#"+id_img_link_tool).attr("alt","'.get_lang('MakeUnavailable', '').'");
 					$("#"+id_img_link_tool).attr("title","'.get_lang('MakeUnavailable', '').'");
 				}
@@ -217,43 +218,27 @@ $language_data = array ();
 while ($row = Database::fetch_array($result_select)) {
 
 	$row_td = array ();
-	$row_td[] = $row['original_name'];
+	$row_td[] = $row['id'];
 	// the first column is the original name of the language OR a form containing the original name
 	if ($_GET['action'] == 'edit' and $row['id'] == $_GET['id']) {
 		if ($row['english_name'] == api_get_setting('platformLanguage')) {
 			$checked = ' checked="checked" ';
 		}
-/**
- * $row_td[] = '
-    <input type="hidden" name="edit_id" value="'.Security::remove_XSS($_GET['id']).'" /><input type="text" name="txt_name" class="focus" value="'.$row['original_name'].'" /> '
-        . '<input type="checkbox" '.$checked.'name="platformlanguage" id="platformlanguage" value="'.$row['english_name'].'" /><label for="platformlanguage">'.$row['original_name'].' '.get_lang('AsPlatformLanguage').'</label> <input type="submit" name="Submit" value="'.get_lang('Ok').'" /><a name="value" />
-            ';
 
- */
-if ($row['available'] == 1) {
-		$row_td[] = '
-                    <form action="'.  api_get_self().'?action=makeunavailable&id='.$row['id'].'" method="post"><input type="hidden" name="edit_id" value="'.Security::remove_XSS($_GET['id']).'" /><input type="text" name="txt_name" class="focus" value="'.$row['original_name'].'" /> '
-			. '<input type="checkbox" '.$checked.'name="platformlanguage" id="platformlanguage" value="'.$row['english_name'].'" /><label for="platformlanguage">'.$row['original_name'].' '.get_lang('AsPlatformLanguage').'</label> <input type="submit" name="Submit" value="'.get_lang('Ok').'" /><a name="value" />
-                            </form>';
-} else {
-   
-    $row_td[] = '
-                    <form action="'.api_get_self().'?action=makeavailable&id='.$row['id'].'" method="post"><input type="hidden" name="edit_id" value="'.Security::remove_XSS($_GET['id']).'" /><input type="text" name="txt_name" class="focus" value="'.$row['original_name'].'" /> '
-			. '<input type="checkbox" '.$checked.'name="platformlanguage" id="platformlanguage" value="'.$row['english_name'].'" /><label for="platformlanguage">'.$row['original_name'].' '.get_lang('AsPlatformLanguage').'</label> <input type="submit" name="Submit" value="'.get_lang('Ok').'" /><a name="value" />
-                            </form>';
-}
+		$row_td[] = '<input type="hidden" name="edit_id" value="'.$_GET['id'].'" /><input type="text" name="txt_name" class="focus" value="'.$row['original_name'].'" /> '
+			. '<input type="checkbox" '.$checked.'name="platformlanguage" id="platformlanguage" value="'.$row['english_name'].'" /><label for="platformlanguage">'.$row['original_name'].' '.get_lang('AsPlatformLanguage').'</label> <input type="submit" name="Submit" value="'.get_lang('Ok').'" /><a name="value" />';
 	} else 	{
-		$row_td[] = $row['english_name'];
+		$row_td[] = $row['original_name'];
 	}
 	// the second column
-	$row_td[] = $row['dokeos_folder'];
+	$row_td[] = $row['english_name'];
 	// the third column
-//	$row_td[] = $row['dokeos_folder'];
+	$row_td[] = $row['dokeos_folder'];
 
 	if ($row['english_name'] == $row_lang['selected_value']){
-		$setplatformlanguage = Display::return_icon('pixel.gif', get_lang('CurrentLanguagesPortal'),array('class'=>'actionplaceholdericon actiononline_22'));
+		$setplatformlanguage = Display::return_icon('links.gif', get_lang('CurrentLanguagesPortal'));
 	} else {
-		$setplatformlanguage = "<a href=\"javascript:if (confirm('".addslashes(get_lang('AreYouSureYouWantToSetThisLanguageAsThePortalDefault'))."')) { location.href='".api_get_self()."?action=setplatformlanguage&id=".$row['id']."'; }\">".Display::return_icon('pixel.gif',get_lang('SetLanguageAsDefault'),array('class'=>'actionplaceholdericon actiononline_22_na'))."</a>";
+		$setplatformlanguage = "<a href=\"javascript:if (confirm('".addslashes(get_lang('AreYouSureYouWantToSetThisLanguageAsThePortalDefault'))."')) { location.href='".api_get_self()."?action=setplatformlanguage&id=".$row['id']."'; }\">".Display::return_icon('link_na.gif',get_lang('SetLanguageAsDefault'))."</a>";
 	}
 	if (api_get_setting('allow_use_sub_language')=='true') {
 
@@ -280,10 +265,10 @@ if ($row['available'] == 1) {
 		$allow_add_term_sub_language='';
 	}
 	if ($row['available'] == 1) {
-		$row_td[] = "<a class=\"make_visible_and_invisible_language\" id=\"linktool_".$row['id']."\" href='".api_get_self()."?action=makeunavailable&id=".$row['id']."'>".Display::return_icon('pixel.gif', get_lang('MakeUnavailable'),array('class'=>'actionplaceholdericon actionvisible','id'=>'imglinktool_'.$row['id']))."</a> <a href='".api_get_self()."?action=edit&id=".$row['id']."#value'>".Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit'))."</a>&nbsp;".$setplatformlanguage.$allow_use_sub_language.$allow_add_term_sub_language.$allow_delete_sub_language;
+		$row_td[] = "<a class=\"make_visible_and_invisible_language\" id=\"linktool_".$row['id']."\" href='".api_get_self()."?action=makeunavailable&id=".$row['id']."'>".Display::return_icon('visible.gif', get_lang('MakeUnavailable'),array('id'=>'imglinktool_'.$row['id']))."</a> <a href='".api_get_self()."?action=edit&id=".$row['id']."#value'>".Display::return_icon('edit.png', get_lang('Edit'))."</a>&nbsp;".$setplatformlanguage.$allow_use_sub_language.$allow_add_term_sub_language.$allow_delete_sub_language;
 		//$row_td[] = "<a class=\"make_visible_and_invisible\" id=\"linktool_".$row['id']."\" href='javascript:void(0)'>".Display::return_icon('visible.gif', get_lang('MakeUnavailable'),array('id'=>'imglinktool_'.$row['id']))."</a> <a href='".api_get_self()."?action=edit&id=".$row['id']."#value'>".Display::return_icon('edit.png', get_lang('Edit'))."</a>&nbsp;".$setplatformlanguage.$allow_use_sub_language.$allow_add_term_sub_language;
 	} else {
-		$row_td[] = "<a class=\"make_visible_and_invisible_language\" id=\"linktool_".$row['id']."\" href='".api_get_self()."?action=makeavailable&id=".$row['id']."'>".Display::return_icon('pixel.gif', get_lang('MakeAvailable'),array('class'=>'actionplaceholdericon actioninvisible','id'=>'imglinktool_'.$row['id']))."</a> <a href='".api_get_self()."?action=edit&id=".$row['id']."#value'>".Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit'))."</a>&nbsp;".$setplatformlanguage.$allow_use_sub_language.$allow_add_term_sub_language.$allow_delete_sub_language;
+		$row_td[] = "<a class=\"make_visible_and_invisible_language\" id=\"linktool_".$row['id']."\" href='".api_get_self()."?action=makeavailable&id=".$row['id']."'>".Display::return_icon('invisible.gif', get_lang('MakeAvailable'),array('id'=>'imglinktool_'.$row['id']))."</a> <a href='".api_get_self()."?action=edit&id=".$row['id']."#value'>".Display::return_icon('edit.png', get_lang('Edit'))."</a>&nbsp;".$setplatformlanguage.$allow_use_sub_language.$allow_add_term_sub_language.$allow_delete_sub_language;
 		//$row_td[] = "<a class=\"make_visible_and_invisible\" id=\"linktool_".$row['id']."\" href='javascript:void(0)'>".Display::return_icon('invisible.gif', get_lang('MakeAvailable'),array('id'=>'imglinktool_'.$row['id']))."</a> <a href='".api_get_self()."?action=edit&id=".$row['id']."#value'>".Display::return_icon('edit.png', get_lang('Edit'))."</a>&nbsp;".$setplatformlanguage.$allow_use_sub_language.$allow_add_term_sub_language;
 	}
 
@@ -292,15 +277,15 @@ if ($row['available'] == 1) {
 
 // create the sortable table
 $table = new SortableTableFromArrayConfig($language_data, 1, count($language_data));
-//$table->set_header(0, '');
-$table->set_header(0, get_lang('OriginalName'));
-$table->set_header(1, get_lang('EnglishName'));
-$table->set_header(2, get_lang('DokeosFolder'));
-$table->set_header(3, get_lang('Properties'));
-//$form_actions = array ();
-//$form_actions['makeavailable'] = get_lang('MakeAvailable');
-//$form_actions['makeunavailable'] = get_lang('MakeUnavailable');
-//$table->set_form_actions($form_actions);
+$table->set_header(0, '');
+$table->set_header(1, get_lang('OriginalName'));
+$table->set_header(2, get_lang('EnglishName'));
+$table->set_header(3, get_lang('DokeosFolder'));
+$table->set_header(4, get_lang('Properties'));
+$form_actions = array ();
+$form_actions['makeavailable'] = get_lang('MakeAvailable');
+$form_actions['makeunavailable'] = get_lang('MakeUnavailable');
+$table->set_form_actions($form_actions);
 
 // feedback message
 echo '<div id="id_content_message">&nbsp;</div>';

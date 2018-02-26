@@ -211,7 +211,7 @@ if(!empty($errorMsg))
 <td>&nbsp;</td></tr>
 <?php } ?>
 <tr>
-  <td width="35%" align="center">
+  <td width="45%" align="center">
 	<div id="ajax_list_courses_multiple">
 	<select id="origin" name="NoSessionCategoryList[]" multiple="multiple" size="20" style="width:320px;">
 	<?php
@@ -222,7 +222,7 @@ if(!empty($errorMsg))
 	</select></div>
 <?php unset($nosessionCourses); ?>
   </td>
-  <td width="30%" valign="middle" align="center">
+  <td width="10%" valign="middle" align="center">
   <?php
   if ($ajax_search) {
   ?>
@@ -240,10 +240,10 @@ if(!empty($errorMsg))
   ?>
 	<br /><br /><br /><br /><br /><br />
 	<?php
-		echo '<button class="save" style="float:none;" type="button" value="" onclick="valide()" >'.get_lang('AddSession').'</button>';
+		echo '<button class="save" type="button" value="" onclick="valide()" >'.get_lang('Addsession').'</button>';
 	?>
   </td>
-  <td width="35%" align="center">
+  <td width="45%" align="center">
   <select id='destination' name="SessionCategoryList[]" multiple="multiple" size="20" style="width:320px;">
 	<?php
 	foreach($rows_category_session as $enreg) {

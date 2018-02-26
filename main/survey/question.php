@@ -93,7 +93,7 @@ if($survey_data['survey_type']==1) {
 	$sql = 'SELECT id FROM '.Database :: get_course_table(TABLE_SURVEY_QUESTION_GROUP).' WHERE survey_id = '.(int)$_GET['survey_id'].' LIMIT 1';
 	$rs = Database::query($sql,__FILE__,__LINE__);
 	if(Database::num_rows($rs)===0) {
-		header('Location: survey.php?'.  api_get_cidreq().'&survey_id='.(int)$_GET['survey_id'].'&message='.'YouNeedToCreateGroups');
+		header('Location: survey.php?survey_id='.(int)$_GET['survey_id'].'&message='.'YouNeedToCreateGroups');
 		exit;
 	}
 }
@@ -115,7 +115,7 @@ $possible_types = array('personality','yesno', 'multiplechoice', 'multiplerespon
 
 // actions
 $actions = '<div class="actions">';
-$actions .= '<a href="survey.php?'.  api_get_cidreq().'&survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('pixel.gif', get_lang('BackToSurvey'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackToSurvey').'</a>';
+$actions .= '<a href="survey.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('go_previous_32.png',get_lang('BackToSurvey')).get_lang('BackToSurvey').'</a>';
 $actions .= '</div>';
 
 
@@ -143,85 +143,83 @@ if (!in_array($_GET['type'], $possible_types))
 
 
 // displaying the form for adding or editing the question
-if (in_array($_GET['type'],$possible_types)) {
-	
-	
+if (empty($_POST['save_question']) && in_array($_GET['type'],$possible_types)) {
+	if (!isset($_POST['save_question'])) {
+
+		// Displaying the header
+		Display::display_tool_header();
+
+		echo $actions;
+
+		$error_message='';
+
+		// Displys message if exists
+		if (isset($_SESSION['temp_sys_message'])) {
+			$error_message=$_SESSION['temp_sys_message'];
+			unset($_SESSION['temp_sys_message']);
+			if ($error_message=='PleaseEnterAQuestion' || $error_message=='PleasFillAllAnswer'|| $error_message=='PleaseChooseACondition'|| $error_message=='ChooseDifferentCategories') {
+				Display::display_error_message(get_lang($error_message), true);
+			}
+		}
+
+		// start the content div
+		echo '<div id="content">';
+	}
+
 	$form = new $_GET['type'];
-	
-	if (isset($_SESSION['temp_sys_message'])) {
-		$error_message=$_SESSION['temp_sys_message'];
-		unset($_SESSION['temp_sys_message']);
+
+	// The defaults values for the form
+	$form_content['answers'] = array('', '');
+
+	if ($_GET['type'] == 'yesno') {
+		$form_content['answers'][0]=get_lang('Yes');
+		$form_content['answers'][1]=get_lang('No');
 	}
-	
+
+	if ($_GET['type'] == 'personality') {
+		$form_content['answers'][0]=get_lang('1');
+		$form_content['answers'][1]=get_lang('2');
+		$form_content['answers'][2]=get_lang('3');
+		$form_content['answers'][3]=get_lang('4');
+		$form_content['answers'][4]=get_lang('5');
+
+		$form_content['values'][0]=0;
+		$form_content['values'][1]=0;
+		$form_content['values'][2]=1;
+		$form_content['values'][3]=2;
+		$form_content['values'][4]=3;
+	}
+
+	// We are editing a question
+	if (isset($_GET['question_id']) AND !empty($_GET['question_id'])) {
+		$form_content = survey_manager::get_question($_GET['question_id']);
+	}
+
 	// an action has been performed (for instance adding a possible answer, moving an answer, ...)
-	if(!$_POST)
-	{
-		// The defaults values for the form
-		$form_content['answers'] = array('', '');
-	
-		if ($_GET['type'] == 'yesno') {
-			$form_content['answers'][0]=get_lang('Yes');
-			$form_content['answers'][1]=get_lang('No');
-		}
-	
-		if ($_GET['type'] == 'personality') {
-			$form_content['answers'][0]=get_lang('1');
-			$form_content['answers'][1]=get_lang('2');
-			$form_content['answers'][2]=get_lang('3');
-			$form_content['answers'][3]=get_lang('4');
-			$form_content['answers'][4]=get_lang('5');
-	
-			$form_content['values'][0]=0;
-			$form_content['values'][1]=0;
-			$form_content['values'][2]=1;
-			$form_content['values'][3]=2;
-			$form_content['values'][4]=3;
-		}
-	
-		// We are editing a question
-		if (isset($_GET['question_id']) AND !empty($_GET['question_id'])) {
-			$form_content = survey_manager::get_question($_GET['question_id']);
-		}
-	
-		
-	
-		if ($error_message!='') {
-			$form_content['question']=$_SESSION['temp_user_message'];
-			$form_content['answers']=$_SESSION['temp_answers'];
-			$form_content['values']=$_SESSION['temp_values'];
-			$form_content['horizontalvertical'] = $_SESSION['temp_horizontalvertical'];
-	
-	
-			unset($_SESSION['temp_user_message']);
-			unset($_SESSION['temp_answers']);
-			unset($_SESSION['temp_values']);
-			unset($_SESSION['temp_horizontalvertical']);
-		}
-	}
-	else {
+	if ($_POST) {
 		$form_content = $_POST;
 		$form_content = $form->handle_action($form_content);
 	}
 
-	// Displaying the header
-	Display::display_tool_header();
+	if ($error_message!='') {
+		$form_content['question']=$_SESSION['temp_user_message'];
+		$form_content['answers']=$_SESSION['temp_answers'];
+		$form_content['values']=$_SESSION['temp_values'];
+		$form_content['horizontalvertical'] = $_SESSION['temp_horizontalvertical'];
 
-	echo $actions;
 
-	$error_message='';
-
-	// Displys message if exists
-	if ($error_message=='PleaseEnterAQuestion' || $error_message=='PleasFillAllAnswer'|| $error_message=='PleaseChooseACondition'|| $error_message=='ChooseDifferentCategories') {
-		Display::display_error_message(get_lang($error_message), true);
+		unset($_SESSION['temp_user_message']);
+		unset($_SESSION['temp_answers']);
+		unset($_SESSION['temp_values']);
+		unset($_SESSION['temp_horizontalvertical']);
 	}
-
-	// start the content div
-	echo '<div id="content">';
-	
-
 
 	$form->create_form($form_content);
 	$form->render_form();
+} else {
+	$form_content = $_POST;
+	$form = new question();
+	$form->handle_action($form_content);
 }
 
 // close the content div

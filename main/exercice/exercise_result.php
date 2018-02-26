@@ -122,12 +122,6 @@ if ( empty ( $exerciseType ) ) {
     $exerciseType = $_REQUEST['exerciseType'];
 }
 
-$course_code = api_get_course_id();
-if(isset($_SESSION['expired_time'][$course_code][intval($_SESSION['id_session'])][$objExercise->id][$learnpath_id]))
-{
-	unset($_SESSION['expired_time'][$course_code][intval($_SESSION['id_session'])][$objExercise->id][$learnpath_id]);
-}
-
 $_configuration['live_exercise_tracking'] = false;
 if($_configuration['live_exercise_tracking']) define('ENABLED_LIVE_EXERCISE_TRACKING',1);
 
@@ -147,19 +141,20 @@ $from_name = $uinfo['firstname'].' '.$uinfo['lastname'];
 $str = $_SERVER['REQUEST_URI'];
 $url = api_get_path(WEB_CODE_PATH).'exercice/exercice.php?'.api_get_cidreq().'&show=result';
 
- // if the above variables are empty or incorrect, we don't have any result to show, so stop the script
-if(!is_array($exerciseResult) || !is_array($questionList) || !is_object($objExercise)) {
-
-	header('Location: exercice.php');
-	exit();
-}
 
 $sql_fb_type='SELECT feedback_type FROM '.$TBL_EXERCICES.' WHERE id ="'.Database::escape_string($objExercise->selectId()).'"';
 
 $res_fb_type=Database::query($sql_fb_type,__FILE__,__LINE__);
 $row_fb_type=Database::fetch_row($res_fb_type);
-$feedback_type = $row_fb_type[0];
+$feedback_type = $row_fb_type[0]; 
 
+ // if the above variables are empty or incorrect, we don't have any result to show, so stop the script
+if(!is_array($exerciseResult) || !is_array($questionList) || !is_object($objExercise))
+{
+
+	header('Location: exercice.php');
+	exit();
+}
 // define basic exercise info to print on screen
 $exerciseTitle=$objExercise->selectTitle();
 $exerciseDescription=$objExercise->selectDescription();
@@ -479,23 +474,8 @@ function display_hotspot_answer($answerId, $answer, $studentChoice, $answerComme
 									"#ED2024",
 									"#45C7F0",
 									"#F7BDE2");
-
-			$s .= '<tr>';
-			$s .= '<td valign="top">';
-			$s .= '	<div style="height:11px; width:11px; background-color:'.$hotspot_colors[$answerId].'; display:inline; float:left; margin-top:3px;"></div>
-						<div style="float:left; padding-left:5px;">'.$answerId.'</div>
-							<div style="float:left; padding-left:5px;">
-								<div style="display:inline; float:left; width:80px;">'.$answer.'</div>
-							</div>';
-			$s .= '</td>
-				   <td valign="top">';
-			$my_choice = ($studentChoice)?get_lang('Correct'):get_lang('Fault');
-			$s .= $my_choice;
-			$s .= '</td>
-				   </tr>';
 	?>
-	
-		<!--<tr>
+		<tr>
 				<td valign="top">
 				<div style="height:11px; width:11px; background-color:<?php echo $hotspot_colors[$answerId]; ?>; display:inline; float:left; margin-top:3px;"></div>
 				<div style="float:left; padding-left:5px;">
@@ -521,10 +501,8 @@ function display_hotspot_answer($answerId, $answer, $studentChoice, $answerComme
 					echo '</span>';				 
 					?>
 				</td>
-		</tr>-->
-		
+		</tr>
 	<?php
-		return $s;
 }
 
 /*
@@ -532,19 +510,14 @@ DISPLAY AND MAIN PROCESS
 */
 
 // I'm in a preview mode as course admin. Display the action menu.
-if ($origin != 'learnpath') {
-    echo '<div class="actions">';
-    if (api_is_course_admin()) {
-        echo '<a href="exercice.php?'.api_get_cidreq().'&exerciseId='.$objExercise->id.'">'.Display::return_icon('pixel.gif', get_lang('GoBackToEx'),array('class'=>'toolactionplaceholdericon toolactionback')).get_lang('GoBackToEx'). '</a>';
-	echo '<a href="exercise_admin.php?scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.$objExercise->id.'">' . Display :: return_icon('pixel.gif', get_lang('Scenario'),array('class'=>'toolactionplaceholdericon toolactionscenario')) . get_lang('Scenario') . '</a>';
-    } else {
-        echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/exercice.php?'.api_get_cidreq().'">' . Display::return_icon('pixel.gif', get_lang('GoBackToEx'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('GoBackToEx').'</a>';
-    }
-    echo '</div>';			                
+if (api_is_course_admin() && $origin != 'learnpath') {
+	echo '<div class="actions">';	
+	echo Display::return_icon('go_previous_32.png', get_lang('GoBackToEx')).'<a href="exercice.php?'.api_get_cidreq().'&exerciseId='.$objExercise->id.'">'.get_lang('GoBackToEx').'</a>';
+	echo '<a href="exercise_admin.php?scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.$objExercise->id.'">' . Display :: return_icon('dokeos_scenario.png', get_lang('Scenario')) . get_lang('Scenario') . '</a>';
+	echo '</div>';
 }
-
-echo '<div id="content">';
-echo '<div class="actions"><table width="100%">';
+	echo '<div id="content">';
+	echo '<div class="actions"><table width="100%">';
 $exerciseTitle=api_parse_tex($exerciseTitle);
 $user_id=api_get_user_id();
 $course_code = api_get_course_id();
@@ -617,7 +590,7 @@ foreach ($questionList as $questionId) {
 		<div id="question_title" class="quiz_content_actions" style="font-weight:bold;margin: 0px 10px 10px 10px;padding: 5px 15px;top:-10px;position: relative;border: 1px solid #ED9438;">
     		<?php echo get_lang("Question").' '.($counter).' : '.$questionName; ?>
     	</div>	   
-    	<div id="question_description" class="scroll_feedback">
+    	<div id="question_description">
     		<?php echo $questionDescription; ?>
     	</div>
 	<!--	<tr bgcolor="#E6E6E6">
@@ -687,7 +660,7 @@ foreach ($questionList as $questionId) {
 				<tr>
 					<td valign="top" colspan="2">
 						<table width="552" border="1" bordercolor="#A4A4A4" style="border-collapse: collapse;">
-						<!--	<tr>
+							<tr>
 								<td width="152" valign="top">
 									<i><?php echo get_lang("CorrectAnswer"); ?></i><br /><br />
 								</td>
@@ -698,7 +671,7 @@ foreach ($questionList as $questionId) {
 								<td width="300" valign="top">
 									<i><?php echo get_lang("Comment"); ?></i><br /><br />
 								</td>
-							</tr>-->
+							</tr>
 			<?php
 		} else { //matching type
 			?>
@@ -770,26 +743,12 @@ foreach ($questionList as $questionId) {
 						if($studentChoice == $answerCorrect)
 						{					
 						$correctChoice_multiple = 'Y';
-						$feedback_if_true = $objAnswerTmp->selectComment($answerId);
 						}
-						else
-						{		
-						$answerWrong = 'Y';
-						$feedback_if_false = $objAnswerTmp->selectComment($answerId);
-						}	
 					}
 					break;
 			case REASONING :
 					$studentChoice=$choice[$answerId];					
-					if($answerCorrect)
-				    {
-					   $feedback_if_true = $objAnswerTmp->selectComment($answerId);
-				    }
-				    else
-				    {
-					   $feedback_if_false = $objAnswerTmp->selectComment($answerId);
-				    }
-
+					
 					if($answerId == '2')
 					{
 						$wrongAnswerWeighting = $answerWeighting;
@@ -803,14 +762,12 @@ foreach ($questionList as $questionId) {
 					{					
 						$correctChoice_reasoning = 'N';
 						$noStudentChoice = 'Y';
-						$answerWrong = 'Y';	
 						break;
 					}
 					elseif(!$answerCorrect && $studentChoice == '1')
 					{					
 						$correctChoice_reasoning = 'N';
 						$noStudentChoice = 'Y';
-						$answerWrong = 'Y';	
 						break;
 					}					
 					break;
@@ -1004,8 +961,7 @@ foreach ($questionList as $questionId) {
 						}
 						else
 						{
-						//	$choice[$answerId]='<font color="red"><s>'.$matching[$choice[$answerId]].'</s></font>';
-							$choice[$answerId]=$matching[$choice[$answerId]];
+							$choice[$answerId]='<font color="red"><s>'.$matching[$choice[$answerId]].'</s></font>';
 						}
 					}
 					else
@@ -1105,14 +1061,7 @@ foreach ($questionList as $questionId) {
 			elseif($answerType == HOT_SPOT)
 			{					
 				if ($origin != 'learnpath') {
-					if($studentChoice){
-					$answerOk = 'Y';
-					}
-					else {
-					$answerOk = 'N';
-					$answerWrong = 'Y';
-					}
-					$s .= display_hotspot_answer($answerId, $answer, $studentChoice, $answerComment);
+					display_hotspot_answer($answerId, $answer, $studentChoice, $answerComment);
 				}
 			}
 			elseif($answerType == HOT_SPOT_ORDER)
@@ -1143,7 +1092,7 @@ foreach ($questionList as $questionId) {
 	} // end for that loops over all answers of the current question
 
 	if ($answerType == REASONING && $noStudentChoice == 'Y'){						
-					if($correctChoice_reasoning == 'Y')				
+					if($correctChoice == 'Y')				
 					{
 						$questionScore += $questionWeighting;
 						$totalScore += $questionWeighting;
@@ -1164,44 +1113,12 @@ foreach ($questionList as $questionId) {
 			?>
 		
 			<tr>
-				<table width="100%" border="0"><tr>
-				<td colspan="2">					
+				<td colspan="2">
+					<i><?php echo get_lang('Hotspot'); ?></i><br /><br />
 					<object type="application/x-shockwave-flash" data="../plugin/hotspot/hotspot_solution.swf?modifyAnswers=<?php echo Security::remove_XSS($questionId); ?>&exe_id=&from_db=0" width="610" height="410">
 						<param name="movie" value="../plugin/hotspot/hotspot_solution.swf?modifyAnswers=<?php echo Security::remove_XSS($questionId); ?>&exe_id=&from_db=0" />
 					</object>
 				</td>
-				<td colspan="2" width="40%" valign="top"><div class="quiz_content_actions" style="height:380px;"><div class="quiz_header"><?php echo get_lang('Feedback'); ?></div><div align="center"><img src="../img/MouseHotspots64.png"></div><br/>
-				<table class="data_table" width="100%" border="1">
-				<?php echo $s;?>
-				</table><br/>
-				<div align="center">
-				<?php 
-				if($answerOk == 'Y' && $answerWrong == 'N'){
-					if($nbrAnswers == 1){
-						$correctComment = explode("~", $objAnswerTmp->selectComment(1));
-						$feedback = $correctComment[0];
-					}
-					else {
-						$feedback = $objAnswerTmp->selectComment(1);
-					}
-				}
-				else {
-					if($nbrAnswers == 1){
-						$correctComment = explode("~", $objAnswerTmp->selectComment(1));
-						$feedback = $correctComment[1];
-					}
-					else {
-						$feedback = $objAnswerTmp->selectComment(2);
-					}				
-				}
-				if(!empty($feedback)){
-				echo get_lang('Feedback').' : '.$feedback ;
-				}
-				?>
-				</div>
-				</div>
-				</td>
-				</tr></table>
 			</tr>
 			<?php 
 			} 
@@ -1224,38 +1141,26 @@ foreach ($questionList as $questionId) {
 		{
 			
 					if($answerType == UNIQUE_ANSWER)
-					{							
-						if($correctChoice_unique == 'Y')
-						{
-							echo '<b>'.get_lang('Feedback').' </b><br /><span>'.nl2br(make_clickable($correctComment[0])).'</span><br />';	
-						}
-						else
-						{
-							echo '<b>'.get_lang('Feedback').' </b><br /><span>'.nl2br(make_clickable($correctComment[1])).'</span><br />';
-						}
+					{						
+						$common_choice = $correctChoice_unique;						
 					}
 					if($answerType == MULTIPLE_ANSWER)
-					{						
-						if($correctChoice_multiple == 'Y' && $answerWrong == 'N')
-						{
-							echo '<b>'.get_lang('Feedback').'  </b><span>'.nl2br(make_clickable($feedback_if_true)).'</span>';	
-						}
-						else
-						{
-							echo '<b>'.get_lang('Feedback').'  </b><span>'.nl2br(make_clickable($feedback_if_false)).'</span>';
-						}
+					{
+						$common_choice = $correctChoice_multiple;						
 					}
 					if($answerType == REASONING)
-					{							
-						if($correctChoice_reasoning == 'Y' && $answerWrong == 'N')
-						{
-							echo '<b>'.get_lang('Feedback').' - '.get_lang('FeedbackReason').'  </b><span>'.nl2br(make_clickable($feedback_if_true)).'</span>';	
-						}
-						else
-						{
-							echo '<b>'.get_lang('Feedback').' - '.get_lang('FeedbackReason').'  </b><span>'.nl2br(make_clickable($feedback_if_false)).'</span>';
-						}
-					}	
+					{
+						$common_choice = $correctChoice_reasoning;						
+					}
+					
+					if($common_choice == 'Y')
+					{
+						echo '<b>'.get_lang('Feedback').' </b><br /><span>'.nl2br(make_clickable($correctComment[0])).'</span><br />';	
+					}
+					else
+					{
+						echo '<b>'.get_lang('Feedback').' </b><br /><span>'.nl2br(make_clickable($correctComment[1])).'</span><br />';
+					}
 		}
 					echo '</td></tr>';
 	?>		
@@ -1266,7 +1171,7 @@ foreach ($questionList as $questionId) {
 			if($questionScore==-1){ 
 				echo get_lang('Score').": 0 /".float_format($questionWeighting);
 			} else {					
-				echo get_lang('Score').": ".round(float_format($questionScore,1))."/".float_format($questionWeighting,1);
+				echo get_lang('Score').": ".float_format($questionScore,1)."/".float_format($questionWeighting,1);
 			}
 			?></b>
 		</div></td>
@@ -1309,35 +1214,19 @@ foreach ($questionList as $questionId) {
 			}
 		} elseif ($answerType==MATCHING) {
 			$j=sizeof($matching)+1;
-			$sql1 = "SELECT * FROM $table_ans WHERE question_id ='".Database::escape_string($questionId)."' AND ponderation = 0.00";
-			$res1 = api_sql_query($sql1, __FILE__, __LINE__);
-			$numrows = Database::num_rows($res1);			
-				for ($i=0;$i<sizeof($choice);$i++) {
+			for ($i=0;$i<sizeof($choice);$i++,$j++) {
 				$val = $choice[$j];
-				
 				if (preg_match_all ('#<font color="red"><s>([0-9a-z ]*)</s></font>#', $val, $arr1))
-				{
 					$val = $arr1[1][0];
-				}
-				
-			//	$val=strip_tags($val);
-				$sql = "SELECT position from $table_ans where question_id='".Database::escape_string($questionId)."' and answer LIKE  '".Database::escape_string($val)."' AND correct=0";				
+				$val=strip_tags($val);
+				$sql = "SELECT position from $table_ans where question_id='".Database::escape_string($questionId)."' and answer='".Database::escape_string($val)."' AND correct=0";
 				$res = api_sql_query($sql, __FILE__, __LINE__);
-				if (Database::num_rows($res)>0) {					
-					$answer = Database::result($res,0,"position");					
-				} else {					
-					$answer = 0;					
-				}	
-				
+				if (Database::num_rows($res)>0) {
+					$answer = Database::result($res,0,"position");
+				} else {
+					$answer = 0;
+				}					
 				exercise_attempt($questionScore,$answer,$quesId,$exeId,$j);
-				if($numrows < sizeof($matching))
-				{
-					$j--;
-				}
-				else
-				{
-					$j++;
-				}
 			}
 		}
 		elseif ($answerType==FREE_ANSWER) {
@@ -1391,22 +1280,18 @@ if ($_configuration['tracking_enabled']) {
 if($objExercise->results_disabled) {
 	ob_end_clean();
 	if ($origin != 'learnpath') {
-		echo '<div class="quiz_content_actions">'.get_lang('ExerciseFinished').'<br /><br /><a href="exercice.php" />'.get_lang('Back').'</a></div>';
-	//	Display :: display_normal_message(get_lang('ExerciseFinished').'<br /><a href="exercice.php" />'.get_lang('Back').'</a>',false);
+		Display :: display_normal_message(get_lang('ExerciseFinished').'<br /><a href="exercice.php" />'.get_lang('Back').'</a>',false);
 	} else {
-		echo '<div class="quiz_content_actions">'.get_lang('ExerciseFinished').'<br /><br />'.'</div>';
-	//	Display :: display_normal_message(get_lang('ExerciseFinished').'<br /><br />',false);
+		Display :: display_normal_message(get_lang('ExerciseFinished').'<br /><br />',false);
 	}
 }
 
 if ($origin != 'learnpath') {
 	//we are not in learnpath tool
-	if(!$objExercise->results_disabled){
 	echo '</div>';
-	}
 
  echo '<div class="actions">';
- if($origin != 'learnpath' && !$objExercise->results_disabled) { 
+ if($origin != 'learnpath') { 
 	 ?>
 	<div>	
 		<b>
@@ -1414,7 +1299,7 @@ if ($origin != 'learnpath') {
 		if ($dsp_percent == true) {
 		  echo number_format(($totalScore/$totalWeighting)*100,1,'.','')."%";
 		} else {
-		  echo round(float_format($totalScore,1))."/".float_format($totalWeighting,1);
+		  echo float_format($totalScore,1)."/".float_format($totalWeighting,1);
 		}
 		?>
 		</b>		

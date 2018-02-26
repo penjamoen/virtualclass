@@ -62,7 +62,7 @@ if (api_is_in_course()) {
 		// 3. Platform administration activities.
 		//$Config['UserFilesPath'] = api_get_path(REL_PATH).'home/default_platform_document/';
         // Changes just for the 2.0 beta
-		$Config['UserFilesPath'] = api_get_path(REL_PATH).'main/default_course_document/';
+		$Config['UserFilesPath'] = api_get_path(REL_PATH).'main/default_course_document/';;
 	} else {
 		// 4. The user is outside courses.
 		$Config['UserFilesPath'] = api_get_path(REL_PATH).'main/upload/users/'.api_get_user_id().'/my_files/';
@@ -88,7 +88,7 @@ $Config['SecureImageUploads'] = true;
 $Config['ConfigAllowedCommands'] = array('QuickUpload', 'FileUpload', 'GetFolders', 'GetFoldersAndFiles', 'CreateFolder') ;
 
 // Allowed Resource Types.
-$Config['ConfigAllowedTypes'] = array('File', 'Audio', 'Images', 'Flash', 'Media', 'MP3', 'Video', 'Video/flv', 'videofiles') ;
+$Config['ConfigAllowedTypes'] = array('File', 'Audio', 'Images', 'Flash', 'Media', 'MP3', 'Video', 'Video/flv') ;
 
 // For security, HTML is allowed in the first Kb of data for files having the
 // following extensions only.
@@ -210,18 +210,8 @@ $Config['QuickUploadAbsolutePath']['Video']		= $Config['UserFilesAbsolutePath'] 
 $Config['AllowedExtensions']['Video/flv']		= array('flv', 'mp4' ) ;
 $Config['DeniedExtensions']['Video/flv']		= $Config['DeniedExtensions']['File'] ;
 $Config['FileTypesPath']['Video/flv']			= $Config['UserFilesPath'] . 'video/flv/' ;
-$Config['FileTypesAbsolutePath']['Video/flv']           = $Config['UserFilesAbsolutePath'] . 'video/flv/' ;
+$Config['FileTypesAbsolutePath']['Video/flv']	= $Config['UserFilesAbsolutePath'] . 'video/flv/' ;
 $Config['QuickUploadPath']['Video/flv']			= $Config['UserFilesPath'] . 'video/flv/' ;
-$Config['QuickUploadAbsolutePath']['Video/flv']         = $Config['UserFilesAbsolutePath'] . 'video/flv/' ;
-
-// videofiles
-$Config['AllowedExtensions']['videofiles']		= array('flv', 'mp4', 'asf', 'avi', 'mpg', 'mpeg', 'mov', 'wmv') ;
-$Config['DeniedExtensions']['videofiles']		= $Config['DeniedExtensions']['File'];
-$Config['FileTypesPath']['videofiles']			= $Config['UserFilesPath'] . 'video/' ;
-$Config['FileTypesAbsolutePath']['videofiles']          = $Config['UserFilesAbsolutePath'].'video/';
-$Config['QuickUploadPath']['videofiles']		= $Config['UserFilesPath'].'video/';
-$Config['QuickUploadAbsolutePath']['videofiles']	= $Config['UserFilesAbsolutePath'].'video/';
-
-
+$Config['QuickUploadAbsolutePath']['Video/flv']	= $Config['UserFilesAbsolutePath'] . 'video/flv/' ;
 
 ?>

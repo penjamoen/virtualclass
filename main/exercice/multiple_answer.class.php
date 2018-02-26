@@ -63,46 +63,45 @@ if (!class_exists('MultipleAnswer')):
    */
   function createAnswersForm($form) {
    global $charset;
-   
-   
-   $renderer = & $form->defaultRenderer();
-   
    $nb_answers = isset($_POST['nb_answers']) ? $_POST['nb_answers'] : 4;
    $nb_answers += ( isset($_POST['lessAnswers']) ? -1 : (isset($_POST['moreAnswers']) ? 1 : 0));
    $navigator_info = api_get_navigator();
 
    if(isset($_POST['formsize']))
-   {
-	  $formsize = $_POST['formsize'];
-   }
-   else
-   {
+	{
+		$formsize = $_POST['formsize'];
+	}
+	else
+	{
 	  $formsize = '';
-   }
+	}
 
-   if(empty($formsize) || $formsize == 'Low')
-   {
+	if(empty($formsize) || $formsize == 'Low')
+	{
 	  $formsize_px = "40px";
-   }
-   else
-   {
+	}
+	else
+	{
 	   $formsize_px = "150px";
-   }
+	}
 
-   $answer_lang_var = api_convert_encoding(get_lang('Answer'), $charset, api_get_system_encoding());
+    $answer_lang_var = api_convert_encoding(get_lang('Answer'), $charset, api_get_system_encoding());
    $form->addElement('html', '<div style="float:right;padding-right:25px;"><img style="cursor: pointer;" src="../img/SmallFormFilled.png" alt="" onclick="lowlineform()" />&nbsp;<img style="cursor: pointer;" src="../img/BigFormClosed.png" alt="" onclick="highlineform()" /></div>');
 
    $html = '
-		<div class="row">			
+		<div class="row">
+			<!--<div class="label">
+			' . get_lang('Answers') . '<br /><img src="../img/fill_field.png">
+			</div>-->
 			<div>
-				<table class="data_table" style="width:100%;">
+				<table class="data_table" style="width:50%;">
 					<tr >
 						<th style="text-align: center;">'.get_lang('True').'</th>
 						<th style="text-align: center;">
 							' . $answer_lang_var . '
 						</th>						
 					</tr>';
-   $form->addElement('html', '<div id="leftcontainer" class="quiz_answer_small_squarebox">');
+   $form->addElement('html', '<div style="float:left">');
    $form->addElement('html', $html);
 
    $defaults = array();
@@ -142,7 +141,7 @@ if (!class_exists('MultipleAnswer')):
     $form->addElement('html', '<tr class="'.$class.'">');
     if (is_object($answer)) {
      $defaults['answer[' . $i . ']'] = $answer->answer[$i];
-  // $defaults['comment['.$i.']'] = $answer -> comment[$i];
+     //$defaults['comment['.$i.']'] = $answer -> comment[$i];
      $defaults['weighting[' . $i . ']'] = float_format($answer->weighting[$i], 1);
      $defaults['correct[' . $i . ']'] = $answer->correct[$i];
     } /*else {
@@ -156,40 +155,41 @@ if (!class_exists('MultipleAnswer')):
        $defaults['correct[2]'] = false;
        $defaults['weighting[2]'] = 0; 
     }*/
-    $renderer->setElementTemplate('<td align="center"><!-- BEGIN error --><!-- END error --><br/>{element}</td>');
+    $renderer = & $form->defaultRenderer();
+    $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>');
 
- //	$answer_number=$form->addElement('text', null,null,'value="'.$i.'"');
- //	$answer_number->freeze();
+    //	$answer_number=$form->addElement('text', null,null,'value="'.$i.'"');
+    //	$answer_number->freeze();
 
     $form->addElement('checkbox', 'correct[' . $i . ']', null, null, 'class="checkbox" style="margin-left: 0em;"');
     $boxes_names[] = 'correct[' . $i . ']';
 
- // $form->addElement('html_editor', 'answer['.$i.']',null, 'style="vertical-align:middle"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '65'));
- // $form->addElement('textarea', 'answer[' . $i . ']', null, 'id="answer['.$i.']" cols="55" rows="1"');
-	$form->add_html_editor('answer[' . $i . ']','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '100%', 'Height' => ''.$formsize_px.''));
+    //$form->addElement('html_editor', 'answer['.$i.']',null, 'style="vertical-align:middle"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '65'));
+ //   $form->addElement('textarea', 'answer[' . $i . ']', null, 'id="answer['.$i.']" cols="55" rows="1"');
+	$form->add_html_editor('answer[' . $i . ']','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '450px', 'Height' => ''.$formsize_px.''));
     $form->addRule('answer[' . $i . ']', get_lang('ThisFieldIsRequired'), 'required');
- // $form->addElement('html_editor', 'comment['.$i.']',null, 'style="vertical-align:middle"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '65'));
- // $form->addElement('text', 'weighting[' . $i . ']', null, 'style="vertical-align:middle;margin-left: 0em;" size="3" value="10"');
+    //$form->addElement('html_editor', 'comment['.$i.']',null, 'style="vertical-align:middle"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '65'));
+    //$form->addElement('text', 'weighting[' . $i . ']', null, 'style="vertical-align:middle;margin-left: 0em;" size="3" value="10"');
     $form->addElement('html', '</tr>');
    }
    $form->addElement('html', '</table>');
-// $form -> addElement ('html', '<br />');
+   //$form -> addElement ('html', '<br />');
 
    $form->add_multiple_required_rule($boxes_names, get_lang('ChooseAtLeastOneCheckbox'), 'multiple_required');
-/* $form -> addElement ('html', '<table width="100%"><tr><td width="15%"><font size="2">Feedback if True</font>');
-   $form -> addElement ('html', '</td><td>');
-   $form->addElement('html_editor', 'comment[1]',null,'style="vertical-align:left"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '65'));
-   $form -> addElement ('html', '</td><td><font size="2">Score:</font></td><td valign="top">');
-   $form->addElement('text', 'weighting[1]',null,array('size'=>'10'));
-   $form -> addElement ('html', '</td></tr><tr><td><font size="2">Feedback if False</font>');
-   $form -> addElement ('html', '</td><td>');
-   $form->addElement('html_editor', 'comment[2]',null,'style="vertical-align:left"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '65'));
-   $form -> addElement ('html', '</td><td><font size="2">Score:</font></td><td valign="top">');
-   $form->addElement('text', 'weighting[2]',null,array('size'=>'10'));
-   $form -> addElement ('html', '</td></tr></table>');
-   $form -> addElement ('html', '<br />'); 
-// $form->addElement('html', '</table>');*/
-// Add the buttons for add/remove answers
+   /* 	$form -> addElement ('html', '<table width="100%"><tr><td width="15%"><font size="2">Feedback if True</font>');
+     $form -> addElement ('html', '</td><td>');
+     $form->addElement('html_editor', 'comment[1]',null,'style="vertical-align:left"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '65'));
+     $form -> addElement ('html', '</td><td><font size="2">Score:</font></td><td valign="top">');
+     $form->addElement('text', 'weighting[1]',null,array('size'=>'10'));
+     $form -> addElement ('html', '</td></tr><tr><td><font size="2">Feedback if False</font>');
+     $form -> addElement ('html', '</td><td>');
+     $form->addElement('html_editor', 'comment[2]',null,'style="vertical-align:left"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '65'));
+     $form -> addElement ('html', '</td><td><font size="2">Score:</font></td><td valign="top">');
+     $form->addElement('text', 'weighting[2]',null,array('size'=>'10'));
+     $form -> addElement ('html', '</td></tr></table>');
+     $form -> addElement ('html', '<br />'); */
+  // $form->addElement('html', '</table>');
+   // Add the buttons for add/remove answers
    $form->addElement('html', '<table width="100%"><tr><td width="100%">');
    
    //global $text, $class;
@@ -201,16 +201,16 @@ if (!class_exists('MultipleAnswer')):
 		else {
 		$form->addElement('html','<div style="float:right;">');
 		}	   	   
-//     $form->addElement('submit', 'lessAnswers', get_lang('LessAnswer'), 'class="minus"');
-//     $form->addElement('submit', 'moreAnswers', get_lang('PlusAnswer'), 'class="plus"');	
-	   $form->addElement('submit', 'lessAnswers', '', 'class="button_less"');
-	   $form->addElement('submit', 'moreAnswers', '', 'class="button_more"');	
+	//   $form->addElement('submit', 'lessAnswers', get_lang('LessAnswer'), 'class="minus"');
+	//   $form->addElement('submit', 'moreAnswers', get_lang('PlusAnswer'), 'class="plus"');	
+	   $form->addElement('submit', 'lessAnswers', '', 'style="background:url(\'../img/form-minus.png\') no-repeat;width:35px;height:40px;border:0px;"');
+	   $form->addElement('submit', 'moreAnswers', '', 'style="background:url(\'../img/form-plus.png\') no-repeat;width:35px;height:40px;border:0px;"');	
    } else {
   //  $form->addElement('style_submit_button', 'lessAnswers', get_lang('LessAnswer'), 'class="minus"');
   //  $form->addElement('style_submit_button', 'moreAnswers', get_lang('PlusAnswer'), 'class="plus"');
 	  $form->addElement('html','<div align="right">');
-	  $form->addElement('submit', 'lessAnswers', '', 'class="button_less"');
-	  $form->addElement('submit', 'moreAnswers', '', 'class="button_more"');	
+	  $form->addElement('html','<input type="image" value="lessAnswers" src="../img/form-minus.png" name="lessAnswers" style="border:0px;background:transparent;">');
+	  $form->addElement('html','<input type="image" value="moreAnswers" src="../img/form-plus.png"  name="moreAnswers" style="border:0px;background:transparent;"> ');	
    }
    $form->addElement('html', '</div></td></tr></table>');
 
@@ -219,17 +219,18 @@ if (!class_exists('MultipleAnswer')):
 
    // Feedback container
    $form->addElement('html', '<div id="feedback_container" style="float:left;width:100%">');
-// $form->addElement('html', '<br/><br/>');
+//   $form->addElement('html', '<br/><br/>');
    $form->addElement('html', '<div style="float:left; width:50%;">' . get_lang('FeedbackIfTrue'));
-// $form->addElement('textarea', 'comment[1]', null, 'id="comment[1]" cols="55" rows="1"');
-   $form->add_html_editor('comment[1]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => ''.$formsize_px.''));
+//   $form->addElement('textarea', 'comment[1]', null, 'id="comment[1]" cols="55" rows="1"');
+	$form->add_html_editor('comment[1]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => ''.$formsize_px.''));
    $form->addElement('html', '</div>');
+
    $form->addElement('html', '<div style="float:right;text-align:right;">');
 
    $form->addElement('html', '<div style="float:left;text-align:left">' . get_lang('FeedbackIfFalse'));
-// $form->addElement('textarea', 'comment[2]', null, 'id="comment[2]" cols="55" rows="1"');
-   $form->add_html_editor('comment[2]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => ''.$formsize_px.''));
-   $form->addElement('html', '</div></div>');
+//   $form->addElement('textarea', 'comment[2]', null, 'id="comment[2]" cols="55" rows="1"');
+	$form->add_html_editor('comment[2]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => ''.$formsize_px.''));
+    $form->addElement('html', '</div></div>');
    $form->addElement('html', '<div style="float:right;text-align:left">');
 
    //ie6 fix
@@ -299,8 +300,9 @@ if (!class_exists('MultipleAnswer')):
      $weighting = abs($answer_score);
      $comment = $feedback_if_true;
     } else {
-     $weighting = abs($weighting);
-     $weighting = -$weighting;
+     $weighting = 0;
+     //$weighting = abs($weighting);
+     //$weighting = -$weighting;
      $comment = $feedback_if_false;
     }
     /*if ($weighting > 0) {

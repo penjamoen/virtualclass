@@ -161,8 +161,8 @@ echo '</div>';
 
 echo '<div class="actions">';
 //echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&action=build&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('build.png', get_lang('Build')).get_lang("Build") . '</a>';
-echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', get_lang('ViewRight'),array('class'=>'actionplaceholdericon actionwikistudenticon')).get_lang("ViewRight") . '</a>';
-echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=edit&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', get_lang('Publication'),array('class'=>'actionplaceholdericon actionauthorsettings')).get_lang("Publication") . '</a>';
+echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('view.png', get_lang('ViewRight')).get_lang("ViewRight") . '</a>';
+echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=edit&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('publication_setup_22.png', get_lang('Publication')).get_lang("Publication") . '</a>';
 echo '</div>';
 
 /*

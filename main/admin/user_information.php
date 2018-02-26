@@ -44,8 +44,8 @@ if( isset($_GET['action']) ) {
 }
 
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'mySpace/myStudents.php?student='.Security::Remove_XSS($_GET['user_id']).'" title="'.get_lang('Reporting').'" >'.Display::return_icon('pixel.gif',get_lang('Reporting'),array('class'=>'toolactionplaceholdericon toolactionstatistics')).'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_edit.php?user_id='.Security::Remove_XSS($_GET['user_id']).'" title="'.get_lang('EditUser').'" >'.Display::return_icon('pixel.gif',get_lang('EditUser'),array('class'=>'toolactionplaceholdericon tooledithome')).'</a>';
+echo '<a href="'.api_get_path(WEB_CODE_PATH).'mySpace/myStudents.php?student='.Security::Remove_XSS($_GET['user_id']).'" title="'.get_lang('Reporting').'" >'.Display::return_icon('statistics.png',get_lang('Reporting')).'</a>';
+echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_edit.php?user_id='.Security::Remove_XSS($_GET['user_id']).'" title="'.get_lang('EditUser').'" >'.Display::return_icon('edit.png',get_lang('EditUser')).'</a>';
 echo '</div>'."\n";
 //getting the user image
 // Start main content
@@ -89,7 +89,7 @@ $user_id = $user['user_id'];
 
 $result=Database::query("SELECT DISTINCT id, name, date_start, date_end
 							FROM session_rel_user, session
-							WHERE id_session=id AND id_user=".Database::escape_string($user_id)."
+							WHERE id_session=id AND id_user=$user_id
 							AND (date_start <= NOW() AND date_end >= NOW() OR date_start='0000-00-00')
 							ORDER BY date_start, date_end, name",__FILE__,__LINE__);
 
@@ -99,20 +99,20 @@ $sessions=Database::store_result($result);
 $result=Database::query("SELECT DISTINCT id, name, date_start, date_end
 						FROM $tbl_session as session
 						INNER JOIN $tbl_session_course as session_rel_course
-							ON session_rel_course.id_coach = ".Database::escape_string($user_id)."
+							ON session_rel_course.id_coach = $user_id
 						AND (date_start <= NOW() AND date_end >= NOW() OR date_start='0000-00-00')
 						ORDER BY date_start, date_end, name",__FILE__,__LINE__);
 
 $session_is_coach = Database::store_result($result);
 
 $personal_course_list = array();
-$header = array();
+
 if(count($sessions)>0){
 
-	$header[] = array(get_lang('Code'), true);
-	$header[] = array(get_lang('Title'), true);
-	$header[] = array(get_lang('Status'), true);
-	$header[] = array('', false);
+	$header[] = array (get_lang('Code'), true);
+	$header[] = array (get_lang('Title'), true);
+	$header[] = array (get_lang('Status'), true);
+	$header[] = array ('', false);
 
 	foreach($sessions as $enreg){
 
@@ -141,7 +141,7 @@ if(count($sessions)>0){
 										ON course.code = session_course_user.course_code AND session_course_user.id_session = $id_session INNER JOIN $tbl_session as session ON session_course_user.id_session = session.id
 										INNER JOIN $tbl_session_course as session_course
 										LEFT JOIN $tbl_user as user ON user.user_id = session_course.id_coach
-										WHERE session_course_user.id_user = ".Database::escape_string($user_id)."  ORDER BY i";
+										WHERE session_course_user.id_user = $user_id  ORDER BY i";
 
 		$course_list_sql_result = Database::query($personal_course_list_sql, __FILE__, __LINE__);
 
@@ -161,10 +161,9 @@ if(count($sessions)>0){
 			$row[] = $my_course['k'];
 			$row[] = $my_course['i'];
 			$row[] = $my_course['s'] == STUDENT ? get_lang('Student') : get_lang('Teacher');
-			$tools = '<a href="course_information.php?code='.$my_course['k'].'">'.Display::return_icon('pixel.gif', get_lang('Overview'),array('class'=>'actionplaceholdericon actioninfo')).'</a>'.
-					'<a href="'.api_get_path(WEB_COURSE_PATH).$my_course['d'].'?id_session='.$id_session.'">'.Display::return_icon('pixel.gif', get_lang('CourseHomepage'),array('class'=>'actionplaceholdericon actioncoursehome')).'</a>' .
-					'<a href="course_edit.php?course_code='.$my_course['k'].'">'.Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).'</a>';
-                
+			$tools = '<a href="course_information.php?code='.$my_course['k'].'">'.Display::return_icon('synthese_view.gif', get_lang('Overview')).'</a>'.
+					'<a href="'.api_get_path(WEB_COURSE_PATH).$my_course['d'].'?id_session='.$id_session.'">'.Display::return_icon('course_home.gif', get_lang('CourseHomepage')).'</a>' .
+					'<a href="course_edit.php?course_code='.$my_course['k'].'">'.Display::return_icon('edit.png', get_lang('Edit')).'</a>';
 
 			if( $my_course->status == STUDENT ){
 				$tools .= '<a href="user_information.php?action=unsubscribe&course_code='.$my_course['k'].'&user_id='.$user['user_id'].'">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>';
@@ -191,7 +190,7 @@ echo '</blockquote>';
 /**
  * Show the courses in which this user is subscribed
  */
-$sql = 'SELECT * FROM '.$table_course_user.' cu, '.$table_course.' c WHERE cu.user_id = '.Database::escape_string($user['user_id']).' AND cu.course_code = c.code';
+$sql = 'SELECT * FROM '.$table_course_user.' cu, '.$table_course.' c WHERE cu.user_id = '.$user['user_id'].' AND cu.course_code = c.code';
 $res = Database::query($sql,__FILE__,__LINE__);
 if (Database::num_rows($res) > 0)
 {
@@ -207,12 +206,12 @@ if (Database::num_rows($res) > 0)
 		$row[] = $course->code;
 		$row[] = $course->title;
 		$row[] = $course->status == STUDENT ? get_lang('Student') : get_lang('Teacher');
-		$tools = '<a href="course_information.php?code='.$course->code.'">'.Display::return_icon('pixel.gif', get_lang('Overview'),array('class'=>'actionplaceholdericon actioninfo')).'</a>'.
-				'<a href="'.api_get_path(WEB_COURSE_PATH).$course->directory.'">'.Display::return_icon('pixel.gif', get_lang('CourseHomepage'),array('class'=>'actionplaceholdericon actioncoursehome')).'</a>' .
-				'<a href="course_edit.php?course_code='.$course->code.'">'.Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).'</a>';
+		$tools = '<a href="course_information.php?code='.$course->code.'">'.Display::return_icon('synthese_view.gif', get_lang('Overview')).'</a>'.
+				'<a href="'.api_get_path(WEB_COURSE_PATH).$course->directory.'">'.Display::return_icon('course_home.gif', get_lang('CourseHomepage')).'</a>' .
+				'<a href="course_edit.php?course_code='.$course->code.'">'.Display::return_icon('edit.png', get_lang('Edit')).'</a>';
 		if( $course->status == STUDENT )
 		{
-			$tools .= '<a href="user_information.php?action=unsubscribe&course_code='.$course->code.'&user_id='.$user['user_id'].'">'.Display::return_icon('pixel.gif', get_lang('Delete'),array('class'=>'actionplaceholdericon actiondelete')).'</a>';
+			$tools .= '<a href="user_information.php?action=unsubscribe&course_code='.$course->code.'&user_id='.$user['user_id'].'">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>';
 
 		}
 		$row[] = '<div align="center">'.$tools.'</div>';
@@ -233,7 +232,7 @@ else
  */
 $table_class_user = Database :: get_main_table(TABLE_MAIN_CLASS_USER);
 $table_class = Database :: get_main_table(TABLE_MAIN_CLASS);
-$sql = 'SELECT * FROM '.$table_class_user.' cu, '.$table_class.' c WHERE cu.user_id = '.Database::escape_string($user['user_id']).' AND cu.class_id = c.id';
+$sql = 'SELECT * FROM '.$table_class_user.' cu, '.$table_class.' c WHERE cu.user_id = '.$user['user_id'].' AND cu.class_id = c.id';
 $res = Database::query($sql,__FILE__,__LINE__);
 if (Database::num_rows($res) > 0)
 {
@@ -245,7 +244,7 @@ if (Database::num_rows($res) > 0)
 	{
 		$row = array();
 		$row[] = $class->name;
-		$row[] = '<a href="class_information.php?id='.$class->id.'">'.Display::return_icon('pixel.gif', get_lang('Overview'),array('class'=>'actionplaceholdericon actioninfo')).'</a>';
+		$row[] = '<a href="class_information.php?id='.$class->id.'">'.Display::return_icon('synthese_view.gif', get_lang('Overview')).'</a>';
 		$data[] = $row;
 	}
 	echo '<p><b>'.get_lang('Classes').'</b></p>';
@@ -286,8 +285,11 @@ if ($_configuration['multiple_access_urls']==true) {
 
 // Close main content
 echo '</div>';
-
-// display the footer
+/*
+==============================================================================
+		FOOTER
+==============================================================================
+*/
 Display::display_footer();
 ?>
 

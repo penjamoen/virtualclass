@@ -91,14 +91,15 @@ function LoadSelection()
 //#### The OK button was hit.
 function Ok()
 {
-	if (GetE('txtURL').value.length == 0) {
+	if ( GetE( 'txtURL' ).value.length == 0 )
+	{
 		GetE( 'txtURL' ).focus() ;
 		alert( oEditor.FCKLang.DlgFlashAlertUrl ) ;
 		return false ;
 	}
 
 	//var e = ( oMedia || FCK.EditorDocument.createElement( 'OBJECT' ) ) ;
-	var e = (oMedia || new Media()) ;
+	var e = ( oMedia || new Media() ) ;
 
 	e.url = GetE( 'txtURL' ).value ;
 
@@ -420,15 +421,35 @@ Media.prototype.getOuterHTML = function ( objectId )
 
 	// si me paso el id, lo uso..
 	// if I pass the id, what use ...
-	if ( objectId ) {
+	if ( objectId )
+	{
 		s += this.createAttribute( 'id', objectId ) ;
-	}		
-        s += this.createAttribute( 'width', this.width ) ;		
-        s += this.createAttribute( 'height', this.height ) ;	
-        s += this.createAttribute( 'align', this.align ) ;	
-        s += this.createAttribute( 'vspace', this.vspace ) ;	
-        s += this.createAttribute( 'hspace', this.hspace ) ;
-	
+	}
+	else if ( this.id != '' )
+	{
+		s += this.createAttribute( 'id', this.id ) ;
+	}
+	if ( this.width > 0 )
+	{
+		s += this.createAttribute( 'width', this.width ) ;
+	}
+	if ( this.height > 0 )
+	{
+		s += this.createAttribute( 'height', this.height ) ;
+	}
+	if ( this.align != '' )
+	{
+		s += this.createAttribute( 'align', this.align ) ;
+	}
+	if ( this.vspace > 0 )
+	{
+		s += this.createAttribute( 'vspace', this.vspace ) ;
+	}
+	if ( this.hspace > 0 )
+	{
+		s += this.createAttribute( 'hspace', this.hspace ) ;
+	}
+
 	s += '>' ;
 	s += this.getInnerHTML( objectId ) ;
 	s += '</object>' ;

@@ -71,7 +71,7 @@ $htmlHeadXtra[] ='<script type="text/javascript">
 $(document).ready(function(){ 
 
 	$(function() {
-		$("#contentLeft ul").sortable({ opacity: 0.6, cursor: "move",cancel: ".nodrag", update: function() {			
+		$("#contentLeft ul").sortable({ opacity: 0.6, cursor: "move", update: function() {			
 			var order = $(this).sortable("serialize") + "&action=updateQuizCategory";
 			var record = order.split("&");
 			var recordlen = record.length;
@@ -121,28 +121,27 @@ $add_params_for_lp = '';
 if (isset($_GET['lp_id'])) {
   $add_params_for_lp = "&lp_id=".$learnpath_id;
 }
-
-$TBL_QUIZ_CATEGORY = Database::get_course_table(TABLE_QUIZ_CATEGORY);
-
-if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'updateQuizCategory') {
-$disparr = explode(",", $_REQUEST['disporder']);
-$len = sizeof($disparr);
-$listingCounter = 1;
-	for ($i = 0; $i < sizeof($disparr); $i++) {
-	$sql = "UPDATE $TBL_QUIZ_CATEGORY SET display_order=" . Database::escape_string($listingCounter) . " WHERE id = " . Database::escape_string($disparr[$i]);
-	$res = Database::query($sql, __FILE__, __LINE__);
-	$listingCounter = $listingCounter + 1;
-	} 
-    header('Location:exercise_category.php?'.api_get_cidReq());
-    exit;
-}
-
 /*********************
  * INIT EXERCISE
  *********************/
 
 // Display header
 Display :: display_tool_header();
+
+$TBL_QUIZ_CATEGORY = Database::get_course_table(TABLE_QUIZ_CATEGORY);
+
+if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'updateQuizCategory')
+{
+$disparr = explode(",", $_REQUEST['disporder']);
+$len = sizeof($disparr);
+$listingCounter = 1;
+	for ($i = 0; $i < sizeof($disparr); $i++) {
+	$sql = "UPDATE $TBL_QUIZ_CATEGORY SET display_order=" . $listingCounter . " WHERE id = " . $disparr[$i];
+	$res = Database::query($sql, __FILE__, __LINE__);
+	$listingCounter = $listingCounter + 1;
+	} 
+echo '<script>window.location.href = "exercise_category.php?'.api_get_cidReq().'"</script>';
+}
 
 echo '<div class="actions">';
 echo '<a href="exercice.php?'.api_get_cidreq().'">'.Display :: return_icon('go_previous_32.png', get_lang('List')) . get_lang('List').'</a>';
@@ -205,25 +204,23 @@ else
 	echo '</tr></table>';
 
 	echo '<div id="contentWrap"><div id="contentLeft"><ul class="dragdrop nobullets " id="categories">';
-        $i = 0;
+//	echo '<table class="data_table" width="100%">';
 	while ($row = Database::fetch_array($result)) {
-            $class = ($i%2==0) ? 'row_odd' : 'row_even';
 		echo '<tr><td>';
 	    echo '<li id="recordsArray_' . $row['id'] . '" class="category">';
 		echo '<div>';
 		echo '<table class="data_table" width="100%">';
 
-		echo '<tr class="'.$class.'" >';
+		echo '<tr>';
 		echo '<td width="10%" align="center"><img src="../img/drag-and-drop.png"></td>';
-		echo '<td class="nodrag" width="70%">'.$row['category_title'].'</td>';
+		echo '<td width="70%">'.$row['category_title'].'</td>';
 		if(api_is_allowed_to_edit())
 		{
-		echo '<td class="nodrag" width="10%" align="center"><a href="'.api_get_self().'?'.api_get_cidReq().'&action=edit_category&cat_id='.$row['id'].'"><img src="../img/edit_link.png"></a></td>';
-		echo '<td class="nodrag" width="10%" align="center"><a href="'.api_get_self().'?'.api_get_cidReq().'&action=delete_category&cat_id='.$row['id'].'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actiondelete')).'</a></td>';
+		echo '<td width="10%" align="center"><a href="'.api_get_self().'?'.api_get_cidReq().'&action=edit_category&cat_id='.$row['id'].'"><img src="../img/edit_link.png"></a></td>';
+		echo '<td width="10%" align="center"><a href="'.api_get_self().'?'.api_get_cidReq().'&action=delete_category&cat_id='.$row['id'].'"><img src="../img/delete.png"></a></td>';
 		}
 		echo '</tr>';
 		echo '</table></div></li></td></tr>';
-                $i++;
 	}
 //	echo '</table>';	
 	echo '</ul></div></div>';

@@ -39,7 +39,7 @@ define('DOKEOS_USER', true);
 $table_admin 	= Database :: get_main_table(TABLE_MAIN_ADMIN);
 $table_user 	= Database :: get_main_table(TABLE_MAIN_USER);
 $database 		= Database::get_main_database();
- 
+
 $htmlHeadXtra[] = '
 <script type="text/javascript">
 <!--
@@ -320,9 +320,7 @@ $select_level = array ();
 //$html_results_enabled[] = FormValidator :: createElement ('style_submit_button', 'submit_plus', get_lang('Add').'+', 'class="add"');
 // End table form and begin image
 $form->addElement('html','</div><br/><br/>');
-//DEV
-$form->addElement('html','<div style="float:right;text-align: left; width: 35%;">'.Display::return_icon('pixel.gif',get_lang('AddUsers'), array('class' => 'imagehelp imagehelpuser')));
-
+$form->addElement('html','<div style="float:right;text-align: left; width: 35%;">'.Display::return_icon('users_help.png', get_lang('AddUsers')));
 $form->addElement('html','<br/><br/><br/><br/><br/><br/><br/><br/>');
 /*$html_results_enabled[] = FormValidator :: createElement ('style_submit_button', 'submit', get_lang('Add'), 'class="add"');
 $form->addGroup($html_results_enabled);*/
@@ -472,14 +470,6 @@ $form->addElement('style_submit_button', 'submit', get_lang('Add'), 'class="add"
 
 // Display the header
 Display::display_header($tool_name);
-
-echo '<div class="actions">';
-//Display::return_icon('pixel.gif',get_lang('Catalogue'), array('class' => 'toolactionplaceholdericon toolactioncatalogue'))
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_list.php">'.Display::return_icon('pixel.gif',get_lang('UserList'), array('class' => 'toolactionplaceholdericon toolactionadminusers')).get_lang('UserList').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_export.php">'.Display::return_icon('pixel.gif',get_lang('Export'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('Export').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_import.php">'.Display::return_icon('pixel.gif',get_lang('Import'), array('class' => 'toolactionplaceholdericon toolactionupload')).get_lang('Import').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_fields.php">'.Display::return_icon('pixel.gif',get_lang('ManageUserFields'), array('class' => 'toolactionplaceholdericon toolactionsprofile')).get_lang('ManageUserFields').'</a>';
-echo '</div>';
 
 // start the content div
 echo '<div id="content">';

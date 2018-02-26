@@ -57,7 +57,7 @@ if (api_get_setting('add_users_by_coach') == 'true') {
 }
 
 Display :: display_header($nameTools);
-echo '<div id="content">';
+
 // Database Table Definitions
 $tbl_course 				= Database :: get_main_table(TABLE_MAIN_COURSE);
 $tbl_user_course 			= Database :: get_main_table(TABLE_MAIN_COURSE_USER);
@@ -158,7 +158,7 @@ if (is_array($a_courses)) {
 		$table_row[] = is_null($avg_score_in_course) ? '' : $avg_score_in_course.'%';
 		$table_row[] = $avg_messages_in_course;
 		$table_row[] = $avg_assignments_in_course;
-		$table_row[] = '<a href="../tracking/courseLog.php?cidReq='.$course_code.'&studentlist=true&id_session='.$id_session.'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a>';
+		$table_row[] = '<a href="../tracking/courseLog.php?cidReq='.$course_code.'&studentlist=true&id_session='.$id_session.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a>';
 
 		$csv_content[] = array (
 			$course['title'],
@@ -178,7 +178,7 @@ if (is_array($a_courses)) {
 $table -> setColAttributes(0, array('align' => 'left'));
 $table -> setColAttributes(7, array('align' => 'center'));
 $table -> display();
-echo '</div>';
+
 /*
  ==============================================================================
 		FOOTER

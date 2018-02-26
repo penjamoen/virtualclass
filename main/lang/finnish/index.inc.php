@@ -35,6 +35,7 @@ $langRefresh = "päivitä sivu";
 $langSystemAnnouncements = "Järjestelmän tiedotus";
 $langHelpMaj = "Apua";
 $langNotRegistered = "Rekisteröitymätön";
+$langAdmin = "Ympäristön ylläpitäjä";
 $Login = "Kirjautuminen";
 $langRegisterForCourse = "Rekisteröidy kurssille";
 $langUnregisterForCourse = "Rekisteröidy kurssilta pois";

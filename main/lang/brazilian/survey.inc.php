@@ -206,7 +206,4 @@ $ThereAreNotQuestionsForthisSurvey = "Não há perguntas para este questionário";
 $MChoice = "M.Escolha";
 $Pageend = "Quebra de página";
 $Printview = "Visualizar Impressão";
-$ShowFilterAttribute = "Mostrar atributo do filtro";
-$HideFilterAttribute = "Ocultar atributo do filtro";
-$CourseHome = "Página do Curso";
 ?>

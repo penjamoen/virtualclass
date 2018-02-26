@@ -17,7 +17,7 @@ if(empty($path))
 
 //zip library for creation of the zipfile
 include(api_get_path(LIBRARY_PATH).'pclzip/pclzip.lib.php');
-global $_course;
+
 //we need this path to clean it out of the zip file
 //I'm not using dirname as it gives too much problems (cfr. \)
 $remove_dir = ($path!='/') ? substr($path,0,strlen($path) - strlen(basename($path))) : '/';
@@ -55,8 +55,7 @@ $prop_table = Database::get_course_table(TABLE_ITEM_PROPERTY);
 //normal users get only visible files that are in visible folders
 
 //admins are allowed to download invisible files
-if (is_allowed_to_edit() || api_is_grouptutor($_course,api_get_session_id(),api_get_user_id())) {
-	$users_list = get_grouptutor_users(api_get_user_id());
+if (is_allowed_to_edit()) {
 	//folder we want to zip --> no longer used, deleted files are included too like this
  	//$what_to_zip = $sys_course_path.$_course['path']."/document".$path;
  	//creation of the zipped folder
@@ -69,25 +68,11 @@ if (is_allowed_to_edit() || api_is_grouptutor($_course,api_get_session_id(),api_
 	}
 	//search for all files that are not deleted => visibility != 2
 
-	$query = "SELECT url FROM $tbl_student_publication AS work,$prop_table AS props  WHERE props.tool='work' AND work.id=props.ref AND work.url LIKE 'work".$querypath."/%' AND work.filetype='file' AND props.visibility<>'2'";
-	if(api_is_grouptutor($_course,api_get_session_id(),api_get_user_id()) && !empty($users_list)){
-		$query .= " AND props.insert_user_id IN (".$users_list.")";
-	}
-	$res = Database::query($query,__FILE__,__LINE__);
-	$num_rows = Database::num_rows($res);
-	$updirpath = $sys_course_path.$_course['path']."/";
+	$query = Database::query("SELECT url FROM $tbl_student_publication AS work,$prop_table AS props  WHERE props.tool='work' AND work.id=props.ref AND work.url LIKE 'work".$querypath."/%' AND work.filetype='file' AND props.visibility<>'2'",__FILE__,__LINE__);
 	//add tem to the zip file
-	$i=1;
-	$addfiles = '';
-	while ($not_deleted_file = Database::fetch_array($res)) {	//var_dump($sys_course_path.$_course['path']."/".$not_deleted_file['url']);exit();
-		$addfiles .= $updirpath.$not_deleted_file['url'];
-		if($i<$num_rows){
-			$addfiles .= ',';
-		}
-		$i++;
-	//	$zip_folder->add($sys_course_path.$_course['path']."/".$not_deleted_file['url'],PCLZIP_OPT_REMOVE_PATH, $sys_course_path.$_course['path']."/work".$remove_dir);
+	while ($not_deleted_file = mysql_fetch_assoc($query)) {	//var_dump($sys_course_path.$_course['path']."/".$not_deleted_file['url']);exit();
+		$zip_folder->add($sys_course_path.$_course['path']."/".$not_deleted_file['url'],PCLZIP_OPT_REMOVE_PATH, $sys_course_path.$_course['path']."/work".$remove_dir);
 	}
-	$zip_folder->add(trim($addfiles),PCLZIP_OPT_REMOVE_PATH, $sys_course_path.$_course['path']."/work".$remove_dir);
 }
 
 //for other users, we need to create a zipfile with only visible files and folders
@@ -128,20 +113,10 @@ else
 		//no invisible folders found, so all visible files can be added to the zipfile
 		$files_for_zipfile = $all_visible_files_path;
 	}
-
-//	$updirpath = $sys_course_path.$_course['path']."/";
-	//add tem to the zip file	
-//	$addfiles = '';
-//	$numfiles = count($files_for_zipfile);
 	//add all files in our final array to the zipfile
 	for ($i=0;$i<count($files_for_zipfile);$i++) {
-	/*	$addfiles .= $updirpath.$files_for_zipfile[$i];
-		if($i < ($numfiles - 1)){
-			$addfiles .= ',';
-		}*/
 		$zip_folder->add($sys_course_path.$_course['path']."/".$files_for_zipfile[$i],PCLZIP_OPT_REMOVE_PATH, $sys_course_path.$_course['path']."/work".$remove_dir);
 	}
-//	$zip_folder->add(trim($addfiles),PCLZIP_OPT_REMOVE_PATH, $sys_course_path.$_course['path']."/work".$remove_dir);
 }//end for other users
 //logging
 // launch event

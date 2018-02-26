@@ -35,55 +35,66 @@ if (isset($_GET['action']) && $_GET['action'] == 'exit_slideshow') {
 // grabbing the list of all the documents of this folder
 //$all_files=$fileList['name'];
 $array_to_search = (is_array($docs_and_folders)) ? $docs_and_folders : array();
+
 if (count($array_to_search) > 0) {
-    foreach ($array_to_search as $key_search => $value_Search) {
-        $all_files[$key_search] = array('path' =>basename($value_Search['path']),'size'=>$value_Search['size'],'date'=> $value_Search['insert_date'], 'file' => $value_Search['title'], 'id' => $value_Search['ref']);
-    }
+	while(list ($key) = each ($array_to_search)) {
+		$all_files[] = basename($array_to_search[$key]['path']);
+		//echo basename($array_to_search[$key]['path']).'<br>';
+	}
 }
 
 
 $image_present = 0;
+
 if (count($all_files) > 0) {
-	foreach ($all_files as $key => $file_detail) {
-                $file = $file_detail['file'];
+	foreach ($all_files as $file) {
 		$slideshow_extension = strrchr($file,'.');
 		$slideshow_extension = strtolower($slideshow_extension);
 		if (in_array($slideshow_extension,$accepted_extensions)) {
 			$image_present = 1;
-			$image_files_only[] = array('file' => $file, 'id' =>$key, 'path' => $file_detail['path'], 'size' => $file_detail['size'], 'date' => $file_detail['date']);
+			$image_files_only[] = $file;
 		}
 	}
 }
 
+$tablename_column = (isset($_GET['tablename_column']) ? Security::remove_XSS($_GET['tablename_column']) : 0);
+if ($tablename_column == 0) {
+	$tablename_column = 1;
+} else {
+	$tablename_column = intval($tablename_column) - 1;
+}
+$tablename_direction = (isset($_GET['tablename_direction']) ? Security::remove_XSS($_GET['tablename_direction']) : 'ASC');
+
+$image_files_only = sort_files($array_to_search);
 $_SESSION['image_files_only'] = $image_files_only;
+
 function sort_files($table) {
 
-	//global $tablename_direction, $accepted_extensions;
-	//$temp = array();
+	global $tablename_direction, $accepted_extensions;
+	$temp = array();
 
 	foreach ($table as $file_array) {
 		if ($file_array['filetype'] == 'file') {
-			/*$slideshow_extension = strrchr($file_array['path'],'.');
-                        $slideshow_extension = strtolower($slideshow_extension);
+			$slideshow_extension = strrchr($file_array['path'],'.');
+            $slideshow_extension = strtolower($slideshow_extension);
 			if (in_array($slideshow_extension,$accepted_extensions)) {
 				$temp[] = array('file', basename($file_array['path']), $file_array['size'], $file_array['insert_date']);
-			}*/
-                        $return_final_array[] = array('path' => basename($file_array['path']),'size'=>$file_array['size'],'date'=> $file_array['insert_date'], 'file' => $file_array['title'], 'id' => $file_array['ref']);
+			}
 		}
 	}
 
-	/*if ($tablename_direction == 'DESC') {
-		uasort($temp, 'rsort_table');
+	if ($tablename_direction == 'DESC') {
+		usort($temp, 'rsort_table');
 	} else {
-		uasort($temp, 'sort_table');
+		usort($temp, 'sort_table');
 	}
 
 	$final_array = array();
 	foreach ($temp as $file_array) {
 		$final_array[] = $file_array[1];
-	}*/
+	}
 
-	return $return_final_array;
+	return $final_array;
 }
 
 function sort_table($a, $b) {

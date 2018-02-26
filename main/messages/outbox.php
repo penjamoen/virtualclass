@@ -30,6 +30,33 @@ if (api_get_setting('allow_message_tool')!='true'){
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.js" type="text/javascript" language="javascript"></script>';
 $htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.css" type="text/css" media="projection, screen">';
 
+$htmlHeadXtra[]='<script language="javascript">
+<!--
+function enviar(miforma)
+{
+	if(confirm("'.get_lang('SureYouWantToDeleteSelectedMessages', '').'"))
+		miforma.submit();
+}
+function select_all(formita)
+{
+   for (i=0;i<formita.elements.length;i++)
+	{
+      		if(formita.elements[i].type == "checkbox")
+				formita.elements[i].checked=1
+	}
+}
+function deselect_all(formita)
+{
+   for (i=0;i<formita.elements.length;i++)
+	{
+      		if(formita.elements[i].type == "checkbox")
+				formita.elements[i].checked=0
+	}
+}
+//-->
+</script>';
+
+
 /*
 		MAIN CODE
 */
@@ -52,18 +79,18 @@ Display::display_header('');
 // Display actions
 echo '<div class="actions">';
 if (api_get_setting('allow_social_tool') == 'true') {
-  echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('pixel.gif',get_lang('Home'),array('class' => 'toolactionplaceholdericon toolactionshome')).get_lang('Home').'</a>';
+  echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('atom.png',get_lang('Home')).get_lang('Home').'</a>';
 } else {
   $social_parameter = '';
   if ($_GET['f']=='social' || api_get_setting('allow_social_tool') == 'true') {
     $social_parameter = '?f=social';
   } else {
-    echo '<a href="'.api_get_path(WEB_PATH).'main/auth/profile.php?type=reduced">'.Display::return_icon('pixel.gif', get_lang('EditNormalProfile'),array('class'=>'actionplaceholdericon actionedit')).'&nbsp;'.get_lang('EditNormalProfile').'</a>';
+    echo '<a href="'.api_get_path(WEB_PATH).'main/auth/profile.php?type=reduced">'.Display::return_icon('edit.gif', get_lang('EditNormalProfile')).'&nbsp;'.get_lang('EditNormalProfile').'</a>';
   }
 }
-echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('pixel.gif',get_lang('Inbox'), array('class' => 'toolactionplaceholdericon toolactioninbox')).get_lang('Inbox').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/messages/new_message.php?f=social">'.Display::return_icon('pixel.gif',get_lang('Inbox'), array('class' => 'toolactionplaceholdericon toolactionsinvite')).get_lang('ComposeMessage').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/messages/outbox.php?f=social">'.Display::return_icon('pixel.gif',get_lang('Outbox'), array('class' => 'toolactionplaceholdericon toolactionoutbox')).get_lang('Outbox').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('inbox_message.png', get_lang('Inbox')).get_lang('Inbox').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/messages/new_message.php?f=social">'.Display::return_icon('compose_message.png', get_lang('ComposeMessage')).get_lang('ComposeMessage').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/messages/outbox.php?f=social">'.Display::return_icon('outbox_message.png', get_lang('Outbox')).get_lang('Outbox').'</a>';
 echo '</div>';
 // Start content
 echo '<div id="content">';
@@ -79,7 +106,7 @@ if ($_GET['f']=='social') {
 		if (api_get_setting('allow_message_tool') == 'true') {
 			echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php">'.Display::return_icon('inbox.png').' '.get_lang('Messages').'</a>';
 		}	
-		echo '<a href="'.api_get_path(WEB_PATH).'main/auth/profile.php?type=reduced">'.Display::return_icon('pixel.gif', get_lang('EditNormalProfile'),array('class'=>'actionplaceholdericon actionedit')).'&nbsp;'.get_lang('EditNormalProfile').'</a>';
+		echo '<a href="'.api_get_path(WEB_PATH).'main/auth/profile.php?type=reduced">'.Display::return_icon('edit.gif', get_lang('EditNormalProfile')).'&nbsp;'.get_lang('EditNormalProfile').'</a>';
 	}
 }
 
@@ -131,7 +158,6 @@ echo '<div id="social-content">';
 				for ($i=0;$i<count($delete_list_id);$i++) {
 					MessageManager::delete_message_by_user_sender(api_get_user_id(), $delete_list_id[$i]);
 				}
-                //exit;
 				$delete_list_id=array();
 				
 				

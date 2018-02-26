@@ -34,16 +34,16 @@ include_once(api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php')
 $TBL_INTRODUCTION = Database::get_course_table(TABLE_TOOL_INTRO);
 $intro_editAllowed = $is_allowed_to_edit;
 
-global $charset,$course_home_visibility_type;
+global $charset;
 $intro_cmdEdit = (empty($_GET['intro_cmdEdit'])?'':$_GET['intro_cmdEdit']);
 $intro_cmdUpdate = isset($_POST['intro_cmdUpdate'])?true:false;
 $intro_cmdDel= (empty($_GET['intro_cmdDel'])?'':$_GET['intro_cmdDel']);
 $intro_cmdAdd= (empty($_GET['intro_cmdAdd'])?'':$_GET['intro_cmdAdd']);
 
 if (!empty ($GLOBALS["_cid"])) {
-	$form = new FormValidator('introduction_text', 'post', api_get_self()."?".api_get_cidreq()."&course_scenario=1");
+	$form = new FormValidator('introduction_text', 'post', api_get_self()."?".api_get_cidreq());
 } else {
-	$form = new FormValidator('introduction_text','post', api_get_self()."?course_scenario=1");
+	$form = new FormValidator('introduction_text');
 }
 $renderer =& $form->defaultRenderer();
 
@@ -51,40 +51,37 @@ $toolbar_set = 'Introduction';
 $width = '100%';
 $height = '200';
 
-$editor_config = array('ToolbarSet' => $toolbar_set, 'Width' => $width, 'Height' => $height);
+// The global variable $fck_attribute has been deprecated. It stays here for supporting old external code.
+global $fck_attribute;
+if (is_array($fck_attribute)) {
+	if (isset($fck_attribute['ToolbarSet'])) {
+		$toolbar_set = $fck_attribute['ToolbarSet'];
+	}
+	if (isset($fck_attribute['Width'])) {
+		$toolbar_set = $fck_attribute['Width'];
+	}
+	if (isset($fck_attribute['Height'])) {
+		$toolbar_set = $fck_attribute['Height'];
+	}
+}
+
+if (is_array($editor_config)) {
+	if (!isset($editor_config['ToolbarSet'])) {
+		$editor_config['ToolbarSet'] = $toolbar_set;
+	}
+	if (!isset($editor_config['Width'])) {
+		$editor_config['Width'] = $width;
+	}
+	if (!isset($editor_config['Height'])) {
+		$editor_config['Height'] = $height;
+	}
+} else {
+	$editor_config = array('ToolbarSet' => $toolbar_set, 'Width' => $width, 'Height' => $height);
+}
+
+
 if (isset($_GET['display_template']) && $_GET['display_template'] == 1 && $tool == TOOL_COURSE_HOMEPAGE) {
   // 5 buttons for display the scenarios in the course home page
-  if ($course_home_visibility_type === true) { // Tablet design - this has another HTML structure
-  $html_buttons = '<div align="center ">
-        <table class="gallery sectiontablet"><tbody>
-        <tr><td><a href="'.  api_get_self().'?scenario=activity">
-        <div class="width_tablet_scenario_button height_tablet_scenario_button border_tablet_button" >
-			<div>'.Display::return_icon('pixel.gif',get_lang('Activities'), array('class' => 'toolscenarioactionplaceholdericon toolscenarioactionactivity')).'</div>
-                        <div class="tablet_scenario_title">'.get_lang('Activities').'</div>
-		</div></a></td>
-        <td><a href="'.  api_get_self().'?scenario=social">
-          <div class="width_tablet_scenario_button height_tablet_scenario_button border_tablet_button">
-			<div class="">'.Display::return_icon('pixel.gif',get_lang('Social'), array('class' => 'toolscenarioactionplaceholdericon toolscenarioactionsocial')).'</div>
-                        <div class="tablet_scenario_title">'.get_lang('Social').'</div>
-		</div></a></td>
-        <td><a href="'.  api_get_self().'?scenario=week">
-          <div class="width_tablet_scenario_button height_tablet_scenario_button border_tablet_button" >
-			<div class="">'.Display::return_icon('pixel.gif',get_lang('Weeks'), array('class' => 'toolscenarioactionplaceholdericon toolscenarioactionweek')).'</div>
-                        <div class="tablet_scenario_title">'.get_lang('Weeks').'</div>
-		</div></a></td>
-        <td><a href="'.  api_get_self().'?scenario=corporate">
-          <div class="width_tablet_scenario_button height_tablet_scenario_button border_tablet_button" >
-			<div class="">'.Display::return_icon('pixel.gif',get_lang('Corporate'), array('class' => 'toolscenarioactionplaceholdericon toolscenarioactioncorporate')).'</div>
-                        <div class="tablet_scenario_title">'.get_lang('Corporate').'</div>
-		</div></a></td>
-        <td><a href="'.  api_get_self().'?scenario=none">
-          <div class="width_tablet_scenario_button height_tablet_scenario_button" >
-			<div class="">'.Display::return_icon('pixel.gif',get_lang('NoScenario'), array('class' => 'toolscenarioactionplaceholdericon toolscenarioactionscenario')).'</div>
-                        <div class="tablet_scenario_title">'.get_lang('NoScenario').'</div>
-		</div></a></td>
-        </tr></tbody>
-        </table></div>';
-  } else {
   $html_buttons = '<div align="center">
         <table class="gallery"><tbody>
         <tr><td><a href="'.  api_get_self().'?scenario=activity">
@@ -114,7 +111,6 @@ if (isset($_GET['display_template']) && $_GET['display_template'] == 1 && $tool 
 		</div></a></td>
         </tr></tbody>
         </table></div>';
-  }
   $form->addElement('html',$html_buttons);
 } else {
   $form->add_html_editor('intro_content', null, null, false, $editor_config);
@@ -295,13 +291,12 @@ if ($intro_dispForm || isset($_GET['scenario'])) {
     // Actions bar for display the scenario icons
     if (((isset($_GET['display_template']) && $_GET['display_template'] == 0) || (isset($_GET['scenario']))) && $tool == TOOL_COURSE_HOMEPAGE) {
         $get_intro_cmdEdit = Security::remove_XSS($_GET['intro_cmdEdit']);
-        //Display::return_icon('pixel.gif',get_lang('Weeks'), array('class' => 'toolscenarioactionplaceholdericon toolscenarioactionweek')
         echo '<div class="actions">';
-        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=activity">'.Display::return_icon('pixel.gif',get_lang('Activities'), array('class' => 'toolactionplaceholdericon toolactionsactivity')).get_lang('Activities').'</a>';
-        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=social">'.Display::return_icon('pixel.gif',get_lang('Social'), array('class' => 'toolactionplaceholdericon toolactionssocial')).get_lang('Social').'</a>';
-        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=week">'.Display::return_icon('pixel.gif',get_lang('Weeks'), array('class' => 'toolactionplaceholdericon toolactionsweek')).get_lang('Weeks').'</a>';
-        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=corporate">'.Display::return_icon('pixel.gif',get_lang('Corporate'), array('class' => 'toolactionplaceholdericon toolactionscorporate')).get_lang('Corporate').'</a>';
-        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=none">'.Display::return_icon('pixel.gif',get_lang('NoScenario'), array('class' => 'toolactionplaceholdericon toolactionsscenario')).get_lang('NoScenario').'</a>';
+        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=activity">'.Display::return_icon('quiz.png',get_lang('Activities')).get_lang('Activities').'</a>';
+        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=social">'.Display::return_icon('social32.png',get_lang('Social')).get_lang('Social').'</a>';
+        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=week">'.Display::return_icon('weeks32.png',get_lang('Weeks')).get_lang('Weeks').'</a>';
+        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=corporate">'.Display::return_icon('corp32.png',get_lang('Corporate')).get_lang('Corporate').'</a>';
+        echo '<a href="'. api_get_self().'?intro_cmdEdit='.$get_intro_cmdEdit.'&amp;display_template=0&amp;scenario=none">'.Display::return_icon('noscenario32.png',get_lang('NoScenario')).get_lang('NoScenario').'</a>';
         echo '</div>';
     }
     // Display course intro
@@ -314,9 +309,9 @@ if ($intro_dispDefault && !isset($_GET['scenario'])) {
 	//$intro_content = make_clickable($intro_content); // make url in text clickable
 	$intro_content = text_filter($intro_content); // parse [tex] codes
 	if (!empty($intro_content))	{
-		echo '<div id="courseintroduction"><div class="scroll_feedback">';
+		echo '<div id="courseintroduction">';
 		echo $intro_content;
-		echo '</div></div>';
+		echo '</div>';
 	}
 }
 
@@ -332,9 +327,9 @@ if ($intro_dispCommand  && !isset($_GET['scenario'])) {
           if ($tool == TOOL_COURSE_HOMEPAGE) {
             $add_param_display_template = "&amp;display_template=1";
           }
-          echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&amp;intro_cmdAdd=1&amp;course_scenario=1".$add_param_display_template."\">\n".get_lang('AddIntro')."</a>\n";
+          echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&amp;intro_cmdAdd=1".$add_param_display_template."\">\n".get_lang('AddIntro')."</a>\n";
 		} else {
-			echo "<a href=\"".api_get_self()."?intro_cmdAdd=1&amp;course_scenario=1\">\n".get_lang('AddIntro')."</a>\n";
+			echo "<a href=\"".api_get_self()."?intro_cmdAdd=1\">\n".get_lang('AddIntro')."</a>\n";
 		}
 		echo "\n</div>";
 
@@ -351,11 +346,11 @@ if ($intro_dispCommand  && !isset($_GET['scenario'])) {
 		// displays "edit intro && delete intro" Commands
 		echo "<div id=\"courseintro_icons\">\n";
 		if (!empty ($GLOBALS["_cid"])) {
-			echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&amp;intro_cmdDel=1&amp;course_scenario=1\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset))."')) return false;\">".Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')).'</a>' . PHP_EOL;
-			echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&amp;intro_cmdEdit=1&amp;course_scenario=1".$add_param_display_template."\">".Display::return_icon('pixel.gif', get_lang('Modify'), array('class' => 'actionplaceholdericon actionedit')).'</a>' . PHP_EOL;
+			echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&amp;intro_cmdDel=1\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset))."')) return false;\"><img src=\"".api_get_path(WEB_CODE_PATH)."img/delete.png\" alt=\"".get_lang('Delete')."\" border=\"0\" /></a>\n";
+			echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&amp;intro_cmdEdit=1".$add_param_display_template."\"><img src=\"".api_get_path(WEB_CODE_PATH)."img/edit_link.png\" alt=\"".get_lang('Modify')."\" border=\"0\" /></a>\n";
 		} else {
-			echo "<a href=\"".api_get_self()."?intro_cmdDel=1&amp;course_scenario=1\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset))."')) return false;\">" . Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')) . '</a>' . PHP_EOL;
-			echo "<a href=\"".api_get_self()."?intro_cmdEdit=1&amp;course_scenario=1\">".Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')).'</a>' . PHP_EOL;
+			echo "<a href=\"".api_get_self()."?intro_cmdDel=1\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset))."')) return false;\"><img src=\"".api_get_path(WEB_CODE_PATH)."img/delete.png\" alt=\"".get_lang('Delete')."\" border=\"0\" /></a>\n";
+			echo "<a href=\"".api_get_self()."?intro_cmdEdit=1\"><img src=\"".api_get_path(WEB_CODE_PATH)."img/edit_link.png\" alt=\"".get_lang('Modify')."\" border=\"0\" /></a>\n";
 		}
 		echo "</div>";
 

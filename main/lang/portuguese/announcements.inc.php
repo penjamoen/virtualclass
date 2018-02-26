@@ -55,5 +55,4 @@ $AnnounceSentToUserSelection = "Anúncio enviado para os utilizadores seleccionad
 $SendAnnouncement = "Enviar anúncio";
 $ModifyAnnouncement = "Editar anúncio";
 $ButtonPublishAnnouncement = "Enviar anúncio";
-$AnnouncementAdd = "Adicionar um anúncio";
 ?>

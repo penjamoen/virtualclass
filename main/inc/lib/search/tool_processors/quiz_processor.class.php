@@ -7,63 +7,41 @@ require_once dirname(__FILE__) . '/search_processor.class.php';
  */
 class quiz_processor extends search_processor {
     public $exercices = array();
-    
-    /**
-     * check if multisite is enable
-     * @global configuration $_configuration
-     * @param string $courseid
-     * @return bool 
-     */
-    function is_enabled_multisite($courseid){
-        //check if multisite is enable
-        global $_configuration;
-        if($_configuration['multiple_access_urls']){
-            require_once api_get_path(LIBRARY_PATH).'urlmanager.lib.php';
-            $url = new UrlManager();
-            $access_url_id = api_get_current_access_url_id();
-            $exist_relation = $url->relation_url_course_exist($courseid, $access_url_id);
-            return $exist_relation > 0 ? true : false;
-        }
-        return true;;
-    }
-    
+
     function quiz_processor($rows) {
         $this->rows = $rows;
         // group by exercise
         foreach ($rows as $row_id => $row_val) {
             $courseid = $row_val['courseid'];
-            $exist_relation = $this->is_enabled_multisite($courseid);
-            if($exist_relation) {
-                $se_data = $row_val['xapian_data'][SE_DATA];
-                switch ($row_val['xapian_data'][SE_DATA]['type']) {
-                    case SE_DOCTYPE_EXERCISE_EXERCISE:
-                        $exercise_id = $se_data['exercise_id'];
-                        $question = NULL;
-                        $item = array(
-                                  'courseid' => $courseid,
-                                  'question' => $question,
-                                  'score' => $row_val['score'],
-                                  'row_id' => $row_id,
-                                );
-                        $this->exercises[$courseid][$exercise_id][] = $item;
-                        $this->exercises[$courseid][$exercise_id]['total_score'] += $row_val['score'];
-                        break;
-                    case SE_DOCTYPE_EXERCISE_QUESTION:
-                        if (is_array($se_data['exercise_ids'])) {
-                            foreach ($se_data['exercise_ids'] as $exercise_id) {
-                                $question = $se_data['question_id'];
-                                $item = array(
-                                    'courseid' => $courseid,
-                                    'question' => $question,
-                                    'score' => $row_val['score'],
-                                    'row_id' => $row_id,
-                                );
-                                $this->exercises[$courseid][$exercise_id][] = $item;
-                                $this->exercises[$courseid][$exercise_id]['total_score'] += $row_val['score'];
-                            }
+            $se_data = $row_val['xapian_data'][SE_DATA];
+            switch ($row_val['xapian_data'][SE_DATA]['type']) {
+                case SE_DOCTYPE_EXERCISE_EXERCISE:
+                    $exercise_id = $se_data['exercise_id'];
+                    $question = NULL;
+                    $item = array(
+                              'courseid' => $courseid,
+                              'question' => $question,
+                              'score' => $row_val['score'],
+                              'row_id' => $row_id,
+                            );
+                    $this->exercises[$courseid][$exercise_id][] = $item;
+                    $this->exercises[$courseid][$exercise_id]['total_score'] += $row_val['score'];
+                    break;
+                case SE_DOCTYPE_EXERCISE_QUESTION:
+                    if (is_array($se_data['exercise_ids'])) {
+                        foreach ($se_data['exercise_ids'] as $exercise_id) {
+                            $question = $se_data['question_id'];
+                            $item = array(
+                                'courseid' => $courseid,
+                                'question' => $question,
+                                'score' => $row_val['score'],
+                                'row_id' => $row_id,
+                            );
+                            $this->exercises[$courseid][$exercise_id][] = $item;
+                            $this->exercises[$courseid][$exercise_id]['total_score'] += $row_val['score'];
                         }
-                        break;
-                }
+                    }
+                    break;
             }
         }
         //print_r($this->exercises);

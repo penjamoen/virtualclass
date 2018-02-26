@@ -194,5 +194,4 @@ $YouNeedToHaveFriendsInYourSocialNetwork = "Você precisa ter amigos em sua rede 
 $SeeAllMyGroups = "Veja todos os meus grupos";
 $EditGroup = "Editar grupo";
 $YouAlreadyInviteAllYourContacts = "Você já convidamos todos os seus contatos";
-$Contact = "Contato";
 ?>

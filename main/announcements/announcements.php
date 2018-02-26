@@ -72,20 +72,6 @@ event_access_tool(TOOL_ANNOUNCEMENT);
 // Display the header
 //Display::display_header($nameTools,"Announcements");
 
-$htmlHeadXtra[] = '    
-    <script type="text/javascript" language="javascript">
-       $(function() {      
-           var theRHeight = $("#announcements_list").innerHeight();
-           var theLHeight = $(".announcement_contentdiv").innerHeight();
-           if (theLHeight > theRHeight) {
-             $("#announcements_list").css("height", theLHeight - 20);  
-           } else {
-             $(".announcement_contentdiv").css("height", theRHeight);
-           }       
-       });
-    </script>
-';
-
 Display :: display_tool_header();
 
 // setting the configuration for the announcements
@@ -277,7 +263,7 @@ echo '<div class="actions">';
 	if (api_is_allowed_to_edit() && number_of_announcements() > 1) {
 		echo "<span>";
 		echo '<div style="float:left;">';
-		echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&action=delete_all\" onclick=\"javascript:if(!confirm('".get_lang("ConfirmYourChoice")."')) return false;\">".Display::return_icon('pixel.gif',get_lang('AnnouncementDeleteAll'),array('class'=>'actionplaceholdericon actiondelete')).get_lang('AnnouncementDeleteAll')."</a>\n";	
+		echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&action=delete_all\" onclick=\"javascript:if(!confirm('".get_lang("ConfirmYourChoice")."')) return false;\">".Display::return_icon('delete.png',get_lang('AnnouncementDeleteAll')).get_lang('AnnouncementDeleteAll')."</a>\n";	
 		echo '</div>';
 		echo "</span>";		
 	}	// if announcementNumber > 1
@@ -297,16 +283,8 @@ Display::display_footer();
 function display_announcements_list(){
 	$announcements = get_announcements();
 	
-	foreach ($announcements as $key=>$announcement){?>
-<script type="text/javascript" language="javascript">
-   $(function(){
-      $("input[name='send_to[receivers]']").bind("click",function(){
-         $miAncho=$(".announcement_contentdiv").height();   
-         $("#announcements_list").css("height",$miAncho);
-      });
-   });
-</script>
-		<?php echo '<div id="announcement'.$announcement['id'].'" class="announcement_list_item">';
+	foreach ($announcements as $key=>$announcement){
+		echo '<div id="announcement'.$announcement['id'].'" class="announcement_list_item">';
 		echo '<a href="announcements.php?action=view&amp;ann_id='.$announcement['id'].'" title="'.$announcement['title'].'">';
 		echo '<span class="announcements_list_date">'.$announcement['announcement_date'].'</span>';
 		echo shorten($announcement['title'],25);
@@ -433,8 +411,7 @@ function announcements_action_handling(){
 			break;
 		case 'delete': 
 			delete_announcement($_GET['id']);
-			display_announcement();
-			//display_announcement_form();
+			display_announcement_form();
 			break;
 		case 'edit': 
 			$input_values = get_announcements($_GET['id']);
@@ -505,7 +482,7 @@ function delete_announcement ($announcement_id){
 }
 
 function display_announcement_form($input_values){
-	if (api_is_allowed_to_edit(false,true) || api_get_course_setting('allow_user_edit_announcement')){
+	if (api_is_allowed_to_edit(false,true)){
 		// initiate the object
 		$form = new FormValidator ( 'announcement_form', 'post', $_SERVER ['REQUEST_URI'] );
 		$renderer = & $form->defaultRenderer();
@@ -534,7 +511,7 @@ function display_announcement_form($input_values){
 				$receivers ['G' . $key] = '-G- ' . $group ['name'];
 			}
 			// The receivers: users
-			$course_users = CourseManager::get_user_list_from_course_code(api_get_course_id(), intval($_SESSION['id_session']) == 0 , intval($_SESSION['id_session']));
+			$course_users = CourseManager::get_user_list_from_course_code(api_get_course_id(), intval($_SESSION['id_session']));
 			foreach ( $course_users as $key => $user ) {
 				$receivers ['U' . $key] = $user ['lastname'] . ' ' . $user ['firstname'];
 			}
@@ -635,7 +612,7 @@ function store_announcement($values){
 	$table_announcement		= Database::get_course_table(TABLE_ANNOUNCEMENT);
 	$table_item_property  		= Database::get_course_table(TABLE_ITEM_PROPERTY);
 
-	if (api_is_allowed_to_edit(false,true) || api_get_course_setting('allow_user_edit_announcement')) {
+	if (api_is_allowed_to_edit(false,true)){
 		// adding a new announcement
 		if (! $values ['announcement_id'] or ! is_numeric ( $values ['announcement_id'] )) {
 			// first we calculate the max display order
@@ -650,7 +627,7 @@ function store_announcement($values){
 					'".Database::escape_string($values['content'])."',
 					NOW(),
 					'".$max."',
-					1,
+					'".Database::escape_string($values['email_sent'])."',
 					'".api_get_session_id()."'
 				)";
 			$result = Database::query($sql,__FILE__,__LINE__);
@@ -677,68 +654,8 @@ function store_announcement($values){
 		}
 	}
 
-	send_announcement_email($values);
-
 	// finally we display the (edited) or added announcement
 	display_announcement($last_id);
-}
-
-
-function send_announcement_email($form_values){
-	
-	global $_user, $_course;
-	
-	$from_name = ucfirst($_user['firstname']).' '.strtoupper($_user['lastname']);
-	$from_email = $_user['mail'];
-	$subject = $form_values['title'];
-	$message = $form_values['content'];
-
-	// create receivers array
-	if($form_values['send_to']['receivers'] == 0)
-	{ // full list of users
-		$receivers = CourseManager::get_user_list_from_course_code(api_get_course_id(), intval($_SESSION['id_session']) != 0, intval($_SESSION['id_session']));
-	}
-	else if($form_values['send_to']['receivers'] == 1) {
-		$users_ids = array();
-		foreach($form_values['send_to']['to'] as $to)
-		{
-			if(strpos($to, 'G') === false)
-			{
-				$users_ids[] = intval(substr($to, 1));
-			}
-			else
-			{
-				$groupId = intval(substr($to, 1));
-				$users_ids = array_merge($users_ids, GroupManager::get_users($groupId));
-			}	
-			$users_ids = array_unique($users_ids);
-		}
-		if(count($users_ids) > 0)
-		{
-			$sql = 'SELECT lastname, firstname, email 
-					FROM '.Database::get_main_table(TABLE_MAIN_USER).'
-					WHERE user_id IN ('.implode(',', $users_ids).')';
-			$rsUsers = Database::query($sql, __FILE__, __LINE__);
-			while($userInfos = Database::fetch_array($rsUsers))
-			{
-				$receivers[] = $userInfos;
-			}
-		}
-	}
-	else if($form_values['send_to']['receivers'] == -1) {
-		$receivers[] = array(
-						'lastname' => $_user['lastName'],
-						'firstname' => $_user['firstName'],
-						'email' => $_user['mail']
-						);
-	}
-	
-	foreach($receivers as $receiver)
-	{
-		$to_name = ucfirst($receiver['firstname']).' '.strtoupper($receiver['lastname']);
-		$to_email = $receiver['email'];
-		api_mail_html($to_name, $to_email, $subject, $message, $from_name, $from_email);
-	}
 }
 
 /**
@@ -783,7 +700,7 @@ function display_announcements_actions(){
 	echo '<div class="actions">';
 	if ((api_is_allowed_to_edit(false,true) OR (api_get_course_setting('allow_user_edit_announcement') && !api_is_anonymous())) and (empty($_GET['origin']) or $_GET['origin'] !== 'learnpath')) {
 		echo '<span>';
-		echo "<a href='".api_get_self()."?".api_get_cidreq()."&action=add&origin=".(empty($_GET['origin'])?'':Security::remove_XSS($_GET['origin']))."'>".Display::return_icon('pixel.gif',get_lang('AddAnnouncement'), array('class' => 'toolactionplaceholdericon toolactionannoucement')).get_lang('AddAnnouncement')."</a>";
+		echo "<a href='".api_get_self()."?".api_get_cidreq()."&action=add&origin=".(empty($_GET['origin'])?'':$_GET['origin'])."'>".Display::return_icon('announcement.png',get_lang('AddAnnouncement')).get_lang('AddAnnouncement')."</a>";
 		echo '</span>';		
 	}
 
@@ -820,15 +737,16 @@ function display_announcement($id=''){
 	echo  '	</div>';
 	if (ereg("MSIE", $_SERVER["HTTP_USER_AGENT"])) {
 		echo  '	<div class="announcement_content" style="height: 333px;overflow: auto;">'.nl2br($announcement['content']).'</div>';
-	} else {
+	}else{
 		echo  '	<div class="announcement_content" style="height: 322px;overflow: auto;">'.nl2br($announcement['content']).'</div>';	
 	}	
+	
 	echo  '</div>';
-	if(api_is_allowed_to_edit() || (api_get_course_setting('allow_user_edit_announcement') && api_get_user_id() == $announcement['insert_user_id'])){
+	if(api_is_allowed_to_edit()){
 		echo  '<div class="announcements_actions" style="padding-top:0px">';
-		echo  '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=edit&id='.$announcement['id'].'">'.Display::return_icon('pixel.gif',get_lang('EditAnnouncement'),array('align' => 'absmiddle','class'=>'actionplaceholdericon actionedit')).' '.get_lang('EditAnnouncement').'</a>';
-		echo  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';		
-		echo  '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=delete&id='.$announcement['id'].'" onclick="javascript:if(!confirm(\''.get_lang("ConfirmYourChoice").'\')) return false;">'.Display::return_icon('delete.png',get_lang('DeleteAnnouncement'),array('align' => 'absmiddle')).' '.get_lang('DeleteAnnouncement').'</a>';
+		echo  '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=edit&id='.$announcement['id'].'">'.Display::return_icon('edit_link.png',get_lang('EditAnnouncement'),array('align' => 'absmiddle')).' '.get_lang('EditAnnouncement').'</a>';
+		echo  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		echo  '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=delete&id='.$announcement['id'].'">'.Display::return_icon('delete.png',get_lang('DeleteAnnouncement'),array('align' => 'absmiddle')).' '.get_lang('DeleteAnnouncement').'</a>';
 		echo  '</div>';
 	}
 	

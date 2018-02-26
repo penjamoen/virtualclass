@@ -87,7 +87,7 @@ if (count($courses) > 0) {
 		$row[] = $course['title'];
 		$row[] = '<a href="course_information.php?code='.$course['code'].'">'.Display::return_icon('info_small.gif', get_lang('Delete')).'</a>'.
 					'<a href="'.api_get_path(WEB_COURSE_PATH).$course['directory'].'">'.Display::return_icon('course_home.gif', get_lang('CourseHome')).'</a>' .
-					'<a href="course_edit.php?course_code='.$course['code'].'">'.Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).'</a>';
+					'<a href="course_edit.php?course_code='.$course['code'].'">'.Display::return_icon('edit.png', get_lang('Edit')).'</a>';
 		$data[] = $row;
 	}
 	echo '<p><b>'.get_lang('Courses').'</b></p>';

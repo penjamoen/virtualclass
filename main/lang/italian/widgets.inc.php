@@ -1,7 +1,6 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$SomeFieldsAreEmpty = "Alcuni campi sono vuoti";
 $ManageWidgets = "Gestisci i widget";
 $AddRSSAsWidget = "Aggiungi un feed RSS come widget";
 $Tools = "Strumenti";
@@ -63,7 +62,7 @@ $Location = "Posizione";
 $Disabled = "Disabilitato";
 $DisplayOrder = "Ordine di visualizzazione";
 $FirstPosition = "Prima posizione (sopra)";
-$Before = "Prima di";
+$Before = "Prima";
 $LastPosition = "Ultima posizione (in fondo)";
 $SaveSettings = "Salva la configurazione";
 $RSSFeed = "Feed RSS";
@@ -77,16 +76,5 @@ $LocationSidebarRight = "Barra laterale a destra";
 $LocationHeader = "Intestazione";
 $LocationFooter = "Piè di pagina";
 $LocationMain = "Area principale";
-$Loading = "Sto caricando";
-$TabbedRss = "RSS in schede";
-$AddTabbedRss = "Aggiungi una scheda per feed RSS";
-$EditTabbedRss = "Modifica una scheda per feed RSS";
-$DeleteTabbedRss = "Elimina una scheda per feed RSS";
-$TabbedRssTitle = "Intestazione";
-$TabbedRssUrl = "URL";
-$TabbedRssNumberItems = "Numero degli elementi visibili";
-$TabbedRssStore = "Salva la scheda di feed RSS";
-$TabbedRSSExplanation = "Questo widget ti permette di raggruppare diverse fonti di aggregazione  RSS in una sola navigazione a schede; ogni feed RSS sarà individuato da una etichetta.";
-$SelectWikiPage = "Seleziona la pagina wiki";
-$WikiExplanation = "Con questo widget potrai mostrare nella pagina iniziale del corso una o più pagine del wiki (nella loro ultima versione) come nelle bacheche: il portale del corso diventerà così aperto alla collaborazione.";
+$ActivateInLocation = "Attivare nella posizione";
 ?>

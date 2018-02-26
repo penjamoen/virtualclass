@@ -202,7 +202,4 @@ $BackToSurvey = "Ankete dön";
 $UpdateInformation = "Bilgiyi güncelle";
 $PleaseFillSurvey = "Lütfen anketi doldurun";
 $ReportingOverview = "Raporlama Görünümü";
-$ThereAreNotQuestionsForthisSurvey = "Bu ankette sorular yoktur";
-$Pageend = "Sayfa ayr&#305;m&#305;";
-$Printview = "Bask&#305; izleme";
 ?>

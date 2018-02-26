@@ -145,11 +145,11 @@ if($_POST['form_sent']) {
 
 Display::display_header($tool_name);
 
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/access_url_add_users_to_url.php">'.Display::return_icon('add_32.png',get_lang('AddUsersToURL')).get_lang('AddUsersToURL').'</a>';
+echo '<div class="actions" style="height:22px;">';
+echo '<div style="float:right;">
+		<a href="'.api_get_path(WEB_CODE_PATH).'admin/access_url_add_users_to_url.php">'.Display::return_icon('view_more_stats.gif',get_lang('AddUserToURL'),'').get_lang('AddUsersToURL').'</a>
+	  </div><br />';
 echo '</div>';
-
-echo '<div id="content">';
 
 api_display_tool_title($tool_name);
 
@@ -196,6 +196,7 @@ if($add_type == 'multiple') {
 $url_list = UrlManager::get_url_data();
 
 ?>
+
 <div style="text-align: left;">
 	<?php echo $link_add_type_unique ?>&nbsp;|&nbsp;<?php echo $link_add_type_multiple ?>
 </div>
@@ -334,9 +335,9 @@ unset($sessionUsersList);
 		<br />
 		<?php
 		if(isset($_GET['add']))
-			echo '<button type="button" class="save" onclick="valide()" >'.get_lang('EditUsers').'</button>';
+			echo '<input type="button" value="'.get_lang('EditUsers').'" onclick="valide()" />';
 		else
-			echo '<button type="button" class="save" onclick="valide()" >'.get_lang('EditUsers').'</button>';
+			echo '<input type="button" value="'.get_lang('EditUsers').'" onclick="valide()" />';
 		?>
 	</td>
 </tr>
@@ -347,7 +348,6 @@ unset($sessionUsersList);
 </table>
 
 </form>
-</div>
 <script type="text/javascript">
 <!--
 function moveItem(origin , destination) {

@@ -47,6 +47,53 @@ $this_section = SECTION_COURSES;
 
 define('DOKEOS_DOCUMENT', true);
 
+// Template's javascript
+$htmlHeadXtra[] = '
+<script type="text/javascript">
+/*
+function InnerDialogLoaded()
+{	
+	
+	var B=new window.frames[0].FCKToolbarButton(\'Templates\',window.frames[0].FCKLang.Templates);	
+	return B.ClickFrame();
+	
+
+	var isIE  = (navigator.appVersion.indexOf(\'MSIE\') != -1) ? true : false ;
+	var EditorFrame = null ;
+
+	if ( !isIE )
+	{
+		EditorFrame = window.frames[0] ;
+	}
+	else
+	{
+		// For this dynamic page window.frames[0] enumerates frames in a different order in IE.
+		// We need a sure method to locate the frame that contains the online editor.
+		for ( var i = 0, n = window.frames.length ; i < n ; i++ )
+		{
+			if ( window.frames[i].location.toString().indexOf(\'InstanceName=texte\') != -1 )
+			{
+				EditorFrame = window.frames[i] ;
+			}
+		}
+	}
+
+	if ( !EditorFrame )
+	{
+		return null ;
+	}
+
+	var B = new EditorFrame.FCKToolbarButton(\'Templates\', EditorFrame.FCKLang.Templates);		
+	return B.ClickFrame();
+};	
+		
+function FCKeditor_OnComplete( editorInstance )
+{
+	document.getElementById(\'frmModel\').innerHTML = "<iframe style=\'height: 525px; width: 180px;\' scrolling=\'no\' frameborder=\'0\' src=\''.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/fckdialogframe.html \'>";
+}
+*/
+</script>';
+
 $_SESSION['whereami'] = 'document/create';
 
 
@@ -258,7 +305,6 @@ if (isset($_POST['newComment']))
 	{
 		$attribute['path'      ] = $row['path' ];
 		$attribute['comment'   ] = $row['title'];
-        $real_document_id  = $row['id'];
 	}
 	//Determine the correct query to the DB
 	//new code always keeps document in database
@@ -267,40 +313,10 @@ if (isset($_POST['newComment']))
 		WHERE path 
 		LIKE BINARY '".$commentPath."'";
 	Database::query($query,__FILE__,__LINE__);
-    //$document_path
 	$oldComment = $newComment;
 	$oldTitle = $newTitle;
 	$comments_updated = get_lang('ComMod');
 	$info_message = get_lang('fileModified');
-    $old_document_path = substr($attribute['path'], 1);
-    $file_path_info = explode("/",$old_document_path);
-    $count_file_info = count($file_path_info);
-    $my_file_name = $file_path_info[$count_file_info - 1];
-    unset($file_path_info[$count_file_info - 1]);
-    $base_file_path = implode("/",$file_path_info);
-    if (!empty($base_file_path)) {
-        $real_base_file_path = '/'.$base_file_path.'/';
-    } else {
-         $real_base_file_path = '/';
-    }
-
-    // File info for rename it
-    $old_real_path = $real_base_file_path.$my_file_name;
-    $new_real_path = $real_base_file_path.disable_dangerous_file(replace_dangerous_char($my_file_name, 'strict'));
-
-    // Path files for create a copy
-    $normal_path_old_encoding = $filepath.$my_file_name;
-    $my_new_file_name = disable_dangerous_file(replace_dangerous_char($my_file_name, 'strict'));
-    $new_path_without_weird_characters = $filepath.$my_new_file_name;
-
-    if (file_exists($normal_path_old_encoding) && !is_dir($normal_path_old_encoding)) {
-        if(copy($normal_path_old_encoding, $new_path_without_weird_characters)) {
-            $query = "UPDATE $dbTable 
-                SET path=REPLACE(path,'".Database::escape_string($old_real_path)."','".Database::escape_string($new_real_path)."') 
-                WHERE id = '".$real_document_id."'";
-            Database::query($query,__FILE__,__LINE__);
-        }
-    }
 }
 
 /*
@@ -311,9 +327,10 @@ if (isset($_POST['newComment']))
 	(Step 1 see below)
 */
 
-if (isset($_POST['renameTo'])) {
-    $info_message = change_name($baseWorkDir, $_GET['sourceFile'], $_POST['renameTo'], $dir, $doc);
-    //assume name change was successful
+if (isset($_POST['renameTo']))
+{
+	$info_message = change_name($baseWorkDir, $_GET['sourceFile'], $_POST['renameTo'], $dir, $doc);
+	//assume name change was successful
 }
 
 /*
@@ -330,11 +347,13 @@ $result = Database::query("SELECT id,comment,title FROM $dbTable WHERE path LIKE
 $message = "<i>Debug info</i><br>directory = $dir<br>";
 $message .= "document = $file_name<br>";
 $message .= "comments file = " . $file . "<br>";
+//Display::display_normal_message($message);
 
-while ($row = Database::fetch_array($result, 'ASSOC')) {
-    $oldComment = $row['comment'];
-    $oldTitle = Security :: remove_XSS($row['title']);
-    $docId = $row['id'];  // RH: metadata
+while($row = Database::fetch_array($result, 'ASSOC'))
+{
+	$oldComment = $row['comment'];
+	$oldTitle = Security :: remove_XSS($row['title']);
+	$docId = $row['id'];  // RH: metadata
 }
 
 /*
@@ -362,26 +381,10 @@ if($is_allowedToEdit)
 		$texte=trim(str_replace(array("\r","\n"),"",stripslashes($_POST['texte'])));
 		$texte=Security::remove_XSS($texte,COURSEMANAGERLOWSECURITY);
 
-                // add template css path if it doesn't exist
-                if (strpos($texte, '/css/templates.css') === false) {
-                    $texte=str_replace('</head>','<link rel="stylesheet" href="'.api_get_path(WEB_COURSE_PATH).$_course['path'].'/document/css/templates.css" type="text/css" /></head>',$texte);
+		if(!strstr($texte,'/css/frames.css'))
+		{
+			$texte=str_replace('</title></head>','</title><link rel="stylesheet" href="../css/frames.css" type="text/css" /></head>',$texte);
 		}
-                
-                // add js path if it doesn't exist
-                $js = '';                
-                if (strpos($texte, '/javascript/jquery.highlight.js') === false) { 
-                    $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
-                    $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'jwplayer/jwplayer.js" language="javascript"></script>'.PHP_EOL;
-                    if (api_get_setting('show_glossary_in_documents') != 'none') {                        
-                        if (api_get_setting('show_glossary_in_documents') == 'ismanual') {
-                            $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"></script>';
-                        } else {
-                            $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"></script>';
-                            $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_automatic.js"></script>';
-                        }
-                    }                                                            
-                }
-                $texte = str_replace('</head>', $js.'</head>', $texte);
 
 		// RH commented: $filename=replace_dangerous_char($filename,'strict');
 		// What??
@@ -448,18 +451,21 @@ if($is_allowedToEdit)
 							api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id']);
 						}
 						
-                                                if (!is_file($filepath.'css/templates.css')) {
-                                                        //make a copy of the current css for the new document
-                                                        copy(api_get_path(SYS_CODE_PATH).'css/'.api_get_setting('stylesheets').'/templates.css', $filepath.'css/templates.css');
-                                                        $doc_id = add_document($_course, $dir.'css/templates.css', 'file', filesize($filepath.'css/templates.css'), 'templates.css');
-                                                        api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'DocumentAdded', $_user['user_id']);
-                                                        api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id']);
-                                                }                                                
+						if(!is_file($filepath.'css/frames.css'))
+						{
+							$platform_theme= api_get_setting('stylesheets');
+							if (file_exists(api_get_path(SYS_CODE_PATH).'css/'.$platform_theme.'/frames.css')) {
+								copy(api_get_path(SYS_CODE_PATH).'css/'.$platform_theme.'/frames.css',$filepath.'css/frames.css');
+								$doc_id=add_document($_course,$dir.'css/frames.css','file',filesize($filepath.'css/frames.css'),'frames.css');
+								api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'DocumentAdded', $_user['user_id']);
+								api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id']);								
+							}
+						}
 								
 						// "WHAT'S NEW" notification: update table item_property (previously last_tooledit)
 						$document_id = DocumentManager::get_document_id($_course,$file);
 						if($document_id)
-						{
+						{	
 							$file_size = filesize($filepath.$filename.'.'.$extension);
 							update_existing_document($_course, $document_id,$file_size,$read_only_flag);
 							api_item_property_update($_course, TOOL_DOCUMENT, $document_id, 'DocumentUpdated', $_user['user_id']);
@@ -473,7 +479,7 @@ if($is_allowedToEdit)
 							}
 							else
 							{							
-							echo "<script>window.location.href='document.php?curdirpath=".urlencode($dir)."';</script>";
+							echo "<script>window.location.href='document.php?curdirpath='".urlencode($dir).";</script>";
 							}
 							exit ();
 						}
@@ -496,7 +502,7 @@ if($is_allowedToEdit)
 							$updatestatus = update_existing_document($_course, $document_id,$file_size,$read_only_flag);
 							if($updatestatus)
 							{							
-							echo "<script>window.location.href='document.php?curdirpath=".urlencode($dir)."';</script>";
+							echo "<script>window.location.href='document.php?curdirpath='".urlencode($dir).";</script>";
 							}
 						}							
 					}				
@@ -504,7 +510,7 @@ if($is_allowedToEdit)
 			}
 			else
 			{				
-
+				
 				if (is_file($filepath.$filename.'.'.$extension)) {
 					$file_size = filesize($filepath.$filename.'.'.$extension);
 					$document_id = DocumentManager::get_document_id($_course,$file);
@@ -513,7 +519,7 @@ if($is_allowedToEdit)
 						$updatestatus = update_existing_document($_course, $document_id,$file_size,$read_only_flag);
 						if($updatestatus)
 						{							
-						echo "<script>window.location.href='document.php?curdirpath=".urlencode($dir)."';</script>";
+						echo "<script>window.location.href='document.php?curdirpath='".urlencode($dir).";</script>";
 						}
 					}					
 				}
@@ -530,7 +536,7 @@ if($is_allowedToEdit)
 							$updatestatus = update_existing_document($_course, $document_id,$file_size,$read_only_flag);
 							if($updatestatus)
 							{							
-							echo "<script>window.location.href='document.php?curdirpath=".urlencode($dir)."';</script>";
+							echo "<script>window.location.href='document.php?curdirpath='".urlencode($dir).";</script>";
 							}
 						}		
 					}					
@@ -551,51 +557,16 @@ if(file_exists($filepath.$doc))
 	$filename=str_replace('.'.$extension,'',$doc);
 	$extension=strtolower($extension);
 	
-	if(in_array($extension,array('html','htm'))) {
-	//	$texte=file($filepath.$doc);
-	//	$texte=implode('',$texte);            
-
-		$texte = file_get_contents($filepath.$doc);	
-		$css_name = api_get_setting('stylesheets');
-		$position = strpos($texte, 'table.result');
-		if ($position !== false){		
-			//$template_css = ' <style type="text/css">'.str_replace('../../img/',api_get_path(REL_CODE_PATH).'img/',file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/default.css')).'</style>';
-			if(file_exists(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css')) {                            
-                            $template_content = str_replace('../../img/', api_get_path(REL_CODE_PATH).'img/', file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css'));
-                            $template_content = str_replace('images/', api_get_path(REL_CODE_PATH).'css/'.$css_name.'/images/', $template_content);
-                            file_put_contents($filepath.'css/templates.css', $template_content);
-			}
-		}
-                
-                if(file_exists(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css')) {
-                    $template_content = str_replace('../../img/', api_get_path(REL_CODE_PATH).'img/', file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css'));
-                    $template_content = str_replace('images/', api_get_path(REL_CODE_PATH).'css/'.$css_name.'/images/', $template_content);            
-                    file_put_contents($filepath.'css/templates.css', $template_content);
-                }
-
-                $texte =  str_replace('{CSS}','<link rel="stylesheet" href="'.api_get_path(WEB_COURSE_PATH).$_course['path'].'/document/css/templates.css" type="text/css" />', $texte);
-                // add template css path if it doesn't exist
-                $template_css = '';
-                if (strpos($texte, '/css/templates.css') === false) {
-                    $template_css = '<link rel="stylesheet" href="'.api_get_path(WEB_COURSE_PATH).$_course['path'].'/document/css/templates.css" type="text/css" />';
-                }
-                // add js path if it doesn't exist
-                $js = '';                
-                if (strpos($texte, 'javascript/jquery.highlight.js') === false) {
-                    $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
-                    $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'jwplayer/jwplayer.js" language="javascript"></script>'.PHP_EOL;   
-                    if (api_get_setting('show_glossary_in_documents') != 'none' && isset($_POST['is_template']) && $_POST['is_template'] == 0) {                    
-                        if (api_get_setting('show_glossary_in_documents') == 'ismanual') {
-                            $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"></script>';
-                        } else {
-                            $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"></script>';
-                            $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_automatic.js"></script>';
-                        }
-                    }
-                }
-
-		$texte = str_replace('</head>', $template_css.$js.'</head>', $texte);                
-		$path_to_append=api_get_path(WEB_COURSE_PATH).$_course['path'].'/document'.$dir;
+	/*if(!in_array($extension,array('html','htm'))) // that was wrong
+	{
+		$extension=$filename=$texte='';		
+	}*/
+	
+	if(in_array($extension,array('html','htm')))
+	{
+		$texte=file($filepath.$doc);
+		$texte=implode('',$texte);
+		$path_to_append=api_get_path('WEB_COURSE_PATH').$_course['path'].'/document'.$dir;
 		$texte=str_replace('="./','="'.$path_to_append,$texte);
 		$texte=str_replace('mp3player.swf?son=.%2F','mp3player.swf?son='.urlencode($path_to_append),$texte);
 	}	
@@ -653,6 +624,7 @@ if ($owner_id == $_user['user_id'] || api_is_platform_admin() || $is_allowed_to_
 
 	// form title
 	//$form->addElement('header', '', $nameTools);
+	
 	$renderer = $form->defaultRenderer();
 
 	$form->addElement('hidden','filename');
@@ -679,7 +651,7 @@ if ($owner_id == $_user['user_id'] || api_is_platform_admin() || $is_allowed_to_
 
 			
 	$read_only_flag=$_POST['readonly'];
-
+			
 	$defaults['texte'] = $texte;
 			
 	//if($extension == 'htm' || $extension == 'html')
@@ -697,6 +669,12 @@ if ($owner_id == $_user['user_id'] || api_is_platform_admin() || $is_allowed_to_
 		}			
 	}
 			
+	if(!$group_document)
+	{
+	//	$metadata_link = '<a href="../metadata/index.php?eid='.urlencode('Document.'.$docId).'">'.get_lang('AddMetadata').'</a>';
+	//	$form->addElement('static',null,get_lang('Metadata'),$metadata_link);
+	}
+			
 	$form->addElement('textarea','newComment',get_lang('Comment'),'rows="3" style="width:300px;"');
 	/*
 	$renderer = $form->defaultRenderer();
@@ -711,63 +689,48 @@ if ($owner_id == $_user['user_id'] || api_is_platform_admin() || $is_allowed_to_
 		}
 	}		
 	
-	if ($is_certificate_mode) {
+	if ($is_certificate_mode)
 		$form->addElement('style_submit_button', 'submit', get_lang('SaveCertificate'), 'class="save"');
-        }
-	else {
+	else 
 		$form->addElement('style_submit_button','submit',get_lang('SaveDocument'), 'class="save"');
-        }
+	
+	if(isset($_REQUEST['tplid']))
+	{
+	$table_sys_template = Database::get_main_table('system_template');
+	$table_template = Database::get_main_table(TABLE_MAIN_TEMPLATES);	
+	$table_document = Database::get_course_table(TABLE_DOCUMENT, $_course['dbName']);
+	$user_id = api_get_user_id();
+	$js = '';
+	if (api_get_setting('show_glossary_in_documents') != 'none') { 
+  $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>'.PHP_EOL;
+		if (api_get_setting('show_glossary_in_documents') == 'ismanual') {	
+			$js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"/>';
+		} else {
+   $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"/>'.PHP_EOL;
+			$js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_automatic.js"/>';
+		}
+	}
+	// setting some paths
+	$img_dir = api_get_path(REL_CODE_PATH).'img/';
+	$default_course_dir = api_get_path(REL_CODE_PATH).'default_course_document/';
 
-	if (isset($_REQUEST['tplid'])) {
-            $table_sys_template = Database::get_main_table('system_template');
-            $table_template = Database::get_main_table(TABLE_MAIN_TEMPLATES);	
-            $table_document = Database::get_course_table(TABLE_DOCUMENT, $_course['dbName']);
-            $user_id = api_get_user_id();
-
-            // setting some paths
-            $img_dir = api_get_path(REL_CODE_PATH).'img/';
-            $default_course_dir = api_get_path(REL_CODE_PATH).'default_course_document/';
-            if(file_exists(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css')) {
-                $template_content = str_replace('../../img/', api_get_path(REL_CODE_PATH).'img/', file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css'));
-                $template_content = str_replace('images/', api_get_path(REL_CODE_PATH).'css/'.$css_name.'/images/', $template_content);            
-                file_put_contents($filepath.'css/templates.css', $template_content);
-            }
-        
+	$template_css = ' <style type="text/css">'.str_replace('../../img/',api_get_path(REL_CODE_PATH).'img/',file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/default.css')).'</style>';
+	$template_css = str_replace('images/',api_get_path(REL_CODE_PATH).'css/'.$css_name.'/images/',$template_css);
 	if(!isset($_REQUEST['tmpltype']))
 	{
 		if($_REQUEST['tplid'] <> 0)
 		{
-                    $query = 'SELECT content FROM '.$table_sys_template.' WHERE id='.$_REQUEST['tplid'];		
-                    $result = api_sql_query($query,__FILE__,__LINE__);
-                    while($obj = Database::fetch_object($result)) {
-                        $valcontent = $obj->content;	
-                    }
-                
-                    // add js path if it doesn't exist
-                    $js = '';                
-                    if (strpos($valcontent, 'javascript/jquery.highlight.js') === false) {
-                        if (api_get_setting('show_glossary_in_documents') != 'none') { 
-                            $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>'.PHP_EOL;
-                            $js .='<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'jwplayer/jwplayer.js" language="javascript"></script>'.PHP_EOL;
-                            if (api_get_setting('show_glossary_in_documents') == 'ismanual') {	
-                                $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"/>';
-                            } else {
-                                $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"/>'.PHP_EOL;
-                                $js .= '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_automatic.js"/>';
-                            }
-                        }
-                    }
-
-                    // add template css path if it doesn't exist
-                    $template_css = '';
-                    if (strpos($valcontent, '/css/templates.css') === false) {
-                        $template_css = '<link rel="stylesheet" href="'.api_get_path(WEB_COURSE_PATH).$_course['path'].'/document/css/templates.css" type="text/css" />';        
-                    }
-                    $valcontent =  str_replace('{CSS}',$template_css.$js, $valcontent);
-                    $valcontent =  str_replace('{IMG_DIR}',$img_dir, $valcontent);
-                    $valcontent =  str_replace('{REL_PATH}', api_get_path(REL_PATH), $valcontent);
-                    $valcontent =  str_replace('{COURSE_DIR}',$default_course_dir, $valcontent);
-                    $defaults['texte'] = $valcontent;
+		$query = 'SELECT content FROM '.$table_sys_template.' WHERE id='.$_REQUEST['tplid'];		
+		$result = api_sql_query($query,__FILE__,__LINE__);
+		while($obj = Database::fetch_object($result))
+				{
+					$valcontent = $obj->content;	
+				}
+		$valcontent =  str_replace('{CSS}',$template_css.$js, $valcontent);      	
+		$valcontent =  str_replace('{IMG_DIR}',$img_dir, $valcontent);
+		$valcontent =  str_replace('{REL_PATH}', api_get_path(REL_PATH), $valcontent);
+		$valcontent =  str_replace('{COURSE_DIR}',$default_course_dir, $valcontent);
+		$defaults['texte'] = $valcontent;
 		}
 	}
 	else
@@ -798,6 +761,7 @@ else
 	$defaults['newComment'] = $oldComment;
 	$defaults['origin'] = Security::remove_XSS($_GET['origin']);
 	$defaults['origin_opt'] = Security::remove_XSS($_GET['origin_opt']);
+
 	$form->setDefaults($defaults);
 	// show templates
 	/*
@@ -828,7 +792,7 @@ $origin=Security::remove_XSS($_GET['origin']);
 		echo '<a href="document.php?curdirpath='.Security::remove_XSS($_GET['curdirpath']).'">'.Display::return_icon('back.png',get_lang('Back').' '.get_lang('To').' '.get_lang('DocumentsOverview')).get_lang('Back').' '.get_lang('To').' '.get_lang('DocumentsOverview').'</a>';
 	echo '</div>';*/
 
-	echo '<div class="actions"><a href="document.php?'.api_get_cidreq().'&curdirpath='.Security::remove_XSS($_GET['dir']).'">'.Display::return_icon('pixel.gif',get_lang('Documents'),array('style'=>'vertical-align:middle;','class'=>'toolactionplaceholdericon toolactionback')).'&nbsp;&nbsp;'.get_lang('Documents').'</a>&nbsp;&nbsp;<a href="template_gallery.php?'.api_get_cidreq().'&doc=N&curdirpath='.urlencode($get_cur_path).'&file='.urlencode($get_file).'">'.Display::return_icon('pixel.gif', get_lang('TemplatesGallery'), array('class' => 'toolactionplaceholdericon toolactiontemplates')).get_lang('TemplatesGallery').'</a></div>';
+	echo '<div class="actions"><a href="document.php?'.api_get_cidreq().'&curdirpath='.Security::remove_XSS($_GET['dir']).'">'.Display::return_icon('go_previous_32.png',get_lang('Documents'),array('style'=>'vertical-align:middle;')).'&nbsp;&nbsp;'.get_lang('Documents').'</a>&nbsp;&nbsp;<a href="template_gallery.php?'.api_get_cidreq().'&doc=N&curdirpath='.urlencode($get_cur_path).'&file='.urlencode($get_file).'"><img src="'.api_get_path(WEB_IMG_PATH).'tools_wizard_48.png">'.get_lang('TemplatesGallery').'</a></div>';
 	echo '<div id="content">';
 	$form->display();
 	echo '<div>';

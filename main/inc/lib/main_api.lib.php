@@ -76,7 +76,7 @@ define('TOOL_ANNOUNCEMENT', 'announcement');
 define('TOOL_FORUM', 'forum');
 define('TOOL_THREAD', 'thread');
 define('TOOL_POST', 'post');
-define('TOOL_DROPBOX', 'dropbox');// This is necessary for validate purpose (hidde dropbox tool)
+//define('TOOL_DROPBOX', 'dropbox');
 define('TOOL_MINDMAP', 'mindmap');
 define('TOOL_QUIZ', 'quiz');
 define('TOOL_USER', 'user');
@@ -129,11 +129,6 @@ define('LOG_COURSE_DELETE', 'course_deleted');
 define('LOG_COURSE_CREATE', 'course_created');
 define('LOG_USER_DELETE', 'user_deleted');
 define('LOG_USER_CREATE', 'user_created');
-define('LOG_USER_UPDATE', 'user_updated');
-define('LOG_USER_LOCK', 'user_locked');
-define('LOG_USER_UNLOCK', 'user_unlocked');
-
-
 define('LOG_SESSION_CREATE', 'session_created');
 define('LOG_SESSION_DELETE', 'session_deleted');
 define('LOG_SESSION_CATEGORY_CREATE', 'session_category_created');
@@ -200,7 +195,6 @@ define('LIBRARY_PATH', 'LIBRARY_PATH');
 define('CONFIGURATION_PATH', 'CONFIGURATION_PATH');
 define('WEB_LIBRARY_PATH', 'WEB_LIBRARY_PATH');
 define('WEB_AJAX_PATH', 'WEB_AJAX_PATH');
-define('SYS_TEST_PATH', 'SYS_TEST_PATH');
 // Constants for requesting path conversion.
 define('TO_WEB', 'TO_WEB');
 define('TO_SYS', 'TO_SYS');
@@ -302,39 +296,43 @@ require_once dirname(__FILE__).'/internationalization.lib.php';
 function api_get_path($path_type, $path = null) {
 
 	static $paths = array(
-		WEB_PATH 				=> '',
-		SYS_PATH 				=> '',
-		REL_PATH 				=> '',
-		WEB_SERVER_ROOT_PATH 	=> '',
-		SYS_SERVER_ROOT_PATH 	=> '',
-		WEB_COURSE_PATH 		=> '',
-		SYS_COURSE_PATH 		=> '',
-		REL_COURSE_PATH 		=> '',
-		REL_CODE_PATH 			=> '',
-		WEB_CODE_PATH 			=> '',
-		SYS_CODE_PATH 			=> '',
-		SYS_LANG_PATH 			=> 'lang/',
-		WEB_IMG_PATH 			=> 'img/',
-		WEB_CSS_PATH 			=> 'css/',
-		SYS_PLUGIN_PATH 		=> 'plugin/',
-		WEB_PLUGIN_PATH 		=> 'plugin/',
-		SYS_ARCHIVE_PATH 		=> 'archive/',
-		WEB_ARCHIVE_PATH 		=> 'archive/',
-		INCLUDE_PATH 			=> 'inc/',
-		LIBRARY_PATH 			=> 'inc/lib/',
-		CONFIGURATION_PATH		=> 'inc/conf/',
-		WEB_LIBRARY_PATH 		=> 'inc/lib/',
-		WEB_AJAX_PATH			=> 'inc/ajax/',
-		SYS_TEST_PATH 			=> 'tests/'
+		WEB_PATH => '',
+		SYS_PATH => '',
+		REL_PATH => '',
+//		REL_SYS_PATH => '',
+		WEB_SERVER_ROOT_PATH => '',
+		SYS_SERVER_ROOT_PATH => '',
+		WEB_COURSE_PATH => '',
+		SYS_COURSE_PATH => '',
+		REL_COURSE_PATH => '',
+		REL_CODE_PATH => '',
+		WEB_CODE_PATH => '',
+		SYS_CODE_PATH => '',
+		SYS_LANG_PATH => 'lang/',
+		WEB_IMG_PATH => 'img/',
+		WEB_CSS_PATH => 'css/',
+		GARBAGE_PATH => 'archive/', // Deprecated?
+		SYS_PLUGIN_PATH => 'plugin/',
+		WEB_PLUGIN_PATH => 'plugin/',
+		SYS_ARCHIVE_PATH => 'archive/',
+		WEB_ARCHIVE_PATH => 'archive/',
+		INCLUDE_PATH => 'inc/',
+		LIBRARY_PATH => 'inc/lib/',
+		CONFIGURATION_PATH => 'inc/conf/',
+		WEB_LIBRARY_PATH => 'inc/lib/',
+		WEB_AJAX_PATH	 => 'inc/ajax/'
 	);
+
 	static $resource_paths = array(
-		FLASH_PLAYER_AUDIO 		=> 'inc/lib/mediaplayer/player.swf',
-		FLASH_PLAYER_VIDEO 		=> 'inc/lib/mediaplayer/player.swf',
-		SCRIPT_SWFOBJECT 		=> 'inc/lib/swfobject/swfobject.js',
-		SCRIPT_ASCIIMATHML 		=> 'inc/lib/asciimath/ASCIIMathML.js'
+		FLASH_PLAYER_AUDIO => 'inc/lib/mediaplayer/player.swf',
+		FLASH_PLAYER_VIDEO => 'inc/lib/mediaplayer/player.swf',
+		SCRIPT_SWFOBJECT => 'inc/lib/swfobject/swfobject.js',
+		SCRIPT_ASCIIMATHML => 'inc/lib/asciimath/ASCIIMathML.js'
 	);
 
 	static $is_this_function_initialized;
+
+	static $include_path_sys;
 	static $server_base_web; // No trailing slash.
 	static $server_base_sys; // No trailing slash.
 	static $root_web;
@@ -342,40 +340,43 @@ function api_get_path($path_type, $path = null) {
 	static $root_rel;
 	static $code_folder;
 	static $course_folder;
-    static $include_path_sys;
-
-	// Always load root_web modifications for multiple url features
-	global $_configuration;
-	//default $_configuration['root_web'] configuration
-	$root_web = $_configuration['root_web'];
-
-	// Configuration data for already installed system.
-	$root_sys = $_configuration['root_sys'];
-	$load_new_config = false;
-
-	// To avoid that the api_get_access_url() function fails since global.inc.php also calls the main_api.lib.php
-	if ($path_type == WEB_PATH) {
-		if (isset($_configuration['access_url']) &&  $_configuration['access_url'] != 1) {
-			//we look into the DB the function api_get_access_url
-			$url_info = api_get_access_url($_configuration['access_url']);
-			$root_web = $url_info['active'] == 1 ? $url_info['url'] : $_configuration['root_web'];
-			$load_new_config = true;
-		}
-	}
 
 	if (!$is_this_function_initialized) {
+
 		global $_configuration;
 
-		$root_rel 		= $_configuration['url_append'];
-		$code_folder 	= $_configuration['code_append'];
-		$course_folder 	= $_configuration['course_folder'];
 		$include_path_sys = str_replace('\\', '/', realpath(dirname(__FILE__).'/../')).'/';
-		// Support for the installation process.
-		// Developers might use the function api_get_path() directly or indirectly (this is difficult to be traced), at the moment when
-		// configuration has not been created yet. This is why this function should be upgraded to return correct results in this case.
 
+		//
+		// Configuration data for already installed system.
+		//
+		$root_sys = $_configuration['root_sys'];
+		if (!isset($_configuration['access_url']) || $_configuration['access_url'] == 1 || $_configuration['access_url'] == '') {
+			//by default we call the $_configuration['root_web'] we don't query to the DB
+			//$url_info= api_get_access_url(1);
+			//$root_web = $url_info['url'];
+			if (isset($_configuration['root_web'])) {
+				$root_web = $_configuration['root_web'];
+			}
+			// Ivan: Just a formal note, here $root_web stays unset, reason about this is unknown.
+		} else {
+			//we look into the DB the function api_get_access_url
+			//this funcion have a problem because we can't called to the Database:: functions
+			$url_info = api_get_access_url($_configuration['access_url']);
+			$root_web = $url_info['active'] == 1 ? $url_info['url'] : $_configuration['root_web'];
+		}
+		$root_rel = $_configuration['url_append'];
+		$code_folder = $_configuration['code_append'];
+		$course_folder = $_configuration['course_folder'];
+
+		//
+		// Support for the installation process.
+		// Developers might use the function api_fet_path() directly or indirectly (this is difficult to be traced), at the moment when
+		// configuration has not been created yet. This is why this function should be upgraded to return correct results in this case.
+		//
 		if (!file_exists($include_path_sys.'/conf/configuration.php')) {
-			if (($pos = strpos(($requested_page_rel = api_get_self()), 'main/install')) !== false) {
+			$requested_page_rel = api_get_self();
+			if (($pos = strpos($requested_page_rel, 'main/install')) !== false) {
 				$root_rel = substr($requested_page_rel, 0, $pos);
 				// See http://www.mediawiki.org/wiki/Manual:$wgServer
 				$server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
@@ -399,83 +400,56 @@ function api_get_path($path_type, $path = null) {
 		}
 
 		// Dealing with trailing slashes.
-		$root_web 		= api_add_trailing_slash($root_web);
-		$root_sys 		= api_add_trailing_slash($root_sys);
-		$root_rel	 	= api_add_trailing_slash($root_rel);
-		$code_folder 	= api_add_trailing_slash($code_folder);
-		$course_folder 	= api_add_trailing_slash($course_folder);
+		$root_web = api_add_trailing_slash($root_web);
+		$root_sys = api_add_trailing_slash($root_sys);
+		$root_rel = api_add_trailing_slash($root_rel);
+		$code_folder = api_add_trailing_slash($code_folder);
+		$course_folder = api_add_trailing_slash($course_folder);
 
 		// Web server base and system server base.
 		$server_base_web = preg_replace('@'.$root_rel.'$@', '', $root_web); // No trailing slash.
 		$server_base_sys = preg_replace('@'.$root_rel.'$@', '', $root_sys); // No trailing slash.
 
+		//
 		// Initialization of a table taht contains common-purpose paths.
-		$paths[WEB_PATH] 				= $root_web;
-		$paths[SYS_PATH] 				= $root_sys;
-		$paths[REL_PATH] 				= $root_rel;
-		$paths[WEB_SERVER_ROOT_PATH] 	= $server_base_web.'/';
-		$paths[SYS_SERVER_ROOT_PATH] 	= $server_base_sys.'/';
-		$paths[WEB_COURSE_PATH] 		= $root_web.$course_folder;
-		$paths[SYS_COURSE_PATH] 		= $root_sys.$course_folder;
-		$paths[REL_COURSE_PATH] 		= $root_rel.$course_folder;
-		$paths[REL_CODE_PATH] 			= $root_rel.$code_folder;
-		$paths[WEB_CODE_PATH] 			= $root_web.$code_folder;
-		$paths[SYS_CODE_PATH] 			= $root_sys.$code_folder;
-
+		//
+		$paths[WEB_PATH] = $root_web;
+		$paths[SYS_PATH] = $root_sys;
+		$paths[REL_PATH] = $root_rel;
+		$paths[WEB_SERVER_ROOT_PATH] = $server_base_web.'/';
+		$paths[SYS_SERVER_ROOT_PATH] = $server_base_sys.'/';
+		$paths[WEB_COURSE_PATH] = $root_web.$course_folder;
+		$paths[SYS_COURSE_PATH] = $root_sys.$course_folder;
+		$paths[REL_COURSE_PATH] = $root_rel.$course_folder;
+		$paths[REL_CODE_PATH] = $root_rel.$code_folder;
+		$paths[WEB_CODE_PATH] = $root_web.$code_folder;
+		// Elimination of an obsolete configuration setting.
+		//$paths[SYS_CODE_PATH] = $GLOBALS['clarolineRepositorySys'];
+		$paths[SYS_CODE_PATH] = $root_sys.$code_folder;
+		//
 		// Now we can switch into api_get_path() "terminology".
-		$paths[SYS_LANG_PATH] 			= $paths[SYS_CODE_PATH].$paths[SYS_LANG_PATH];
-		$paths[SYS_PLUGIN_PATH] 		= $paths[SYS_PATH].$paths[SYS_PLUGIN_PATH];
-		$paths[SYS_ARCHIVE_PATH] 		= $paths[SYS_PATH].$paths[SYS_ARCHIVE_PATH];
-		$paths[SYS_TEST_PATH] 			= $paths[SYS_PATH].$paths[SYS_TEST_PATH];
-
-		$paths[WEB_CSS_PATH] 			= $paths[WEB_CODE_PATH].$paths[WEB_CSS_PATH];
-		$paths[WEB_IMG_PATH] 			= $paths[WEB_CODE_PATH].$paths[WEB_IMG_PATH];
-		$paths[WEB_LIBRARY_PATH] 		= $paths[WEB_CODE_PATH].$paths[WEB_LIBRARY_PATH];
+		$paths[SYS_LANG_PATH] = $paths[SYS_CODE_PATH].$paths[SYS_LANG_PATH];
+		$paths[WEB_IMG_PATH] = $paths[WEB_CODE_PATH].$paths[WEB_IMG_PATH];
+		// TODO: This path may depend on the configuration option? To be researched.
+		// Maybe a new constant like WEB_USER_CSS_PATH has to be defined?
+		$paths[WEB_CSS_PATH] = $paths[WEB_CODE_PATH].$paths[WEB_CSS_PATH];
+		//
+		$paths[GARBAGE_PATH] = $paths[SYS_PATH].$paths[GARBAGE_PATH]; // Deprecated?
+		$paths[SYS_PLUGIN_PATH] = $paths[SYS_PATH].$paths[SYS_PLUGIN_PATH];
+		$paths[WEB_PLUGIN_PATH] = $paths[WEB_PATH].$paths[WEB_PLUGIN_PATH];
+		$paths[SYS_ARCHIVE_PATH] = $paths[SYS_PATH].$paths[SYS_ARCHIVE_PATH];
+		$paths[WEB_ARCHIVE_PATH] = $paths[WEB_PATH].$paths[WEB_ARCHIVE_PATH];
+		// A change for Dokeos 1.8.6.2
+		// Calculation in the previous way does not rely on configuration settings and in some cases gives unexpected results.
+		//$paths[INCLUDE_PATH] = $include_path_sys; // Old behaviour, Dokeos 1.8.6.1.
+		$paths[INCLUDE_PATH] = $paths[SYS_CODE_PATH].$paths[INCLUDE_PATH]; // New behaviour, coherrent with the model, Dokeos 1.8.6.2.
+		//
+		$paths[LIBRARY_PATH] = $paths[SYS_CODE_PATH].$paths[LIBRARY_PATH];
+		$paths[CONFIGURATION_PATH] = $paths[SYS_CODE_PATH].$paths[CONFIGURATION_PATH];
+		$paths[WEB_LIBRARY_PATH] = $paths[WEB_CODE_PATH].$paths[WEB_LIBRARY_PATH];
 		$paths[WEB_AJAX_PATH] 	 		= $paths[WEB_CODE_PATH].$paths[WEB_AJAX_PATH];
-
-		$paths[WEB_PLUGIN_PATH] 		= $paths[WEB_PATH].$paths[WEB_PLUGIN_PATH];
-		$paths[WEB_ARCHIVE_PATH] 		= $paths[WEB_PATH].$paths[WEB_ARCHIVE_PATH];
-
-		$paths[INCLUDE_PATH] 			= $paths[SYS_CODE_PATH].$paths[INCLUDE_PATH];
-		$paths[LIBRARY_PATH] 			= $paths[SYS_CODE_PATH].$paths[LIBRARY_PATH];
-		$paths[CONFIGURATION_PATH] 		= $paths[SYS_CODE_PATH].$paths[CONFIGURATION_PATH];
-
+        
 		$is_this_function_initialized = true;
-	} else {
-		if ($load_new_config) {
-			//  Redefining variables to work well with the "multiple url" feature
-
-			// All web paths need to be here
-			$web_paths = array(
-				WEB_PATH 				=> '',
-				WEB_SERVER_ROOT_PATH	=> '',
-				WEB_COURSE_PATH 		=> '',
-				WEB_CODE_PATH 			=> '',
-				WEB_IMG_PATH 			=> 'img/',
-				WEB_CSS_PATH 			=> 'css/',
-				WEB_PLUGIN_PATH 		=> 'plugin/',
-				WEB_ARCHIVE_PATH 		=> 'archive/',
-				WEB_LIBRARY_PATH 		=> 'inc/lib/',
-				WEB_AJAX_PATH 			=> 'inc/ajax/',
-			);
-
-			$root_web 		= api_add_trailing_slash($root_web);
-			// Web server base and system server base.
-			$server_base_web = preg_replace('@'.$root_rel.'$@', '', $root_web); // No trailing slash.
-
-			// Redefine root webs
-			$paths[WEB_PATH] 				= $root_web;
-			$paths[WEB_SERVER_ROOT_PATH]	= $server_base_web.'/';
-			$paths[WEB_COURSE_PATH] 		= $root_web.$course_folder;
-			$paths[WEB_CODE_PATH] 			= $root_web.$code_folder;
-			$paths[WEB_IMG_PATH] 			= $paths[WEB_CODE_PATH].$web_paths[WEB_IMG_PATH];
-
-			$paths[WEB_CSS_PATH] 			= $paths[WEB_CODE_PATH].$web_paths[WEB_CSS_PATH];
-			$paths[WEB_PLUGIN_PATH] 		= $paths[WEB_PATH].$web_paths[WEB_PLUGIN_PATH];
-			$paths[WEB_ARCHIVE_PATH] 		= $paths[WEB_PATH].$web_paths[WEB_ARCHIVE_PATH];
-			$paths[WEB_LIBRARY_PATH] 		= $paths[WEB_CODE_PATH].$web_paths[WEB_LIBRARY_PATH];
-			$paths[WEB_AJAX_PATH] 	 		= $paths[WEB_CODE_PATH].$web_paths[WEB_AJAX_PATH];
-		}
 	}
 
 	// Shallow purification and validation of input parameters.
@@ -488,6 +462,7 @@ function api_get_path($path_type, $path = null) {
 	}
 
 	// Retrieving a common-purpose path.
+
 	if (isset($paths[$path_type])) {
 		return $paths[$path_type];
 	}
@@ -548,12 +523,18 @@ function api_get_path($path_type, $path = null) {
 		$path = preg_replace(VALID_WEB_SERVER_BASE, '/', $path);
 
 	} elseif (strpos($path, $server_base_sys) === 0) {
+
 		$path = preg_replace('@^'.$server_base_sys.'@', '', $path);
+
 	} elseif (strpos($path, '/') === 0) {
+
 		// Leading slash - we assume that this path is semi-absolute (REL),
 		// then path is left without furthes modifications.
+
 	} else {
+
 		return null; // Probably implementation of this case won't be needed.
+
 	}
 
 	// Path now is semi-absolute. It is convenient at this moment repeated slashes to be removed.
@@ -686,89 +667,43 @@ function api_block_anonymous_users() {
 */
 
 /**
- * @return an array with the navigator name,version,browser shortname, device where the browser is running.
+ * @return an array with the navigator name and version
  */
 function api_get_navigator() {
 	$navigator = 'Unknown';
 	$version = 0;
-        $shortname = '';
-        $device = array();
 	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Opera') !== false) {
 		$navigator = 'Opera';
 		list (, $version) = explode('Opera', $_SERVER['HTTP_USER_AGENT']);
 	} elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
 		$navigator = 'Internet Explorer';
-                $shortname = 'msie';
 		list (, $version) = explode('MSIE', $_SERVER['HTTP_USER_AGENT']);
 	} elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'Gecko') !== false) {
 		$navigator = 'Mozilla';
-                $shortname = 'firefox';
 		list (, $version) = explode('; rv:', $_SERVER['HTTP_USER_AGENT']);
 	} elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'Netscape') !== false) {
 		$navigator = 'Netscape';
-                $shortname = 'netscape';
 		list (, $version) = explode('Netscape', $_SERVER['HTTP_USER_AGENT']);
 	}
 	// Added by Ivan Tcholakov, 23-AUG-2008.
 	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Konqueror') !== false) {
 		$navigator = 'Konqueror';
-                $shortname = 'konqueror';
 		list (, $version) = explode('Konqueror', $_SERVER['HTTP_USER_AGENT']);
 	}
 	if (stripos($_SERVER['HTTP_USER_AGENT'], 'applewebkit') !== false) {
 		$navigator = 'AppleWebKit';
-                $shortname = 'applewebkit';
 		list (, $version) = explode('Version/', $_SERVER['HTTP_USER_AGENT']);
 	}
 	if (stripos($_SERVER['HTTP_USER_AGENT'], 'safari') !== false) {
 		$navigator = 'Safari';
-                $shortname = 'safari';
 		list (, $version) = explode('Version/', $_SERVER['HTTP_USER_AGENT']);
 	}
-        
-        // Get device where the browser is running
-        $iPod = stripos($_SERVER['HTTP_USER_AGENT'],"iPod");
-        $iPhone = stripos($_SERVER['HTTP_USER_AGENT'],"iPhone");
-        $iPad = stripos($_SERVER['HTTP_USER_AGENT'],"iPad");
-        $webOS = stripos($_SERVER['HTTP_USER_AGENT'],"webOS");
-        $BlackBerry = stripos($_SERVER['HTTP_USER_AGENT'],"BlackBerry");
-        $RimTablet= stripos($_SERVER['HTTP_USER_AGENT'],"RIM Tablet");
-
-        if(stripos($_SERVER['HTTP_USER_AGENT'],"Android") && stripos($_SERVER['HTTP_USER_AGENT'],"mobile")){
-                $AndroidPhone = true;
-        }else if(stripos($_SERVER['HTTP_USER_AGENT'],"Android")){
-                $AndroidPhone = false;
-                $AndroidTablet = true;
-        }else{
-                $AndroidPhone = false;
-                $AndroidTablet = false;
-        }
-        // Set device information
-        // We return an array with the machine name, the machine type (phone or tablet) and a generic device type (mobile)
-        if( $iPod){ // Device is an iPod touch
-          $device = array('machine'=> 'ipod', 'machinetype'=>'phone', 'devicetype' => 'mobile');
-        } else if ($iPhone ) { // Device is an iPhone touch
-          $device = array('machine'=> 'iphone', 'machinetype'=>'phone', 'devicetype' => 'mobile'); 
-        }else if($iPad){ // Devie is an IPAD
-          $device = array('machine'=> 'ipad', 'machinetype'=>'tablet', 'devicetype' => 'mobile'); 
-        }else if($AndroidPhone){ // Device is an Andriod phone
-          $device = array('machine'=> 'android', 'machinetype'=>'phone', 'devicetype' => 'mobile'); 
-        }else if($AndroidTablet){ // Device is an Andriod tablet
-          $device = array('machine'=> 'android', 'machinetype'=>'tablet', 'devicetype' => 'mobile'); 
-        }else if($webOS){ // This is a webOS device
-          $device = array('machine'=> 'webos', 'machinetype'=>'phone', 'devicetype' => 'mobile'); 
-        }else if($BlackBerry){ // This is a blackberry phone
-          $device = array('machine'=> 'blackberry', 'machinetype'=>'phone', 'devicetype' => 'mobile'); 
-        }else if($RimTablet){ // Device is a RIM/BlackBerry tablet
-          $device = array('machine'=> 'blackberry', 'machinetype'=>'tablet', 'devicetype' => 'mobile'); 
-        }
-
-	// Get version
+	//
 	$version = doubleval($version);
 	if (strpos($version, '.') === false) {
 		$version = number_format(doubleval($version), 1);
 	}
-	return array ('name' => $navigator, 'version' => $version,'shortname' => $shortname, 'device' => $device);
+	return array ('name' => $navigator, 'version' => $version);
 }
 
 /**
@@ -1005,7 +940,7 @@ function api_get_course_path($course_code = null) {
  * @return	mixed	The value of that setting in that table. Return -1 if not found.
  */
 function api_get_course_setting($setting_name, $course_code = null, $forcerefresh=false) {
-   global $_course;
+
 	if (!is_array($_SESSION['course_setting'][$_course['code']]) OR $forcerefresh){
 		api_get_all_course_settings();
 	} else {
@@ -1839,10 +1774,6 @@ function api_get_self() {
  * @see usermanager::is_admin(user_id) for a user-id specific function
  */
 function api_is_platform_admin($allow_sessions_admins = false) {
-	
-	if(isset($GLOBALS['learner_view']) && $GLOBALS['learner_view'] === true)
-		return false;
-
 	if ($_SESSION['is_platformAdmin']) {
 		return true;
 	}
@@ -1884,27 +1815,57 @@ function api_is_course_tutor() {
 }
 
 /**
- * Check if the current user is a course or session coach, if you need know the course coach please use the api_is_course_coach function
+ * Check if the current user is a course or session coach
  * @params int - optional, session id
  * @params string - optional, course code
  * @return boolean True if current user is a course or session coach
  */
-function api_is_coach() {
+function api_is_coach($session_id = 0, $course_code = '') {
 	global $_user;
 	global $sessionIsCoach;
+
+	// caching mechanism
+	//if (!empty($_SESSION['_is_coach'][$session_id])){
+	if (array_key_exists($session_id,$_SESSION['_is_coach'])){
+		return $_SESSION['_is_coach'][$session_id];
+	}
+
+	if (!empty($session_id)) {
+		$session_id = intval($session_id);
+	} else {
+		$session_id = api_get_session_id();
+	}
+
+	if (!empty($course_code)) {
+		$course_code = Database::escape_string($course_code);
+	} else {
+		$course_code = api_get_course_id();
+	}
+
+	$sql = "SELECT DISTINCT id, name, date_start, date_end
+							FROM session
+							INNER JOIN session_rel_course_rel_user session_rc_ru
+								ON session_rc_ru.id_user = '".Database::escape_string($_user['user_id'])."'
+							WHERE session_rc_ru.course_code = '$course_code' AND session_rc_ru.status = 2 AND session_rc_ru.id_session = '$session_id'
+							ORDER BY date_start, date_end, name";
+
+	$result = Database::query($sql,__FILE__,__LINE__);
+	$sessionIsCoach = Database::store_result($result);
 
 	$sql = "SELECT DISTINCT id, name, date_start, date_end
 							FROM session
 							WHERE session.id_coach =  '".Database::escape_string($_user['user_id'])."'
+							AND id = '$session_id'
 							ORDER BY date_start, date_end, name";
-	$result = api_sql_query($sql,__FILE__,__LINE__);
-	$sessionIsCoach = api_store_result($result);
 
-	if(count($sessionIsCoach) > 0) {
-		return true;
-	} else {
-		return false;
-	}
+	$result = Database::query($sql,__FILE__,__LINE__);
+	$sessionIsCoach = array_merge($sessionIsCoach , Database::store_result($result));
+
+	// storing in the session (for caching and preventing countless execution of the same query
+	$_SESSION['_is_coach'][$session_id] = count($sessionIsCoach); 
+
+	return (count($sessionIsCoach) > 0);
+
 }
 
 /**
@@ -1971,13 +1932,13 @@ function api_is_session_in_category($session_id,$category_name) {
  *                               'subTitle'
  * @return void
  */
-function api_display_tool_title($title_element, $class = 'orange') {
+function api_display_tool_title($title_element) {
 	if (is_string($title_element)) {
 		$tit = $title_element;
 		unset ($title_element);
 		$title_element['mainTitle'] = $tit;
 	}
-	echo '<h3 class="'.$class.'">';
+	echo '<h3 class="orange">';
 	if (!empty($title_element['supraTitle'])) {
 		echo '<small>'.$title_element['supraTitle'].'</small><br />';
 	}
@@ -2118,9 +2079,6 @@ function api_display_debug_info($debug_info) {
 */
 
 function api_is_allowed_to_edit($tutor=false,$coach=false,$session_coach = false) {
-	
-	if(isset($GLOBALS['learner_view']) && $GLOBALS['learner_view'] === true)
-		return false;
 
 	$my_session_id = api_get_session_id();
 	$is_allowed_coach_to_edit = api_is_coach();		
@@ -2174,10 +2132,6 @@ function api_is_allowed_to_edit($tutor=false,$coach=false,$session_coach = false
 * @return boolean, true: the user has the rights to edit, false: he does not
 */
 function api_is_allowed_to_session_edit($tutor=false,$coach=false) {
-	
-	if(isset($GLOBALS['learner_view']) && $GLOBALS['learner_view'] === true)
-		return false;
-	
 	if (api_is_allowed_to_edit($tutor, $coach)) {
 		// if I'm a teacher, I will return true in order to not affect the normal behaviour of Dokeos tools
 		return true;
@@ -2878,7 +2832,6 @@ function api_return_html_area($name, $content = '', $height = '', $width = '100%
  * @param string $message
  * @param string $additional_headers
  * @param string $additional_parameters
- * @deprecated we should use api_mail_html or api_mail instead this function, this function needs be re-do for support UTF-8 messages
  * @author Ivan Tcholakov, 04-OCT-2009, a reworked version of this function.
  * @link http://www.dokeos.com/forum/viewtopic.php?t=15557
  */
@@ -3410,185 +3363,6 @@ function api_set_setting($var, $value, $subvar = null, $cat = null, $access_url 
 	}
 }
 
-function api_set_settings_category_no_changable($category, $value = null, $access_url = 1, $is_superadmin = false) {
-	if (empty($category)) { return false; }
-	$category = Database::escape_string($category);
-	$t_s = Database::get_main_table(TABLE_MAIN_SETTINGS_CURRENT);
-	$access_url = (int) $access_url;
-        $access_url_changeable = ($is_superadmin == true) ? " OR access_url_changeable=1 " : "";
-	if (empty($access_url)) { $access_url = 1; }
-	if (isset($value)) {
-		$value = Database::escape_string($value);
-		$sql = "UPDATE $t_s SET selected_value = '$value' WHERE category = '$category' AND access_url = $access_url 
-                AND (access_url_changeable = 0 $access_url_changeable)";
-		$res = Database::query($sql, __FILE__, __LINE__);
-		return $res !== false;
-	} else {
-                $sql = "UPDATE $t_s SET selected_value = NULL WHERE category = '$category' AND access_url = $access_url 
-                AND (access_url_changeable = 0 $access_url_changeable)";
-                $res = Database::query($sql, __FILE__, __LINE__);
-                return $res !== false;
-        }
-}
-
-/**
- * Allow check if the given setting exists
- * @param string The variable name
- * @param string The value
- * @param string The sub variable name
- * @param string The category
- * @param integer Url ID
- * @return boolean 
- */
-function api_check_if_setting_exist($var, $value, $subvar = null, $cat = null, $access_url = 1){
-        if (empty($var)) { return false; }
-	$t_settings = Database::get_main_table(TABLE_MAIN_SETTINGS_CURRENT);
-	$var = Database::escape_string($var);
-	$value = Database::escape_string($value);
-	$access_url = (int)$access_url;
-	if (empty($access_url)) { $access_url = 1; }
-	$select = "SELECT id,access_url_changeable FROM $t_settings WHERE variable = '$var' ";
-	if (!empty($subvar)) {
-		$subvar = Database::escape_string($subvar);
-		$select .= " AND subkey = '$subvar'";
-	}
-	if (!empty($cat)) {
-		$cat = Database::escape_string($cat);
-		$select .= " AND category = '$cat'";
-	}
-	if ($access_url > 1) {
-		$select .= " AND access_url = $access_url";
-	} else {
-		$select .= " AND access_url = 1 ";
-	}
-
-	$res = Database::query($select, __FILE__, __LINE__);
-	if (Database::num_rows($res) > 0) {
-            return true;
-        } else {
-            return false;
-        }
-}
-
-/**
- * Check if the setting is changeable in a multiste evironment
- * @param type $var
- * @param type $value
- * @param type $subvar
- * @param type $cat
- * @param type $access_url
- * @return boolean 
- */
-function api_get_check_if_setting_is_changable($var, $value, $subvar = null, $cat = null, $access_url = 1){
-        if (empty($var)) { return false; }
-	$t_settings = Database::get_main_table(TABLE_MAIN_SETTINGS_CURRENT);
-	$var = Database::escape_string($var);
-	$value = Database::escape_string($value);
-	$access_url = (int)$access_url;
-	if (empty($access_url)) { $access_url = 1; }
-	$select = "SELECT id,access_url_changeable FROM $t_settings WHERE variable = '$var' ";
-	if (!empty($subvar)) {
-		$subvar = Database::escape_string($subvar);
-		$select .= " AND subkey = '$subvar'";
-	}
-	if (!empty($cat)) {
-		$cat = Database::escape_string($cat);
-		$select .= " AND category = '$cat'";
-	}
-	if ($access_url > 1) {
-		$select .= " AND access_url = $access_url";
-	} else {
-		$select .= " AND access_url = 1 ";
-	}
-        $res = Database::query($select, __FILE__, __LINE__);
-	if (Database::num_rows($res) > 0) {
-            $row = Database::fetch_array($res);
-            if($row['access_url_changeable'] == 0) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
-}
-/**
- * Allow create a new setting
- * @param type $var
- * @param type $value
- * @param type $subvar
- * @param type $cat
- * @param type $access_url 
- */
-function api_create_setting($var, $value, $subvar = null, $cat = null, $access_url = 1){
-        $t_settings = Database::get_main_table(TABLE_MAIN_SETTINGS_CURRENT);
-        //Item not found for this access_url, we have to check if it exist with access_url = 1
-        $select = "SELECT * FROM $t_settings WHERE variable = '$var' AND access_url = 1 ";
-        // just in case
-        if ($access_url == 1) {
-                if (!empty($subvar)) {
-                        $select .= " AND subkey = '$subvar'";
-                }
-                if (!empty($cat)) {
-                        $select .= " AND category = '$cat'";
-                }
-                $res = Database::query($select, __FILE__, __LINE__);
-
-                if (Database::num_rows($res) > 0) { //we have a setting for access_url 1, but none for the current one, so create one
-                        $row = Database::fetch_array($res);
-                        $insert = "INSERT INTO $t_settings " .
-                                        "(variable,subkey," .
-                                        "type,category," .
-                                        "selected_value,title," .
-                                        "comment,scope," .
-                                        "subkeytext,access_url)" .
-                                        " VALUES " .
-                                        "('".$row['variable']."',".(!empty($row['subkey']) ? "'".$row['subkey']."'" : "NULL")."," .
-                                        "'".$row['type']."','".$row['category']."'," .
-                                        "'$value','".$row['title']."'," .
-                                        "".(!empty($row['comment']) ? "'".$row['comment']."'" : "NULL").",".(!empty($row['scope']) ? "'".$row['scope']."'" : "NULL")."," .
-                                        "".(!empty($row['subkeytext'])?"'".$row['subkeytext']."'":"NULL").",$access_url)";
-                        
-                        $res = Database::query($insert, __FILE__, __LINE__);
-                } else { // this setting does not exist
-                        error_log(__FILE__.':'.__LINE__.': Attempting to update setting '.$var.' ('.$subvar.') which does not exist at all', 0);
-                }
-        } else {
-                // other access url
-                if (!empty($subvar)) {
-                        $select .= " AND subkey = '$subvar'";
-                }
-                if (!empty($cat)) {
-                        $select .= " AND category = '$cat'";
-                }
-                
-                $res = Database::query($select, __FILE__, __LINE__);
-
-                if (Database::num_rows($res) > 0) { //we have a setting for access_url 1, but none for the current one, so create one
-                        $row = Database::fetch_array($res);
-                        if ($row['access_url_changeable'] == 1) {
-                                $insert = "INSERT INTO $t_settings " .
-                                                "(variable,subkey," .
-                                                "type,category," .
-                                                "selected_value,title," .
-                                                "comment,scope," .
-                                                "subkeytext,access_url, access_url_changeable)" .
-                                                " VALUES " .
-                                                "('".$row['variable']."',".
-                                                (!empty($row['subkey']) ? "'".$row['subkey']."'" : "NULL")."," .
-                                                "'".$row['type']."','".$row['category']."'," .
-                                                "'$value','".$row['title']."'," .
-                                                "".(!empty($row['comment']) ? "'".$row['comment']."'" : "NULL").",".
-                                                (!empty($row['scope']) ? "'".$row['scope']."'" : "NULL")."," .
-                                                "".(!empty($row['subkeytext']) ? "'".$row['subkeytext']."'" : "NULL").",$access_url,".$row['access_url_changeable'].")";
-                                $res = Database::query($insert, __FILE__, __LINE__);
-                        }
-                } else { // this setting does not exist
-                        error_log(__FILE__.':'.__LINE__.': Attempting to update setting '.$var.' ('.$subvar.') which does not exist at all. The access_url is: '.$access_url.' ',0);
-                }
-        }
-}
-
 /**
  * Sets a whole category of settings to one specific value
  * @param	string	Category
@@ -3604,7 +3378,7 @@ function api_set_settings_category($category, $value = null, $access_url = 1) {
 	if (isset($value)) {
 		$value = Database::escape_string($value);
 		$sql = "UPDATE $t_s SET selected_value = '$value' WHERE category = '$category' AND access_url = $access_url";
-                $res = Database::query($sql, __FILE__, __LINE__);
+		$res = Database::query($sql, __FILE__, __LINE__);
 		return $res !== false;
 	}
 	$sql = "UPDATE $t_s SET selected_value = NULL WHERE category = '$category' AND access_url = $access_url";
@@ -3696,7 +3470,7 @@ function api_get_settings($cat = null, $ordering = 'list', $access_url = 1, $url
 	}
 	if (empty($access_url)) { $access_url = 1; }
 	$sql = "SELECT id, variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url, access_url_changeable " .
-			" FROM $t_cs WHERE access_url = $access_url  $url_changeable_where AND (category <> 'widget' OR category IS NULL)";
+			" FROM $t_cs WHERE access_url = $access_url  $url_changeable_where ";
 	if (!empty($cat)) {
 		$cat = Database::escape_string($cat);
 		$sql .= " AND category='$cat' ";
@@ -3706,7 +3480,6 @@ function api_get_settings($cat = null, $ordering = 'list', $access_url = 1, $url
 	} else {
 		$sql .= " ORDER BY 1,2 ASC";
 	}
-	
 	$res = Database::query($sql, __FILE__, __LINE__);
 	return Database::store_result($res);
 }
@@ -3725,7 +3498,6 @@ function api_get_settings_categories($exceptions = array(), $access_url = 1) {
 	if ($list != "'',''" and $list != "''" and !empty($list)) {
 		$sql .= " WHERE category NOT IN ($list)";
 	}
-        $sql .= "ORDER BY id";
 	$r = Database::query($sql, __FILE__, __LINE__);
 	return Database::store_result($r);
 }
@@ -3859,7 +3631,7 @@ function api_register_delegated_settings() {
 	// it can happen that the platform admin decides to delegate a platform setting, that the course admin changes
 	// this setting and that the platform admin later revokes the delegation of this platform setting. 
 	// in this case we should not overwrite this setting although it is in the $table_course_setting table
-	$sql = "SELECT * FROM $table_course_setting WHERE category='platform' OR category='PRO'";
+	$sql = "SELECT * FROM $table_course_setting WHERE category='platform'";
 	$result = Database::query($sql, __FILE__, __LINE__);
 	while ($row=Database::fetch_array($result,'ASSOC')){
 		if (array_key_exists($row['variable'],$_settingdelegation)) {
@@ -3901,7 +3673,7 @@ function api_load_widget_settings($script){
 		$sql_extra = '';
 	}
 	
-	$sql="SELECT * FROM $table_setting WHERE category='widget' $sql_extra";
+	$sql="SELECT * FROM $table_setting WHERE category='widget' $sql_extra";	
 	$res = Database::query($sql, __FILE__, __LINE__);
 	while ($row = Database::fetch_array($res,'ASSOC')) {
 		// we store it as a multidimensional array if the subkey column is not empty or it the type is a checkbox
@@ -4815,33 +4587,4 @@ function passwordcamelcase($element, $value, $arg){
 	} else {
 		return true;
 	}
-}
-
-function api_is_grouptutor($_course, $session_id, $user_id){
-	$tbl_group = Database::get_course_table(TABLE_GROUP, $_course['dbName']);
-	$tbl_group_tutor = Database::get_course_table(TABLE_GROUP_TUTOR, $_course['dbName']);
-
-	$sql = "SELECT * FROM $tbl_group gp, $tbl_group_tutor grt WHERE gp.id = grt.group_id AND grt.user_id = ".$user_id;
-	$rs = Database::query($sql,__FILE__,__LINE__);
-	$num_rows = Database::num_rows($rs);
-	if($num_rows <> 0){
-		return true;
-	}
-	return false;
-}
-
-/**
- * Get the CSS info from css folder
- * @param String The css name provided by api_get_setting('stylesheets')
- * @return Array The css information from css.info file
- */
-function api_get_css_info ($css_name = null) {
-    $css_info = array();
-    require_once api_get_path(LIBRARY_PATH).'fileManage.lib.php';
-    if (is_null($css_name)) {
-        $css_name = api_get_setting('stylesheets');
-    }
-    $css_path = api_get_path(SYS_PATH).'main/css/'.$css_name.'/css.info';
-    $css_info = FileManager::parse_info_file($css_path);
-    return $css_info;
 }

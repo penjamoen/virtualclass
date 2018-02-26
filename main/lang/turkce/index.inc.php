@@ -40,6 +40,7 @@ $langMe = "ben";
 $langSystemAnnouncements = "Duyurular";
 $langHelpMaj = "Yard&#305;m";
 $langNotRegistered = "Kay&#305;tl&#305; de&#287;il";
+$langAdmin = "Platform Yöneticisi";
 $Login = "Giri&#351;";
 $langRegisterForCourse = "Derse Kay&#305;t";
 $langUnregisterForCourse = "Ders kayd&#305; sil";

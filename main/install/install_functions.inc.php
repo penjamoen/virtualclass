@@ -444,7 +444,7 @@ function get_client_language($language_list){
 function display_language_selection()
 { ?>
 	<h1><?php get_lang('WelcomeToTheDokeosInstaller');?></h1>
-	<h2 class="warning-title"><?php echo display_step_sequence(); ?><?php echo get_lang('InstallationLanguage');?></h2>
+	<h2><?php echo display_step_sequence(); ?><?php echo get_lang('InstallationLanguage');?></h2>
 	<p><?php echo get_lang('PleaseSelectInstallationProcessLanguage');?>:</p>
 	<form id="lang_form" method="post" action="<?php echo api_get_self(); ?>">
 	<?php display_language_selection_box('language_list'); ?>
@@ -465,9 +465,9 @@ function display_language_selection()
  * @author unknow
  * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University
 */
-function display_requirements($installType, $badUpdatePath, $updatePath='', $update_from_version_8=array(), $update_from_version_6=array(), $update_from_version_20=array())
+function display_requirements($installType, $badUpdatePath, $updatePath='', $update_from_version_8=array(), $update_from_version_6=array())
 {
-	echo '<h2 class="warning-title">'.display_step_sequence().get_lang('Requirements')."</h2>\n";
+	echo '<h2>'.display_step_sequence().get_lang('Requirements')."</h2>\n";
 
 	echo '<strong>'.get_lang('ReadThoroughly').'</strong><br />';
 	echo get_lang('MoreDetails').' <a href="../../documentation/installation_guide.html" target="_blank">'.get_lang('ReadTheInstallGuide').'</a>.<br />'."\n";
@@ -623,10 +623,6 @@ function display_requirements($installType, $badUpdatePath, $updatePath='', $upd
 				<td class="requirements-value">'.check_writable('inc/conf/').'</td>
 			</tr>
 			<tr>
-				<td class="requirements-item">dokeos/main/upload/template_thumbnails/</td>
-				<td class="requirements-value">'.check_writable('upload/template_thumbnails/').'</td>
-			</tr>
-			<tr>
 				<td class="requirements-item">dokeos/main/upload/users/</td>
 				<td class="requirements-value">'.check_writable('upload/users/').'</td>
 			</tr>
@@ -666,9 +662,8 @@ function display_requirements($installType, $badUpdatePath, $updatePath='', $upd
 		if($badUpdatePath)
 		{ ?>
 			<div style="background-color:white; font-weight:bold; text-align:left;"><br/>
-				<?php echo get_lang('Error');
-                                ?>!<br />
-				Dokeos <?php echo (isset($_POST['step2_update_6'])?implode('|',$update_from_version_6):isset($_POST['step2_update_20']) ? implode('|',$update_from_version_20) : implode('|',$update_from_version_8)).' '.get_lang('HasNotBeenFoundInThatDir'); ?>.
+				<?php echo get_lang('Error');?>!<br />
+				Dokeos <?php echo (isset($_POST['step2_update_6'])?implode('|',$update_from_version_6):implode('|',$update_from_version_8)).' '.get_lang('HasNotBeenFoundInThatDir'); ?>.
 			</div>
 		<?php }
 		else
@@ -685,8 +680,8 @@ function display_requirements($installType, $badUpdatePath, $updatePath='', $upd
 			<td colspan="2" align="left">
 				<button type="submit" class="previous_link" name="step1" value="&lt; <?php echo get_lang('Back');?>" >&nbsp;&nbsp;<?php echo get_lang('Back');?></button>
 				<input type="hidden" name="is_executable" id="is_executable" value="-" />
-				<button type="submit" class="next" name="<?php echo (isset($_POST['step2_update_6'])?'step2_update_6':isset($_POST['step2_update_8']) ? 'step2_update_8': 'step2_update_20');?>" value="<?php echo get_lang('Next');?> &gt;" ><?php echo get_lang('Next');?></button>
-                        </td>
+				<button type="submit" class="next" name="<?php echo (isset($_POST['step2_update_6'])?'step2_update_6':'step2_update_8');?>" value="<?php echo get_lang('Next');?> &gt;" ><?php echo get_lang('Next');?></button>
+			</td>
 			</tr>
 			</table>
 		<?php
@@ -704,61 +699,68 @@ function display_requirements($installType, $badUpdatePath, $updatePath='', $upd
 		//0xxx is an octal number, this is the required format
 		$notwritable = array();
         $curdir = getcwd();
-		if(!is_writable('../inc/conf')) {
+		if(!is_writable('../inc/conf'))
+		{
 			$notwritable[] = realpath($curdir.'/../inc/conf');
 			@chmod('../inc/conf',$perm);
 		}
 
-		if(!is_writable('../upload/users')) {
+		if(!is_writable('../upload/users'))
+		{
 			$notwritable[] = realpath($curdir.'/../upload/users');
 			@chmod('../upload/users', $perm);
 		}
-		if(!is_writable('../upload/template_thumbnails')) {
-			$notwritable[] = realpath($curdir.'/../upload/template_thumbnails');
-			@chmod('../upload/template_thumbnails', $perm);
-		}
-		if(!is_writable('../install')) {
-			$notwritable[] = realpath($curdir.'/../install');
-			@chmod('../install', $perm);
-		}
-                if(!is_writable('../default_course_document/images/')) {
-                    $notwritable[] = realpath($curdir.'/../default_course_document/images/');
-                    @chmod('../default_course_document/images/', $perm);
-                }
-		if(!is_writable('../../archive')) {
+
+        if(!is_writable('../default_course_document/images/'))
+        {
+            $notwritable[] = realpath($curdir.'/../default_course_document/images/');
+            @chmod('../default_course_document/images/', $perm);
+        }
+
+		if(!is_writable('../../archive'))
+		{
 			$notwritable[] = realpath($curdir.'/../../archive');
 			@chmod('../../archive',$perm);
 		}
-		if(!is_writable('../../courses')) {
+
+		if(!is_writable('../../courses'))
+		{
 			$notwritable[] = realpath($curdir.'/../../courses');
 			@chmod('../../courses',$perm);
 		}
-		if(!is_writable('../../home')) {
+
+		if(!is_writable('../../home'))
+		{
 			$notwritable[] = realpath($curdir.'/../../home');
 			@chmod('../../home',$perm);
 		}
-		if(file_exists('../inc/conf/configuration.php') && !is_writable('../inc/conf/configuration.php')) {
+
+		if(file_exists('../inc/conf/configuration.php') && !is_writable('../inc/conf/configuration.php'))
+		{
 			$notwritable[]= realpath($curdir.'/../inc/conf/configuration.php');
 			@chmod('../inc/conf/configuration.php',$perm_file);
 		}
 
 		//Second, if this fails, report an error
 		//--> the user will have to adjust the permissions manually
-		if(count($notwritable) > 0) {
+		if(count($notwritable)>0)
+		{
 			$error=true;
-			echo '<div class="warning-message-install"><b>'.get_lang('Warning').' : </b><br />';
+			echo '<div class="quiz_content_actions rounded">';
+			echo get_lang('Warning').':<br />';
 			printf(get_lang('NoWritePermissionPleaseReadInstallGuide'),'<a href="../../documentation/installation_guide.html" target="blank">','</a>');
 			echo '<ul>';
 			foreach ($notwritable as $value)
 			{
 				echo '<li>'.$value.'</li>';
 			}
-			echo '</ul></div>';
+			echo '</ul>';
+			echo '</div>';
 		}
 		// check wether a Dokeos configuration file already exists.
 		elseif(file_exists('../inc/conf/configuration.php'))
 		{
-				echo '<div class="warning-message-install">';
+				echo '<div class="warning-message">';
 				echo get_lang('WarningExistingDokeosInstallationDetected');
 				echo '</div>';
 		}
@@ -771,16 +773,15 @@ function display_requirements($installType, $badUpdatePath, $updatePath='', $upd
 		<?php
 		//real code
 		echo '<button type="submit" class="upgrade_link" name="step2_update_8" value="Upgrade from Dokeos 1.8.x"';
-                if($error) echo ' disabled="disabled"';
+		if($error) echo ' disabled="disabled"';
 		//temporary code for alpha version, disabling upgrade
 		//echo '<input type="submit" name="step2_update" value="Upgrading is not possible in this beta version"';
 		//echo ' disabled="disabled"';
 		//end temp code
 		echo ' >&nbsp;&nbsp;'.get_lang('UpgradeFromDokeos18x').'</button> ';
-                // Button for upgrade from 2.0
-		echo '<button type="submit" class="upgrade_link" name="step2_update_20" value="Upgrade from Dokeos 2.0.x"';
-                if($error) echo ' disabled="disabled"';
-		echo ' >&nbsp;&nbsp;'.get_lang('UpgradeFromDokeos20x').'</button> ';
+		//echo '<button type="submit" class="save" name="step2_update_6" value="Upgrade from Dokeos 1.6.x"';
+		//if($error) echo ' disabled="disabled"';
+		//echo ' >'.get_lang('UpgradeFromDokeos16x').'</button>';
 		echo '</p>';
 	}
 }
@@ -792,7 +793,7 @@ function display_requirements($installType, $badUpdatePath, $updatePath='', $upd
 */
 function display_license_agreement()
 {
-	echo '<h2 class="warning-title">'.display_step_sequence().get_lang('Licence').'</h2>';
+	echo '<h2>'.display_step_sequence().get_lang('Licence').'</h2>';
 	echo '<p>'.get_lang('DokeosLicenseInfo').'</p>';
 	echo '<p><a href="../../documentation/license.html" target="_blank">'.get_lang('PrintVers').'</a></p>';
 	?>
@@ -877,7 +878,7 @@ function display_database_settings_form($installType, $dbHostForm, $dbUsernameFo
 {
 	if($installType == 'update')
 	{
-		global $_configuration, $update_from_version_6, $update_from_version_20;
+		global $_configuration, $update_from_version_6;
 		if(in_array($_POST['old_version'],$update_from_version_6))
 		{
 	        $dbHostForm=get_config_param('dbHost');
@@ -932,14 +933,14 @@ function display_database_settings_form($installType, $dbHostForm, $dbUsernameFo
 				$dbUserForm=$dbPrefixForm.'dokeos_user';
 			}
 		}
-		echo "<h2 class='warning-title'>" . display_step_sequence() .get_lang("DBSetting") . "</h2>";
+		echo "<h2>" . display_step_sequence() .get_lang("DBSetting") . "</h2>";
 		echo get_lang("DBSettingUpgradeIntro");
 	}else{
 		if(empty($dbPrefixForm)) //make sure there is a default value for db prefix
 		{
 			$dbPrefixForm = 'dokeos_';
 		}
-		echo "<h2 class='warning-title'>" . display_step_sequence() .get_lang("DBSetting") . "</h2>";
+		echo "<h2>" . display_step_sequence() .get_lang("DBSetting") . "</h2>";
 		echo get_lang("DBSettingIntro");
 	}
 
@@ -1062,7 +1063,7 @@ function display_configuration_settings_form($installType, $urlForm, $languageFo
 		$languageForm = $_SESSION['install_language'];
 	}
 
-	echo "<h2 class='warning-title'>" . display_step_sequence() . get_lang("CfgSetting") . "</h2>";
+	echo "<h2>" . display_step_sequence() . get_lang("CfgSetting") . "</h2>";
 	echo '<p>'.get_lang('ConfigSettingsInfo').' <b>main/inc/conf/configuration.php</b></p>';
 
 	echo "</td></tr>\n<tr><td>";
@@ -1237,28 +1238,32 @@ function display_configuration_settings_form($installType, $urlForm, $languageFo
 function display_after_install_message($installType, $nbr_courses)
 {
 	?>
-	<h2 class="warning-title"><?php echo display_step_sequence() . get_lang("CfgSetting"); ?></h2>
+	<h2><?php echo display_step_sequence() . get_lang("CfgSetting"); ?></h2>
+
+	<?php echo get_lang('FirstUseTip'); ?>
+
 	<?php if($installType == 'update' && $nbr_courses > MAX_COURSE_TRANSFER): ?>
+	<br /><br />
 	<b><?php echo get_lang('Warning');?> :</b> <?php printf(get_lang('YouHaveMoreThanXCourses'),MAX_COURSE_TRANSFER,MAX_COURSE_TRANSFER,'<a href="update_courses.php">','</font></a>');?></font>
 	<?php endif; ?>
+
+	<br /><br />
 	<?php
 	echo '<div class="warning-message">';
 	//echo '<img src="../img/message_warning.png" style="float:left; margin-right:10px;" alt="'.get_lang('Warning').'"/>';
 	echo '<b>'.get_lang('SecurityAdvice').'</b>';
 	echo ': ';
 	printf(get_lang('ToProtectYourSiteMakeXAndYReadOnly'),'main/inc/conf/configuration.php','main/install/index.php');
-        echo '</div>';
-        
-        /*echo '<div class="sectiontablet main_activity">';
-        echo get_lang('FirstUseTip');
-        echo '</div>';*/
+	echo '</div>';
+	?>
 
-        $message .= ' <a href="../../index.php"><b style="text-transform:uppercase;">'.get_lang('GoToYourNewlyCreatedPortal')."</b></a>";
-        echo '<div class="actions"><div style="float: left; text-align: left; width: 70%;height:200px;" class="quiz_content_actions"><br/>'.get_lang('FirstUseTip').'<br/><br/>'.$message.'</div>';
-        // Display image
-        echo '<div style="float: right; text-align: right; width: 20%;margin-right:5px;">';
-        echo '<img src="../img/Cjigsaw.png" title="'.get_lang('GoToYourNewlyCreatedPortal').'" />';
-        echo '</div><div class="clear"></div></div>';	
+    <?php 
+    $message .= ' <a href="../../index.php"><b>'.get_lang('GoToYourNewlyCreatedPortal')."</b></a>";
+    echo '<div class="actions"><div style="float: left; text-align: left; width: 60%;height:200px;" class="quiz_content_actions"><br/>'.$message.'</div>';
+    // Display image
+    echo '<div style="float: right; text-align: right; width: 30%;margin-right:20px;">';
+    echo '<img src="../img/Cjigsaw.png" title="'.get_lang('GoToYourNewlyCreatedPortal').'" />';
+    echo '</div></div>';	
     ?>
 	</form>
 	<?php

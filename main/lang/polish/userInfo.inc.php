@@ -47,5 +47,4 @@ $SocialParent = "Moi rodzice";
 $SocialFriend = "Moi znajomi";
 $SocialGoodFriend = "Moi przyjaciele";
 $SocialEnemy = "Moi wrogowie";
-$Admin = "Administrator";
 ?>

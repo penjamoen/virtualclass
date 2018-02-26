@@ -31,7 +31,7 @@ $tool_name = get_lang('EditSession');
 $interbreadcrumb[]=array('url' => 'index.php',"name" => get_lang('PlatformAdmin'));
 $interbreadcrumb[]=array('url' => "session_list.php","name" => get_lang('SessionList'));
 
-$result=Database::query("SELECT name,max_seats,description,date_start,date_end,id_coach, session_admin_id, nb_days_access_before_beginning, nb_days_access_after_end, session_category_id, visibility FROM $tbl_session WHERE id='$id'",__FILE__,__LINE__);
+$result=Database::query("SELECT name,date_start,date_end,id_coach, session_admin_id, nb_days_access_before_beginning, nb_days_access_after_end, session_category_id, visibility FROM $tbl_session WHERE id='$id'",__FILE__,__LINE__);
 
 if (!$infos=Database::fetch_array($result)) {
 	header('Location: session_list.php');
@@ -47,23 +47,20 @@ if (!api_is_platform_admin() && $infos['session_admin_id']!=$_user['user_id']) {
 if ($_POST['formSent']) {
 	$formSent=1;
 	$name= $_POST['name'];
-	$max_seats = (html_entity_decode($_POST['max_seats']) == '&infin;'?'-1':intval($_POST['max_seats']));
-	$description= $_POST['description'];
 	$year_start= $_POST['year_start'];
 	$month_start=$_POST['month_start'];
 	$day_start=$_POST['day_start'];
 	$year_end=$_POST['year_end'];
 	$month_end=$_POST['month_end'];
 	$day_end=$_POST['day_end'];
-//	$nb_days_acess_before = $_POST['nb_days_access_before'];
-//	$nb_days_acess_after = $_POST['nb_days_access_after'];
+	$nb_days_acess_before = $_POST['nb_days_access_before'];
+	$nb_days_acess_after = $_POST['nb_days_access_after'];
 	$nolimit=$_POST['nolimit'];
 	$id_coach=$_POST['id_coach'];
 	$id_session_category = $_POST['session_category'];
-//	$id_visibility = $_POST['session_visibility'];
+	$id_visibility = $_POST['session_visibility'];
 
-//	$return = SessionManager::edit_session($id,$name,$year_start,$month_start,$day_start,$year_end,$month_end,$day_end,$nb_days_acess_before,$nb_days_acess_after,$nolimit, $id_coach, $id_session_category,$id_visibility);
-	$return = SessionManager::edit_session($id,$name,$description,$year_start,$month_start,$day_start,$year_end,$month_end,$day_end,$nolimit, $id_coach, $id_session_category, $max_seats);
+	$return = SessionManager::edit_session($id,$name,$year_start,$month_start,$day_start,$year_end,$month_end,$day_end,$nb_days_acess_before,$nb_days_acess_after,$nolimit, $id_coach, $id_session_category,$id_visibility);
 	if ($return == strval(intval($return))) {
 		header('Location: resume_session.php?id_session='.$return);
 		exit();
@@ -91,16 +88,6 @@ $thisYear=date('Y');
 // display the header
 Display::display_header($tool_name);
 
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/catalogue_management.php">' . Display::return_icon('pixel.gif',get_lang('Catalogue'), array('class' => 'toolactionplaceholdericon toolactioncatalogue')) . get_lang('Catalogue') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/topic_list.php">' . Display :: return_icon('pixel.gif', get_lang('Topics'),array('class' => 'toolactionplaceholdericon toolactiontopic')) . get_lang('Topics') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/programme_list.php">' . Display :: return_icon('pixel.gif', get_lang('Programmes'),array('class' => 'toolactionplaceholdericon toolactionprogramme')) . get_lang('Programmes') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_list.php">' . Display :: return_icon('pixel.gif', get_lang('SessionList'),array('class' => 'toolactionplaceholdericon toolactionsession')) . get_lang('SessionList') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_export.php">'.Display::return_icon('pixel.gif',get_lang('ExportSessionListXMLCSV'),array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('ExportSessionListXMLCSV').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_import.php">'.Display::return_icon('pixel.gif',get_lang('ImportSessionListXMLCSV'),array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('ImportSessionListXMLCSV').'</a>';	        
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'coursecopy/copy_course_session.php">'.Display::return_icon('pixel.gif',get_lang('CopyFromCourseInSessionToAnotherSession'),array('class' => 'toolactionplaceholdericon toolsettings')).get_lang('CopyFromCourseInSessionToAnotherSession').'</a>';
-echo '</div>';
-
 // Start content page
 echo '<div id="content">';
 
@@ -122,20 +109,6 @@ if (!empty($return)) {
 <tr>
   <td width="30%"><?php echo get_lang('SessionName') ?>&nbsp;&nbsp;</td>
   <td width="70%"><input type="text" name="name" size="50" maxlength="50" value="<?php if($formSent) echo api_htmlentities($name,ENT_QUOTES,$charset); else echo api_htmlentities($infos['name'],ENT_QUOTES,$charset); ?>"></td>
-</tr>
-<tr>
-  <td width="40%" valign="top"><?php echo get_lang('Description') ?>&nbsp;&nbsp;</td>
-  <td width="60%">
-  <?php
-  if($formSent) $description =  $description; else $description =  $infos['description'];
-  echo api_return_html_area('description', $description, '', '', null, array('ToolbarSet' => 'Survey', 'Width' => '550', 'Height' => '180'))
-  ?>
-  <!--<textarea name="description" class="focus" rows="5" cols="37"><?php if($formSent) echo api_htmlentities($description,ENT_QUOTES,$charset); else echo api_htmlentities($infos['description'],ENT_QUOTES,$charset); ?></textarea>-->
-  </td>
-</tr>
-<tr>
-  <td width="40%"><?php echo get_lang('MaxSeats') ?></td>
-  <td width="60%"><input type="text" name="max_seats" size="5" maxlength="6" value="<?php echo ($infos['max_seats'] == '-1'?'&infin;':$infos['max_seats']); ?>"></td>
 </tr>
 <tr>
   <td width="30%"><?php echo get_lang('CoachName') ?>&nbsp;&nbsp;</td>
@@ -163,7 +136,7 @@ unset($Coaches);
 	$result = Database::query($sql,__FILE__,__LINE__);
 	$Categories = Database::store_result($result);
 ?>
-<!--<tr>
+<tr>
   <td width="30%"><?php echo get_lang('SessionCategory') ?></td>
   <td width="70%">
   	<select name="session_category" value="true" style="width:250px;">
@@ -173,7 +146,7 @@ unset($Coaches);
 		<?php endforeach; ?>
 	</select>
   </td>
-</tr>-->
+</tr>
 
 <tr>
   <td width="30%"><?php echo get_lang('NoTimeLimits') ?></td>
@@ -317,7 +290,7 @@ for($i=$thisYear-5;$i <= ($thisYear+5);$i++)
   </select>
   </td>
 </tr>
-<!--<tr>
+<tr>
 	<td>
 		&nbsp;
 	</td>
@@ -357,7 +330,7 @@ for($i=$thisYear-5;$i <= ($thisYear+5);$i++)
 		<?php endforeach; ?>
 	</select>
   </td>
-</tr>-->
+</tr>
 
 
 <tr>

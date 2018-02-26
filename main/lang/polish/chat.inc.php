@@ -30,12 +30,9 @@ $langLinkURL = "URL &#322;&#261;cza (adres link\'a)";
 $langWelcomeToOnlineConf = "Witam na <b>Konferencji online</b>";
 $langNoLinkAvailable = "Brak &#322;&#261;cza";
 $langChat_reset_by = "zresetuj czat";
-$langAdmin = "administrator platformy";
 $OrFile = "Lub plik";
 $langCallSent = "Twój czatowy rozmówca otrzyma&#322; powiadomienie i wie, &#380;e chcesz z nim rozmawia&#263;. Oczekiwanie na przyj&#281;cie rozmowy.";
 $langChatDenied = "Rozmówca nie chce z tob&#261; teraz rozmawia&#263;.";
 $Send = "Wy&#347;lij";
 $Connected = "Po&#322;&#261;czony";
-$Question = "Pytanie";
-$AnInvitationHasBeenSentTo = "Zaproszenie zosta&#322;o wys&#322;ane do";
 ?>

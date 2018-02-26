@@ -5,7 +5,7 @@
  * @author Julio Montoya <gugli100@gmail.com>
  */
 $cidReset=true;
-$language_file = array('userInfo', 'admin');
+$language_file = array('userInfo');
 require_once '../inc/global.inc.php';
 require_once api_get_path(LIBRARY_PATH).'usermanager.lib.php';
 require_once api_get_path(LIBRARY_PATH).'group_portal_manager.lib.php';
@@ -21,6 +21,21 @@ $this_section = SECTION_SOCIAL;
 //$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.js" type="text/javascript" language="javascript"></script>'; //jQuery
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.js" type="text/javascript" language="javascript"></script>';
 $htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.css" type="text/css" media="projection, screen">';
+
+// prepare anchor for message group topic
+$anchor = '';
+if (isset($_GET['anchor_topic'])) {
+	$anchor = Security::remove_XSS($_GET['anchor_topic']);
+} else {
+	$match = 0;
+	$param_names = array_keys($_GET);
+	foreach ($param_names as $param) {
+		if (preg_match('/^items_(\d)_page_nr$/', $param, $match)) {
+			break;
+		}
+	}
+	$anchor = 'topic_'.$match[1];
+}
 
 $htmlHeadXtra[] = '<script type="text/javascript">
 
@@ -69,22 +84,7 @@ function validate_text_empty (str,msg) {
 	}
 }
 
-
-
-
-function show_icon_edit(element_html) {
-	ident="#edit_image";
-	$(ident).show();
-}
-
-function hide_icon_edit(element_html)  {
-	ident="#edit_image";
-	$(ident).hide();
-}
-
-</script>';
-/*
- * jQuery(document).ready(function() {
+jQuery(document).ready(function() {
 
    var valor = "'.$anchor.'";
 
@@ -112,7 +112,20 @@ function hide_icon_edit(element_html)  {
    }
 
 });
- */
+
+
+function show_icon_edit(element_html) {
+	ident="#edit_image";
+	$(ident).show();
+}
+
+function hide_icon_edit(element_html)  {
+	ident="#edit_image";
+	$(ident).hide();
+}
+
+</script>';
+
 $allowed_views = array('mygroups','newest','pop');
 $interbreadcrumb[]= array ('url' =>'home.php','name' => get_lang('Social'));
 
@@ -134,62 +147,29 @@ if (isset($_GET['view']) && in_array($_GET['view'],$allowed_views)) {
 
 Display :: display_header($tool_name, 'Groups');
 
-// getting group information
-$group_id	= intval($_GET['id']);
-$relation_group_title = '';
-$my_group_role = 0;
-if ($group_id != 0 ) {
-	$user_leave_message = false;
-	$user_added_group_message = false;
-	$group_info = GroupPortalManager::get_group_data($group_id);
-
-	if (isset($_GET['action']) && $_GET['action']=='leave') {
-		$user_leaved = intval($_GET['u']);
-		//I can "leave me myself"
-		if (api_get_user_id() == $user_leaved) {
-			GroupPortalManager::delete_user_rel_group($user_leaved, $group_id);
-			$user_leave_message = true;
-
-		}
-	}
-	// add a user to a group if its open
-	if (isset($_GET['action']) && $_GET['action']=='join') {
-		// we add a user only if is a open group
-		$user_join = intval($_GET['u']);
-		if (api_get_user_id() == $user_join && !empty($group_id)) {
-			if ($group_info['visibility'] == GROUP_PERMISSION_OPEN) {
-				GroupPortalManager::add_user_to_group($user_join, $group_id);
-				$user_added_group_message = true;
-			} else {
-				GroupPortalManager::add_user_to_group($user_join, $group_id, GROUP_USER_PERMISSION_PENDING_INVITATION_SENT_BY_USER);
-				$user_added_group_message = true;
-			}
-		}
-	}
-}
 // Display actions
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('pixel.gif',get_lang('Home'),array('class' => 'toolactionplaceholdericon toolactionshome')).get_lang('Home').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('atom.png',get_lang('Home')).get_lang('Home').'</a>';
 // Only admins and teachers can create groups
 if (api_is_allowed_to_edit(null,true)) {
-    echo '<a href="'.api_get_path(WEB_PATH).'main/social/group_add.php">'.Display::return_icon('pixel.gif',get_lang('CreateAgroup'),array('class' => 'toolactionplaceholdericon toolactionsgroup')).get_lang('CreateAgroup').'</a>';
+    echo '<a href="'.api_get_path(WEB_PATH).'main/social/group_add.php">'.Display::return_icon('groupadd_32.png',get_lang('CreateAgroup')).get_lang('CreateAgroup').'</a>';
 }
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('pixel.gif',get_lang('MyGroups'),array('class' => 'toolactionplaceholdericon toolactiongroupimage')).get_lang('MyGroups').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('group.png',get_lang('MyGroups')).get_lang('MyGroups').'</a>';
 
 if (isset($_GET['id']) && $_GET['id'] >= 0) {
   $group_id = Security::remove_XSS($_GET['id']);
   $relation_group_title = get_lang('IamAnAdmin');
-  $links .=  '<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=400&width=610&&user_friend='.api_get_user_id().'&group_id='.$group_id.'&action=add_message_group" class="thickbox" title="'.get_lang('ComposeMessage').'">'.Display::return_icon('pixel.gif',get_lang('NewTopic'),array('class' => 'toolactionplaceholdericon toolsocialnewtopic')).get_lang('NewTopic').'</a>';
-  $links .=  '<a href="groups.php?id='.$group_id.'">'.	Display::return_icon('pixel.gif',get_lang('MessageList'),array('class' => 'toolactionplaceholdericon toolsocialmessagelist')).get_lang('MessageList').'</a>';
+  $links .=  '<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=400&width=610&&user_friend='.api_get_user_id().'&group_id='.$group_id.'&action=add_message_group" class="thickbox" title="'.get_lang('ComposeMessage').'">'.Display::return_icon('compose_message.png', get_lang('NewTopic')).get_lang('NewTopic').'</a>';
+  $links .=  '<a href="groups.php?id='.$group_id.'">'.				Display::return_icon('message_list.png', get_lang('MessageList')).get_lang('MessageList').'</a>';
   // only group admins can edit the group
   if (GroupPortalManager::is_group_admin($group_id)) {
-    $links .=  '<a href="group_edit.php?id='.$group_id.'">'.Display::return_icon('pixel.gif',get_lang('EditGroup'),array('class' => 'toolactionplaceholdericon tooledithome')).get_lang('EditGroup').'</a>';
+    $links .=  '<a href="group_edit.php?id='.$group_id.'">'.			Display::return_icon('group_edit.png', get_lang('EditGroup')).get_lang('EditGroup').'</a>';
   }
 
   //my relation with the group is set here
   $my_group_role = GroupPortalManager::get_user_group_role(api_get_user_id(), $group_id);
   if ($my_group_role == GROUP_USER_PERMISSION_READER) {
-      $links .=  '<a href="groups.php?id='.$group_id.'&action=leave&u='.api_get_user_id().'">'.	Display::return_icon('pixel.gif', get_lang('LeaveGroup'), array('class'=>'toolactionplaceholdericon tooldeletegroup')).'<span class="social-menu-text4" >'.get_lang('LeaveGroup').'</span></a>';
+      $links .=  '<a href="groups.php?id='.$group_id.'&action=leave&u='.api_get_user_id().'">'.	Display::return_icon('delete_data.gif', get_lang('LeaveGroup'), array('hspace'=>'6')).'<span class="social-menu-text4" >'.get_lang('LeaveGroup').'</span></a>';
   }
 
   echo $links;
@@ -198,10 +178,6 @@ echo '</div>';
 
 // Start content
 echo '<div id="content">';
-
-if (isset($_GET['deleted']) && $_GET['deleted'] == 1) {
-    echo '<div class="confirmation-message">'.get_lang('GroupDeleted').'</div>';
-}
 
 // save message group
 if (isset($_POST['token']) && $_POST['token'] === $_SESSION['sec_token']) {
@@ -249,6 +225,39 @@ if (isset($_POST['token']) && $_POST['token'] === $_SESSION['sec_token']) {
 	}
 }
 
+// getting group information
+$group_id	= intval($_GET['id']);
+$relation_group_title = '';
+$my_group_role = 0;
+if ($group_id != 0 ) {
+	$user_leave_message = false;
+	$user_added_group_message = false;
+	$group_info = GroupPortalManager::get_group_data($group_id);
+
+	if (isset($_GET['action']) && $_GET['action']=='leave') {
+		$user_leaved = intval($_GET['u']);
+		//I can "leave me myself"
+		if (api_get_user_id() == $user_leaved) {
+			GroupPortalManager::delete_user_rel_group($user_leaved, $group_id);
+			$user_leave_message = true;
+
+		}
+	}
+	// add a user to a group if its open
+	if (isset($_GET['action']) && $_GET['action']=='join') {
+		// we add a user only if is a open group
+		$user_join = intval($_GET['u']);
+		if (api_get_user_id() == $user_join && !empty($group_id)) {
+			if ($group_info['visibility'] == GROUP_PERMISSION_OPEN) {
+				GroupPortalManager::add_user_to_group($user_join, $group_id);
+				$user_added_group_message = true;
+			} else {
+				GroupPortalManager::add_user_to_group($user_join, $group_id, GROUP_USER_PERMISSION_PENDING_INVITATION_SENT_BY_USER);
+				$user_added_group_message = true;
+			}
+		}
+	}
+}
 
 echo '<div id="social-content">';
 
@@ -305,6 +314,13 @@ if ($group_id != 0 ) {
 					}
 				echo '</div>';
 
+				if (!empty($relation_group_title)) {
+					echo '<div class="social-group-details-info">';
+					echo '<span>'.get_lang('StatusInThisGroup').' : </span>';
+					echo $relation_group_title;
+					echo '</div>';
+				}
+
 				//Group's tags
 				if (!empty($tags)) {
 					echo '<div id="social-group-details-info"><span>'.get_lang('Tags').' : </span>'.$tags.'</div>';
@@ -321,14 +337,14 @@ if ($group_id != 0 ) {
 			if (!empty($content)) {
 				echo $content;
 			} else {
-				echo '<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=400&width=610&&user_friend='.api_get_user_id().'&group_id='.$group_id.'&action=add_message_group" class="thickbox" title="'.get_lang('ComposeMessage').'">'.Display::return_icon('pixel.gif',get_lang('YouShouldCreateATopic'),array('class' => 'toolactionplaceholdericon toolsocialnewtopic','hspace' => '6')).'<span class="social-menu-text4" >'.get_lang('YouShouldCreateATopic').'</span></a></li>';
+				echo '<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=400&width=610&&user_friend='.api_get_user_id().'&group_id='.$group_id.'&action=add_message_group" class="thickbox" title="'.get_lang('ComposeMessage').'">'.Display::return_icon('compose_message.png', get_lang('NewTopic'), array('hspace'=>'6')).'<span class="social-menu-text4" >'.get_lang('YouShouldCreateATopic').'</span></a></li>';
 			}
 		} else {
 			// if I already sent an invitation message
 			if (!in_array($my_group_role, array(GROUP_USER_PERMISSION_PENDING_INVITATION_SENT_BY_USER, GROUP_USER_PERMISSION_PENDING_INVITATION))) {
-				echo '<a href="groups.php?id='.$group_id.'&action=join&u='.api_get_user_id().'">'.Display::return_icon('pixel.gif',get_lang('YouShouldJoinTheGroup'),array('class' => 'toolactionplaceholdericon toolactionsgroup','hspace' => '6')).'<span class="social-menu-text4" >'.get_lang('YouShouldJoinTheGroup').'</a></span>';
+				echo '<a href="groups.php?id='.$group_id.'&action=join&u='.api_get_user_id().'">'.Display::return_icon('group_join.png', get_lang('YouShouldJoinTheGroup'), array('hspace'=>'6')).'<span class="social-menu-text4" >'.get_lang('YouShouldJoinTheGroup').'</a></span>';
 			} elseif ($my_group_role == GROUP_USER_PERMISSION_PENDING_INVITATION) {
-				echo '<a href="groups.php?id='.$group_id.'&action=join&u='.api_get_user_id().'">'.Display::return_icon('pixel.gif',get_lang('YouHaveBeenInvitedJoinNow'),array('class' => 'toolactionplaceholdericon toolactionsgroup','hspace' => '6')).'<span class="social-menu-text4" >'.get_lang('YouHaveBeenInvitedJoinNow').'</span></a>';
+				echo '<a href="groups.php?id='.$group_id.'&action=join&u='.api_get_user_id().'">'.Display::return_icon('group_join.png', get_lang('YouHaveBeenInvitedJoinNow'), array('hspace'=>'6')).'<span class="social-menu-text4" >'.get_lang('YouHaveBeenInvitedJoinNow').'</span></a>';
 			}
 		}
 	echo '</div>'; // end layout messages
@@ -530,9 +546,9 @@ echo '</div>';
 echo '<div class="actions">';
 if (isset($_GET['id']) && $_GET['id'] >= 0) {
   $group_id = Security::remove_XSS($_GET['id']);
-  $links =  '<a href="group_members.php?id='.$group_id.'">'.		Display::return_icon('pixel.gif', get_lang('MemberList'), array('class' => 'actionplaceholdericon actiongroupstudentview')).get_lang('MemberList').'</a>';
-  $links .=  '<a href="group_waiting_list.php?id='.$group_id.'">'.	Display::return_icon('pixel.gif', get_lang('WaitingList'), array('class' => 'actionplaceholdericon actionlatestchanges')).get_lang('WaitingList').'</a>';
-  $links .=  '<a href="group_invitation.php?id='.$group_id.'">'.	Display::return_icon('pixel.gif', get_lang('InviteFriends'), array('class' => 'actionplaceholdericon actionadduser')).get_lang('InviteFriends').'</a>';
+  $links =  '<a href="group_members.php?id='.$group_id.'">'.		Display::return_icon('member_list.png', get_lang('MemberList')).get_lang('MemberList').'</a>';
+  $links .=  '<a href="group_waiting_list.php?id='.$group_id.'">'.	Display::return_icon('waiting_list.png', get_lang('WaitingList')).get_lang('WaitingList').'</a>';
+  $links .=  '<a href="group_invitation.php?id='.$group_id.'">'.	Display::return_icon('invitation_friend.png', get_lang('InviteFriends')).get_lang('InviteFriends').'</a>';
   echo $links;
 }
 echo '</div>';

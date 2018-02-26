@@ -92,7 +92,4 @@ $ForumSearchResults = "A  Fórumban keresés eredménye";
 $ForumSearchInformation = "Több szóra is kereshet, ha + jellel kezdi azokat";
 $YouWillBeNotifiedOfNewPosts = "E-mailben értesítést fog kapni az új hozzászólásokról.";
 $YouWillNoLongerBeNotifiedOfNewPosts = "Ezután e-mailben nem fog értesítést fog kapni az új hozzászólásokról.";
-$AddImage = "Kép hozzáadása";
-$StudentList = "Tanulók listája";
-$MaxScore = "Pont";
 ?>

@@ -24,7 +24,7 @@ $config['ToolbarSets']['Maximized'] = array(
 	array('OrderedList','UnorderedList','-','Outdent','Indent','Blockquote','CreateDiv'),
 	array('JustifyLeft','JustifyCenter','JustifyRight','JustifyFull'),
 	array('Rule','SpecialChar','PageBreak'),
-	array('mimetex','asciimath','Image','imgmapPopup','-','MP3','-','videoPlayer','-','googlemaps','Smiley'),
+	array('mimetex','asciimath','Image','imgmapPopup','Flash','MP3','EmbedMovies','flvPlayer','YouTube','googlemaps','Smiley'),
 	'/',
 	array('Style','FontFormat','FontName','FontSize'),
 	array('TextColor','BGColor'),

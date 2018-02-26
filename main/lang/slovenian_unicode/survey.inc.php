@@ -203,7 +203,4 @@ $UpdateInformation = "Ažuriraj informacije";
 $PleaseFillSurvey = "Prosim, izpolnite vprašalnik";
 $ReportingOverview = "Poročila - pregled";
 $ThereAreNotQuestionsForthisSurvey = "Trenutno ni vprašanj vprašalnika";
-$MChoice = "G. Choice";
-$Pageend = "Prelom strani";
-$Printview = "Predogled ";
 ?>

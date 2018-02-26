@@ -30,6 +30,6 @@ $CourseDescriptionAdded = "Description de cours ajoutée";
 $WikiAdded = "Wiki ajouté";
 $SurveyAdded = "Enquête ajoutée";
 $NotebookAdded = "Note ajoutée";
-$NotebookUpdated = "Note enregistrée";
+$NotebookUpdated = "Note mise à jour";
 $NotebookDeleted = "Note supprimée";
 ?>

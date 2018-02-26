@@ -18,20 +18,20 @@ $cidReset = true;
 
 // setting the help
 $help_content = 'platformadministrationsettings';
-switch ($_GET['category']) {
+switch ($_GET['category']){
 	case 'Security':
 		$help_content = 'platformadministrationsettingssecurity';
 		break;
 }
 
 // including the global Dokeos file
-require_once '../inc/global.inc.php';
+require ('../inc/global.inc.php');
 
 // Including additional libraries.
 require_once (api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php');
 require_once (api_get_path(LIBRARY_PATH).'fileManage.lib.php');
 require_once (api_get_path(LIBRARY_PATH).'fileUpload.lib.php');
-require_once (api_get_path(LIBRARY_PATH).'urlmanager.lib.php');
+
 // additional javascript, css, ...
 $htmlHeadXtra [] = '<script src="' . api_get_path ( WEB_LIBRARY_PATH ) . 'javascript/iphone-style-checkboxes.js" type="text/javascript" language="javascript"></script>';
 $htmlHeadXtra [] = '<script src="' . api_get_path ( WEB_LIBRARY_PATH ) . 'javascript/jquery.tools.min.js" type="text/javascript" language="javascript"></script>';
@@ -156,9 +156,6 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
 			//print_r($settings_by_access);
 			$settings_by_access_list=array();
 			foreach($settings_by_access as $row) {
-                            
-                                if ($row['variable'] == 'installation_date') { continue; }
-                            
 				if (empty($row['variable']))
 					$row['variable']=0;
 				if (empty($row['subkey']))
@@ -179,19 +176,10 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
 	//$resultsettings = Database::query($sqlsettings, __FILE__, __LINE__);
 	//while ($row = Database::fetch_array($resultsettings))
 	$default_values = array();
-        $url_object = new UrlManager();
-        $user_id = $_user['user_id'];
-        $is_superadmin = $url_object->is_superadmin($user_id);
-        $allow_superadmin = $url_object->allow_superadmin();
-	$settings_to_ignore = array('import_calendar');
 	foreach($settings as $row) {
-            
-                if ($row ['variable'] == 'installation_date') { continue; }
-                
-		if (($rowkeys['variable'] == 'course_create_active_tools' && $rowkeys['subkey'] == 'enable_search') || ($rowkeys['variable'] == 'show_tabs' && $rowkeys['subkey'] == 'my_gradebook')){
+		if ($row ['variable'] == 'search_enabled') {
 			continue;
 		}
-
 		$anchor_name = $row['variable'].(!empty($row['subkey']) ? '_'.$row['subkey'] : '');
 		$form->addElement('html',"\n<a name=\"$anchor_name\"></a>\n");
 
@@ -226,18 +214,15 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
 			$form->addElement('html', '<div style="float:right;">'.Display::return_icon('shared_setting.png',get_lang('SharedSettingIconComment')).'</div>');
 		}
 
-		$hideme = array();
-		$hide_element = false;
-		if ($_configuration['access_url'] != 1){
-                    
-			if ($row['access_url_changeable'] == 0 && $is_superadmin == false)
+		$hideme=array();
+		$hide_element=false;
+		if ($_configuration['access_url']!=1)
+		{
+			if ($row['access_url_changeable']==0)
 			{
 				//we hide the element in other cases (checkbox, radiobutton) we 'freeze' the element
-				if($allow_superadmin) {
-                                    $hide_element=true;
-                                    
-                                }
-                                $hideme=array('disabled');
+				$hide_element=true;
+				$hideme=array('disabled');
 			}
 			elseif($url_info['active']==1)
 			{
@@ -257,7 +242,6 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
 				}
 				// there is no else because we load the default $row['selected_value'] of the main Dokeos site
 			}
-                        
 		}
 
 		switch ($row['type']) {
@@ -318,37 +302,26 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
 				$default_values[$row['variable']] = $row['selected_value'];
 				break;
 			case 'checkbox';
-                                //checked if the access_url have active tools
-                                $url_obj = new UrlManager();
-                                $url_id = $_configuration['access_url'];
-                                $rs_active_url = $url_obj->url_has_active_tools($url_id);
 				//1. we collect all the options of this variable
 				$sql = "SELECT * FROM settings_current WHERE variable='".$row['variable']."' AND access_url =  1";
-                                
+
 				$result = Database::query($sql, __FILE__, __LINE__);
 				$group = array ();
 				while ($rowkeys = Database::fetch_array($result)) {
- 					if (($rowkeys['variable'] == 'course_create_active_tools' && $rowkeys['subkey'] == 'enable_search') || ($rowkeys['variable'] == 'show_tabs' && $rowkeys['subkey'] == 'my_gradebook')) {
-                                                 continue;
-                                        }
+ 					if ($rowkeys['variable'] == 'course_create_active_tools' && $rowkeys['subkey'] == 'enable_search') {continue;}
 					$element = & $form->createElement('checkbox', $rowkeys['subkey'], '', get_lang($rowkeys['subkeytext']));
-					if ($row['access_url_changeable']==1 || ($row['variable'] == 'course_create_active_tools' && $is_superadmin == true) || $rs_active_url == true) {
+					if ($row['access_url_changeable']==1) {
 						//2. we look into the DB if there is a setting for a specific access_url
 						$access_url = $_configuration['access_url'];
 						if(empty($access_url )) $access_url =1;
-                                                $t_cs = Database::get_main_table(TABLE_MAIN_SETTINGS_CURRENT);
-						$sql = "SELECT selected_value FROM $t_cs WHERE variable='".$rowkeys['variable']."' AND subkey='".$rowkeys['subkey']."'  AND  subkeytext='".$rowkeys['subkeytext']."' AND access_url =  $access_url";
+						$sql = "SELECT selected_value FROM settings_current WHERE variable='".$rowkeys['variable']."' AND subkey='".$rowkeys['subkey']."'  AND  subkeytext='".$rowkeys['subkeytext']."' AND access_url =  $access_url";
 						$result_access = Database::query($sql, __FILE__, __LINE__);
 						$row_access = Database::fetch_array($result_access);
-                                                if (Database::num_rows($result_access) > 0) {
-                                                    if ($row_access['selected_value'] == 'true' && ! $form->isSubmitted()) {
-                                                            $element->setChecked(true);
-                                                    }
-                                                } else if ($rowkeys['selected_value'] == 'true' && ! $form->isSubmitted()) {
+						if ($row_access['selected_value'] == 'true' && ! $form->isSubmitted()) {
 							$element->setChecked(true);
 						}
 					} else {
-                                                if ($rowkeys['selected_value'] == 'true' && ! $form->isSubmitted()) {
+						if ($rowkeys['selected_value'] == 'true' && ! $form->isSubmitted()) {
 							$element->setChecked(true);
 						}
 					}
@@ -363,17 +336,6 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
 				$form->addElement('static', null, get_lang($row['comment']), get_lang('CurrentValue').' : '.$row['selected_value'],$hideme);
 		}
 	}
-        
-         // installation date insife category "Advanced"
-         if ($_GET['category'] == 'Advanced') {                            
-            $rs_install_date = Database::query("SELECT title, comment, variable, selected_value FROM $table_settings_current WHERE category='".Database::escape_string($_GET['category'])."' AND variable='installation_date'");                            
-            if (Database::num_rows($rs_install_date) > 0){
-                $row_install_date = Database::fetch_array($rs_install_date, 'ASSOC');
-                $form->addElement('header', null, get_lang($row_install_date['title']));
-                $form->addElement('static', null, get_lang($row_install_date['comment']), get_lang('CurrentValue').' : '.date('d-m-Y H:i:s', $row_install_date['selected_value']));
-            }
-         }
-        
 	if ($_GET['category'] <> "Languages"){
 		$form->addElement('html','<div align="right">');
 		$form->addElement('style_submit_button', ' ',get_lang('SaveSettings'), 'class="save"');
@@ -383,32 +345,12 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
 	if ($form->validate())
 	{
 		$values = $form->exportValues();
-                // Create active tools list
-                $url_obj = new UrlManager();
-                $is_main_url = $url_obj->is_main_url($url_obj->get_main_url_id());
-                $allow_superadmin = $url_obj->allow_superadmin();
-                $is_superadmin_in_url = $url_obj->is_superadmin_in_url($_configuration['access_url'],  api_get_user_id());
-                //if ($is_main_url && $is_superadmin_in_url>0) {
-                    $url_obj->add_course_create_active_tools_to_urls();
-                //}
 		// the first step is to set all the variables that have type=checkbox of the category
 		// to false as the checkbox that is unchecked is not in the $_POST data and can
 		// therefore not be set to false.
 		// This, however, also means that if the process breaks on the third of five checkboxes, the others
 		// will be set to false.
-                
-                if($is_superadmin == true){
-                    //get the list of url
-                    $url_list = $url_obj->get_url_data();
-                    foreach ($url_list as $url_objs) {
-                        if ($url_objs['active']==1) {
-                            $r = api_set_settings_category_no_changable($my_category,'false',$url_objs['id'],$is_superadmin);
-                        }	
-                    }
-                }else{
-                    
-                    $r = api_set_settings_category($my_category,'false',$_configuration['access_url']);
-                }
+		$r = api_set_settings_category($my_category,'false',$_configuration['access_url']);
 		//$sql = "UPDATE $table_settings_current SET selected_value='false' WHERE category='$my_category' AND type='checkbox'";
 		//$result = Database::query($sql, __FILE__, __LINE__);
 		// Save the settings
@@ -421,27 +363,8 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
 				//$result = Database::query($sql, __FILE__, __LINE__);
 
 				if (api_get_setting($key) != $value) $keys[] = $key;
-                                if(!api_check_if_setting_exist($key, $value, null, null, $_configuration['access_url'])) {
-                                    
-                                    api_create_setting($key, $value, null, null, $_configuration['access_url']);
-                                }
-                                
-				if(api_get_check_if_setting_is_changable($key, $value, null, null, $_configuration['access_url'])) {
-                                    if ($is_superadmin == true) {
-                                        //get the list of url
-                                        $url_list = $url_obj->get_url_data();
-                                        
-                                        foreach ($url_list as $url_objs) {
-                                            if ($url_objs['active'] == 1) {
-                                                $result = api_set_setting($key, $value, null, null, $url_objs['id']);
-                                            }
-                                        }
-                                    } else {
-                                        $result = api_set_setting($key, $value, null, null, $_configuration['access_url']);
-                                    }
-                                } else {
-                                    $result = api_set_setting($key, $value, null, null, $_configuration['access_url']);
-                                }
+
+				$result = api_set_setting($key,$value,null,null,$_configuration['access_url']);
 
 			}
 			else
@@ -464,31 +387,8 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
 
 					//$sql = "UPDATE $table_settings_current SET selected_value='true' WHERE variable='$key' AND subkey = '$subkey'";
 					//$result = Database::query($sql, __FILE__, __LINE__);
-                                        
-					if(!api_check_if_setting_exist($key, 'true', $subkey, null, $_configuration['access_url'])) {
-                                            api_create_setting($key, 'true', $subkey, null, $_configuration['access_url']);
-                                        }
-                                        
-                                        if(api_get_check_if_setting_is_changable($key, 'true', $subkey, null, $_configuration['access_url'])) {
-                                            if ($is_superadmin == true) {
-                                                //get the list of url
-                                                $url_list = $url_obj->get_url_data();
-                                                foreach ($url_list as $url_objs) {
-                                                    if ($url_objs['active'] == 1) {
-                                                        $result = api_set_setting($key, 'true', $subkey, null, $url_objs['id']);
-                                                    }
-                                                }
-                                            } else {
-                                                $result = api_set_setting($key, 'true', $subkey, null, $_configuration['access_url']);
-                                            }
-                                        } else {
-                                            
-                                            $result = api_set_setting($key, 'true', $subkey, null, $_configuration['access_url']);
-                                            if($allow_superadmin == false){
-                                                $result = api_set_setting($key, 'true', $subkey, null, 1);
-                                            }
-                                            
-                                        }
+
+					$result = api_set_setting($key,'true',$subkey,null,$_configuration['access_url']);
 
 				}
 			}
@@ -529,46 +429,43 @@ if (!empty($_GET['action']) && $_GET['action'] == "stored")
 }
 
 // the action images
-$action_images['platform'] 		= array('class' => 'actionplaceholdericon actioncoursehome');
-$action_images['course'] 		= array('class' => 'actionplaceholdericon actionscourse');
-$action_images['tools'] 		= array('class' => 'actionplaceholdericon actionseditsettings');
-$action_images['user'] 			= array('class' => 'actionplaceholdericon actionsmembers');
-$action_images['gradebook']		= array('class' => 'actionplaceholdericon actionsgradebook');
-$action_images['ldap'] 			= array('class' => 'actionplaceholdericon actionsloginmanager');
+$action_images['platform'] 		= 'dokeos_22.png';
+$action_images['course'] 		= 'course_22.png';
+$action_images['tools'] 		= 'settings_22.png';
+$action_images['user'] 			= 'members_22.png';
+$action_images['gradebook']		= 'gradebook_eval_not_empty.png';
+$action_images['ldap'] 			= 'loginmanager.png';
+$action_images['security'] 		= 'lock_22.png';
 $action_images['languages']		= 'languages.png';
-$action_images['tuning'] 		= array('class' => 'actionplaceholdericon actionstuning');
-$action_images['security'] 		= array('class' => 'actionplaceholdericon actionslook');
+$action_images['tuning'] 		= 'tuning.png';
 $action_images['plugins'] 		= 'plugin.png';
-$action_images['stylesheets']           = 'theme.png';
-$action_images['templates']             = 'tools_wizard_22.png';
-$action_images['search']                = 'find_22.png';
-$action_images['editor']		= array('class' => 'actionplaceholdericon actionsedithtml');
-$action_images['system']		= array('class' => 'actionplaceholdericon actionsedithtml');
+$action_images['stylesheets'] 	= 'theme.png';
+$action_images['templates'] 	= 'tools_wizard_22.png';
+$action_images['search']        = 'find_22.png';
+$action_images['editor']		= 'html.png';
+$action_images['system']		= 'system.png';
 $action_images['wysiwyg']		= 'toolbar.png';
-$action_images['cas']			= array('class' => 'actionplaceholdericon actionsloginmanager');
-$action_images['pro']			= array('class' => 'actionplaceholdericon actionadminpro');
+$action_images['cas']			= 'loginmanager.png';
 
 // grabbing the categories
 //$selectcategories = "SELECT DISTINCT category FROM ".$table_settings_current." WHERE category NOT IN ('stylesheets','Plugins')";
 //$resultcategories = Database::query($selectcategories, __FILE__, __LINE__);
-$resultcategories = api_get_settings_categories(array('stylesheets','Plugins', 'Templates', 'Search','widget','Languages', 'Advanced'));
+$resultcategories = api_get_settings_categories(array('stylesheets','Plugins', 'Templates', 'Search'));
 echo "\n<div class=\"actions\">";
 //while ($row = Database::fetch_array($resultcategories))
 foreach($resultcategories as $row)
 {
-   //echo "\n\t<a href=\"".api_get_self()."?category=".$row['category']."\">".Display::return_icon($action_images[strtolower($row['category'])], api_ucfirst(get_lang($row['category']))).api_ucfirst(get_lang($row['category']))."</a>";	
-   echo "\n\t<a href=\"".api_get_self()."?category=".$row['category']."\">".Display::return_icon('pixel.gif',api_ucfirst(get_lang($row['category'])),$action_images[strtolower($row['category'])]).api_ucfirst(get_lang($row['category']))."</a>";	 
-                                                                                    
+	echo "\n\t<a href=\"".api_get_self()."?category=".$row['category']."\">".Display::return_icon($action_images[strtolower($row['category'])], api_ucfirst(get_lang($row['category']))).api_ucfirst(get_lang($row['category']))."</a>";
 }
-//echo "\n\t<a href=\"".api_get_self()."?category=Plugins\">".Display::return_icon($action_images['plugins'], api_ucfirst(get_lang('Plugins'))).api_ucfirst(get_lang('Plugins'))."</a>";
-echo "\n\t<a href=\"".api_get_self()."?category=stylesheets\">".Display::return_icon('pixel.gif',get_lang('Stylesheets'), array('class' => 'actionplaceholdericon actionstheme')).api_ucfirst(get_lang('Stylesheets'))."</a>";
-echo "\n\t<a href=\"".api_get_self()."?category=Templates\">".Display::return_icon('pixel.gif',get_lang('Templates'), array('class' => 'actionplaceholdericon actionstoolswizard')).api_ucfirst(get_lang('Templates'))."</a>";
-// advanced parameters
-echo "\n\t<a href=\"".api_get_self()."?category=Advanced\">".Display::return_icon('pixel.gif',get_lang('AdvancedParameters'), array('class' => 'actionplaceholdericon actionadvanced')).api_ucfirst(get_lang('AdvancedParameters'))."</a>";
-//echo "\n\t<a href=\"".api_get_self()."?category=Search\">".Display::return_icon($action_images['search'], api_ucfirst(get_lang('Search'))).api_ucfirst(get_lang('Search'))."</a>";
+echo "\n\t<a href=\"".api_get_self()."?category=Plugins\">".Display::return_icon($action_images['plugins'], api_ucfirst(get_lang('Plugins'))).api_ucfirst(get_lang('Plugins'))."</a>";
+echo "\n\t<a href=\"".api_get_self()."?category=stylesheets\">".Display::return_icon($action_images['stylesheets'], api_ucfirst(get_lang('Stylesheets'))).api_ucfirst(get_lang('Stylesheets'))."</a>";
+echo "\n\t<a href=\"".api_get_self()."?category=Templates\">".Display::return_icon($action_images['templates'], api_ucfirst(get_lang('Templates'))).api_ucfirst(get_lang('Templates'))."</a>";
+echo "\n\t<a href=\"".api_get_self()."?category=Search\">".Display::return_icon($action_images['search'], api_ucfirst(get_lang('Search'))).api_ucfirst(get_lang('Search'))."</a>";
 //echo "\n\t<a href=\"".api_get_self()."?category=System\">".Display::return_icon($action_images['system'], api_ucfirst(get_lang('System'))).api_ucfirst(get_lang('System'))."</a>";
-//echo "\n\t<a href=\"".api_get_self()."?category=Wysiwyg\">".Display::return_icon($action_images['wysiwyg'], api_ucfirst(get_lang('Wysiwyg'))).api_ucfirst(get_lang('Wysiwyg'))."</a>";
+echo "\n\t<a href=\"".api_get_self()."?category=Wysiwyg\">".Display::return_icon($action_images['wysiwyg'], api_ucfirst(get_lang('Wysiwyg'))).api_ucfirst(get_lang('Wysiwyg'))."</a>";
 echo "\n</div>";
+
+
 
 // start the content div
 echo '<div id="content">';
@@ -587,20 +484,20 @@ if (!empty($_GET['category']))
 		case 'stylesheets' :
 			handle_stylesheets();
 			break;
-                case 'Search' :
-                        handle_search();
-                        break;
+        case 'Search' :
+            handle_search();
+            break;
 		case 'Templates' :
 			handle_templates();
 			break;
-		//case 'System' :
-			//include ('settings_system.inc.php');
-			//exit;
+		case 'System' :
+			include ('settings_system.inc.php');
+			exit;
 		case 'Wysiwyg' :
 			include ('settings_wysiwyg.inc.php');
 			exit;
 		default :
-			$form->display();                       
+			$form->display();
 	}
 }
 
@@ -730,7 +627,7 @@ function handle_stylesheets()
 	}
 
 	// Preview of the stylesheet
-	echo '<div style="padding:0px;border:0px;"><iframe frameborder="0" src="style_preview.php" width="100%" height="350"  name="preview"></iframe></div>';
+	echo '<div><iframe src="style_preview.php" width="100%" height="300" name="preview"></iframe></div>';
 
 	echo '<form name="stylesheets" method="post" action="'.api_get_self().'?category='.Security::remove_XSS($_GET['category']).'">';
 	if ($handle = @opendir(api_get_path(SYS_PATH).'main/css/'))
@@ -1002,7 +899,7 @@ function handle_templates()
 {
 	if ($_GET['action'] != 'add') {
 		echo "\n<div class=\"actions\" style=\"margin-left:1px\" >";
-		echo '<a href="settings.php?category=Templates&amp;action=add">'.Display::return_icon('pixel.gif', get_lang('AddTemplate'),array('class'=>'actionplaceholdericon actionaddtemplate')).get_lang('AddTemplate').'</a>';
+		echo '<a href="settings.php?category=Templates&amp;action=add">'.Display::return_icon('template_add.gif', get_lang('AddTemplate')).get_lang('AddTemplate').'</a>';
 		echo "\n</div>";
 	}
 
@@ -1114,8 +1011,8 @@ function get_template_data($from, $number_of_items, $column, $direction)
  */
 function actions_filter($id)
 {
-	$return .= '<a href="settings.php?category=Templates&amp;action=edit&amp;id='.Security::remove_XSS($id).'">'.Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).'</a>';
-	$return .= '<a href="settings.php?category=Templates&amp;action=delete&amp;id='.Security::remove_XSS($id).'" onclick="javascript:if(!confirm('."'".get_lang("ConfirmYourChoice")."'".')) return false;">'.Display::return_icon('pixel.gif', get_lang('Delete'),array('class'=>'actionplaceholdericon actiondelete')).'</a>';
+	$return .= '<a href="settings.php?category=Templates&amp;action=edit&amp;id='.Security::remove_XSS($id).'">'.Display::return_icon('edit.png', get_lang('Edit')).'</a>';
+	$return .= '<a href="settings.php?category=Templates&amp;action=delete&amp;id='.Security::remove_XSS($id).'" onclick="javascript:if(!confirm('."'".get_lang("ConfirmYourChoice")."'".')) return false;">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>';
 	return $return;
 }
 
@@ -1148,244 +1045,7 @@ function image_filter($image)
  * @version August 2008
  * @since Dokeos 1.8.6
  */
- function add_edit_template()
-{
-	// initiate the object
-	$form = new FormValidator('template', 'post', 'settings.php?category=Templates&action='.Security::remove_XSS($_GET['action']).'&id='.Security::remove_XSS($_GET['id']));
-
-	// settting the form elements: the header
-	if ($_GET['action'] == 'add') {
-		$title = get_lang('AddTemplate');
-	} else {
-		$title = get_lang('EditTemplate');
-	}
-	$form->addElement('header', '', $title);
-
-	// settting the form elements: the title of the template
-   if ($_GET['action'] == 'add') {
-        $form->add_textfield('title', get_lang('Title'), false, array('id' => 'idTitle','size' => '50'));
-    } else {
-     //   $form->addElement('static','title', '', get_lang('Title'));
-		  $form->add_textfield('title', get_lang('Title'), false, array('id' => 'idTitle','size' => '50'));
-    }
-
-	// settting the form elements: the form to upload an image to be used with the template
-	$form->addElement('file','template_image',get_lang('Image'),'');
-
-	// settting the form elements: a little bit information about the template image
-	$form->addElement('static', 'file_comment', '', get_lang('TemplateImageComment100x70'));
-
-	// settting the form elements: the content of the template (wysiwyg editor)
-	//$form->addElement('html_editor', 'template_text', get_lang('Text'), null, array('ToolbarSet' => 'AdminTemplates', 'Width' => '100%', 'Height' => '730'));
-	$form->addElement('html_editor', 'template_text', '', null, array('ToolbarSet' => 'AdminTemplates', 'Width' => '100%', 'Height' => '730'));
-		// settting the form elements: the submit button
-	$form->addElement('style_submit_button' , 'submit', get_lang('Ok') ,'class="save"');
-	
-	// setting the rules: the required fields
-    if ($_GET['action'] == 'add') {
-        $form->addRule('title', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');
-    }
-	$form->addRule('template_text', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');
-
-
-	// getting all the information of the template when editing a template
-	if ($_GET['action'] == 'edit') {
-		// Database table definition
-		$table_system_template = Database :: get_main_table('system_template');
-		$sql = "SELECT * FROM $table_system_template WHERE id = '".Database::escape_string($_GET['id'])."'";
-		$result = Database::query($sql, __FILE__, __LINE__);
-		$row = Database::fetch_array($result,'ASSOC');
-
-		$defaults['template_id'] 	= intval($_GET['id']);
-		//$defaults['template_text'] 	= $row['content'];
-		//forcing a get_lang
-		//$defaults['title'] 			= get_lang($row['title']);
-
-		$title = get_lang($row['title']);
-		$position = strpos($title, '[=');
-		if ($position === false){		
-			$title = get_lang($row['title']);
-		}
-		else {
-			$title = $row['title'];
-		}		
-		$defaults['title'] 			= $title;
-
-        // setting some paths
-        $img_dir = api_get_path(REL_CODE_PATH).'img/';
-        $default_course_dir = api_get_path(REL_CODE_PATH).'default_course_document/';
-        
-		$valcontent =  $row['content'];
-		$css_name = api_get_setting('stylesheets');
-                $filepath = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document/';
-		//$template_css = ' <style type="text/css">'.str_replace('../../img/',api_get_path(REL_CODE_PATH).'img/',file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/default.css')).'</style>';		
-		if(file_exists(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css')) {
-			$template_content = str_replace('../../img/', api_get_path(REL_CODE_PATH).'img/', file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css'));
-                        $template_content = str_replace('images/', api_get_path(REL_CODE_PATH).'css/'.$css_name.'/images/', $template_content);
-                        file_put_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css', $template_content);
-                        //copy(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css', $filepath.'css/templates.css');
-		}
-		
-                //$template_css = str_replace('images/',api_get_path(REL_CODE_PATH).'css/'.$css_name.'/images/',$template_css);
-                $valcontent =  str_replace('{CSS}','<link rel="stylesheet" href="'.api_get_path(WEB_PATH).'main/css/'.$css_name.'/templates.css" type="text/css" />', $valcontent);
-                $valcontent =  str_replace('{IMG_DIR}',$img_dir, $valcontent);
-                $valcontent =  str_replace('{REL_PATH}', api_get_path(REL_PATH), $valcontent);
-                $valcontent =  str_replace('{COURSE_DIR}',$default_course_dir, $valcontent);                                
-                
-                
-		$defaults['template_text'] 	= $valcontent;
-
-        // adding an extra field: a hidden field with the id of the template we are editing
-		$form->addElement('hidden','template_id');
-
-		// adding an extra field: a preview of the image that is currently used
-		if (!empty($row['image'])) {
-			$form->addElement('static','template_image_preview', '', '<img src="'.api_get_path(WEB_PATH).'home/default_platform_document/template_thumb/'.$row['image'].'" alt="'.get_lang('TemplatePreview').'"/>');
-		} else {
-			$form->addElement('static','template_image_preview', '', '<img src="'.api_get_path(WEB_PATH).'home/default_platform_document/template_thumb/noimage.gif" alt="'.get_lang('NoTemplatePreview').'"/>');
-		}
-
-		// setting the information of the template that we are editing
-		$form->setDefaults($defaults);
-	} else {
-        $default_content = '<!-- white table for the course --> <!-- Your template should be inside of the table with class=white --> <table class="white" style="text-align: left; width: 100%; height: 600px;" border="0" cellpadding="0" cellspacing="0">
-        <tbody>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-        </tbody>
-        </table> <!-- end white table for the course -->';
-        $defaults['template_text'] = $default_content;
-		// setting the information of the template that we are adding
-		$form->setDefaults($defaults);
-    }
-
-	// if the form validates (complies to all rules) we save the information, else we display the form again (with error message if needed)
-	if( $form->validate() ) {
-
-		$check = Security::check_token('post');
-		if ($check) {
-			// exporting the values
-			$values = $form->exportValues();
-
-			// upload the file
-			if (!empty($_FILES['template_image']['name']))
-			{
-				include_once (api_get_path(LIBRARY_PATH).'fileUpload.lib.php');
-				$upload_ok = process_uploaded_file($_FILES['template_image']);
-
-				if ($upload_ok)
-				{
-					// Try to add an extension to the file if it hasn't one
-					$new_file_name = add_ext_on_mime(stripslashes($_FILES['template_image']['name']), $_FILES['template_image']['type']);
-
-					// upload dir
-					$upload_dir = api_get_path(SYS_PATH).'home/default_platform_document/template_thumb/';
-
-					// create dir if not exists
-	                if (!is_dir($upload_dir)) {
-	                    $perm = api_get_setting('permissions_for_new_directories');
-	                    $perm = octdec(!empty($perm)?$perm:'0770');
-	                	$res = @mkdir($upload_dir,$perm);
-	                }
-
-					// resize image to max default and upload
-					require_once (api_get_path(LIBRARY_PATH).'image.lib.php');
-					$temp = new image($_FILES['template_image']['tmp_name']);
-					$picture_infos=@getimagesize($_FILES['template_image']['tmp_name']);
-
-					$max_width_for_picture = 100;
-
-					if ($picture_infos[0]>$max_width_for_picture)
-					{
-						$thumbwidth = $max_width_for_picture;
-						if (empty($thumbwidth) or $thumbwidth==0) {
-						  $thumbwidth=$max_width_for_picture;
-						}
-						$new_height = round(($thumbwidth/$picture_infos[0])*$picture_infos[1]);
-
-						$temp->resize($thumbwidth,$new_height,0);
-					}
-
-					$type=$picture_infos[2];
-
-					switch (!empty($type))
-					{
-						case 2 : $temp->send_image('JPG',$upload_dir.$new_file_name);
-								 break;
-						case 3 : $temp->send_image('PNG',$upload_dir.$new_file_name);
-								 break;
-						case 1 : $temp->send_image('GIF',$upload_dir.$new_file_name);
-								 break;
-					}
-				}
-		   }
-
-		   // store the information in the database (as insert or as update)
-		   $table_system_template = Database :: get_main_table('system_template');
-		   if ($_GET['action'] == 'add') {
-	   		$content_template = explode('<!-- white table for the course -->',$values['template_text']);
-                        $content_template = explode('<!-- end white table for the course -->',$content_template[1]);
-                        $real_content_template = $content_template[0];
-                        // Save the updated template
-			//$position = stripos($values['template_text'], 'A:hover');                                                
-                        /*
-			if ($position !== false){					
-                            $content_template = '<head>{CSS}<style type="text/css">.text{font-weight: normal;}</style></head><body><!-- white table for the course -->'.Database::escape_string($real_content_template).'<!-- end white table for the course --></body>';
-			}	
-			else {				
-                            $content_template = '<head><style type="text/css">.text{font-weight: normal;}</style></head><body><!-- white table for the course -->'.Database::escape_string($real_content_template).'<!-- end white table for the course --></body>';
-			}*/
-                        $content_template = '<head>{CSS}</head><body><!-- white table for the course -->'.Database::escape_string($real_content_template).'<!-- end white table for the course --></body>';
-
-		   	$sql = "INSERT INTO $table_system_template (title, content, image) VALUES ('".Database::escape_string($values['title'])."','".$content_template."','".Database::escape_string($new_file_name)."')";
-                        $result = Database::query($sql, __FILE__, __LINE__);
-
-			// display a feedback message
-                        echo get_lang('TemplateAdded');
-	//		echo '<a href="settings.php?category=Templates&amp;action=add">'.Display::return_icon('template_add.gif', get_lang('AddTemplate')).get_lang('AddTemplate').'</a>';
-		   } else {
-                        // Split content templates
-                        $content_template = explode('<!-- white table for the course -->',$values['template_text']);
-                        $content_template = explode('<!-- end white table for the course -->',$content_template[1]);
-                        $real_content_template = $content_template[0];
-                        // Save the updated template
-                        /*$position = stripos($values['template_text'], 'a:hover');				
-                        if ($position !== false){
-                            $content_template = '<head>{CSS}<style type="text/css">.text{font-weight: normal;}</style></head><body><!-- white table for the course -->'.Database::escape_string($real_content_template).'<!-- end white table for the course --></body>';
-                        }
-                        else {
-                        $content_template = '<head><style type="text/css">.text{font-weight: normal;}</style></head><body><!-- white table for the course -->'.Database::escape_string($real_content_template).'<!-- end white table for the course --></body>';
-                        }*/
-                        $content_template = '<head>{CSS}</head><body><!-- white table for the course -->'.Database::escape_string($real_content_template).'<!-- end white table for the course --></body>';
-                        $sql = "UPDATE $table_system_template set title = '".Database::escape_string($values['title'])."', content = '".$content_template."'";
-
-                        if (!empty($new_file_name)) {
-                                $sql .= ", image = '".Database::escape_string($new_file_name)."'";
-                        }
-                        $sql .= " WHERE id='".Database::escape_string($_GET['id'])."'";
-                        $result = Database::query($sql, __FILE__, __LINE__);
-
-			// display a feedback message
-                        echo get_lang('TemplateEdited');
-		   }
-
-		}
-	   Security::clear_token();
-	   display_templates();
-	}
-	else
-	{
-		$token = Security::get_token();
-		$form->addElement('hidden','sec_token');
-		$form->setConstants(array('sec_token' => $token));
-		// display the form
-		$form->display();
-	}
-}
-//commented old code
-/*function add_edit_template()
+function add_edit_template()
 {
 	// initiate the object
 	$form = new FormValidator('template', 'post', 'settings.php?category=Templates&action='.Security::remove_XSS($_GET['action']).'&id='.Security::remove_XSS($_GET['id']));
@@ -1563,7 +1223,7 @@ function image_filter($image)
 			   	/*$sql = "UPDATE $table_system_template set title = '".Database::escape_string($values['title'])."',
 											   		  content = '".$content_template."'";*/
 
-		/*	   	$sql = "UPDATE $table_system_template set content = '".$content_template."'";
+			   	$sql = "UPDATE $table_system_template set content = '".$content_template."'";
 
 			   	if (!empty($new_file_name)) {
 			   		$sql .= ", image = '".Database::escape_string($new_file_name)."'";
@@ -1588,7 +1248,7 @@ function image_filter($image)
 		// display the form
 		$form->display();
 	}
-}*/
+}
 
 
 /**

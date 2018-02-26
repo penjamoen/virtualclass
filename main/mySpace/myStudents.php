@@ -10,7 +10,7 @@
 $language_file = array('registration', 'index', 'tracking', 'exercice', 'admin');
 
 
-require_once '../inc/global.inc.php';
+require '../inc/global.inc.php';
 require_once api_get_path(LIBRARY_PATH).'tracking.lib.php';
 require_once api_get_path(LIBRARY_PATH).'export.lib.inc.php';
 require_once api_get_path(LIBRARY_PATH).'usermanager.lib.php';
@@ -74,7 +74,7 @@ if (isset ($_GET['details'])) {
 			"name" => get_lang("Users")
 		);
 	} else
-		if (!empty ($_GET['origin']) && $_GET['origin'] == 'tracking_course') {                    
+		if (!empty ($_GET['origin']) && $_GET['origin'] == 'tracking_course') {
 			$course_info = CourseManager :: get_course_information($get_course_code);
 			if (empty ($cidReq)) {
 				//$interbreadcrumb[] = array ("url" => api_get_path(WEB_COURSE_PATH).$course_info['directory'], 'name' => $course_info['title']);
@@ -169,8 +169,7 @@ if (!api_is_allowed_to_edit() && !api_is_coach() && $_user['status'] != DRH && $
 	api_not_allowed(true);
 }
 
-Display :: display_tool_header($nameTools);
-
+Display :: display_header($nameTools);
 
 /*
  * ======================================================================================
@@ -239,16 +238,16 @@ if (!empty ($_GET['student'])) {
 
 	// Actions bar
 	echo '<div class="actions">';
-        echo '<a href="javascript: void(0);" onclick="javascript: window.print();">'.Display::return_icon('pixel.gif',get_lang('Print'), array('class' => 'toolactionplaceholdericon toolactionprint32')). get_lang('Print') . '</a>';
-	echo '<a href="' . api_get_self() . '?' . Security :: remove_XSS($_SERVER['QUERY_STRING']) . '&export=csv">'.Display::return_icon('pixel.gif',get_lang('ExportAsCSV'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')) . get_lang('ExportAsCSV') . '</a>';
+	echo '<a href="javascript: void(0);" onclick="javascript: window.print();"><img src="../img/print32.png">&nbsp;' . get_lang('Print') . '</a>';
+	echo '<a href="' . api_get_self() . '?' . Security :: remove_XSS($_SERVER['QUERY_STRING']) . '&export=csv"><img src="../img/excel_32.png">&nbsp;' . get_lang('ExportAsCSV') . '</a>';
 	if (!empty ($info_user['email'])) {
-		$send_mail = Display::return_icon('pixel.gif',get_lang('SendMail'), array('class' => 'toolactionplaceholdericon toolactionsendmail')).' ' . Display :: encrypted_mailto_link($info_user['email'], get_lang('SendMail'));
+		$send_mail = Display :: return_icon('send_mail.gif', get_lang('SendMail')) . ' ' . Display :: encrypted_mailto_link($info_user['email'], get_lang('SendMail'));
 	} else {
-		$send_mail = Display::return_icon('pixel.gif',get_lang('SendMail'), array('class' => 'toolactionplaceholdericon toolactionsendmail')). ' ' . get_lang('SendMail');
+		$send_mail = Display :: return_icon('send_mail.gif', get_lang('SendMail')) . ' ' . get_lang('SendMail');
 	}
 	echo $send_mail;
 	if (!empty ($_GET['student']) && !empty ($_GET['course'])) { //only show link to connection details if course and student were defined in the URL
-		echo '<a href="access_details.php?student=' . Security :: remove_XSS($_GET['student']) . '&course=' . Security :: remove_XSS($_GET['course']) . '&amp;origin=' . Security :: remove_XSS($_GET['origin']) . '&amp;cidReq=' . Security :: remove_XSS($_GET['course']) . '">' . Display::return_icon('pixel.gif',get_lang('AccessDetails'), array('class' => 'toolactionplaceholdericon toolactionstatistics')) . ' ' . get_lang('AccessDetails') . '</a>';
+		echo '<a href="access_details.php?student=' . Security :: remove_XSS($_GET['student']) . '&course=' . Security :: remove_XSS($_GET['course']) . '&amp;origin=' . Security :: remove_XSS($_GET['origin']) . '&amp;cidReq=' . Security :: remove_XSS($_GET['course']) . '">' . Display :: return_icon('statistics.png', get_lang('AccessDetails')) . ' ' . get_lang('AccessDetails') . '</a>';
 	}
 	echo '</div>';
 
@@ -372,12 +371,7 @@ if (!empty ($_GET['student'])) {
 	if ($image_array['file'] == 'unknown.jpg') {
 		echo '<img ' . $img_attributes . ' />';
 	} else {
-//		echo '<input type="image" ' . $img_attributes . ' onclick="javascript: return show_image(\'' . $url_big_image . '\',\'' . $big_image_width . '\',\'' . $big_image_height . '\');"/>';
-         echo  Display::return_icon('pixel.gif',get_lang('TrackTrainings'), array('class' => 'placeholderunknowns toolunknown',"style"=>"margin-left:15px;border:1px solid gray;border-radius:5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;2rightarrow"));
-                                           
-
+		echo '<input type="image" ' . $img_attributes . ' onclick="javascript: return show_image(\'' . $url_big_image . '\',\'' . $big_image_width . '\',\'' . $big_image_height . '\');"/>';
 	}
 	echo '</td>';
 ?>
@@ -388,7 +382,7 @@ if (!empty ($_GET['student'])) {
 										<?php echo get_lang('Information'); ?>
 									</th>
 								</tr>
-								<tr class="row_even">
+								<tr>
 						<td>
 										<?php
 
@@ -397,7 +391,7 @@ if (!empty ($_GET['student'])) {
 ?>
 									</td>
 								</tr>
-								<tr class="row_odd">
+								<tr>
 						<td>
 										<?php
 
@@ -410,7 +404,7 @@ if (!empty ($_GET['student'])) {
 ?>
 									</td>
 								</tr>
-								<tr class="row_even">
+								<tr>
 						<td>
 										<?php
 
@@ -424,7 +418,7 @@ if (!empty ($_GET['student'])) {
 ?>
 									</td>
 								</tr>
-								<tr class="row_odd">
+								<tr>
 						<td>
 										<?php
 
@@ -457,52 +451,53 @@ if (!empty ($_GET['student'])) {
 										<?php echo get_lang('Tracking'); ?>
 									</th>
 								</tr>
-								<tr class="row_even">
+								<tr>
 						<td align="right">
-													<?php echo get_lang('FirstLogin').' : '; ?>
+													<?php echo get_lang('FirstLogin') ?>
 												</td>
 						<td align="left">
 													<?php echo $first_connection_date ?>
 												</td>
 											</tr>
-											<tr class="row_odd">
+											<tr>
 						<td align="right">
-													<?php echo get_lang('LatestLogin').' : '; ?>
+													<?php echo get_lang('LatestLogin') ?>
 												</td>
 						<td align="left">
 													<?php echo $last_connection_date ?>
 												</td>
 											</tr>
-											<tr class="row_even">
+											<tr>
 						<td align="right">
-													<?php echo get_lang('TimeSpentInTheCourse').' : '; ?>
+													<?php echo get_lang('TimeSpentInTheCourse') ?>
 												</td>
 						<td align="left">
 													<?php echo $time_spent_on_the_course ?>
 												</td>
 											</tr>
-											<tr class="row_odd">
+											<tr>
 						<td align="right">
-						<?php
-                        echo get_lang('Progress').' : ';
-                        Display :: display_icon('info3.gif', get_lang('ScormAndLPProgressTotalAverage'), array (
-                            'align' => 'absmiddle',
-                            'hspace' => '0px'
-                        ));
-                        ?>
+													<?php
+
+	echo get_lang('Progress');
+	Display :: display_icon('info3.gif', get_lang('ScormAndLPProgressTotalAverage'), array (
+		'align' => 'absmiddle',
+		'hspace' => '3px'
+	));
+?>
 												</td>
 						<td align="left">
 													<?php echo $avg_student_progress.'%' ?>
 												</td>
 											</tr>
-											<tr class="row_even">
+											<tr>
 						<td align="right">
 													<?php
 
-	echo get_lang('Score').' : ';
+	echo get_lang('Score');
 	Display :: display_icon('info3.gif', get_lang('ScormAndLPTestTotalAverage'), array (
 		'align' => 'absmiddle',
-		'hspace' => '0px'
+		'hspace' => '3px'
 	));
 ?>
 												</td>
@@ -745,7 +740,7 @@ if (!empty ($_GET['student'])) {
 				));
 
 				if (empty ($score)) {
-					$score = 0;
+					//$score = 0;
 				}
 				if ($i % 2 == 0) {
 					$css_class = "row_odd";
@@ -800,11 +795,11 @@ if (!empty ($_GET['student'])) {
 						$from ='&from=myspace';
 					}
 ?>
-					<a href="charts/learnpath.ajax.php?width=900&height=500&cidReq=<?php echo $course_code_info; ?>&course=<?php echo $course_code_info ?>&lp_id=<?php echo $learnpath['id'] ?>&user_id=<?php echo intval($_GET['student']) ?>" class="thickbox" title="<?php echo sprintf(get_lang('CompareUsersOnLearnpath'),$learnpath['name']) ?>">
-						<?php echo Display::return_icon('pixel.gif',get_lang('AccessDetails'), array('class' => 'actionplaceholdericon actionstatistics')) ?>
+					<a href="charts/learnpath.ajax.php?width=900&height=500&course=<?php echo $course_code_info ?>&lp_id=<?php echo $learnpath['id'] ?>&user_id=<?php echo intval($_GET['student']) ?>" class="thickbox" title="<?php echo sprintf(get_lang('CompareUsersOnLearnpath'),$learnpath['name']) ?>">
+						<img src="../img/statistics.png" border="0" />
 					</a>
-					<a href="lp_tracking.php?cidReq=<?php echo Security::remove_XSS($_GET['course']); ?>&course=<?php echo Security::remove_XSS($_GET['course']).$from; ?>&origin=<?php echo Security::remove_XSS($_GET['origin']) ?>&lp_id=<?php echo $learnpath['id']?>&student_id=<?php echo $info_user['user_id'] ?>">
-						<?php echo Display::return_icon('pixel.gif',get_lang('AccessDetails'), array('class' => 'actionplaceholdericon actionstatisticsdetails')) ?>
+					<a href="lp_tracking.php?course=<?php echo Security::remove_XSS($_GET['course']).$from; ?>&origin=<?php echo Security::remove_XSS($_GET['origin']) ?>&lp_id=<?php echo $learnpath['id']?>&student_id=<?php echo $info_user['user_id'] ?>">
+						<img src="../img/2rightarrow.png" border="0" />
 					</a>
 					<?php
 				}
@@ -885,7 +880,7 @@ if (!empty ($_GET['student'])) {
 					$result_essais = Database::query($sql_essais, __FILE__, __LINE__);
 					$essais = Database :: fetch_array($result_essais);
 
-					$sql_score = "SELECT exe_id, exe_result,exe_weighting, exe_date, start_date
+					$sql_score = "SELECT exe_id, exe_result,exe_weighting, exe_date
 														 FROM $tbl_stats_exercices
 														 WHERE exe_user_id = " . Database :: escape_string($is_student) . "
 														 AND exe_cours_id = '" . $info_course['code'] . "'
@@ -900,12 +895,7 @@ if (!empty ($_GET['student'])) {
 						$score = $score + $scores['exe_result'];
 						$weighting = $weighting + $scores['exe_weighting'];
 						$exe_id = $scores['exe_id'];
-
-                                                if (isset($scores['exe_date']) && $scores['exe_date'] != '0000-00-00 00:00:00') {
-                                                    $exe_date = format_locale_date(get_lang('DateFormatLongWithoutDay'), strtotime($scores['exe_date']));
-                                                } else {
-                                                    $exe_date = format_locale_date(get_lang('DateFormatLongWithoutDay'), strtotime($scores['start_date']));
-                                                }
+						$exe_date = format_locale_date(get_lang('DateFormatLongWithoutDay'), strtotime($scores['exe_date']));
 					}
 					$score_percentage = 0;
 					if ($weighting != 0) {
@@ -961,7 +951,7 @@ if (!empty ($_GET['student'])) {
 						$id_last_attempt = Database :: result($result_last_attempt, 0, 0);
 
 						if ($essais['essais'] > 0)
-							echo '<a href="../exercice/exercise_show.php?id=' . $id_last_attempt . '&cidReq=' . $info_course['code'] . '&student=' . Security :: remove_XSS($_GET['student']) . '&origin=' . (empty ($_GET['origin']) ? 'tracking' : Security :: remove_XSS($_GET['origin'])) . '&email='.$info_user['email'].'">'.Display::return_icon('pixel.gif','',array('class'=>'button_more','border'=>'0')).'</a>';
+							echo '<a href="../exercice/exercise_show.php?id=' . $id_last_attempt . '&cidReq=' . $info_course['code'] . '&student=' . Security :: remove_XSS($_GET['student']) . '&origin=' . (empty ($_GET['origin']) ? 'tracking' : Security :: remove_XSS($_GET['origin'])) . '"> <img src="' . api_get_path(WEB_IMG_PATH) . 'quiz.gif" border="0" /> </a>';
 					}
 					echo "	</td>
 												  </tr>
@@ -1027,12 +1017,12 @@ if (!empty ($_GET['student'])) {
 			$chat_last_connection
 		);
 ?>
-				<tr class="row_even">
+				<tr>
 					<th colspan="2">
 						<?php echo get_lang('OtherTools'); ?>
 					</th>
 				</tr>
-				<tr class="row_odd"><!-- assignments -->
+				<tr><!-- assignments -->
 					<td width="40%">
 						<?php echo get_lang('Student_publication') ?>
 					</td>
@@ -1040,7 +1030,7 @@ if (!empty ($_GET['student'])) {
 						<?php echo $nb_assignments ?>
 					</td>
 				</tr>
-				<tr class="row_even"><!-- messages -->
+				<tr><!-- messages -->
 					<td>
 						<?php echo get_lang('Messages') ?>
 					</td>
@@ -1048,7 +1038,7 @@ if (!empty ($_GET['student'])) {
 						<?php echo $messages ?>
 					</td>
 				</tr>
-				<tr class="row_odd"><!-- links -->
+				<tr><!-- links -->
 					<td>
 						<?php echo get_lang('LinksDetails') ?>
 					</td>
@@ -1056,7 +1046,7 @@ if (!empty ($_GET['student'])) {
 						<?php echo $links ?>
 					</td>
 				</tr>
-				<tr class="row_even"><!-- documents -->
+				<tr><!-- documents -->
 					<td>
 						<?php echo get_lang('DocumentsDetails') ?>
 					</td>
@@ -1064,7 +1054,7 @@ if (!empty ($_GET['student'])) {
 						<?php echo $documents ?>
 					</td>
 				</tr>
-				<tr class="row_odd"><!-- Chats -->
+				<tr><!-- Chats -->
 					<td>
 						<?php echo get_lang('ChatLastConnection') ?>
 					</td>
@@ -1115,14 +1105,7 @@ if (!empty ($_GET['student'])) {
 				get_lang('Progress', ''),
 				get_lang('Score', '')
 			);
-            $i = 0;
 			foreach ($courses as $course_code) {
-				if ($i % 2 == 0) {
-					$css_class = "row_odd";
-				} else {
-					$css_class = "row_even";
-				}
-                $i++;
 				if (CourseManager :: is_user_subscribed_in_course($student_id, $course_code, true)) {
 					$course_info = CourseManager :: get_course_information($course_code);
 					$time_spent_on_course = api_time_to_hms(Tracking :: get_time_spent_on_the_course($info_user['user_id'], $course_code));
@@ -1137,7 +1120,7 @@ if (!empty ($_GET['student'])) {
 						$score
 					);
 					echo '
-										<tr class="'.$css_class.'">
+										<tr>
 											<td align="right">
 												' . $course_info['title'] . '
 											</td>
@@ -1152,13 +1135,11 @@ if (!empty ($_GET['student'])) {
 											</td>';
 					if (isset ($_GET['id_coach']) && intval($_GET['id_coach']) != 0) {
 						echo '<td align="center" width="10">
-														<a href="' . api_get_self() . '?student=' . $info_user['user_id'] . '&details=true&course=' . $course_info['code'] . '&id_coach=' . Security :: remove_XSS($_GET['id_coach']) . '&origin=' . Security :: remove_XSS($_GET['origin']) . '&id_session=' . Security :: remove_XSS($_GET['id_session']) . '#infosStudent">';
-     echo Display::return_icon('pixel.gif',get_lang('TrackTrainings'), array('class' => 'actionplaceholdericon actionstatisticsdetails'));
-     echo '</td>';
-        /*<img src="' . api_get_path(WEB_IMG_PATH) . '2rightarrow.gif" border="0" /></a>*/
+														<a href="' . api_get_self() . '?student=' . $info_user['user_id'] . '&details=true&course=' . $course_info['code'] . '&id_coach=' . Security :: remove_XSS($_GET['id_coach']) . '&origin=' . Security :: remove_XSS($_GET['origin']) . '&id_session=' . Security :: remove_XSS($_GET['id_session']) . '#infosStudent"><img src="' . api_get_path(WEB_IMG_PATH) . '2rightarrow.gif" border="0" /></a>
+													</td>';
 					} else {
 						echo '<td align="center" width="10">
-														<a href="' . api_get_self() . '?student=' . $info_user['user_id'] . '&details=true&course=' . $course_info['code'] . '&origin=' . Security :: remove_XSS($_GET['origin']) . '&id_session=' . Security :: remove_XSS($_GET['id_session']) . '#infosStudent">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a>
+														<a href="' . api_get_self() . '?student=' . $info_user['user_id'] . '&details=true&course=' . $course_info['code'] . '&origin=' . Security :: remove_XSS($_GET['origin']) . '&id_session=' . Security :: remove_XSS($_GET['id_session']) . '#infosStudent"><img src="' . api_get_path(WEB_IMG_PATH) . '2rightarrow.gif" border="0" /></a>
 													</td>';
 					}
 					echo '</tr>';

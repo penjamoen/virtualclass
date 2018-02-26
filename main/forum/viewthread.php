@@ -201,8 +201,8 @@ if ($my_message<>'PostDeletedSpecial') {
 	echo '<div class="actions">';
 	echo '<span style="float:right;">'.search_link().'</span>';
 	if ($origin != 'learnpath') {
-		echo '<a href="index.php?gradebook='.$gradebook.'">'.Display::return_icon('pixel.gif',get_lang('BackToForumOverview'),array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackToForumOverview').'</a>';
-		echo '<a href="viewforum.php?&forum='.Security::remove_XSS($_GET['forum']).'&amp;gidReq='.$_SESSION['toolgroup'].'">'.Display::return_icon('pixel.gif',get_lang('BackToForum'),array('class' => 'toolactionplaceholdericon toolactionforum')).get_lang('BackToForum').'</a>';
+		echo '<a href="index.php?gradebook='.$gradebook.'">'.Display::return_icon('go-previous.png',get_lang('BackToForumOverview')).' '.get_lang('BackToForumOverview').'</a>';
+		echo '<a href="viewforum.php?&forum='.Security::remove_XSS($_GET['forum']).'&amp;gidReq='.$_SESSION['toolgroup'].'">'.Display::return_icon('forum.png',get_lang('BackToForum')).' '.get_lang('BackToForum').'</a>';
 	}
 	// the reply to thread link should only appear when the forum_category is not locked AND the forum is not locked AND the thread is not locked.
 	// if one of the three levels is locked then the link should not be displayed
@@ -211,7 +211,7 @@ if ($my_message<>'PostDeletedSpecial') {
 		if ($_user['user_id'] OR ($current_forum['allow_anonymous']==1 AND !$_user['user_id'])) {
 			//reply link
 			if (!api_is_anonymous() && api_is_allowed_to_session_edit(false,true)) {
-				echo '<a href="reply.php?'.api_get_cidreq().'&forum='.Security::remove_XSS($_GET['forum']).'&amp;thread='.Security::remove_XSS($_GET['thread']).'&amp;action=replythread&origin='.$origin.'">'.Display::return_icon('pixel.gif',get_lang('ReplyToThread'), array('class' => 'toolactionplaceholdericon toolactionsinvite')).get_lang('ReplyToThread').'</a>';
+				echo '<a href="reply.php?'.api_get_cidreq().'&forum='.Security::remove_XSS($_GET['forum']).'&amp;thread='.Security::remove_XSS($_GET['thread']).'&amp;action=replythread&origin='.$origin.'">'.Display::return_icon('forumthread_new.png',get_lang('ReplyToThread')).get_lang('ReplyToThread').'</a>';
 			}
 			//new thread link
 			if ((api_is_allowed_to_edit(false,true) && !(api_is_course_coach() && $current_forum['session_id']!=$_SESSION['id_session'])) OR ($current_forum['allow_new_threads']==1 AND isset($_user['user_id'])) OR ($current_forum['allow_new_threads']==1 AND !isset($_user['user_id']) AND $current_forum['allow_anonymous']==1)) {

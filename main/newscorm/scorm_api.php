@@ -1159,7 +1159,6 @@ function update_toc(update_action,update_id,change_ids)
         }
 		var myelem = $("#toc_"+update_id);		
 		var myelemimg = $("#toc_img_"+update_id);		
-		var toggleMenuItem = $("#toggle_menu_item_"+update_id);
 		logit_lms('update_toc("'+update_action+'",'+update_id+')',2);				
 		
 		if(update_id != 0)
@@ -1175,14 +1174,12 @@ function update_toc(update_action,update_id,change_ids)
 					{					
 						myelem.attr('class',"scorm_item_1");
 					}
-					toggleMenuItem.removeClass('current');
 					break;
 				case 'highlight':
                     if (change_ids=='yes') {
 					   olms.lms_next_item = update_id;
 					   olms.lms_previous_item = update_id;
                     }
-                    toggleMenuItem.addClass('current');
 					myelem.attr('class',"scorm_item_highlight");
 					break;
 				case 'not attempted':   					
@@ -1190,40 +1187,30 @@ function update_toc(update_action,update_id,change_ids)
 						myelemimg.attr('src','../img/notattempted.gif');
 						myelemimg.attr('alt','n');						
 					}
-					toggleMenuItem.removeClass('not_attempted incomplete completed failed passed browsed');
-					toggleMenuItem.addClass('not_attempted');
 					break;
 				case 'incomplete':					
 					if( myelemimg.attr('src') != '../img/incomplete.gif') {
 						myelemimg.attr('src','../img/incomplete.gif');
 						myelemimg.attr('alt','i');						
 					}
-					toggleMenuItem.removeClass('not_attempted incomplete completed failed passed browsed');
-					toggleMenuItem.addClass('incomplete');
 					break;
-				case 'completed':			
+				case 'completed':					
 					if( myelemimg.attr('src') != '../img/completed.gif') {
 						myelemimg.attr('src','../img/completed.gif');
 						myelemimg.attr('alt','c');						
 					}
-					toggleMenuItem.removeClass('not_attempted incomplete completed failed passed browsed');
-					toggleMenuItem.addClass('completed');
 					break;
 				case 'failed':					
 					if( myelemimg.attr('src') != '../img/failed.gif') {
 						myelemimg.attr('src','../img/failed.gif');
 						myelemimg.attr('alt','f');						
 					}
-					toggleMenuItem.removeClass('not_attempted incomplete completed failed passed browsed');
-					toggleMenuItem.addClass('failed');
 					break;
 				case 'passed':					
 					if( myelemimg.attr('src') != '../img/completed.gif' && myelemimg.attr('alt') != 'passed') {
 						myelemimg.attr('src','../img/completed.gif');
 						myelemimg.attr('alt','p');						
 					}
-					toggleMenuItem.removeClass('not_attempted incomplete completed failed passed browsed');
-					toggleMenuItem.addClass('passed');
 					break;
 				case 'browsed':					
 					if( myelemimg.attr('src') != '../img/completed.gif' && myelemimg.attr('alt') != 'browsed') {
@@ -1386,7 +1373,6 @@ function update_message_frame(msg_msg)
  */
  
 function switch_item(current_item, next_item){
-
     // backup these params
     var orig_current_item = current_item;
     var orig_next_item = next_item;
@@ -1558,17 +1544,6 @@ function switch_item(current_item, next_item){
 		 		$("#media").html(tmp_data);
 	}
   	});
-        
-        
-        // (5) switch audio recorder
-        $.ajax({
-		type: "GET",
-		url: "lp_ajax_switch_audiorecorder.php?action=view&lp_id="+olms.lms_lp_id+"&lp_item_id="+next_item,
-		success: function(tmp_data) {
-                    $("#audio-recorder-action").html(tmp_data);
-                }
-  	});
-        
 	return true;
 }
 /**
@@ -1888,84 +1863,41 @@ function attach_glossary_into_scorm() {
         //mouse over event
         $("iframe").contents().find('body').find('.glossary-ajax').mouseover(function() {
             random_id=Math.round(Math.random()*100);
-            //div_show_id="div_show_id";
-            if ($("iframe").contents().find('body').find("div#main_div_show_id").length > 0) {
-	  	$("iframe").contents().find('body').find("div#main_div_show_id").remove();
-	    }
-            var text_box = $(this).text();            
-            var div_content_id="div_content_id";
-            margin = "";
-            if($.browser.msie) {
-                h = $(this).height();
-                h += h/4;
-                margin = "margin: "+h+"px 0px 0px;";
-            }
-            section_white = "background-color:#ffffff;-moz-border-radius: 5px 5px 5px 5px;background: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF) repeat scroll 0 0 transparent;border: 1px solid #4171B5;clear: both;margin: 6px 6px 20px;overflow: visible;padding: 0 5px 5px;width: auto;";
-            sectiontitle = "background-color:#ffffff;-moz-border-radius: 5px 5px 5px 5px;background: -moz-linear-gradient(center top , #EAEAEA, #FFFFFF) repeat scroll 0 0 transparent;border: 1px solid #4171B5;color: #4171B5;display: inline-block;font-weight: bold;margin: 0 10px 10px;padding: 5px 15px;position: relative;top: -7px;";
-            section_white += margin;
-            sectiontitle += 'cursor:pointer;float:right;'
-            glossary_close = "";
-            
-            var theContainer = $("iframe").contents().find('body').find("div#"+div_content_id);
-            $("<div  id='main_div_show_id'></div>").insertAfter(this);
-            
-            $("iframe").contents().find('body').find("div#main_div_show_id").css({
-                'width':'500px', 
-                'border':'6px solid #525252', 
-                'min-height':'120px',
-                'padding':'5px 10px',
-                '-moz-border-radius': '5px',
-                '-webkit-border-radius': '5px',
-                'border-radius': '5px',
-                'z-index':'1000',
-                'background-color':'#FFF',
-                'font-size':'12px',
-                'font-family':'Verdana',
-                'font-weight':'normal',
-                'overflow':'auto'
-          }); 
-          
-          $("iframe").contents().find('body').find("div#main_div_show_id").center();
-          
-      	    $("iframe").contents().find('body').find("div#"+div_content_id).attr("style","overflow:auto;width: 100%;color:#000000;clear:both;");
-            $("iframe").contents().find('body').find("div#glossary-close").click(function(){$("iframe").contents().find('body').find("div#main_div_show_id").remove();});
+            div_show_id="div_show_id"+random_id;
+            div_content_id="div_content_id"+random_id;
+            $(this).append("<div id="+div_show_id+" ><div id="+div_content_id+">&nbsp;</div></div>");
+            $("iframe").contents().find('body').find("div#"+div_show_id).attr("style","display:inline;float:left;position:absolute;background-color:#F5F6CE;border-bottom: 1px dashed #dddddd;border-right: 1px dashed #dddddd;border-left: 1px dashed #dddddd;border-top: 1px dashed #dddddd;color:#305582;margin-left:5px;margin-right:5px;");
+            $("iframe").contents().find('body').find("div#"+div_content_id).attr("style","background-color:#F5F6CE;color:#305582;margin-left:8px;margin-right:8px;margin-top:5px;margin-bottom:5px;");
                 notebook_id=$(this).attr("name");
                 data_notebook=notebook_id.split("link");
                 my_glossary_id=data_notebook[1];
                 $.ajax({
                     contentType: "application/x-www-form-urlencoded",
+                    beforeSend: function(object) {
+                        $("iframe").contents().find('body').find("div#"+div_content_id).html("<img src="+my_protocol+"//"+location.host+work_path+"/main/inc/lib/javascript/indicator.gif />"); 
+                    },
                     type: "POST",
                     url: my_protocol+"//"+location.host+work_path+"/main/glossary/glossary_ajax_request.php",
                     data: "glossary_id="+my_glossary_id,
                     success: function(datos) {
-                        
-                        var btn_close = "<div class='btn-glossary-close' style='text-align:right;background-color: #E8E8E8;height: 20px;margin:-5px -10px;padding:5px;margin-bottom:5px;padding-top:0px;'><table width='100%'><tr><td align='left' style='font-weight:bold;'>"+text_box+"</td><td align='right' width='50px;'><a href='javascript:void(0)' onclick='window.parent.closeGlossaryPopup(\"main_div_show_id\");'><img src='<?php echo api_get_path(WEB_IMG_PATH).'close.gif'; ?>' /></a></td></tr></table></div>";
-                    
-                        $("iframe").contents().find('body').find("#main_div_show_id").html(btn_close+datos);
-                        
+                        $("iframe").contents().find('body').find("div#"+div_content_id).html(datos);
                     }
                 });
             });
+            // mouse out event
+            $("iframe").contents().find('body').find('.glossary-ajax').mouseout(function(){
+                var current_element,
+                current_element=$(this);
+                div_show_id=current_element.find("div").attr("id");
+                $("iframe").contents().find('body').find("div#"+div_show_id).remove();
+            });
+            
             //Callback Helper
             function replace_complete_char(m) {
                 var complete_term_pattern = new RegExp(real_term,"i"); 
-                var tag = m.replace(complete_term_pattern,"<a href='javascript:void(0);' class='glossary-ajax highlight' style='color:blue;text-decoration: none;' name='link"+specific_terms[0]+"'>$&</a>");
-                
+                var tag = m.replace(complete_term_pattern," <span class=\"glossary-ajax\" style='color:blue' name=\"link"+specific_terms[0]+"\">$&</span>"); 
                 return tag;
             }
         }
     });
-    
-    jQuery.fn.center = function () {
-        this.css("position","absolute");
-        this.css("top", "25%");
-        this.css("left", "25%");
-        return this;
-    }
-    
-}
-
-function closeGlossaryPopup(obj) {   
-    $("iframe").contents().find('body').find("div#"+obj).hide("slow");    
-    $("iframe").contents().find('body').find("div#"+obj).remove();    
 }

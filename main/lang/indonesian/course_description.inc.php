@@ -1,8 +1,8 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$langCourseProgram  = "Deskripsi Mata Kuliah";
-$langThisCourseDescriptionIsEmpty  = "Mata Kuliah ini saat ini belum dideskripsikan";
+$langCourseProgram  = "Deskripsi Mata Pelajaran";
+$langThisCourseDescriptionIsEmpty  = "Mata Pelajaran ini saat ini belum dideskripsikan";
 $langEditCourseProgram  = "Buat dan edit dengan formulir";
 $QuestionPlan  = "Pertanyaan ke pengajar";
 $langInfo2Say  = "Informasi untuk siswa";

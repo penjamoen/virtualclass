@@ -50,9 +50,9 @@ $(document).ready(function() {
               
 			  var complex_array = new Array();
               $("#highlight-plugin .glossary-ajax").mouseover(function(){
-                var random_id=Math.round(Math.random()*100);
-                var div_show_id="div_show_id"+random_id;
-                var div_content_id="div_content_id"+random_id;
+                random_id=Math.round(Math.random()*100);
+                div_show_id="div_show_id"+random_id;
+                div_content_id="div_content_id"+random_id;
                  $(this).append("<div id="+div_show_id+" ><div id="+div_content_id+">&nbsp;</div></div>");
                  $("div#"+div_show_id).attr("style","display:inline;float:left;position:absolute;background-color:#F5F6CE;border-bottom: 1px dashed #dddddd;border-right: 1px dashed #dddddd;border-left: 1px dashed #dddddd;border-top: 1px dashed #dddddd;color:#305582;margin-left:5px;margin-right:5px;");
                  $("div#"+div_content_id).attr("style","background-color:#F5F6CE;color:#305582;margin-left:8px;margin-right:8px;margin-top:5px;margin-bottom:5px;");
@@ -71,7 +71,7 @@ $(document).ready(function() {
                         }
                     });
               });
-              $("#highlight-plugin .glossary-ajax").click(function(){
+              $("#highlight-plugin .glossary-ajax").mouseout(function(){
                     var current_element,
                     current_element=$(this);
                     div_show_id=current_element.find("div").attr("id");

@@ -77,10 +77,10 @@ function get_zip_files_in_garbage(){
 // Actions bar
 echo	'<div class="actions">';
 //	echo		'<a href="../newscorm/lp_controller.php?cidReq='.$_course['sysCode'].'">'.Display::return_icon('scorm.gif',get_lang('ReturnToLearningPaths')).' '.get_lang('ReturnToLearningPaths').'</a>';
-echo	'<a href="../newscorm/lp_controller.php?cidReq='.$_course['sysCode'].'">'.Display::return_icon('pixel.gif', get_lang('ReturnToLearningPaths'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('ReturnToLearningPaths').'</a>';
-/*if($search_enabled) {
+echo		'<a href="../newscorm/lp_controller.php?cidReq='.$_course['sysCode'].'">'.Display::render_author_action("author").'</a>';
+if($search_enabled) {
 	echo	'<a href="#" onclick="javascript:toggle_criteria();">'.Display::render_author_action("more_criteria").'</a>';
-}*/
+}
 echo	'</div>';
 
 
@@ -122,12 +122,6 @@ if($search_enabled)
 }
 
 $form -> addElement ('html','</div>');
-if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian')) {
-    //TODO: include language file
-    $form -> addElement('html','<input type="hidden" name="index_document" value="1"/>'.
-     '<input type="hidden" name="language" value="' . api_get_setting('platformLanguage') . '"/>');
-    $form-> addElement('textarea','search_terms',get_lang('SearchKeywords').':',array('cols'=>'42','rows' => '2'));
-}
 //$form -> addElement ('submit', 'convert', get_lang('Send'), array('style'=>""));
 $form -> addElement ('style_submit_button', 'convert', get_lang('Send'), array('style'=>"",'class'=>'save'));
 

@@ -45,7 +45,7 @@ Display::display_tool_header(get_lang('CopyCourse'));
 echo '<div id="content">';
 ?>
 <div class="section_white">
-	<div class="sectiontitle"><?php Display::display_icon('pixel.gif', get_lang("CopyCourse"),array('class'=>'toolactionplaceholdericon toolactioncopy')); ?>&nbsp;&nbsp;<a href="../coursecopy/copy_course.php?<?php echo api_get_cidreq();?>"><?php echo get_lang("CopyCourse");?></a></div>
+	<div class="sectiontitle"><?php Display::display_icon('copy.png', get_lang("CopyCourse")); ?>&nbsp;&nbsp;<a href="../coursecopy/copy_course.php?<?php echo api_get_cidreq();?>"><?php echo get_lang("CopyCourse");?></a></div>
 	<div class="sectioncontent">
        <table width="100%" cellspacing="2" cellpadding="10" border="0" align="center">
            <tbody>

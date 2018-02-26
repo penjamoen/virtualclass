@@ -162,13 +162,22 @@ function ldap_find_user_info ($login)
 {
 	global $ldap_host , $ldap_port , $ldap_basedn , $ldap_rdn , $ldap_pass , $ldap_search_dn, $ldap_session_field;
 
+	//echo "Connecting ...";
+	//echo "$ldap_host $ldap_port";
 	$ldap_connect = ldap_connect( $ldap_host, $ldap_port);
 	ldap_set_version($ldap_connect);
 	if ($ldap_connect) {
+		//   	echo " Connect to LDAP server successful ";
+		//   	echo "Binding ...";
 		$ldap_bind = false;
 		$ldap_bind_res = ldap_handle_bind($ldap_connect,$ldap_bind);
 		if ($ldap_bind_res)
 		{
+			//echo " LDAP bind successful... ";
+			//echo " Searching for uid... ";
+			// Search surname entry
+			//OLD: $sr=ldap_search($ldapconnect,"dc=rug, dc=ac, dc=be", "uid=$login");
+			//	echo "<p> ldapDc = '$LDAPbasedn' </p>";
 			if(!empty($ldap_search_dn))
 			{
 				$sr=ldap_search($ldap_connect, $ldap_search_dn, "uid=$login");
@@ -184,6 +193,7 @@ function ldap_find_user_info ($login)
 			//		echo " Getting entries ...";
 			$info = ldap_get_entries($ldap_connect, $sr);
 			//echo "Data for ".$info["count"]." items returned:<p>";
+
 		}
 		else
 		{
@@ -204,20 +214,9 @@ function ldap_find_user_info ($login)
 	$result["email"] = $info[0]["mail"][0];
 	$tutor_field = api_get_setting('ldap_filled_tutor_field');
 	$result[$tutor_field] = $info[0][$tutor_field]; //employeenumber by default
-  if (empty($ldap_session_field)) 
-  {
-    $result['courses'] = $info[0][$ldap_session_field][0];
-  }
+	$result['courses'] = $info[0][$ldap_session_field][0];
+#$result['courses'] = $info[0]['cursus'];
 	return $result;
-}
-/**
-  update userinfo according to $info_array
- **/
-function ldap_update_user_info($login, $info_array)
-{
-  $old_info = UserManager::get_user_info($login);
-  $u = array_merge($old_info, $info_array);
-  return UserManager::update_user($u['user_id'], $u['firstname'], $u['lastname'], $u['username'], null, null, $u['email'], $u['status'], $u['official_code'], $u['phone'], $u['picture_uri'], $u['expiration_date'], $u['active'], $u['creator_id'], $u['hr_dept_id'], null, $u['language'], $u['country_code'], $u['civility']) ;
 }
 
 /**
@@ -248,14 +247,14 @@ function ldap_update_user($login)
 {
 	$uinfo=ldap_find_user_info($login);
 	ldap_put_user_info_locally($login, $uinfo);
+	ldap_subscribe_user_to_session($login,$uinfo);
 }
 
 
 
 /**
  *	This function uses the data from ldap_find_user_info()
- *	to add the userdata to Dokeos.
- *  It returns the user_id in case of success and false in case of failure
+ *	to add the userdata to Dokeos
  *
  *	"firstname", "name", "email", "isEmployee"
  ===============================================================
@@ -268,6 +267,8 @@ function ldap_put_user_info_locally($login, $info_array)
 	global $submitRegistration, $submit, $uname, $email,
 	       $nom, $prenom, $password, $password1, $status;
 	global $platformLanguage;
+	global $loginFailed, $uidReset, $_user;
+	global $ldap_session_field;
 
 	/*----------------------------------------------------------
 	  1. set the necessary variables
@@ -281,6 +282,8 @@ function ldap_put_user_info_locally($login, $info_array)
 	$password1  = $ldap_pass_placeholder;
 	$official_code = '';
 
+	define ("STUDENT",5);
+	define ("COURSEMANAGER",1);
 
 	$tutor_field = api_get_setting('ldap_filled_tutor_field');
 	$tutor_value = api_get_setting('ldap_filled_tutor_field_value');
@@ -316,6 +319,8 @@ function ldap_put_user_info_locally($login, $info_array)
 			}
 		}
 	}
+	//$official_code = xxx; //example: choose an attribute
+
 	/*----------------------------------------------------------
 	  2. add info to Dokeos
 	  ------------------------------------------------------------ */
@@ -325,9 +330,22 @@ function ldap_put_user_info_locally($login, $info_array)
 			$email, $uname, $password, $official_code,
 			$platformLanguage,'', '', 'ldap');
 
-  $toreturn = is_int($_userId) ? $_userId : false;
+	//echo "new user added to Dokeos, id = $_userId";
 
-  return $toreturn;
+	//user_id, username, password, auth_source
+
+	/*----------------------------------------------------------
+	  3. register session
+	  ------------------------------------------------------------ */
+
+	$uData['user_id'] = $_userId;
+	$uData['username'] = $uname;
+	$uData['auth_source'] = "ldap";
+
+	$loginFailed = false;
+	$uidReset = true;
+	$_user['user_id'] = $uData['user_id'];
+	api_session_register('_uid');
 }
 
 /* >>>>>>>>>>>>>>>> end of UGent LDAP routines <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
@@ -418,6 +436,7 @@ function ldap_authentication_check ($uname, $passwd, $cas=false)
 	// connection correcte
 	else
 	{
+		ldap_update_user($uname);
 		return (0);
 	}
 } // end of check

@@ -75,7 +75,7 @@ $TABLECOURSUSER	        = Database::get_main_table(TABLE_MAIN_COURSE_USER);
 $TABLECOURSE_GROUPSUSER = Database::get_course_table(TABLE_GROUP_USER);
 $TABLEUSER	        = Database::get_main_table(TABLE_MAIN_USER);
 $TABLETRACK_ACCESS      = Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_ACCESS);
-Display::display_tool_header($nameTools, 'Tracking');
+Display::display_header($nameTools, "Tracking");
 include(api_get_path(LIBRARY_PATH)."statsUtils.lib.inc.php");
 
 // the variables for the days and the months

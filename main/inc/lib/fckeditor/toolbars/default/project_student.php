@@ -11,7 +11,7 @@
 $config['ToolbarSets']['Normal'] = array(
 	array('FitWindow','-','PasteWord','-','Undo','Redo'),
 	array('Link','Unlink','Anchor'),
-	array('Image','videoPlayer','MP3','mimetex'),
+	array('Image','flvPlayer','Flash','EmbedMovies','YouTube','MP3','mimetex'),
 	array('Table','googlemaps'),
 	array('FontName','FontSize'),
 	array('Bold','Italic','Underline'),

@@ -11,7 +11,7 @@
 $config['ToolbarSets']['Normal'] = array(
 	array('Save','FitWindow','PasteWord','-','Undo','Redo'),
 	array('Link','Unlink','Anchor'),
-	array('Image','videoPlayer','MP3','mimetex','asciimath'),
+	array('Image','flvPlayer','Flash','EmbedMovies','YouTube','MP3','mimetex','asciimath'),
 	array('Table','SpecialChar'),
 	array('Outdent','Indent','-','TextColor','BGColor','-','OrderedList','UnorderedList'),
 	'/',
@@ -33,7 +33,7 @@ $config['ToolbarSets']['Maximized'] = array(
 	array('OrderedList','UnorderedList','-','Outdent','Indent','Blockquote','CreateDiv'),
 	array('JustifyLeft','JustifyCenter','JustifyRight','JustifyFull'),
 	array('Rule','SpecialChar','PageBreak'),
-	array('mimetex','asciimath','Image','imgmapPopup','MP3','videoPlayer','googlemaps','Smiley'),
+	array('mimetex','asciimath','Image','imgmapPopup','Flash','MP3','EmbedMovies','flvPlayer','googlemaps','Smiley'),
 	'/',
 	array('Style','FontFormat','FontName','FontSize'),
 	array('TextColor','BGColor'),

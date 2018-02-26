@@ -33,7 +33,6 @@ include ('../inc/global.inc.php');
 
 // Additional libraries
 require ('functions.php');
-require_once (api_get_path ( LIBRARY_PATH ) . 'formvalidator/FormValidator.class.php');
 
 /**
  * @todo: consider moving all these actions into the handle_calendar_actions function and only call handle_calendar_actions() here once
@@ -85,9 +84,5 @@ switch ($_GET['action']){
         case 'platformmoveresize':
 		resize_platformagenda_item($id,$_GET['daydelta'],$_GET['minutedelta']);
 		break;
-}
-
-if (api_get_setting('calendar_google_import')=='true'){
-	google_calendar_action_handling();
 }
 ?>

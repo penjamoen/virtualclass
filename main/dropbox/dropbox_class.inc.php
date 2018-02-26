@@ -39,7 +39,7 @@
  * @version 1.30
  * @copyright 2004
  * @author Jan Bols <jan@ivpv.UGent.be>
- * with contributions by Ren? Haentjens <rene.haentjens@UGent.be> (see RH)
+ * with contributions by Ren� Haentjens <rene.haentjens@UGent.be> (see RH)
   *	@package dokeos.dropbox
  **/
 class Dropbox_Work {
@@ -373,7 +373,7 @@ class Dropbox_Person
 		$this->isCourseTutor = $isCourseTutor;
 		$this->receivedWork = array();
 		$this->sentWork = array();
-                
+
 		//Note: perhaps include an ex coursemember check to delete old files
 
 		$session_id = api_get_session_id();
@@ -384,23 +384,13 @@ class Dropbox_Person
 		$file_tbl = Database::get_course_table(TABLE_DROPBOX_FILE);
 		// find all entries where this person is the recipient
 		$sql = "SELECT r.file_id, r.cat_id
-				FROM $post_tbl r, $person_tbl p , $file_tbl f
+				FROM $post_tbl r, $person_tbl p
 				WHERE r.dest_user_id = '".addslashes($this->userId)."'
 					AND r.dest_user_id = p.user_id
-                                        AND r.file_id = f.id
-					AND r.file_id = p.file_id 
-                                        AND f.type=0";
-                /*
-                 * $sql = "SELECT r.file_id, r.cat_id
-				FROM $post_tbl r, $person_tbl p , $file_tbl f
-				WHERE r.dest_user_id = '".addslashes($this->userId)."'
-					AND r.dest_user_id = p.user_id
-                                        AND r.file_id = f.id
 					AND r.file_id = p.file_id $condition_session";
-                 * **/
 
 		//if (intval($_SESSION['id_session']>0)) { $sql .= " AND r.session_id = ".intval($_SESSION['id_session']); }
-                $this->sql_ = $sql;
+
         $result = Database::query($sql,__FILE__,__LINE__);
 		while ($res = Database::fetch_array($result)) {
 			$temp = new Dropbox_Work($res["file_id"]);
@@ -416,7 +406,7 @@ class Dropbox_Person
 				AND f.id = p.file_id $condition_session";
 
 		//if(intval($_SESSION['id_session']>0)) { $sql .= " AND f.session_id = ".intval($_SESSION['id_session']); }
-//$this->sql_ = $sql;
+
         $result =Database::query($sql,__FILE__,__LINE__);
 		while ($res = Database::fetch_array($result)) {
 			$this->sentWork[] = new Dropbox_SentWork($res["id"]);

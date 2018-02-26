@@ -11,7 +11,7 @@
 $config['ToolbarSets']['Normal'] = array(
 	array('Save','FitWindow','PasteWord','-','Undo','Redo'),
 	array('Link','Unlink','Anchor','Glossary'),
-	array('Image','imgmapPopup','MascotManager','MindmapManager','videoPlayer','MP3','mimetex','asciimath'),
+	array('Image','imgmapPopup','MascotManager','MindmapManager','flvPlayer','Flash','EmbedMovies','YouTube','MP3','mimetex','asciimath'),
 	array('Table','SpecialChar','Outdent','Indent','TextColor','BGColor'),
 	array('OrderedList','UnorderedList','-','Source'),
 	'/',

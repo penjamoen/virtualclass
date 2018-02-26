@@ -84,6 +84,9 @@ function handle_multiple_actions()
 
 		foreach ($checked_file_ids as $key=>$value)
 		{
+			var_dump($value);
+			var_dump($to_cat_id);
+			var_dump($part);
 			store_move($value, $to_cat_id, $part);
 		}
 		return get_lang('FilesMoved');
@@ -879,9 +882,7 @@ function store_add_dropbox()
         return get_lang('AuthorFieldCannotBeEmpty');
     }
     */
-    // Check if mindmap folder exists, if doen't exists we will create the folder
-	$course_id=api_get_course_id();
-	DocumentManager::create_specifics_folder_in_course($course_id,'mindmaps');
+
     // there are no recipients selected
 	if ( !isset( $_POST['recipients']) || count( $_POST['recipients']) <= 0)
     {	
@@ -1046,21 +1047,15 @@ function store_add_dropbox()
 	$thumbnail_width = 250;
 	$thumbnail_height = 150;
 	$curdirpath = '';
-	if(isset($_POST['curdirpath'])){ 	
-		$curdirpath = Security::remove_XSS($_POST['curdirpath']);
-		if ($curdirpath == '/') {
-			$curdirpath = '';
-		}		
+	if(isset($_POST['curdirpath']))
+	{	
+		$curdirpath = $_POST['curdirpath'];		
 	}
-	$mindmap_path = $mindmap_syspath.$curdirpath.'/';
-	if ($curdirpath == '') {
-	  $mindmap_path = $mindmap_syspath;
-	}
-
+	$mindmap_path = $mindmap_syspath.'/'.$curdirpath;
 	if($dropbox_filename_ext == 'png' || $dropbox_filename_ext == 'gif' || $dropbox_filename_ext == 'jpeg' || $dropbox_filename_ext == 'jpg')
 	{		
 	//	@move_uploaded_file( $dropbox_filetmpname, dropbox_cnf("sysPath") . '/' . $dropbox_filename);
-		@move_uploaded_file( $dropbox_filetmpname, $mindmap_path .'/'. $dropbox_filename);
+		@move_uploaded_file( $dropbox_filetmpname, $mindmap_path . '/' . $dropbox_filename);
 	/*	copy($mindmap_path . '/' . $dropbox_filename, $mindmap_syspath . '/thumbs/' . $dropbox_filename);		
 		$image = $mindmap_syspath . '/thumbs/' . $dropbox_filename;
 		list($twidth,$theight) = getimagesize($image);

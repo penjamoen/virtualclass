@@ -167,7 +167,7 @@ class ResultTable extends SortableTable
 	private function build_edit_column ($item) {
 		$status=CourseManager::get_user_in_course_status(api_get_user_id(), api_get_course_id());
 		if ($status==1) {//api_is_course_admin()
-			$edit_column = '<a href="' . api_get_self() . '?editres=' . $item['result_id'] . '&selecteval=' . $this->evaluation->get_id() . '">'.Display::return_icon('pixel.gif',get_lang('Modify'),array('class'=>'actionplaceholdericon actionedit','alt'=>'')).'</a>';
+			$edit_column = '<a href="' . api_get_self() . '?editres=' . $item['result_id'] . '&selecteval=' . $this->evaluation->get_id() . '"><img src="../img/navigation/edit.png" border="0" title="' . get_lang('Modify') . '" alt="" /></a>';
 		}
 		if ($this->evaluation->get_course_code() == null) {
 			$edit_column.= '&nbsp;<a href="' . api_get_self() . '?resultdelete=' . $item['result_id'] . '&selecteval=' . $this->evaluation->get_id() . '" onclick="return confirmationuser();"><img src="../img/delete.png" border="0" title="' . get_lang('Delete') . '" alt="" /></a>';

@@ -6,14 +6,9 @@ define('SE_DATA', 2);
 define('SE_USER', 3);
 
 // in some cases we need top differenciate xapian documents of the same tool
-
 define('SE_DOCTYPE_EXERCISE_EXERCISE', 0);
 define('SE_DOCTYPE_EXERCISE_QUESTION', 1);
-define('SE_DOCTYPE_WIKI_WIKI', 2);
-define('SE_DOCTYPE_FORUM_FORUM', 3);
-define('SE_DOCTYPE_SURVEY_SURVEY', 4);
-define('SE_DOCTYPE_STUDENT_PUBLICATION', 5);
-define('SE_DOCTYPE_LEARNPATH', 6);
+
 // xapian prefixes
 define('XAPIAN_PREFIX_COURSEID','C');
 define('XAPIAN_PREFIX_TOOLID','O');

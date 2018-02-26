@@ -101,13 +101,13 @@ Display :: display_header($tool_name, 'Groups');
 
 // Display actions
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('pixel.gif',get_lang('Home'), array('class' => 'toolactionplaceholdericon toolactionshome')).get_lang('Home').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('pixel.gif', get_lang('Messages'), array('class' => 'toolactionplaceholdericon toolactionsmessage')).get_lang('Messages').$count_unread_message.'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.Display::return_icon('pixel.gif',get_lang('Invitations'), array('class' => 'toolactionplaceholdericon toolactionsinvite')).get_lang('Invitations').$total_invitations.'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.Display::return_icon('pixel.gif',get_lang('ViewMySharedProfile'), array('class' => 'toolactionplaceholdericon toolactionsprofile')).get_lang('ViewMySharedProfile').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.Display::return_icon('pixel.gif',get_lang('Friends'), array('class' => 'toolactionplaceholdericon toolactionsfriend')).get_lang('Friends').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('pixel.gif',get_lang('Groups'), array('class' => 'toolactionplaceholdericon toolactionsgroup')).get_lang('Groups').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('pixel.gif',get_lang('Search'), array('class' => 'toolactionplaceholdericon toolactionsearch')).get_lang('Search').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('atom.png',get_lang('Home')).get_lang('Home').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('instant_message.png',get_lang('Messages')).get_lang('Messages').$count_unread_message.'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.Display::return_icon('invitation.png',get_lang('Invitations')).get_lang('Invitations').$total_invitations.'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.Display::return_icon('my_shared_profile.png',get_lang('ViewMySharedProfile')).get_lang('ViewMySharedProfile').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.Display::return_icon('friend.png',get_lang('Friends')).get_lang('Friends').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('group.png',get_lang('Groups')).get_lang('Groups').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('zoom.png',get_lang('Search')).get_lang('Search').'</a>';
 echo '</div>';
 // Start content
 echo '<div id="content">';
@@ -128,11 +128,12 @@ $user_id	= api_get_user_id();
 $name_search= Security::remove_XSS($_POST['search_name_q']);
 $number_friends = 0;
 
-if (!empty($name_search) && $name_search!='undefined') {
+if (isset($name_search) && $name_search!='undefined') {
 	$friends = SocialManager::get_friends($user_id,null,$name_search);
 } else {
 	$friends = SocialManager::get_friends($user_id);
 }
+
 
 if (count($friends) == 0 ) {
 	echo get_lang('NoFriendsInYourContactList').'<br /><br />';
@@ -141,15 +142,14 @@ if (count($friends) == 0 ) {
 	
 	?>
 	<div align="center" >
-	<table width="100%" border="0" cellpadding="0" cellspacing="0" align="left" >
+	<table width="100%" border="0" cellpadding="0" cellspacing="0" >
 	  <tr>
-	    <td height="25" valign="left">
+	    <td height="25" valign="top">
 	    <table width="100%" border="0" cellpadding="0" cellspacing="0" >
 	      <tr>
-              <td width="100%"  align="left" class="social-align-box">
-                <?php api_display_tool_title(get_lang('Search')); ?>
-                  <input class="social-search-image" type="text" id="id_search_image" name="id_search_image" value="" onkeyup="search_image_social(this)" />
-              </td>
+	        <td width="100%"  valign="top" class="social-align-box">&nbsp;&nbsp;<?php echo get_lang('Search') .'&nbsp;&nbsp; : &nbsp;&nbsp;'; ?>
+	        	<input class="social-search-image" type="text" id="id_search_image" name="id_search_image" value="" onkeyup="search_image_social(this)" />
+	        </td>
 	      </tr>
 	    </table></td>
 	  </tr>
@@ -159,14 +159,16 @@ if (count($friends) == 0 ) {
 	      <tr>
 			<td height="153" valign="top">
 				<?php
-				echo '<div class="social-box-container2" align="center">';
-				echo '<div id="div_content_table">';
+				echo '<div class="social-box-container2">';
+				echo '<div id="div_content_table" class="social-box-content2">';
+				
+		
+					
 					$friend_html = '';
 					$number_of_images = 8;
 					
 					$number_friends = count($friends);
 					$j=0;
-                    $my_user_id = api_get_user_id();
 					echo '<div id ="social-content-right">';
 					$friend_html.= '<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="" >';
 					for ($k=0;$k<$number_friends;$k++) {
@@ -177,20 +179,9 @@ if (count($friends) == 0 ) {
 								$friend = $friends[$j];
 								$user_name = api_xml_http_response_encode($friend['firstName'].' '.$friend['lastName']);
 								$friends_profile = SocialManager::get_picture_user($friend['friend_user_id'], $friend['image'], 92);
-                                // Add delete iconf if users is external friend
-                                $add_remove_events = '';
-                                $add_contact_form = '';
-                                if ($friend['contact_type'] <> 0) {
-                                    $invitation_sent_list = SocialManager::get_list_invitation_sent_by_user_id($my_user_id);
-                                    if (is_array($invitation_sent_list) && is_array($invitation_sent_list[$friend['friend_user_id']]) && count($invitation_sent_list[$friend['friend_user_id']]) <>0 ) {
-                                        $add_contact_form =  '<a href="'.api_get_path(WEB_PATH).'main/messages/send_message_to_userfriend.inc.php?view_panel=2&height=260&width=610&user_friend='.$friend['friend_user_id'].'" class="thickbox" title="'.get_lang('SendInvitation').'">'.Display :: return_icon('invitation_22.png', get_lang('SocialInvitationToFriends')).'</a>';
-                                    }
-                                    $add_remove_events = 'onMouseover="show_icon_delete(this)" onMouseout="hide_icon_delete(this)"'; 
-                                }
-                                // Icon is no added if the contact is direct, for example a session/course/group friend
-								$friend_html.='<div  '.$add_remove_events.' class="image-social-content" id=div_'.$friends[$j]['friend_user_id'].'>';
+								$friend_html.='<div onMouseover="show_icon_delete(this)" onMouseout="hide_icon_delete(this)" class="image-social-content" id=div_'.$friends[$j]['friend_user_id'].'>';
 								$friend_html.='<span><a href="profile.php?u='.$friend['friend_user_id'].'"><center><img src="'.$friends_profile['file'].'" style="height:60px;border:3pt solid #eee" id="imgfriend_'.$friend['friend_user_id'].'" title="'.$user_name.'" /></center></a></span>';
-								$friend_html.='<img onclick="delete_friend (this)" id=img_'.$friend['friend_user_id'].' src="../img/blank.gif" alt="" title=""  class="image-delete" /> <center class="friend">'.$user_name.'<br/>'.$add_contact_form.'</center></div>';				
+								$friend_html.='<img onclick="delete_friend (this)" id=img_'.$friend['friend_user_id'].' src="../img/blank.gif" alt="" title=""  class="image-delete" /> <center class="friend">'.$user_name.'</center></div>';				
 							}
 							$j++;
 						}

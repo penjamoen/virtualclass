@@ -30,7 +30,6 @@ $langLinkURL = "URL linkului";
 $langWelcomeToOnlineConf = "Bine ai venit la <b>Conferinta Online</b>";
 $langNoLinkAvailable = "Nici o legatura disponibila";
 $langChat_reset_by = "reseteaza chatul";
-$langAdmin = "Administratorul platformei";
 $OrFile = "Sau fisierul";
 $langCallSent = "Apelul de chat a fost trimis. Asteapta aprobarea partenerului.";
 $langChatDenied = "Apelul tau a fost respins de catre partener.";

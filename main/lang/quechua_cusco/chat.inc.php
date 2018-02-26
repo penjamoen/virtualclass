@@ -30,7 +30,6 @@ $langLinkURL = "Waskhanaq URL";
 $langWelcomeToOnlineConf = "Chayaykamullaysi <b>RI</b>";
 $langNoLinkAvailable = "Ni hoq waskhanapas kanchu";
 $langChat_reset_by = "kuti qallarichiy chat nisqata";
-$langAdmin = "Plataforma nisqamanta kamachiynin";
 $OrFile = "Utaq khipu";
 $langCallSent = "Rimapakunapaq mañakuyqa apachiku. Mayqan runaman mañakuyqa suyachikushanraq. ";
 $langChatDenied = "Waqyasqaykiqa mana chaskikunchu runa mañakusqayki";

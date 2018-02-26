@@ -39,7 +39,7 @@ Display::display_tool_header($nameTools,"Doc");
 // actions
 echo '<div class="actions">';
 // link back to the documents overview
-echo '<a href="document.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif',get_lang('Documents'),array('style'=>'vertical-align:middle;','class'=>'toolactionplaceholdericon toolactionback')).'&nbsp;&nbsp;'.get_lang('Documents').'</a>';
+echo '<a href="document.php?'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png',get_lang('Documents'),array('style'=>'vertical-align:middle;')).'&nbsp;&nbsp;'.get_lang('Documents').'</a>';
 echo '</div>';
 
 echo '<div id="content">';

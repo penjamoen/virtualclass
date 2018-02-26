@@ -71,7 +71,7 @@ class UserManager
 	  * if it exists, $_user['user_id'] is the creator id. If a problem arises,
 	  * it stores the error message in global $api_failureList
 	  */
-	public static function create_user($firstName, $lastName, $status, $email, $loginName, $password, $official_code = '', $language = '', $phone = '', $picture_uri = '', $auth_source = PLATFORM_AUTH_SOURCE, $expiration_date = '0000-00-00 00:00:00', $active = 1, $hr_dept_id = 0, $extra = null, $country_code = '', $civility = '') {
+	public static function create_user($firstName, $lastName, $status, $email, $loginName, $password, $official_code = '', $language = '', $phone = '', $picture_uri = '', $auth_source = PLATFORM_AUTH_SOURCE, $expiration_date = '0000-00-00 00:00:00', $active = 1, $hr_dept_id = 0, $extra = null) {
 		global $_user, $userPasswordCrypted;
 
 		$firstName = Security::remove_XSS($firstName);
@@ -109,45 +109,45 @@ class UserManager
 
 		$current_date = date('Y-m-d H:i:s', time());
 		$sql = "INSERT INTO $table_user
-                            SET lastname = '".Database::escape_string(trim($lastName))."',
-                            firstname = '".Database::escape_string(trim($firstName))."',
-                            username = '".Database::escape_string(trim($loginName))."',
-                            status = '".Database::escape_string($status)."',
-                            password = '".Database::escape_string($password)."',
-                            email = '".Database::escape_string($email)."',
-                            official_code	= '".Database::escape_string($official_code)."',
-                            picture_uri 	= '".Database::escape_string($picture_uri)."',
-                            creator_id  	= '".Database::escape_string($creator_id)."',
-                            auth_source = '".Database::escape_string($auth_source)."',
-                            phone = '".Database::escape_string($phone)."',
-                            language = '".Database::escape_string($language)."',
-                            registration_date = '".$current_date."',
-                            expiration_date = '".Database::escape_string($expiration_date)."',
-                            hr_dept_id = '".Database::escape_string($hr_dept_id)."',
-                            active = '".Database::escape_string($active)."',
-                            login_counter = '".$login_counter."',
-                            country_code = '".$country_code."',
-                            civility = '".$civility."'
-                       ";
+				SET lastname = '".Database::escape_string(trim($lastName))."',
+				firstname = '".Database::escape_string(trim($firstName))."',
+				username = '".Database::escape_string(trim($loginName))."',
+				status = '".Database::escape_string($status)."',
+				password = '".Database::escape_string($password)."',
+				email = '".Database::escape_string($email)."',
+				official_code	= '".Database::escape_string($official_code)."',
+				picture_uri 	= '".Database::escape_string($picture_uri)."',
+				creator_id  	= '".Database::escape_string($creator_id)."',
+				auth_source = '".Database::escape_string($auth_source)."',
+				phone = '".Database::escape_string($phone)."',
+				language = '".Database::escape_string($language)."',
+				registration_date = '".$current_date."',
+				expiration_date = '".Database::escape_string($expiration_date)."',
+				hr_dept_id = '".Database::escape_string($hr_dept_id)."',
+				active = '".Database::escape_string($active)."',
+				login_counter = '".$login_counter."'";
 		$result = Database::query($sql, __FILE__, __LINE__);
 		if ($result) {
-                    $return = Database::insert_id();
-                    global $_configuration;
-                    require_once api_get_path(LIBRARY_PATH).'urlmanager.lib.php';
-                    if ($_configuration['multiple_access_urls'] == true) {
-                            if (api_get_current_access_url_id() != -1) {
-                                    UrlManager::add_user_to_url($return, api_get_current_access_url_id());
-                            } else {
-                                    UrlManager::add_user_to_url($return, 1);
-                            }
-                    } else {
-                            //we are adding by default the access_url_user table with access_url_id = 1
-                            UrlManager::add_user_to_url($return, 1);
-                    }
-                    // add event to system log
-                    $time = time();
-                    $user_id_manager = api_get_user_id();
-                    event_system(LOG_USER_CREATE, LOG_USER_ID, $return, $time, $user_id_manager);
+			//echo "id returned";
+			$return = Database::insert_id();
+			global $_configuration;
+			require_once api_get_path(LIBRARY_PATH).'urlmanager.lib.php';
+			if ($_configuration['multiple_access_urls'] == true) {
+				if (api_get_current_access_url_id() != -1) {
+					UrlManager::add_user_to_url($return, api_get_current_access_url_id());
+				} else {
+					UrlManager::add_user_to_url($return, 1);
+				}
+			} else {
+				//we are adding by default the access_url_user table with access_url_id = 1
+				UrlManager::add_user_to_url($return, 1);
+			}
+
+			// add event to system log
+			$time = time();
+			$user_id_manager = api_get_user_id();
+			event_system(LOG_USER_CREATE, LOG_USER_ID, $return, $time, $user_id_manager);
+
 		} else {
 			//echo "false - failed" ;
 			$return=false;
@@ -368,7 +368,7 @@ class UserManager
 	 * @param	array	A series of additional fields to add to this user as extra fields (optional, defaults to null)
 	 * @return boolean true if the user information was updated
 	 */
-	public static function update_user($user_id, $firstname, $lastname, $username, $password = null, $auth_source = null, $email, $status, $official_code, $phone, $picture_uri, $expiration_date, $active, $creator_id = null, $hr_dept_id = 0, $extra = null, $language = 'english', $country_code = '', $civility = '') {
+	public static function update_user($user_id, $firstname, $lastname, $username, $password = null, $auth_source = null, $email, $status, $official_code, $phone, $picture_uri, $expiration_date, $active, $creator_id = null, $hr_dept_id = 0, $extra = null, $language = 'english') {
 		global $userPasswordCrypted;
 		if ($user_id != strval(intval($user_id))) return false;
 		if ($user_id === false) return false;
@@ -387,17 +387,14 @@ class UserManager
 			$sql .=	" auth_source='".Database::escape_string($auth_source)."',";
 		}
 		$sql .=	"
-                            email='".Database::escape_string($email)."',
-                            status='".Database::escape_string($status)."',
-                            official_code='".Database::escape_string($official_code)."',
-                            phone='".Database::escape_string($phone)."',
-                            picture_uri='".Database::escape_string($picture_uri)."',
-                            expiration_date='".Database::escape_string($expiration_date)."',
-                            active='".Database::escape_string($active)."',
-                            hr_dept_id=".intval($hr_dept_id).",
-                            country_code='".Database::escape_string($country_code)."',
-                            civility='".Database::escape_string($civility)."'
-                          ";
+				email='".Database::escape_string($email)."',
+				status='".Database::escape_string($status)."',
+				official_code='".Database::escape_string($official_code)."',
+				phone='".Database::escape_string($phone)."',
+				picture_uri='".Database::escape_string($picture_uri)."',
+				expiration_date='".Database::escape_string($expiration_date)."',
+				active='".Database::escape_string($active)."',
+				hr_dept_id=".intval($hr_dept_id);
 		if (!is_null($creator_id)) {
 			$sql .= ", creator_id='".Database::escape_string($creator_id)."'";
 		}
@@ -409,12 +406,6 @@ class UserManager
 				$res = $res && self::update_extra_field($user_id,$fname,$fvalue);
 			}
 		}
-                
-                // add event to system log
-                $time = time();
-                $user_id_manager = api_get_user_id();
-                event_system(LOG_USER_UPDATE, LOG_USER_ID, $user_id, $time, $user_id_manager);
-                
 		return $return;
 	}
 
@@ -1155,160 +1146,7 @@ class UserManager
 		return $fields;
 	}
 
-        /**
-	 * Get an array of active fields	         
-	 * @return	array	active fields details (e.g. $list[2])
-	 */
-	public static function get_active_extra_fields($selected_fields = null) {
-		
-		$t_uf = Database :: get_main_table(TABLE_MAIN_USER_FIELD);
-		$c_act = 0;
-                
-                $filter_fields = '';
-                if (is_array($selected_fields) && count($selected_fields) > 0) {
-                    $filter_fields .= ' AND u_f.id IN('.implode(',', $selected_fields).')';
-                }
-                
-                $array_field_activate = array();
-                $sql_field_activate = "SELECT u_f.id as id
-                FROM $t_uf u_f 
-                where u_f.field_visible = 1 $filter_fields
-                group by 1
-                order by u_f.field_order";
-                $query_field_activate = Database::query($sql_field_activate, __FILE__, __LINE__);
-                while ($row = Database::fetch_array($query_field_activate)){
-                    $array_field_activate[$c_act] = $row['id'];
-                    $c_act++;
-                }
-
-		return $array_field_activate;
-	}
-        
-        /**
-	 * Get an array of user active fields
-         * @param	integer	Id of user
-	 * @return	array	array of user active fields (e.g. $list[2])
-	 */
-	public static function get_active_sorted_extra_fields($field_sort, $direction,$from,$number_of_items,$keyword,$keyword_firstname,$keyword_lastname,$keyword_username,$keyword_email,$keyword_officialcode, $keyword_status,$keyword_admin, $keyword_active,$keyword_inactive,$sql_add,$from,$number_of_items) {
-                
-                $user_table = Database :: get_main_table(TABLE_MAIN_USER);
-                $t_u_f_values = Database :: get_main_table(TABLE_MAIN_USER_FIELD_VALUES);
-                $tbl_user_field = Database :: get_main_table(TABLE_MAIN_USER_FIELD);
-                $admin_table = Database :: get_main_table(TABLE_MAIN_ADMIN);            
-                
-                $sql_sort = "select u.user_id, 
-                u.user_id,
-                u.official_code,
-                u.firstname ,
-                u.lastname,  
-                u.username, 
-                 u.email,
-                u.status,
-                u.active,
-                u.user_id,
-                u.expiration_date      AS exp ,
-                u_f_v.field_value,
-                 u_f_v.field_id,
-                u_f.id
-                from $user_table u
-                ";
-                
-                // adding the filter to see the user's only of the current access_url    
-                if ((api_is_platform_admin() || api_is_session_admin()) && $_configuration['multiple_access_urls']==true && api_get_current_access_url_id()!=-1) {
-                    $access_url_rel_user_table= Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_USER);
-                    $sql_sort.= " INNER JOIN $access_url_rel_user_table url_rel_user ON (u.user_id=url_rel_user.user_id)";
-                }
-                
-                
-                
-                $sql_sort .= " left join $t_u_f_values u_f_v on u.user_id = u_f_v.user_id";
-                if (!empty($field_sort)) {
-                    $sql_sort .= " and u_f_v.field_id = $field_sort";
-                }
-                $sql_sort .= " left  join $tbl_user_field u_f on u_f.id = u_f_v.field_id";
-                if (!empty($field_sort)) {
-                    $sql_sort .= " AND	 u_f.id = $field_sort ";
-                }
-                
-                /*
-                 * Start Recicled
-                 */                
-                $sql_sort .= $sql_add;
-                /*
-                 * End Recicled
-                 */                               
-                $sql_sort .= " group by u.user_id ";                
-                $sql_sort .= " order by u_f_v.field_value $direction ";
-                $sql_sort .= " LIMIT $from,$number_of_items"; 
-                $res = Database::query($sql_sort, __FILE__, __LINE__);
-                return $res ;
-                
-	}
-        
-        
-        /**
-	 * Get an array of user active fields
-         * @param	integer	Id of user
-	 * @return	array	array of user active fields (e.g. $list[2])
-	 */
-	public static function get_active_user_extra_fields($user) {
-		
-                $user_table = Database :: get_main_table(TABLE_MAIN_USER);	
-                $t_u_f_values = Database :: get_main_table(TABLE_MAIN_USER_FIELD_VALUES);
-                $tbl_user_field = Database :: get_main_table(TABLE_MAIN_USER_FIELD);
-        
-		$sql_extra_field_user =  "SELECT u_f.id as id,u_f.field_display_text as field_display_text,
-                u_f.field_order, u_f_v.field_value  as field_value
-                FROM $tbl_user_field u_f 
-                inner join $t_u_f_values u_f_v on u_f_v.field_id = u_f.id
-                inner join $user_table u on u.user_id = u_f_v.user_id
-                where u.user_id =$user and u_f.field_visible = 1 group by u_f.id order by u_f.field_order";
-            
-                $sql_rows = Database::query($sql_extra_field_user, __FILE__, __LINE__);
-                $num_rows = Database::num_rows($sql_rows);
-           
-                $cont_user_active = 0;
-                $array_user_active = array(); 
-          
-                if($num_rows !=0 ) {
-                    while($rows = Database::fetch_array($sql_rows)) {                                     
-                        $array_user_active[$cont_user_active] = $rows['id'];                  
-                        $cont_user_active++;
-                    }
-                }
-            
-                return $array_user_active;
-	}
-        /**
-	 * Get an user fields
-         * @param	integer	Id of user
-         * @param	integer	Id of Field
-	 * @return	String	of user active fields (e.g. $list[2])
-	 */
-        public static function get_user_name_field($user ,$field_id){
-            
-            $user_table = Database :: get_main_table(TABLE_MAIN_USER);	
-            $t_u_f_values = Database :: get_main_table(TABLE_MAIN_USER_FIELD_VALUES);
-            $tbl_user_field = Database :: get_main_table(TABLE_MAIN_USER_FIELD);
-                
-            $sql_field = "SELECT u_f.id as id,u_f.field_display_text as field_display_text,
-            u_f.field_order, u_f_v.field_value  as field_value
-            FROM $tbl_user_field u_f 
-            inner join $t_u_f_values u_f_v on u_f_v.field_id = u_f.id
-            inner join $user_table u on u.user_id = u_f_v.user_id
-            where u.user_id = $user and u_f.field_visible = 1 
-            and u_f_v.field_id = $field_id
-            group by 1
-            order by u_f.field_order";
-
-            $quey_field = Database::query($sql_field, __FILE__, __LINE__);
-            $rows_field = Database::fetch_array($quey_field);
-
-            return $rows_field['field_value'];
-                    
-        }
-
-         /**
+	/**
 	 * Get the list of options attached to an extra field
 	 * @param string $fieldname the name of the field
 	 * @return array the list of options
@@ -1952,7 +1790,7 @@ class UserManager
 	 */
 	public static function get_personal_session_course_list($user_id) {
 		// Database Table Definitions
-		$tbl_course_user 			= Database :: get_main_table(TABLE_MAIN_COURSE_USER);
+		$tbl_course_user = Database :: get_main_table(TABLE_MAIN_COURSE_USER);
 		$tbl_course 				= Database :: get_main_table(TABLE_MAIN_COURSE);
 		$tbl_user 					= Database :: get_main_table(TABLE_MAIN_USER);
 		$tbl_session 				= Database :: get_main_table(TABLE_MAIN_SESSION);
@@ -1990,7 +1828,7 @@ class UserManager
 
 		$tbl_user_course_category = Database :: get_user_personal_table(TABLE_USER_COURSE_CATEGORY);
 
-		$personal_course_list_sql = "SELECT course.*, course.code k, course.directory d, course.visual_code c, course.db_name db, course.title i, course.tutor_name t, course.course_language l, course_rel_user.status s, course_rel_user.sort sort, course_rel_user.user_course_cat user_course_cat
+		$personal_course_list_sql = "SELECT course.code k, course.directory d, course.visual_code c, course.db_name db, course.title i, course.tutor_name t, course.course_language l, course_rel_user.status s, course_rel_user.sort sort, course_rel_user.user_course_cat user_course_cat
 			FROM ".$tbl_course_user." course_rel_user
 				LEFT JOIN ".$tbl_course." course
 					ON course.code = course_rel_user.course_code
@@ -2001,6 +1839,7 @@ class UserManager
 										ORDER BY user_course_category.sort, course_rel_user.sort, course.title ASC";
 
 		$course_list_sql_result = api_sql_query($personal_course_list_sql, __FILE__, __LINE__);
+		//var_dump($course_list_sql_result); exit;
 		while ($result_row = Database::fetch_array($course_list_sql_result)) {
 			$personal_course_list[] = $result_row;
 		}
@@ -2142,8 +1981,8 @@ class UserManager
 			$access_url_id = api_get_current_access_url_id();
 			if($access_url_id!=-1) {
 				$tbl_url_course = Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_COURSE);
-				$join_access_url= ",$tbl_url_course url_rel_course ";
-				$where_access_url=" AND access_url_id = $access_url_id  AND url_rel_course.course_code = scu.course_code";
+				$join_access_url= "LEFT JOIN $tbl_url_course url_rel_course ON url_rel_course.course_code= course.code";
+				$where_access_url=" AND access_url_id = $access_url_id ";
 			}
 		}
 
@@ -2885,28 +2724,25 @@ class UserManager
 	 * @param int field id of the tag
 	 * @return array
 	 */
-	public static function get_all_user_tags($tag, $field_id = 0, $from = null, $number_of_items = null) {
+	public static function get_all_user_tags($tag, $field_id = 0, $from=0, $number_of_items=10) {
 		// database table definition
 
 		$user_table 			= Database::get_main_table(TABLE_MAIN_USER);
 		$table_user_tag			= Database::get_main_table(TABLE_MAIN_TAG);
 		$table_user_tag_values	= Database::get_main_table(TABLE_MAIN_USER_REL_TAG);
 		$field_id = intval($field_id);
-		$tag = Database::escape_string($tag);	
-                $where_field = "";
+		$tag = Database::escape_string($tag);
+		$from = intval($from);
+    	$number_of_items = intval($number_of_items);
+    	$where_field = "";
 		if ($field_id != 0) {
 			$where_field = " field_id = $field_id AND ";
 		}
 		// all the information of the field
 		$sql = "SELECT u.user_id,u.username,firstname, lastname, email, tag, picture_uri FROM $table_user_tag ut INNER JOIN $table_user_tag_values uv ON (uv.tag_id=ut.id)
 				INNER JOIN $user_table u ON(uv.user_id =u.user_id)
-				WHERE $where_field tag LIKE '$tag%' ".(api_get_user_id()?" AND u.user_id <> ".  api_get_user_id():"")." ORDER BY tag";
-                
-                if (isset($from) && isset($number_of_items)) {    
-                    $from = intval($from);
-                    $number_of_items = intval($number_of_items);
-                    $sql .= " LIMIT $from,$number_of_items";
-                }
+				WHERE $where_field tag LIKE '$tag%' ORDER BY tag";
+		$sql .= " LIMIT $from,$number_of_items";
 
 		$result = Database::query($sql, __FILE__, __LINE__);
 		$return = array();
@@ -2940,21 +2776,18 @@ class UserManager
 		if ($_configuration['multiple_access_urls']==true && api_get_current_access_url_id()!=-1) {
 	    		$sql.= " AND url_rel_user.access_url_id=".api_get_current_access_url_id();
 	    }
-            
-            if (api_get_user_id()) {
-                $sql .= " AND u.user_id <> ".api_get_user_id();
-            }
-            
 		$direction = 'ASC';
 	    if (!in_array($direction, array('ASC','DESC'))) {
 	    	$direction = 'ASC';
 	    }
 
 	    $column = intval($column);
-            if (isset($from) && isset($number_of_items)) {
-                $sql .= " LIMIT $from,$number_of_items";
-            }
-            
+	    $from = intval($from);
+	    $number_of_items = intval($number_of_items);
+
+		//$sql .= " ORDER BY col$column $direction ";
+		$sql .= " LIMIT $from,$number_of_items";
+
 		$res = Database::query($sql, __FILE__, __LINE__);
 		if (Database::num_rows($res)> 0) {
 			while ($row = Database::fetch_array($res,'ASSOC')) {
@@ -2973,14 +2806,17 @@ class UserManager
 	 */
 	public static function get_search_form($query) {
 		echo'<form method="GET" action="'.api_get_path(WEB_PATH).'main/social/search.php">
-		<table cellspacing="1" cellpadding="1" width="100%">
+		<table cellspacing="0" cellpadding="0" width="320px">
 		<tr>
-		<td align="right" width="200px">              
-                  <input type="text" style="width:200px;" value="'.Security::remove_XSS($query).'" name="q"/>
+		<td>
+			<div id="search_label">
+					<b>'.get_lang('Search').'</b > ('.get_lang('UsersGroups').')
+            </div>
+              <div style="float:right;padding:3px;">
+				<input type="text" size="35" value="'.Security::remove_XSS($query).'" name="q"/>
+                <br/><button style="margin:2px;" class="search" type="submit" value="search">'.get_lang('Search').'</button>
+			</div>
 		</td>
-                <td align="left">
-                <button style="margin:2px;float:none;" class="search" type="submit" value="search">'.get_lang('Search').'</button>
-                </td>
 		</tr>
 		</table></form>';
 	}

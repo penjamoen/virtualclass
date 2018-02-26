@@ -594,7 +594,7 @@ function display_upgrade_header($text_dir, $dokeos_version, $install_type, $upda
 		<title>&mdash; <?php echo get_lang('DokeosInstallation').' &mdash; '.get_lang('Version_').' '.$dokeos_version; ?></title>
 		<style type="text/css" media="screen, projection">
 			/*<![CDATA[*/
-			@import "../css/dokeos2_tablet/default.css";
+			@import "../css/dokeos_blue/default.css";
 			/*]]>*/
 		</style>
 	<?php if(!empty($charset)){ ?>

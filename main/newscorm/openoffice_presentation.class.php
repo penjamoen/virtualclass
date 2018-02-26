@@ -15,7 +15,7 @@
  * @package dokeos.learnpath.OpenofficeDocument
  */
 require_once('openoffice_document.class.php');
-if (api_get_setting('search_enabled')=='true' && extension_loaded('xapian')) {
+if (api_get_setting('search_enabled')=='true') {
 	require_once(api_get_path(LIBRARY_PATH).'search/DokeosIndexer.class.php');
 	require_once(api_get_path(LIBRARY_PATH).'search/IndexableChunk.class.php');
 	require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
@@ -129,7 +129,7 @@ class OpenofficePresentation extends OpenofficeDocument {
 				}
 			}
             // code for text indexing
-            if (api_get_setting('search_enabled')=='true' && extension_loaded('xapian')) {
+            if (api_get_setting('search_enabled')=='true') {
 
 	            if (isset($_POST['index_document']) && $_POST['index_document']) {
 	              //Display::display_normal_message(print_r($_POST));

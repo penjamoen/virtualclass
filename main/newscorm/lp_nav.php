@@ -20,10 +20,7 @@ require_once('scorm.class.php');
 require_once('aicc.class.php');
 //error_log('New LP - Loaded lp_nav: '.$_SERVER['REQUEST_URI'],0);
 $htmlHeadXtra[] = '<script language="JavaScript" type="text/javascript">
-          try {
 	  var dokeos_xajax_handler = window.parent.oxajax;
-          } catch(e){}
-          
 	</script>';
 $progress_bar = '';
 $navigation_bar = '';

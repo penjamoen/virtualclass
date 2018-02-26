@@ -13,11 +13,6 @@
 /**** display of tool_navigation_menu according to admin setting *****/
 require_once (api_get_path(LIBRARY_PATH).'course.lib.php');
 global $_course;
-
-if($_SESSION['studentview'] == "studentview"){
-	$_SESSION['studentview'] = "teacherview";
-}
-
 if (api_get_setting('show_navigation_menu') != 'false') {
 
    $course_id = api_get_course_id();
@@ -46,7 +41,7 @@ if (api_get_setting('show_navigation_menu') != 'false') {
 		global $_configuration,$charset;
 		$platform_lang_var = api_convert_encoding(get_lang('Platform'), $charset, api_get_system_encoding());
 
-		echo $platform_lang_var, ' <a href="http://www.dokeos.com" target="_blank">Dokeos ', $_configuration['dokeos_version'], '</a>';
+		echo $platform_lang_var, ' <a href="http://btikp.org" target="_blank">PSB BTIKP Version 1.0 ', $_configuration[''], '</a>';
 		// Server mode indicator.
 		if (api_is_platform_admin()) {
 			if (api_get_setting('server_type') == 'test') {
@@ -133,7 +128,7 @@ if ((api_get_setting('showonline', 'world') == 'true' && !$_user['user_id']) || 
 	} else {
 		$user_list = WhoIsOnline($_user['user_id'], $_configuration['statistics_database'], api_get_setting('time_limit_whosonline'));
 	}
-	echo '&nbsp;<span class="usersonline"><span class="usersonlinetitle">'. $usersonline_lang_var . ' : </span><span class="usersonlinecontent">'.count($user_list).'</span><span class="usersonlineicon"></span></span>';
+	echo '&nbsp;<span class="usersonline">'. $usersonline_lang_var . ' : </span>'.count($user_list);
 }
 
 ?>&nbsp;

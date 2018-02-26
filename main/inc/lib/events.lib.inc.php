@@ -490,7 +490,7 @@ function create_event_exercice($exo_id)
 function exercise_attempt($score,$answer,$quesId,$exeId,$j)
 {
 	$score = Database::escape_string($score);
-//	$answer = Database::escape_string($answer);
+	$answer = Database::escape_string($answer);
 	$quesId = Database::escape_string($quesId);
 	$exeId = Database::escape_string($exeId);
 	$j = Database::escape_string($j);
@@ -499,9 +499,9 @@ function exercise_attempt($score,$answer,$quesId,$exeId,$j)
 	$TBL_TRACK_ATTEMPT = Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_ATTEMPT);
 
 	//Validation in case of fraud
-    if (isset($_SESSION['expired_time'][$_cid][$_SESSION['objExercise']->id])) { //Only for exercice of type "One page"
-    	$current_time = strtotime(gmdate('Y-m-d H:i:s'));
-    	$expired_date = $_SESSION['expired_time'][$_cid][$_SESSION['objExercise']->id];
+    if (isset($_SESSION['expired_time'])) { //Only for exercice of type "One page"
+    	$current_time = time();
+    	$expired_date = $_SESSION['expired_time'];
     	$expired_time = strtotime($expired_date);
     	$total_time_allowed = $expired_time + 30;
 	    if ($total_time_allowed < $current_time) {
@@ -543,7 +543,7 @@ function exercise_attempt($score,$answer,$quesId,$exeId,$j)
 			  ".$exeId.",
 			  ".$user_id.",
 			   '".$quesId."',
-			   '".Database::escape_string(addslashes($answer))."',
+			   '".addslashes($answer)."',
 			   '".$score."',
 			   '".$_cid."',
 			   '".$j."',
@@ -590,20 +590,13 @@ function exercise_attempt_hotspot($exe_id, $question_id, $answer_id, $correct, $
 
     //Validation in case of fraud
     if (isset($_SESSION['expired_time'])) { //Only for exercice of type "One page"
-    /*	$current_time = time();
+    	$current_time = time();
     	$expired_date = $_SESSION['expired_time'];
     	$expired_time = strtotime($expired_date);
 	    $total_time_allowed = $expired_time + 30;
 	    if ($total_time_allowed < $current_time) {
 	    	$correct = 0;
-	    }*/
-		$current_time = (int)gmdate('U');
-		$expired_date = $_SESSION['expired_time'];
-		$expired_time = strtotime($expired_date.' UTC');
-		$total_time_allowed = $expired_time + 5;
-		if ($total_time_allowed < $current_time) {
-			$choice = 0;
-		}
+	    }
     }
 
 	$tbl_track_e_hotspot = Database :: get_statistic_table(TABLE_STATISTIC_TRACK_E_HOTSPOT);

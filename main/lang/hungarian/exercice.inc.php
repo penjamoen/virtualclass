@@ -255,8 +255,6 @@ $ExeStartTime = "Kezd&#337;dátum";
 $ExeEndTime = "Befejez&#337; dátum";
 $Value = "Érték";
 $Duration = "Id&#337;tartam";
-$TryAgain = "Próbáld újra";
-$VisitUrl = "Nézd meg a linket";
 $Difficulty = "Nehézségi szint";
 $NewScore = "Új pont";
 $NewComment = "Új megjegyzés";
@@ -266,5 +264,4 @@ $SelectTargetLP = "Cél tanösvény kiválasztása";
 $SelectTargetQuestion = "Cél kérdés kiválasztása";
 $CantShowResults = "Nem elérhet&#337;";
 $CantViewResults = "Az eredményeket nem lehet megjeleníteni";
-$HideResultsToStudents = "Eredmények elrejtése";
 ?>

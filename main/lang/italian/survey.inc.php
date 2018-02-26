@@ -206,7 +206,4 @@ $ThereAreNotQuestionsForthisSurvey = "Non ci sono domande nel questionario";
 $MChoice = "Scelta Multipla";
 $Pageend = "Interruzione di pagina";
 $Printview = "Anteprima di stampa";
-$ShowFilterAttribute = "Mostra gli attributi del filtro";
-$HideFilterAttribute = "Nascondi gli attributi del filtro";
-$CourseHome = "Pagina iniziale";
 ?>

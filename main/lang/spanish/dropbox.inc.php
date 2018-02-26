@@ -133,7 +133,7 @@ $ReceivedCatgoryDeleted = "La carpeta ha sido eliminada";
 $UploadMap = "Subir un Mapa";
 $NewFolder = "Nueva Carpeta";
 $DownloadDokeosMind = "Descargar Dokeos Mental";
-$MapsOut = "Mapas enviados";
-$MapsIn = "Mapas recibidos";
+$MapsOut = "Mapas de salida";
+$MapsIn = "Mapas de entrada";
 $ok = "Ok";
 ?>

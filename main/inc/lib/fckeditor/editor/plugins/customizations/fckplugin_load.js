@@ -49,8 +49,6 @@ FCKPlugin.prototype.Load = function()
 		case 'audio':
 		case 'fckEmbedMovies':
 		case 'flvPlayer':
-                case 'videoPlayer':
-                case 'jwDokPlayer':
 		case 'youtube':
 		case 'googlemaps':
 		case 'mimetex':
@@ -94,9 +92,7 @@ FCKPlugin.prototype.Load = function()
 		case 'dragresizetable':
 		case 'fckEmbedMovies':
 		case 'flvPlayer':
-                case 'videoPlayer':
 		case 'googlemaps':
-                case 'jwDokPlayer':
 		case 'ImageManager':
 		case 'imgmap':
 		case 'mimetex':

@@ -105,7 +105,7 @@ $GroupUsers = "Grupo de usuarios";
 $GroupCategoryName = "Nombre de la categoria del grupo";
 $GroupScenarioCollaborationDescription = "Escenario del Grupo";
 $GroupScenarioCompetition = "Competencia";
-$PublicPrivateGroup = "Grupo";
+$PublicPrivateGroup = "Privado";
 $NoGroupToolsAvailable = "No hay Grupos";
 $GroupStudentRegistrationDenied = "Registro Denegado";
 $Seats = "Asientos";
@@ -114,5 +114,4 @@ $GroupsPerUser = "Grupos por Usuario";
 $NoCategory = "No hay Categorías";
 $JoinGroup = "Unirse al Grupo";
 $GroupMembership = "Miembros del Grupo";
-$GroupChat = "Chat";
 ?>

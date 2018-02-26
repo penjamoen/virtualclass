@@ -44,7 +44,7 @@ $table->set_column_filter(3, 'edit_filter');
 function edit_filter($id,$url_params,$row)
 {
 	global $charset;
-	$return = '<a href="specific_fields_add.php?action=edit&field_id='.$row[0].'">'.Display::return_icon('pixel.gif',get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).'</a>';
+	$return = '<a href="specific_fields_add.php?action=edit&field_id='.$row[0].'">'.Display::return_icon('edit.png',get_lang('Edit')).'</a>';
 	$return .= ' <a href="'.api_get_self().'?action=delete&field_id='.$row[0].'" onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset))."'".')) return false;">'.Display::return_icon('delete.png',get_lang('Delete')).'</a>';
 	return $return;
 }
@@ -68,8 +68,8 @@ if(!empty($_GET['message']))
 echo '<div class="actions">';
 $form->display();
 echo '</div>';
-echo '<div id="content">';
+
 $table->display();
-echo '</div>';
+
 // Displaying the footer
 Display::display_footer();

@@ -127,5 +127,4 @@ $Up2DateManualDokeosCom = "Bekijk de meer up to date installatie handleiding op 
 $MysqlConnectionOk = "Mysql connectie is ok";
 $ApplySettingsToGroups = "Standaard";
 $IfStillTypingPleaseContinue = "Indien nog steeds aan het typen, gelieve doorgaan";
-$UpgradeFromDokeos20x = "Upgrade 2.x portaal";
 ?>

@@ -83,28 +83,6 @@ if($deleteQuestion)
 		{
 			$nbrQuestions--;
 		}
-
-		//If question is removed from exercise and if the exercise is incomplete by any user removing the question from the exercise tracking of that user.
-
-		$track_questionlist = array();
-		$new_questionlist = array();
-		
-		$stat_table = Database :: get_statistic_table(TABLE_STATISTIC_TRACK_E_EXERCICES);	
-		$sql = "SELECT * FROM $stat_table WHERE exe_exo_id = $exerciseId AND exe_user_id = ".api_get_user_id()." AND exe_cours_id = '".api_get_course_id()."' AND status = 'incomplete'";
-		$result = Database::query($sql, __FILE__, __LINE__);
-		$nbrQuestions = Database::num_rows($result);
-		if($nbrQuestions > 0){
-		while ($row = Database::fetch_array($result)) {
-			$data = $row['data_tracking'];
-		}
-		}
-		
-		$track_questionlist = explode(",",$data);		
-		$new_questionlist = remove_element($track_questionlist,$deleteQuestion);	
-		
-		$data_arr = implode(",", $new_questionlist);
-		$sql = "UPDATE $stat_table SET data_tracking = '".$data_arr."' WHERE exe_exo_id = $exerciseId AND exe_user_id = ".api_get_user_id()." AND exe_cours_id = '".api_get_course_id()."' AND status = 'incomplete'";
-		api_sql_query($sql, __FILE__, __LINE__);
 	}
 
 	// destruction of the Question object
@@ -137,12 +115,12 @@ $question_lang_var = api_convert_encoding(get_lang('Question'), $charset, api_ge
 $type_lang_var = api_convert_encoding(get_lang('Type'), $charset, api_get_system_encoding());
 $level_lang_var = api_convert_encoding(get_lang('Level'), $charset, api_get_system_encoding());
 ?>
-<div id="content">
+<div id="content" class="actions">
 <table class="data_table data_table_exercise" id="table_question_list" style="width:100%">
 	<tr>
 		<th width="8%"><?php echo $move_lang_var; ?></th>
 		<th width="8%"><?php echo $modify_lang_var; ?></th>
-		<th align="left" width="35%"><?php echo $question_lang_var; ?></th>
+		<th width="35%"><?php echo $question_lang_var; ?></th>
 		<th width="9%"><?php echo $type_lang_var;?></th>
 		<th width="9%"><?php echo $level_lang_var; ?></th>
 		<?php
@@ -162,52 +140,18 @@ $questionList = array();
 $TBL_EXERCICES = Database::get_course_table(TABLE_QUIZ_TEST, $db_name);
 $TBL_QUESTIONS = Database::get_course_table(TABLE_QUIZ_QUESTION, $db_name);
 $TBL_EXERCICE_QUESTION = Database::get_course_table(TABLE_QUIZ_TEST_QUESTION, $db_name);
-$TBL_QUIZ_TYPE = Database::get_course_table(TABLE_QUIZ_TYPE, $db_name);
 
-$quiz_category = 0;
-$nbrQuestions = 0;
-
-if(api_get_setting('show_quizcategory') == 'true'){
-$sql_scenario = "SELECT count(*) FROM $TBL_QUIZ_TYPE WHERE exercice_id = ".Database::escape_string(Security::remove_XSS($_REQUEST['exerciseId']))." AND current_active = 1";
-$rs_scenario = Database::query($sql_scenario, __FILE__, __LINE__);
-$quiz_category = Database::result($rs_scenario, 0);
-}
-
-if($quiz_category <> 0) {
-$sql = "SELECT category_id,quiz_level,number_of_question,scenario_type FROM $TBL_QUIZ_TYPE WHERE exercice_id = ".Database::escape_string(Security::remove_XSS($_REQUEST['exerciseId'])). " AND current_active = 1";
-$result = Database::query($sql, __FILE__, __LINE__);
-while($row = Database::fetch_array($result))
-{	
-	$scenario_type = $row['scenario_type'];	
-	$sql_in = "SELECT DISTINCT(question.id) AS id FROM $TBL_EXERCICES quiz, $TBL_QUESTIONS question, $TBL_EXERCICE_QUESTION rel_question, $TBL_QUIZ_TYPE quiz_type WHERE quiz.id=rel_question.exercice_id AND rel_question.question_id = question.id AND quiz.id = quiz_type.exercice_id AND rel_question.exercice_id = quiz_type.exercice_id AND question.level = ".$row['quiz_level']." AND question.category = ".$row['category_id']." ORDER BY rel_question.question_order LIMIT ".$row['number_of_question'];		
-	$result_in = Database::query($sql_in, __FILE__, __LINE__);
-	$num_questions = Database::num_rows($result_in);	
-	if($num_questions <> 0){	
-	while ($row_in = Database::fetch_array($result_in)) {	
-	$questionList[] = $row_in[0];
-	}
-	}
-	$nbrQuestions = $nbrQuestions + $num_questions;
-}
-}
-else
-{
-	$sql = "SELECT question.id FROM $TBL_EXERCICES quiz, $TBL_QUESTIONS question, $TBL_EXERCICE_QUESTION rel_question WHERE quiz.id=rel_question.exercice_id AND rel_question.question_id = question.id AND quiz.id=".Database::escape_string(Security::remove_XSS($_REQUEST['exerciseId']))." ORDER BY rel_question.question_order";
-	$result = Database::query($sql, __FILE__, __LINE__);
-	$nbrQuestions = Database::num_rows($result);
-	while ($row = Database::fetch_array($result)) {
-		$questionList[] = $row[0];
-	}
-}
-
-/*$sql = "SELECT question.id FROM $TBL_EXERCICES quiz, $TBL_QUESTIONS question, $TBL_EXERCICE_QUESTION rel_question WHERE quiz.id=rel_question.exercice_id AND rel_question.question_id = question.id AND quiz.id=".Database::escape_string(Security::remove_XSS($_REQUEST['exerciseId']))." ORDER BY rel_question.question_order";
+$sql = "SELECT question.id FROM $TBL_EXERCICES quiz, $TBL_QUESTIONS question, $TBL_EXERCICE_QUESTION rel_question WHERE quiz.id=rel_question.exercice_id AND rel_question.question_id = question.id AND quiz.id=".Database::escape_string(Security::remove_XSS($_REQUEST['exerciseId']))." ORDER BY rel_question.question_order";
 $result = Database::query($sql, __FILE__, __LINE__);
 $nbrQuestions = Database::num_rows($result);
 while ($row = Database::fetch_array($result)) {
 	$questionList[] = $row[0];
-}*/
+}
 if($nbrQuestions) {
 echo '<div id="contentWrap"><div id="contentLeft"><ul class="dragdrop nobullets " id="categories">';
+
+	//$questionList = $objExercise->selectQuestionList();   
+
 	$i=1;
 	if (is_array($questionList)) {
 		foreach($questionList as $id) {
@@ -232,10 +176,23 @@ echo '<div id="contentWrap"><div id="contentLeft"><ul class="dragdrop nobullets 
 				<tr <?php if($i%2==0) echo 'class="row_odd"'; else echo 'class="row_even"'; ?>>
 				<td align="center" width="8%" style="cursor:pointer">
 				<?php
-                                    echo Display::return_icon('pixel.gif', get_lang('Move'), array('class' => 'actionplaceholdericon actionsdraganddrop')); 
-                                 ?>
-                                </td>
-				<td class="nodrag" align="center" width="8%">
+               //echo Display::display_icon('dokeos_updown.png', get_lang('Move'));
+               echo Display::display_icon('drag-and-drop.png', get_lang('Move'));
+				/*if($i != 1) { ?>
+						<a href="<?php echo api_get_self(); ?>?moveUp=<?php echo $id; ?>"><img src="../img/up.gif" border="0" alt="<?php echo get_lang('MoveUp'); ?>"></a>
+				<?php if($i == $nbrQuestions) {
+			    		echo '<img src="../img/down_na.gif">';
+					}
+				}*/
+				/*if($i != $nbrQuestions) {
+					if($i == 1){
+						echo '<img src="../img/up_na.gif">';
+					}
+				?>
+						<a href="<?php echo api_get_self(); ?>?moveDown=<?php echo $id; ?>"><img src="../img/down.gif" border="0" alt="<?php echo get_lang('MoveDown'); ?>"></a>
+				<?php }*/ ?>
+                </td>
+				<td align="center" width="8%">
 				<?php
 				if(!isset($_SESSION['fromlp'])) {
                     $question_type = $objQuestionTmp->selectType();
@@ -247,11 +204,11 @@ echo '<div id="contentWrap"><div id="contentLeft"><ul class="dragdrop nobullets 
 					<a href="<?php echo api_get_self(); ?>?myid=1&fromTpl=1&editQuestion=<?php echo $id; ?>&<?php echo api_get_cidreq()?>">
 					<?php
 				}
-                    echo Display::return_icon('pixel.gif', get_lang('Modify'), array('class' => 'actionplaceholdericon actionedit'));
+                    echo Display::display_icon('edit_32.png', get_lang('Modify'));
 				?>
               </a>
               </td>
-				<td class="nodrag" width="35%"><?php
+				<td width="35%"><?php
                 $question_title = trim($objQuestionTmp->selectTitle());
                 if (!empty($question_title)) {
                   echo $question_title;
@@ -259,50 +216,39 @@ echo '<div id="contentWrap"><div id="contentLeft"><ul class="dragdrop nobullets 
                   echo '&nbsp;';
                 }
                 ?></td>
-				<td class="nodrag" align="center" width="8%"><?php
+				<td align="center" width="8%"><?php
      eval('$explanation=get_lang('.get_class($objQuestionTmp).'::$explanationLangVar);');
     switch (get_class($objQuestionTmp)) {
       case 'UniqueAnswer':
-     //   echo Display::return_icon('multiple_choice_medium.png', $explanation);
-		  echo Display::return_icon('pixel.gif', $explanation, array('class' => 'quizactionplaceholdericon quiz_multiple_choice_list'));
+        echo Display::return_icon('multiple_choice_medium.png', $explanation);
       break;
       case 'MultipleAnswer':
-      //  echo Display::return_icon('multiple_answer_medium.png', $explanation);
-		  echo Display::return_icon('pixel.gif', $explanation, array('class' => 'quizactionplaceholdericon quiz_multiple_answer_list'));
+        echo Display::return_icon('multiple_answer_medium.png', $explanation);
       break;
       case 'FillBlanks':
-      //  echo Display::return_icon('fill_in_the_blank_medium.png', $explanation);
-		  echo Display::return_icon('pixel.gif', $explanation, array('class' => 'quizactionplaceholdericon quiz_fillups_list'));
+        echo Display::return_icon('fill_in_the_blank_medium.png', $explanation);
       break;
       case 'Matching':
-      //  echo Display::return_icon('drag_drop_medium.png', $explanation);
-		  echo Display::return_icon('pixel.gif', $explanation, array('class' => 'quizactionplaceholdericon quiz_matching_list'));
+        echo Display::return_icon('drag_drop_medium.png', $explanation);
       break;
       case 'FreeAnswer':
-      //  echo Display::return_icon('open_question_medium.png', $explanation);
-		  echo Display::return_icon('pixel.gif', $explanation, array('class' => 'quizactionplaceholdericon quiz_openquestion_list'));
+        echo Display::return_icon('open_question_medium.png', $explanation);
       break;
       case 'Reasoning':
-      //  echo Display::return_icon('reasoning_medium.png', $explanation);
-		  echo Display::return_icon('pixel.gif', $explanation, array('class' => 'quizactionplaceholdericon quiz_reasoning_list'));
+        echo Display::return_icon('reasoning_medium.png', $explanation);
       break;
       case 'HotSpot':
-      //  echo Display::return_icon('hotspots_medium.png', $explanation);
-		  echo Display::return_icon('pixel.gif', $explanation, array('class' => 'quizactionplaceholdericon quiz_hotspot_list'));
-      break;
-	  case 'HotSpotDelineation':
-      //  echo Display::return_icon('delineation_medium.png', $explanation);
-		  echo Display::return_icon('pixel.gif', $explanation, array('class' => 'quizactionplaceholdericon quiz_contour_list'));
+        echo Display::return_icon('hotspots_medium.png', $explanation);
       break;
     }
     ?>
     </td>
-			 <td class="nodrag" align="center" width="8%">
+			 <td align="center" width="8%">
 				<?php 
 				$level = $objQuestionTmp->selectLevel(); 
 				$category = $objQuestionTmp->selectCategory(); 
 	
-				if($level == '1' || $level == '0') {
+				if($level == '1') {
 					$level = '<div  class="level_style_general" onclick="level(\'4\',\''.$id.'\');" title="Advanced"></div><div class="level_style_general" onclick="level(\'3\',\''.$id.'\');" title="Intermediate"></div><div class="level_style_general" onclick="level(\'2\',\''.$id.'\');" title="Beginner"></div><div class="level_style_prerequestie" onclick="level(\'1\',\''.$id.'\');" title="Prerequestie"></div>';
 				}
 				if($level == '2') {
@@ -320,7 +266,7 @@ echo '<div id="contentWrap"><div id="contentLeft"><ul class="dragdrop nobullets 
 				<?php
 				if(api_get_setting('show_quizcategory') == 'true'){
 				?>
-				<td class="nodrag" align="center" width="15%">
+				<td align="center" width="15%">
 					
 					<select name="quiz_category_<?php echo $id; ?>" id="quiz_category_<?php echo $id; ?>">
 					<option <?php if($category == '0') echo 'selected'; ?>>Select</option>
@@ -329,13 +275,12 @@ echo '<div id="contentWrap"><div id="contentLeft"><ul class="dragdrop nobullets 
 					$sql = "SELECT * FROM $TBL_QUIZ_CATEGORY";
 					$result = api_sql_query($sql, __FILE__, __LINE__);
 					while($row = Database::fetch_array($result))
-					{	
-						$category_id = $row['id'];
+					{		
 						$category_title = $row['category_title'];
-						if($category == $category_id) {
-						  echo '<option value = "'.$category_id.'" selected>'.$row['category_title'].'</option>';
+						if($category == $category_title) {
+						  echo '<option selected>'.$row['category_title'].'</option>';
 						} else {
-                                                  echo '<option value = "'.$category_id.'">'.$row['category_title'].'</option>';
+                          echo '<option>'.$row['category_title'].'</option>';
 						}
 					}
 					?>
@@ -345,15 +290,13 @@ echo '<div id="contentWrap"><div id="contentLeft"><ul class="dragdrop nobullets 
 				<?php
 				}
 				?>
-			 <td class="nodrag" align="center"  width="8%">
-					<a href="<?php echo api_get_self(); ?>?deleteQuestion=<?php echo $id; ?>&<?php echo api_get_cidreq()?>&exerciseId=<?php  echo $objExercise->id;?>" onclick="javascript:if(!confirm('<?php echo addslashes(api_htmlentities(get_lang('ConfirmYourChoice'))); ?>')) return false;"><?php
-					 echo Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')); 
-					 ?></a>
+			 <td align="center"  width="8%">
+					<a href="<?php echo api_get_self(); ?>?deleteQuestion=<?php echo $id; ?>&<?php echo api_get_cidreq()?>&exerciseId=<?php  echo $objExercise->id;?>" onclick="javascript:if(!confirm('<?php echo addslashes(api_htmlentities(get_lang('ConfirmYourChoice'))); ?>')) return false;"><img src="../img/delete.png" border="0" title="<?php echo get_lang('Delete'); ?>" alt="<?php echo get_lang('Delete'); ?>" /></a>
 			    </td>
-				 <td class="nodrag" align="center" width="8%">
+				 <td align="center" width="8%">
      <a href="admin.php?<?php echo api_get_cidreq().'&viewQuestion='.$id.'&exerciseId='.$objExercise->id; ?>">
       <?php
-     echo Display::return_icon('pixel.gif', get_lang('ViewRight'), array('class' => 'actionplaceholdericon actionquizview')); 
+     echo Display::display_icon('dokeos_find.png',get_lang('ViewRight'));
      ?>
      </a></td>
 			  <?php
@@ -396,18 +339,9 @@ if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0) {
           echo '<a href="exercise_category.php?' . api_get_cidreq() . '">' . Display :: return_icon('category_22.png', get_lang('Categories')) . get_lang('Categories') . '</a>';
 	   }
 	   ?>		  
-	<a href="<?php echo 'exercice.php?show=result&'.  api_get_cidreq(); ?>"><?php echo Display::return_icon('pixel.gif', get_lang('Tracking'), array('class' => 'actionplaceholdericon actiontracking')) . get_lang('Tracking'); ?></a>
-	<a href="<?php echo 'question_pool.php?fromExercise='.Security::remove_XSS($_GET['exerciseId']).'&'.  api_get_cidreq(); ?>"><?php echo Display::return_icon('pixel.gif', get_lang('QuizQuestionsPool'), array('class' => 'actionplaceholdericon actionquestionpool'))  . get_lang('QuizQuestionsPool'); ?></a>
+	<a href="<?php echo 'exercice.php?show=result&'.  api_get_cidreq(); ?>"><?php echo Display :: return_icon('reporting22.png', get_lang('Tracking')) . get_lang('Tracking')?></a>
+	<a href="<?php echo 'question_pool.php?fromExercise='.Security::remove_XSS($_GET['exerciseId']).'&'.  api_get_cidreq(); ?>"><?php echo Display :: return_icon('pool.png', get_lang('QuizQuestionsPool')) . get_lang('QuizQuestionsPool')?></a>
 	<?php
    }
 	   ?>
 </div>
-<?php
-function remove_element($track_questionlist,$deleteQuestion)
-{
-	foreach($track_questionlist as $key => $value) {
-	if ($value == $deleteQuestion) unset($track_questionlist[$key]);
-	}
-	return $track_questionlist;
-}
-?>

@@ -40,6 +40,7 @@ $langMe = "me stesso";
 $langSystemAnnouncements = "Novità";
 $langHelpMaj = "Aiuto";
 $langNotRegistered = "Non sei ancora iscritto";
+$langAdmin = "Amministratore della piattaforma";
 $Login = "Accesso";
 $langRegisterForCourse = "Iscriviti a un corso";
 $langUnregisterForCourse = "Cancellati da un corso";
@@ -70,8 +71,4 @@ $Inbox = "Posta in entrata";
 $Comppose = "Componi";
 $PendingInvitations = "Inviti in attesa";
 $EditPublicPages = "Modifica le pagine pubbliche";
-$Programme = "Locandina";
-$AvailableFrom = "disponibile dal";
-$To = "al";
-$OpenCourses = "Corsi aperti";
 ?>

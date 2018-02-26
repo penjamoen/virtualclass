@@ -18,7 +18,7 @@ require_once 'learnpath.class.php';
 require_once 'learnpathItem.class.php';
 
 // Load Jquery library
-//$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
+$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
 
 // setting the tabs
 $this_section=SECTION_COURSES;
@@ -80,12 +80,12 @@ if (empty($charset)) {
 // Display the header
 Display::display_tool_header();
 // display the actions
-echo '<div class="actions" >';
+echo '<div class="actions " style="padding:3px;" >';
 echo lp_video_actions();
 echo '</div>';
 
 // start the content div
-echo '<div id="content">';
+echo '<div id="content_with_secondary_actions">';
 
 // the main content
 lp_video_main();
@@ -109,11 +109,11 @@ function lp_video_actions(){
 
   $lp_id = Security::remove_XSS($_GET['lp_id']);
   $return.= '';
-  $return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', $author_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthor')).$author_lang_var . '</a>';
-  $return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $content_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorcontent')).$content_lang_var . '</a>';
-  $return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $scenario_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorscenario')).$scenario_lang_var . '</a>';
-  $return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $view_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorpreview')).$view_lang_var . '</a>';
-  return $return;
+  $return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('author.png', $author_lang_var).$author_lang_var . '</a>';
+  $return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $lp_id . '">' . Display::return_icon('content.png', $content_lang_var).$content_lang_var . '</a>';
+  $return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $lp_id . '">' . Display::return_icon('organize.png', $scenario_lang_var).$scenario_lang_var . '</a>';
+  $return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $lp_id . '">' . Display::return_icon('search.png', $view_lang_var).$view_lang_var . '</a>';
+	 return $return;
 }
 
 function lp_video_secondary_actions(){
@@ -139,7 +139,7 @@ $j=1;
 
 echo '<table style="width:100%;" class="gallery">';
 
-$sql = "SELECT * FROM $table_document doc,$propTable prop WHERE doc.id = prop.ref AND prop.tool = '".Database::escape_string(TOOL_DOCUMENT)."' AND doc.filetype = 'file' AND doc.path LIKE '/video/%'";
+$sql = "SELECT * FROM $table_document doc,$propTable prop WHERE doc.id = prop.ref AND prop.tool = '".TOOL_DOCUMENT."' AND doc.filetype = 'file' AND doc.path LIKE '/video/%'";
 
 $result = Database::query($sql, __FILE__, __LINE__);
 
@@ -152,7 +152,7 @@ while ($row = Database::fetch_array($result)) {
  // Add link
 	echo '<a href="lp_controller.php?'.api_get_cidReq().'&action=add_item&type='.TOOL_DOCUMENT.'&resource=video&lp_id='.$lp_id.'&tplid='.$row['id'].'&filename='.$title.'">';
 	echo '	<div class="section">
-			<div class="sectioncontent">'.Display::return_icon('pixel.gif', get_lang('Mediabox'), array('class' => 'mediaactionplaceholdericon media_create_video_button')).'</div>
+			<div class="sectioncontent">'.Display::return_icon('media_video.png',get_lang('Mediabox')).'</div>
 			<div class="sectionfooter">'.$title_lang_var.'</div>
 		</div>';
 	echo '</a>';

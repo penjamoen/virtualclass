@@ -91,30 +91,6 @@ function switch_item_details($lp_id,$user_id,$view_id,$current_item,$next_item)
             if($debug>1){error_log('In {default} - next item is '.$new_item_id.'(current: '.$current_item.')',0);}
             break;
     }
-
-  // Normally the documents are loaded by javascript, then we are updating the documents here
-  $src = $mylp->get_link('http',$new_item_id);
-  $sys_src_info = explode('?',$src);
-  $sys_src = $sys_src_info[0];
-  $file_url_sys = str_replace(api_get_path(WEB_PATH),api_get_path(SYS_PATH),$sys_src);
-
-  if (file_exists($file_url_sys)) {
-      $path_info = pathinfo($file_url_sys);
-      // Check only HTML documents
-      if ($path_info['extension'] == 'html') {
-          $get_file_content = file_get_contents($file_url_sys);
-          $matches = preg_match('/<embed/i', $get_file_content,$matches);
-          // Only for files that has embed tags
-          $get_file_content = str_replace(array('wmode="opaque"','wmode="transparent"'), "", $get_file_content);
-          $write_doc_swf = false;
-          if (count($matches) > 0) {
-              $write_doc_swf = true;
-              $get_file_content = str_replace(array('wmode="opaque"','wmode="transparent"'), "", $get_file_content);
-              $get_file_content = str_replace(array('<embed'), array('<embed wmode="opaque" '), $get_file_content);
-          }
-      }
-  }
-
     $mylp->start_current_item(true);
     if($mylp->force_commit){
         $mylp->save_current();

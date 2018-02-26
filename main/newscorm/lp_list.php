@@ -27,6 +27,8 @@ include_once(api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php')
 $this_section=SECTION_COURSES;
 
 // Add additional javascript, css
+//$htmlHeadXtra[] = '<script type="text/javascript" language="javascript">$("#actions").click(function(){ alert("You clicked an action")});</script>';
+//extra javascript functions for in html head:
 $htmlHeadXtra[] =
 "<script language='javascript' type='text/javascript'>
 	function confirmation(name)
@@ -36,34 +38,36 @@ $htmlHeadXtra[] =
 	}
 </script>";
 // Add additional javascript, css
+$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
+$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.ui.all.js" type="text/javascript" language="javascript"></script>';
+
 $htmlHeadXtra[] ='<script type="text/javascript">
 $(document).ready(function(){
 	$(function() {
-		$(".sort").sortable({ opacity: 0.6,cursor: "move",cancel: ".nodrag", update: function(event, ui) {
-                var current_lp_id = ui.item.attr("id");
-                var current_lp_data = current_lp_id.split("lp_row_");
-                var Lp_id = current_lp_data[1]; // This is the current LP ID of the selected row
+		$(".sort").sortable({ opacity: 0.6,cursor: "move", update: function(event, ui) {
+    //$(this).sortable("refresh");
+    var current_lp_id = ui.item.attr("id");
+    var current_lp_data = current_lp_id.split("lp_row_");
+    var Lp_id = current_lp_data[1]; // This is the current LP ID of the selected row
 
-                var sorted_list = $(this).sortable("serialize");
-                    sorted_list = sorted_list.replace(/&/g,"");
-                var sorted_data = sorted_list.split("lp_row[]=");
+    var sorted_list = $(this).sortable("serialize");
+        sorted_list = sorted_list.replace(/&/g,"");
+    var sorted_data = sorted_list.split("lp_row[]=");
 
-               // get new order of this lp
-                var newOrder = 0;
-                for(var i=0; i<sorted_data.length; i++){
-                  if(sorted_data[i] == Lp_id){
-                    newOrder = i;
-                  }
-                }
+    // get new order of this lp
+    var newOrder = 0;
+    for(var i=0; i<sorted_data.length; i++){
+      if(sorted_data[i] == Lp_id){
+        newOrder = i;
+      }
+    }
 		  // call ajax to save new position
 		  $.ajax({
 			   type: "GET",
 			   url: "lp_ajax_change_position.php?' . api_get_cidreq() . '&action=change_lp_position&lp_id="+Lp_id+"&new_order="+newOrder,
-			   success: function(response){
-                                document.location="lp_controller.php?' . api_get_cidreq() . '";
-                           }
-                        })
-                    }
+			   success: function(response){}
+		  })
+		}
 		});
 	});
 
@@ -86,6 +90,7 @@ $interbreadcrumb[] = array ("url"=>"coursetool.php", "name"=> get_lang('CourseTo
 
 // Display the header
 Display::display_tool_header(get_lang('CourseTool'));
+
 
 /*------------------------------*/
 
@@ -141,19 +146,17 @@ if($is_allowed_to_edit)
   {
 	  switch ($_GET['dialogtype'])
 	  {
-		case 'confirmation':	Display::display_confirmation_message($dialog_box);		break;
-		case 'error':			Display::display_error_message($dialog_box);			break;
-		case 'warning':			Display::display_warning_message($dialog_box);			break;
-		default:	    		Display::display_normal_message($dialog_box);			break;
+	  	case 'confirmation':	Display::display_confirmation_message($dialog_box);		break;
+	  	case 'error':			Display::display_error_message($dialog_box);			break;
+	  	case 'warning':			Display::display_warning_message($dialog_box);			break;
+	  	default:	    		Display::display_normal_message($dialog_box);			break;
 	  }
   }
 
-	if (api_failure::get_last_failure()){
-		Display::display_normal_message(api_failure::get_last_failure());
-	}
+	if (api_failure::get_last_failure())	    Display::display_normal_message(api_failure::get_last_failure());
 
 	echo '<div class="actions">';
-		echo '<a class="" href="#">'.Display::return_icon('pixel.gif', get_lang('Author'), array('class' => 'toolactionplaceholdericon toolactionauthor')) . get_lang("Author").'</a>';
+		echo '<a class="" href="#">'.Display::return_icon('author.png'). get_lang("Author").'</a>';
 	echo '</div>';
 }
 
@@ -164,21 +167,18 @@ if($is_allowed_to_edit)
 <div id="content">
 	<?php
 		if (api_is_allowed_to_edit()) {
-			/* CREATE NEW, SCORM, WORD, POWERPOINT */
-			$common_params = api_get_cidreq()."&curdirpath=/&tool=".TOOL_LEARNPATH;
-			$href_create_new =	"\"".api_get_self()."?".api_get_cidreq()."&action=add_lp\"";
-			$href_scorm = 		"\"../upload/index.php?".$common_params."\"";
-			$href_word = 		"\"../upload/upload_word.php?".$common_params."\"";
-			$href_ppt = 		"\"../upload/upload_ppt.php?".$common_params."\"";
-	
-			$common_classes = "big_button four_buttons rounded grey_border";
-			echo "<a href=$href_create_new class=\"$common_classes new_button\" >".get_lang("New")."</a>";
-			echo "<a href=$href_scorm class=\"$common_classes scorm_button\" >".get_lang("UploadScorm")."</a>";
-			echo "<a href=$href_word class=\"$common_classes serious_game_button \" >".get_lang("SeriousGameConvert")."</a>";
-			if(api_get_setting('service_ppt2lp', 'active') === 'true')
-			{
-				echo "<a href=$href_ppt class=\"$common_classes ppt_button\" >".get_lang("PowerPointConvert")."</a>";
-			}
+		/* CREATE NEW, SCORM, WORD, POWERPOINT */
+		$common_params = api_get_cidreq()."&curdirpath=/&tool=".TOOL_LEARNPATH;
+		$href_create_new =	"\"".api_get_self()."?".api_get_cidreq()."&action=add_lp\"";
+		$href_scorm = 		"\"../upload/index.php?".$common_params."\"";
+		$href_word = 		"\"../upload/upload_word.php?".$common_params."\"";
+		$href_ppt = 		"\"../upload/upload_ppt.php?".$common_params."\"";
+
+		$common_classes = "big_button four_buttons rounded grey_border";
+		echo "<a href=$href_create_new class=\"$common_classes new_button\" >".get_lang("New")."</a>";
+		echo "<a href=$href_scorm class=\"$common_classes scorm_button\" >".get_lang("UploadScorm")."</a>";
+		echo "<a href=$href_word class=\"$common_classes serious_game_button \" >".get_lang("SeriousGameConvert")."</a>";
+		//echo "<a href=$href_ppt class=\"$common_classes ppt_button\" >".get_lang("PowerPointConvert")."</a>";
 		}
 
 	?>
@@ -196,7 +196,7 @@ if($is_allowed_to_edit)
 					<?php
 					}
 					?>
-					<th align="left">	<?php echo get_lang("ExistingCourses"); ?></th>
+					<th>	<?php echo get_lang("ExistingCourses"); ?></th>
 					<?php
 					if($is_allowed_to_edit){
 					?>
@@ -210,19 +210,6 @@ if($is_allowed_to_edit)
 					<?php
 					}
 					?>
-                                        <?php
-					if($is_allowed_to_edit){
-					?>
-					<th>	<?php echo get_lang("Visible"); ?></th>
-					<?php
-					}
-					if($is_allowed_to_edit){
-                                        ?>
-					<th>	<?php echo get_lang("Configure"); ?></th>
-					<?php
-					}
-                                        ?>
-                                        
 				</tr>
 			</thead>
 			<tbody class="sort">
@@ -244,7 +231,7 @@ if($is_allowed_to_edit)
 							$name = Security::remove_XSS($details['lp_name']);
 							$open_link = 'lp_controller.php?'.api_get_cidreq().'&action=view&lp_id='.$id;
 
-							$edit_link = Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit'));
+							$edit_link = Display::return_icon("navigation/edit.png", get_lang("Edit"));
 							$delete_link = "";
 
 							if($is_allowed_to_edit)
@@ -254,51 +241,33 @@ if($is_allowed_to_edit)
 									/* EDIT/BUILD COMMAND */
 									if($details['lp_type']==1 || $details['lp_type']==2 || $details['lp_type']==3){
 										$edit_link =	'<a href="lp_controller.php?'.api_get_cidreq().'&amp;action=add_item&amp;type=step&amp;lp_id='.$id.'">' .
-															Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')).
+															Display::return_icon("navigation/edit.png", get_lang("Edit")) .
 														'</a>';
 									}
 
 									/* DELETE COMMAND */
 									$delete_link =	"<a href=\"lp_controller.php?".api_get_cidreq()."&action=delete&lp_id=$id\" onClick=\"return confirmation('".addslashes($name)."');\" >" .
-														Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')).
+														Display::return_icon("navigation/delete.png", $delete_title).
 													"</a>";
 								} else {
-									$delete_link = 	Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete invisible'));
+									$delete_link = 	Display::return_icon("delete_na.gif", $delete_title);
 								}
 							}	// endif $is_allowed_to_edit
        $css_class = ($counter%2 == 0) ? 'row_even' : 'row_odd';
 							$line =		'<tr id="lp_row_'.$id.'" class='.$css_class.'>'.
-		         '<td class="dragHandle" align="center" style="cursor:pointer;width:40px;">'.Display::return_icon('pixel.gif', get_lang('Move'), array('class' => 'actionplaceholdericon actionsdraganddrop')).'</td>';
+		         '<td class="dragHandle" align="center" style="cursor:pointer;width:40px;">'.Display::return_icon('drag-and-drop.png', get_lang('Move')).'</td>';
 							if($is_allowed_to_edit){
-								$line .=	"<td class='nodrag' align='center' style='width:60px;'>".$edit_link."</td>";
+								$line .=	"<td align='center' style='width:60px;'>".$edit_link."</td>";
 							}
-								$line .=	"<td class='nodrag' align='left' style='width:770px;'><a href='".$open_link."' class='blue_link'>".$name."</a></td>";
+								$line .=	"<td align='left' style='width:770px;'><a href='".$open_link."' class='blue_link'>".$name."</a></td>";
 							if($is_allowed_to_edit){
-								$line .=	"<td class='nodrag' align='center' style='width:60px;'>".$delete_link."</td>";
+								$line .=	"<td align='center' style='width:60px;'>".$delete_link."</td>";
 							}
 							else
 							{
 								$line .= "<td>".$html."</td>";
 							}
-							if($is_allowed_to_edit){
-                                                                $coment =  ($details['lp_visibility'] == 1 ? get_lang('Enabled') : get_lang('Hidden')) ;
-                                                                $visible = ($details['lp_visibility'] == 1 ? Display::return_icon('pixel.gif', get_lang('Visible'), array('class' => 'actionplaceholdericon actionvisible')) : Display::return_icon('pixel.gif', get_lang('Invisible'), array('class' => 'actionplaceholdericon actionvisible invisible'))) ;
-                                                                $new_status = ($details['lp_visibility'] == 1 ? 0 : 1);
-								$line .= "<td class='nodrag' align='center' style='width:60px;'><a href='?action=toggle_visible&lp_id=".$id."&new_status=".$new_status."'>".$visible."</a></td>";
-								$line .= "<td class='nodrag' align='center' style='width:60px;'>";
-                                                                
-                                                                if($details['lp_prevent_reinit']==1){
-                                                                        $line .= '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_reinit&lp_id='.$id.'">' .
-                                                                                        Display::return_icon('pixel.gif',get_lang('AllowMultipleAttempts'),array('class'=>'actionplaceholdericon actionreload_na'));
-                                                                }else{
-                                                                        $line .= '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_reinit&lp_id='.$id.'">' .
-                                                                                        Display::return_icon('pixel.gif',get_lang('PreventMultipleAttempts'),array('class'=>'actionplaceholdericon actionreload'));
-                                                                                        '</a>&nbsp;';
-							}     
-                                                                $line .= "</td>";
-                                                                
-							}     
-                                                        $line .= "</tr>";
+										"</tr>";
 
 							echo $line;
        $counter++;

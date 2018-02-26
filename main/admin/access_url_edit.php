@@ -5,7 +5,7 @@
 * @package dokeos.admin
 */
 
-$language_file = array('admin','userInfo');
+$language_file = 'admin';
 $cidReset = true;
 require ('../inc/global.inc.php');
 $this_section = SECTION_PLATFORM_ADMIN;
@@ -79,8 +79,8 @@ $form->addElement('text','url',get_lang('URL'),array('size'=>'30'));
 $form->addRule('url', get_lang('ThisFieldIsRequired'), 'required');
 $form->addRule('url', '', 'maxlength',254);
 $form->addElement('textarea','description',get_lang('Description'));
-$form->addElement('checkbox','active',null,get_lang('Active'));
-$form->addRule('active', get_lang('ThisFieldIsRequired'), 'required');
+$form->addElement('checkbox','active',get_lang('Active'));
+$form->addRule('checkbox', get_lang('ThisFieldIsRequired'), 'required');
 
 $defaults['url']='http://';
 $form->setDefaults($defaults);
@@ -120,10 +120,6 @@ if (isset ($_GET['action']))
 }
 
 // Submit button
-$form->addElement('style_submit_button', 'submit', $submit_name, 'class="save"');
-
-echo '<div id="content">';
+$form->addElement('submit', 'submit', $submit_name);
 $form->display();
-echo '</div>';
-
 ?>

@@ -206,6 +206,4 @@ $ThereAreNotQuestionsForthisSurvey = "Il n\'y a pas de questions dans cette enqu
 $MChoice = "Ch. multiple";
 $Pageend = "Saut de page";
 $Printview = "Vue impression";
-$ShowFilterAttribute = "Montrer le fitre";
-$HideFilterAttribute = "Masquer le filtre";
 ?>

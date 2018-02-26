@@ -77,7 +77,7 @@ include('answer.class.php');
 
 
 // name of the language file that needs to be included
-$language_file = array('exercice','hotspot');
+$language_file='exercice';
 
 define('DOKEOS_QUIZGALLERY', true);
 
@@ -98,7 +98,7 @@ include_once(api_get_path(LIBRARY_PATH).'fileUpload.lib.php');
 include_once(api_get_path(LIBRARY_PATH).'document.lib.php');
 require_once '../newscorm/learnpath.class.php';
 // Load jquery library
-//$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
+$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
 
 //$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.corners.min.js" type="text/javascript"></script>';
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/dhtmlwindow.js" type="text/javascript"></script>';
@@ -106,15 +106,17 @@ $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/mod
 $htmlHeadXtra[] = '<style type="text/css" media="all">@import "' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/modal.css";</style>';
 $htmlHeadXtra[] = '<style type="text/css" media="all">@import "' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/dhtmlwindow.css";</style>';
 //$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.tablednd_0_5.js"></script>';
-//$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.ui.all.js" type="text/javascript" language="javascript"></script>';
+$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.ui.all.js" type="text/javascript" language="javascript"></script>';
 $htmlHeadXtra[] = '<script>
   $(document).ready(function (){
     $("div.label").attr("style","width: 100%;text-align:left");
     $("div.row").attr("style","width: 100%;");
     $("div.formw").attr("style","width: 100%;");
+    $(".hotspot-form").clone().appendTo(".quiz_little_squarebox");
+    $(".hotspot-form:last").remove();
+    $(".quiz_questions_squarebox").find("br:first").remove();
   });
 </script>';
-
 
 $htmlHeadXtra[] = '<script src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/jquery.epiclock.min.js" type="text/javascript" language="javascript"></script>'; //jQuery
 if (api_get_setting('show_glossary_in_documents') != 'none' && isset($_GET['viewQuestion']) && $_GET['viewQuestion'] > 0 ){
@@ -124,16 +126,6 @@ if (api_get_setting('show_glossary_in_documents') != 'none' && isset($_GET['view
   } else {
     $htmlHeadXtra[] = '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/glossary_quiz.js"/></script>';
   }
-  
-$htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/customInput.jquery.js" language="javascript"></script>';
-$htmlHeadXtra[] = '<script type="text/javascript"> 
-	// Run the script on DOM ready:
-	$(function(){
-                try {
-		$("input").customInput();
-                } catch(e){}
-	});
-	</script>';
 }
 
 // Add the lp_id parameter to all links if the lp_id is defined in the uri
@@ -189,6 +181,17 @@ if (isset($_SESSION['lpobject'])) {
   }
  }
 }
+
+// Isaac have commented this code, if you have found an issue, let me know please
+// we set the encoding of the lp
+/*if (!empty($_SESSION['oLP']->encoding)) {
+	$charset = $_SESSION['oLP']->encoding;
+} else {
+	$charset = api_get_system_encoding();
+}
+if (empty($charset)) {
+	$charset = 'ISO-8859-1';
+}*/
 
 // Add the extra lp_id parameter to some links
 $add_params_for_lp = '';
@@ -253,7 +256,7 @@ $htmlHeadXtra[] ='<script type="text/javascript">
 $(document).ready(function(){ 
 
 	$(function() {
-		$("#contentLeft ul").sortable({ opacity: 0.6, cursor: "move",cancel: ".nodrag", update: function() {
+		$("#contentLeft ul").sortable({ opacity: 0.6, cursor: "move", update: function() {
 			var order = $(this).sortable("serialize") + "&action=updateQuizQuestion";
 			var record = order.split("&");
 			var recordlen = record.length;
@@ -265,14 +268,12 @@ $(document).ready(function(){
 			}
 		
 			// call ajax to save new position
-                    $.ajax({
+	$.ajax({
 			type: "GET",
 			url: "exercise.ajax.php?'.api_get_cidReq().'&action=updateQuizQuestion&exerciseId='.$exerciseId.'&disporder="+disparr,
-			success: function(msg){
-                            document.location="admin.php?exerciseId='.Security::remove_XSS($_GET['exerciseId']).'&' . api_get_cidreq() . '";
-                        }
-                    })
-                  }
+			success: function(msg){}
+		})
+		}
 		});
 	});
 
@@ -605,6 +606,11 @@ if(isset($_REQUEST['totTpl'])) {
 	$totTpl = Security::remove_XSS($_REQUEST['totTpl']);// Posible deprecated code
 }
 
+/*if((!isset($_REQUEST['fromTpl']))&&($_SESSION['editQn'] != '1')&&(!isset($_SESSION['fromlp']))&&(!isset($_GET['hotspotadmin']))) {
+  Display::display_tool_header($nameTools,'Exercise');
+} else {
+  Display::display_reduced_header($nameTools,'Exercise');
+}*/
 
 Display::display_tool_header($nameTools,'Exercise');
 
@@ -622,7 +628,7 @@ if (!isset($_REQUEST['exerciseId']) && (isset($_REQUEST['fromExercise']) && $_RE
 }
 
 // Main buttons
-echo '<div class="actions">';
+echo '<div class="actions" style="margin-top:5px;">';
 	$author_lang_var = api_convert_encoding(get_lang('Author'), $charset, api_get_system_encoding());
 	$content_lang_var = api_convert_encoding(get_lang('Content'), $charset, api_get_system_encoding());
 	$scenario_lang_var = api_convert_encoding(get_lang('Scenario'), $charset, api_get_system_encoding());
@@ -630,15 +636,14 @@ echo '<div class="actions">';
 	if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0)
 	{
 	  $lp_id = Security::remove_XSS($_GET['lp_id']);
-	  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', $author_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthor')).$author_lang_var . '</a>';
-	  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=add_item&type=step">' . Display::return_icon('pixel.gif', $content_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorcontent')).$content_lang_var . '</a>';
+	  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '">' . Display::return_icon('go_previous_32.png', $author_lang_var).$author_lang_var . '</a>';
+	  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=add_item&type=step">' . Display::return_icon('content.png', $content_lang_var).$content_lang_var . '</a>';
 	} else {
-	  echo '<a href="exercice.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang('List'), array('class' => 'toolactionplaceholdericon toolactionback'))  . get_lang('List') . '</a>';
+	  echo '<a href="exercice.php?' . api_get_cidreq() . '">' . Display :: return_icon('go_previous_32.png', get_lang('List')) . get_lang('List') . '</a>';
 	}
-	echo '<a href="exercise_admin.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang('NewEx'), array('class' => 'toolactionplaceholdericon toolactionnewquiz'))  . get_lang('NewEx') . '</a>';	
-	echo '<a href="admin.php?' . api_get_cidreq() . '&exerciseId='.$exercice_id.'">' . Display::return_icon('pixel.gif', get_lang('Questions'), array('class' => 'toolactionplaceholdericon toolactionquestion')). get_lang('Questions') . '</a>';
-	echo '<a href="exercise_admin.php?scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.$exercice_id.'">' . Display::return_icon('pixel.gif', $scenario_lang_var, array('class' => 'toolactionplaceholdericon toolactionscenario')) . $scenario_lang_var . '</a>';
-	echo '<a href="exercice_submit.php?' . api_get_cidreq() . '&exerciseId='.$exercice_id.'&clean=true">' . Display::return_icon('pixel.gif', get_lang('ViewRight'), array('class' => 'toolactionplaceholdericon toolactionsearch')). get_lang('ViewRight') . '</a>';
+	echo '<a href="exercise_admin.php?' . api_get_cidreq() . '">' . Display :: return_icon('new_quiz.png', get_lang('NewEx')) . get_lang('NewEx') . '</a>';	
+	echo '<a href="admin.php?' . api_get_cidreq() . '&exerciseId='.$exercice_id.'">' . Display :: return_icon('dokeos_question.png', get_lang('Questions')) . get_lang('Questions') . '</a>';
+	echo '<a href="exercise_admin.php?scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.$exercice_id.'">' . Display :: return_icon('dokeos_scenario.png', $scenario_lang_var) . $scenario_lang_var . '</a>';
 
 echo '</div>';
 
@@ -664,12 +669,12 @@ if (isset($_REQUEST['hotspotadmin'])) {
   $exercice_id = Security::remove_XSS($_REQUEST['exerciseId']);
   
   // Main buttons
-  echo '<div class="actions">';
+  echo '<div class="actions" style="margin-top:5px;">';
 	  $scenario_lang_var = api_convert_encoding(get_lang('Scenario'), $charset, api_get_system_encoding());
-	  echo '<a href="exercice.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang('List'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('List') . '</a>';
-	  echo '<a href="exercise_admin.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang('NewEx'), array('class' => 'toolactionplaceholdericon toolactionnewquiz')) . get_lang('NewEx') . '</a>';
-	  echo '<a href="admin.php?' . api_get_cidreq() . '&exerciseId='.$exercice_id.'">' . Display::return_icon('pixel.gif', get_lang('Questions'), array('class' => 'toolactionplaceholdericon toolactionquestion')) . get_lang('Questions') . '</a>';
-	  echo '<a href="exercise_admin.php?scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.$exercice_id.'">' . Display::return_icon('pixel.gif', $scenario_lang_var, array('class' => 'toolactionplaceholdericon toolactionscenario'))  . $scenario_lang_var . '</a>';
+	  echo '<a href="exercice.php?' . api_get_cidreq() . '">' . Display :: return_icon('list.png', get_lang('List')) . get_lang('List') . '</a>';
+	  echo '<a href="exercise_admin.php?' . api_get_cidreq() . '">' . Display :: return_icon('new_quiz.png', get_lang('NewEx')) . get_lang('NewEx') . '</a>';
+	  echo '<a href="admin.php?' . api_get_cidreq() . '&exerciseId='.$exercice_id.'">' . Display :: return_icon('dokeos_question.png', get_lang('Questions')) . get_lang('Questions') . '</a>';
+	  echo '<a href="exercise_admin.php?scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.$exercice_id.'">' . Display :: return_icon('dokeos_scenario.png', $scenario_lang_var) . $scenario_lang_var . '</a>';
   echo '</div>';
 }
 if(isset($_GET['message'])){
@@ -688,17 +693,9 @@ if($newQuestion || $editQuestion || $viewQuestion) {
 	}
 	?><input type="hidden" name="Type" value="<?php echo $type; ?>" />
 	<?php
-        
-        if($type == 6) {
-          $type_hotspost_delineation = $type;
-          include('hotspot_one.inc.php');
-	} 
-	else if($type==9)
-	{
-		$type_hotspost_delineation = $type;
-		include('hotspot_delineation.inc.php');
-	}
-	else {
+	if($type == 6) {
+	  include('hotspot_one.inc.php');
+	} else {
 	  include('question_admin.inc.php');
 	}
 //	include('question_admin.inc.php');
@@ -710,10 +707,8 @@ if($newQuestion || $editQuestion || $viewQuestion) {
 
 if(!$newQuestion && !$modifyQuestion && !$editQuestion && !$viewQuestion && !isset($_GET['hotspotadmin']))
 {
-   // Question list management(nice buttons for questions here)
-	include_once('question_list_admin.inc.php');
 	include_once(api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php');
-	$form = new FormValidator('exercise_admin', 'post', api_get_self().'?exerciseId='.Security::remove_XSS($_GET['exerciseId']));
+	$form = new FormValidator('exercise_admin', 'post', api_get_self().'?exerciseId='.$_GET['exerciseId']);
 	$form -> addElement ('hidden','edit','true');
 	//$objExercise -> createForm ($form,'simple');
 
@@ -723,10 +718,12 @@ if(!$newQuestion && !$modifyQuestion && !$editQuestion && !$viewQuestion && !iss
 			Display::display_confirmation_message(get_lang('ExerciseEdited'));
 	}
 	if(api_get_setting('search_enabled')=='true' && !extension_loaded('xapian')) {
-			echo '<div class="confirmation-message">'.get_lang('SearchXapianModuleNotInstaled').'</div>';
+			Display::display_error_message(get_lang('SearchXapianModuleNotInstaled'));
 	}
 	$form -> display ();
-	
+//	echo '<br />';
+	// Question list management(nice buttons for questions here)
+	include_once('question_list_admin.inc.php');
 }
 
 api_session_register('objExercise');

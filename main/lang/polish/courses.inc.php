@@ -2,12 +2,12 @@
 for more information: see languages.txt in the lang folder. 
 */
 $lang_already_enrolled                      = "ju&#380; zapisany";
-$lang_my_personnal_course_list              = "Moje kursy";
+$lang_my_personnal_course_list              = "Lista moich kursów";
 $lang_course_enrollment                     = "Kursy u&#380;ykownika";
 $lang_course_not_available                  = "Kurs niedost&#281;pny...";
 $lang_enroll                                = "Zapisz";
 $lang_enroll_to_a_new_course                = "Zapisz do nowego kursu";
-$lang_my_present_course_list                = "Moje kursy";
+$lang_my_present_course_list                = "Aktualna lista kursów";
 $lang_no_course_to_enroll_in_this_category  = "W tej kategorii nie ma dostêpnych kursów...
 ";
 $lang_or_search_from_the_course_code        = "Lub wyszukaj wed&#322;ug kodów kursów";
@@ -39,9 +39,9 @@ $langHideAndSubscribeOpen = "Ukryty / Otwarty";
 $langShowAndSubscribeOpen = "Widoczny / Otwarty";
 $langShowAndSubscribeClosed = "Widoczny / Zamkni&#281;ty";
 $langAdminThisUser = "Powrót do u&#380;ytkownika";
-$langManage = "Zarz&#261;dzanie portalem";
+$langManage = "Zarz&#261;dzanie campusem";
 $langEnrollToCourseSuccessful = "Zosta&#322;e&#347; zapisany na ten kurs. Jeste&#347; zarejestrowanym u&#380;ytkownikiem.";
-$langSubCat = "podkategorie";
+$langSubCat = "podkategoriach";
 $langUnsubscribeNotAllowed = "Wypisanie z tego kursy jest niedozwolone.";
 $langCourseAdminUnsubscribeNotAllowed  = "Jeste&#347; administratorem tego kursu.";
 $CourseManagement = "Zarz&#261;dzanie kursem";
@@ -70,9 +70,4 @@ $SubmitRegistrationCode = "Prze&#347;lij kod rejestracyjny";
 $CourseCategoryDeleted = "Kategoria zosta&#322;a usuni&#281;ta";
 $CategorySortingDone = "Kategoria zosta&#322;a posortowana";
 $CourseCategoryEditStored = "Kategoria zosta&#322;a uaktualniona";
-$buttonCreateCourseCategory = "Zapisz kategorie";
-$buttonChangeCategory = "Zmie&#324; kategorie";
-$SessionName = "Nazwa sesji";
-$SessionCategory = "Kategoria sesji";
-$DefaultCategory = "Domy&#347;lna kategoria";
 ?>

@@ -7,7 +7,7 @@
 
 
 // name of the language file that needs to be included
-$language_file = array ('registration','admin','exercice','work');
+$language_file = array ('registration','admin','exercice');
 
 // resetting the course id
 $cidReset = true;
@@ -37,7 +37,7 @@ Display::display_header();
 
 echo '<div class="actions">';
 if(isset($_GET['action']) && $_GET['action'] == 'edit'){
-	echo '<a href="emailtemplates.php">'.Display::return_icon('pixel.gif', get_lang('Emailtemplates'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('Emailtemplates').'</a>';
+	echo '<a href="emailtemplates.php">'.Display::return_icon('go_previous_32.png',get_lang('Emailtemplates')).' '.get_lang('Emailtemplates').'</a>';
 }
 echo '</div>';
 
@@ -114,68 +114,6 @@ if(isset($_GET['action']) && $_GET['action'] == 'edit')
 			$content .= "{administratorTelephone} \n";
 			$content .= get_lang('Email')." : {emailAdministrator}";
 		}
-		if($description == 'Quizsuccess'){
-			$content = get_lang('DearStudentEmailIntroduction')."\n\n";
-			$content .= get_lang('AttemptVCC')."\n\n";
-			$content .= get_lang('Quizsuccess')."\n\n";
-			$content .= get_lang('Question').": {ques_name} \n";	
-			$content .= get_lang('Exercice')." :{test} \n\n";
-			$content .= get_lang('ClickLinkToViewComment')." - {url} \n\n";
-			$content .= get_lang('Notes')."\n\n";
-			$content .= "{notes} \n\n";
-			$content .= get_lang('Regards')."\n\n";			
-			$content .= "{administratorSurname} \n";
-			$content .= get_lang('Manager')."\n";
-			$content .= "{administratorTelephone} \n";
-			$content .= get_lang('Email')." : {emailAdministrator}";
-		}
-		if($description == 'Quizfailure'){
-			$content = get_lang('DearStudentEmailIntroduction')."\n\n";
-			$content .= get_lang('AttemptVCC')."\n\n";
-			$content .= get_lang('Quizfailure')."\n\n";
-			$content .= get_lang('Question').": {ques_name} \n";	
-			$content .= get_lang('Exercice')." :{test} \n\n";
-			$content .= get_lang('ClickLinkToViewComment')." - {url} \n\n";
-			$content .= get_lang('Notes')."\n\n";	
-			$content .= "{notes} \n\n";
-			$content .= get_lang('Regards')."\n\n";			
-			$content .= "{administratorSurname} \n";
-			$content .= get_lang('Manager')."\n";
-			$content .= "{administratorTelephone} \n";
-			$content .= get_lang('Email')." : {emailAdministrator}";
-		}
-		if($description == 'Newassignment'){
-			$content = get_lang('Dear')." {Name} ,\n\n";
-			$content .= get_lang('CreatedNewAssignment').' : '." {courseName} ". "\n\n";
-			$content .= "{assignmentName}" . "\n\n";
-			$content .= "{assignmentDescription}" . "\n\n";
-			$content .= get_lang('Deadline').' : '. "{assignmentDeadline}" . "\n\n";
-			$content .= get_lang('UploadPaper').' : '. "{siteName}" . "\n\n";
-			$content .= get_lang('Yours').', '. "\n\n";
-			$content .= "{authorName}" ."\n";				
-		}
-		if($description == 'Submitwork'){
-			$content = get_lang('Dear')." {authorName} ,\n\n";
-			$content .=  "{studentName}". get_lang('PublishedPaper') . "\n\n";
-			$content .= "{paperName} ". "\n\n";
-			$content .= get_lang('For'). "{assignmentName} - {assignmentDescription}" .get_lang('In'). " {courseName}" . "\n\n";			
-			$content .= get_lang('DeadlineWas').' : '. "{assignmentDeadline}" . "\n\n";
-			$content .= get_lang('PaperSubmittedOn').' : '. "{assignmentSentDate}" . "\n\n";
-			$content .= get_lang('CorrectComment').' : '. "{siteName}" . "\n\n";
-			$content .= get_lang('Yours').', '. "\n\n";
-			$content .= "{administratorSurname}" ."\n";				
-		}
-		if($description == 'Correctwork'){
-			$content = get_lang('Dear')." {studentName} ,\n\n";
-			$content .=  get_lang('CorrectedPaper') . "\n\n";
-			$content .= "{paperName} ". "\n\n";
-			$content .= get_lang('For'). "{assignmentName} - {assignmentDescription}" .get_lang('In'). "{courseName}" . "\n\n";			
-			$content .= get_lang('DeadlineWas').' : '. "{assignmentDeadline}" . "\n\n";
-			$content .= get_lang('PaperSubmittedOn').' : '. "{assignmentSentDate}" . "\n\n";
-			$content .= get_lang('CheckMark').' : '. "{siteName}" . "\n\n";
-			$content .= get_lang('Yours').', '. "\n\n";
-			$content .= "{authorName}" ."\n";				
-		}
 	}
 	
 	$defaults['content'] = $content;
@@ -234,6 +172,7 @@ $sql = "SELECT * FROM $table_emailtemplate";
 if(!empty($language_selected)){
 	$sql .= " WHERE language = '".$language_selected."'";
 }
+
 $result = api_sql_query($sql, __FILE__, __LINE__);
 $numrows = Database::num_rows($result);
 if($numrows <> 0)
@@ -259,7 +198,7 @@ if($numrows <> 0)
           // User templates are not translatable
 		  echo '<div class="sectiontitle">'.$row['title'].'</div>
 				<div class="sectioncontent"><img border="0" src="'.$image.'"></div>
-				<div align="center"><a href="'.api_get_self().'?action=edit&id='.$row['id'].'">'.Display::return_icon('pixel.gif', get_lang("Edit"), array('class' => 'actionplaceholdericon actionedit')).'&nbsp;&nbsp;'.Display::return_icon('pixel.gif', get_lang("Delete"), array('class' => 'actionplaceholdericon actiondelete')).'</div>
+				<div align="center"><a href="'.api_get_self().'?action=edit&id='.$row['id'].'"><img src="../img/edit_link.png"></a>&nbsp;&nbsp;<img src="../img/delete.png"></div>
 			</div>';
 		echo '</td>';
 		if($j==4)

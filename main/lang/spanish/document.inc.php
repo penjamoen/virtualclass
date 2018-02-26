@@ -316,5 +316,4 @@ $OnlyAllowedUploadJpgGifPngFilesInMascotFolder = "Solo archivos jpg,gif y png so
 $OnlyAllowedUploadJpgXmindGifPngFilesInMindmapsFolder = "Solo archivos jpg,gif,png y xmind son permitidos subir en la carpeta mindmaps";
 $OnlyAllowedUploadSwfFilesInAnimationFolder = "Solo archivos swf son permitidos subir en la carpeta Animaciones";
 $OnlyAllowedUploadJpgGifPngZipFilesInImagesFolder = "Solo archivos jpg,gif,png y zip son permitidos subir en la carpeta Imágenes";
-$DoesNotExistsTheFolder = "No existe la carpeta";
 ?>

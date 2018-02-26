@@ -24,7 +24,7 @@ require_once 'classes/CourseSelectForm.class.php';
 require_once '../inc/lib/xajax/xajax.inc.php';
 
 // setting the breadcrumbs
-//$interbreadcrumb[]=array('url' => '../admin/index.php',"name" => get_lang('PlatformAdmin'));
+$interbreadcrumb[]=array('url' => '../admin/index.php',"name" => get_lang('PlatformAdmin'));
 
 // section for the tabs
 $this_section=SECTION_PLATFORM_ADMIN;
@@ -87,10 +87,10 @@ function display_form() {
 	$sessions = SessionManager::get_sessions_list();
 
 	// actions
-	//$html .= '<div class="sectiontitle">';
+	$html .= '<div class="sectiontitle">';
 	// link back to the documents overview
-	//$html .= '<a href="../admin/index.php">'.Display::return_icon('back.png',get_lang('BackTo').' '.get_lang('PlatformAdmin'),array('style'=>'vertical-align:middle')).get_lang('BackTo').' '.get_lang('PlatformAdmin').'</a>';
-	//$html .= '</div>';
+	$html .= '<a href="../admin/index.php">'.Display::return_icon('back.png',get_lang('BackTo').' '.get_lang('PlatformAdmin'),array('style'=>'vertical-align:middle')).get_lang('BackTo').' '.get_lang('PlatformAdmin').'</a>';
+	$html .= '</div>';
 
 	$html .= '<div class="row"><div class="form_header">'.get_lang('CopyCourse').'</div></div>'; 
 	$html .= '<form name="formulaire" method="post" action="'.api_get_self().'" >';
@@ -299,23 +299,10 @@ $htmlHeadXtra[] = '<script language="javascript">
 </script>';
 
 // Display the header
-Display::display_header($nameTools);
+Display::display_tool_header($nameTools);
 
 // Display the tool title
 // api_display_tool_title($nameTools);
-
-echo '<div class="actions">';
-if(api_get_setting('show_catalogue')=='true'){
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/catalogue_management.php">' . Display::return_icon('pixel.gif',get_lang('Catalogue'), array('class' => 'toolactionplaceholdericon toolactioncatalogue')) . get_lang('Catalogue') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/topic_list.php">' . Display :: return_icon('pixel.gif', get_lang('Topics'),array('class' => 'toolactionplaceholdericon toolactiontopic')) . get_lang('Topics') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/programme_list.php">' . Display :: return_icon('pixel.gif', get_lang('Programmes'),array('class' => 'toolactionplaceholdericon toolactionprogramme')) . get_lang('Programmes') . '</a>';
-}
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_add.php">'.Display :: return_icon('pixel.gif', get_lang('AddSession'),array('class' => 'toolactionplaceholdericon toolactionadd')).get_lang('AddSession').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_list.php">' . Display :: return_icon('pixel.gif', get_lang('SessionList'),array('class' => 'toolactionplaceholdericon toolactionsession')) . get_lang('SessionList') . '</a>';        
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_export.php">'.Display::return_icon('pixel.gif',get_lang('ExportSessionListXMLCSV'),array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('ExportSessionListXMLCSV').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_import.php">'.Display::return_icon('pixel.gif',get_lang('ImportSessionListXMLCSV'),array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('ImportSessionListXMLCSV').'</a>';	        
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'coursecopy/copy_course_session.php">'.Display::return_icon('pixel.gif',get_lang('CopyFromCourseInSessionToAnotherSession'),array('class' => 'toolactionplaceholdericon toolsettings')).get_lang('CopyFromCourseInSessionToAnotherSession').'</a>';	
-echo '</div>';
 
 // start the content div
 echo '<div id="content">';

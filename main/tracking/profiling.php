@@ -106,7 +106,7 @@ $view = (isset($_REQUEST['view']) ? $_REQUEST['view'] : '');
 $nameTools = get_lang('Tracking');
 
 // display the header
-Display::display_tool_header($nameTools, 'Tracking');
+Display::display_header($nameTools, 'Tracking');
 
 // getting all the students of the course
 $a_students = CourseManager :: get_student_list_from_course_code($_course['id'], true, (empty($_SESSION['id_session']) ? null : $_SESSION['id_session']));
@@ -114,20 +114,17 @@ $nbStudents = count($a_students);
 
 // gettting all the additional information of an additional profile field
 if (isset($_GET['additional_profile_field']) && is_numeric($_GET['additional_profile_field'])) {
- $additional_user_profile_info = get_additional_profile_information_of_field($_GET['additional_profile_field']);
+ $additional_user_profile_info = get_addtional_profile_information_of_field($_GET['additional_profile_field']);
 
  $user_array = array();
  foreach ($a_students as $key => $item) {
   $user_array[] = $key;
+
  }
  //fetching only the user that are loaded NOT ALL user in the portal
- $additional_user_profile_info = get_additional_profile_information_of_field_by_user($_GET['additional_profile_field'], $user_array);
+ $additional_user_profile_info = get_addtional_profile_information_of_field_by_user($_GET['additional_profile_field'], $user_array);
  $profile_id = Security::remove_XSS($_GET['additional_profile_field']);
  $profile_name = UserManager::get_extra_field_name_by_field_id($profile_id);
-}
-
-if (!empty($_GET['additional_profile_field'])){
-	$addional_param = 'additional_profile_field='.Security::remove_XSS($_GET['additional_profile_field']);
 }
 
 /*
@@ -137,9 +134,9 @@ if (!empty($_GET['additional_profile_field'])){
  */
 
 echo '<div class="actions">';
-echo '<a href="learners.php?' . api_get_cidreq() . '&studentlist=true">' . Display::return_icon('pixel.gif', get_lang('Students'), array('class' => 'toolactionplaceholdericon toolactionadminusers')) . get_lang('Students') . '</a>';
-echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&export=csv&' . $addional_param . '">' . Display::return_icon('pixel.gif', get_lang('ExportAsXLS'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')) . get_lang('ExportAsXLS') . '</a>';
-echo '<a href="javascript: void(0);" onclick="javascript: window.print();">' . Display::return_icon('pixel.gif', get_lang('Print'), array('class' => 'toolactionplaceholdericon toolactionprint32')) . get_lang('Print') . '</a>';
+echo '<a href="learners.php?' . api_get_cidreq() . '&studentlist=true">' . Display::return_icon('adminUsers.png', get_lang('Students')) . get_lang('Students') . '</a>';
+echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&export=csv&' . $addional_param . '">' . Display::return_icon('excel_32.png', get_lang('ExportAsXLS')) . get_lang('ExportAsXLS') . '</a>';
+echo '<a href="javascript: void(0);" onclick="javascript: window.print();">' . Display::return_icon('print32.png', get_lang('Print')) . get_lang('Print') . '</a>';
 echo '</div>';
 
 // start the content div
@@ -197,14 +194,12 @@ if ($_GET['studentlist'] == 'true' || empty($_GET['studentlist'])) {
   $table->set_header(9, get_lang('LatestLogin'), false, 'align="center"');
   if (isset($_GET['additional_profile_field']) AND is_numeric($_GET['additional_profile_field'])) {
    $table->set_header(10, Security::remove_XSS($profile_name), false);
-  } elseif (isset($_GET['additional_profile_field']) AND in_array($_GET['additional_profile_field'], array('active', 'email'))) {
-  	$table->set_header(10, get_lang(ucfirst($_GET['additional_profile_field'])), false);
   } else {
    $table->set_header(10, '', false);
   }
   $table->set_header(11, get_lang('Details'), false);
-  //$html_table = $table->get_table_html();
-  $table->display();
+  $html_table = $table->get_table_html();
+  echo $html_table;
  } else {
   echo get_lang('NoUsersInCourseTracking');
  }
@@ -250,10 +245,10 @@ if ($_GET['studentlist'] == 'true' || empty($_GET['studentlist'])) {
 // close the content div
 echo '</div>';
 echo '<div class="actions">';
-$return = '<a href="courseLog.php?' . api_get_cidreq() . '&studentlist=resources">' . Display::return_icon('pixel.gif', get_lang('Traffic'), array('class' => 'actionplaceholdericon actionquota')). get_lang('Traffic') . '</a>';
-$return .= '<a href="../exercice/exercice.php?' . api_get_cidreq() . '&reporting=true&page=profiling&show=result">' . Display::return_icon('pixel.gif', get_lang('Quiz'), array('class' => 'actionplaceholdericon actionstudentviewquiz')) . get_lang('Quiz') . '</a>';
-$return .= '<a href="notification.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang('Notification'), array('class' => 'actionplaceholdericon actionannouncement')). get_lang('Notification') . '</a>';
-$return .= '<a href="profiling.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang('Profiling'), array('class' => 'actionplaceholdericon actioncoach')) . get_lang('Profiling') . '</a>';
+$return = '<a href="courseLog.php?' . api_get_cidreq() . '&studentlist=resources">' . Display::return_icon('diskquota.png', get_lang('Traffic')) . ' ' . get_lang('Traffic') . '</a>';
+$return .= '<a href="../exercice/exercice.php?' . api_get_cidreq() . '&reporting=true&page=profiling&show=result">' . Display::return_icon('quiz_22.png', get_lang('Quiz')) . ' ' . get_lang('Quiz') . '</a>';
+$return .= '<a href="notification.php?' . api_get_cidreq() . '">' . Display::return_icon('announcement_22.png', get_lang('Notification')) . ' ' . get_lang('Notification') . '</a>';
+$return .= '<a href="profiling.php?' . api_get_cidreq() . '">' . Display::return_icon('01coach.png', get_lang('Profiling')) . ' ' . get_lang('Profiling') . '</a>';
 echo $return;
 echo '</div>';
 // display the footer
@@ -280,12 +275,12 @@ function display_additional_profile_fields() {
  * @since October 2009
  * @version 1.8.7
  */
-function get_additional_profile_information_of_field($field_id) {
- return Tracking::get_additional_profile_information_of_field($field_id);
+function get_addtional_profile_information_of_field($field_id) {
+ return Tracking::get_addtional_profile_information_of_field($field_id);
 }
 
 /**
- * This function gets all the information of a certrain ($field_id) additional profile field for a specific list of users is more efficent than  get_additional_profile_information_of_field() function
+ * This function gets all the information of a certrain ($field_id) additional profile field for a specific list of users is more efficent than  get_addtional_profile_information_of_field() function
  * It gets the information of all the users so that it can be displayed in the sortable table or in the csv or xls export
  *
  * @author	Julio Montoya <gugli100@gmail.com>
@@ -295,8 +290,8 @@ function get_additional_profile_information_of_field($field_id) {
  * @since	Nov 2009
  * @version	1.8.6.2
  */
-function get_additional_profile_information_of_field_by_user($field_id, $users) {
- return Tracking::get_additional_profile_information_of_field_by_user($field_id, $users);
+function get_addtional_profile_information_of_field_by_user($field_id, $users) {
+ return Tracking::get_addtional_profile_information_of_field_by_user($field_id, $users);
 }
 
 /**

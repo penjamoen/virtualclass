@@ -171,7 +171,7 @@ if (!class_exists('Matching')):
 						<th width="20%" >' . $matchesto_lang_var . '</th>
 						<th width="35%" >' . $rightset_lang_var . '</th>			
 						<th width="5%" >&nbsp;</hd>
-					</tr></table><table width="100%" class="data_table">';
+					</tr>';
 
    // Main container
    $form->addElement('html', '<div style="float:left;width:100%">');
@@ -179,7 +179,7 @@ if (!class_exists('Matching')):
    $form->addElement('html', $html);
    $form->addElement('html', '<tr class="row_odd"><td valign="top">&nbsp');
    // Match to column
-/*   $form->addElement('html', '<div>');
+   $form->addElement('html', '<div>');
    $form->addElement('html', '<table width="100%" border="0">');
    for ($i = 1; $i <= $nb_matches; ++$i) {
     $group = array();
@@ -192,31 +192,16 @@ if (!class_exists('Matching')):
    }
    $form->addElement('html', '</table>');
 
-   $form->addElement('html', '</div>');*/
+   $form->addElement('html', '</div>');
    $form->addElement('html', '</td><td valign="top">');
    $form->addElement('html', '<div><table width="100%">');
-   $tmp_matches = array();
-   $tmp_matches = $a_matches;
    for ($i = 1; $i <= $nb_matches; ++$i) {
-    $form->addElement('html', '<tr><td valign="top" style="padding-top:10px;">'.$i.'</td><td style="height:43px;">');
-	$form->add_html_editor('answer[' . $i . ']','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '350px', 'Height' => ''.$formsize_px.''));
- /*   $group = array();
-    $group[] = FormValidator :: createElement ('html_editor', 'answer['.$i.']',null, 'style="margin:0em;"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '350px', 'Height' => ''.$formsize_px.'')); 
-    $form->addGroup($group, null, null, '</td>');*/
-
-//	$form->addElement('html', '</td></tr>');
-    $form->addElement('html', '</td>');
-	$group = array();
-    $form->addElement('html', '<td valign="top" style="padding-top:5px;">');
-    for ($k = 1; $k <= $nb_options; $k++) {
-     $tmp_matches[$k] = $tmp_matches[$k] . $i;
-	// $match_lang_var[] = api_convert_encoding($tmp_matches[$k], $charset, api_get_system_encoding());
-    }
-    $group[] = FormValidator :: createElement('select', 'matches[' . $i . ']', null, $tmp_matches, 'id="matches[' . $i . ']""');
+    $form->addElement('html', '<tr><td style="height:43px;">');
+    $group = array();
+    $group[] = FormValidator :: createElement ('html_editor', 'answer['.$i.']',null, 'style="margin:0em;"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '350px', 'Height' => ''.$formsize_px.''));
+ //   $group[] = FormValidator :: createElement('textarea', 'answer[' . $i . ']', null, 'id="answer['.$i.']" cols="40" rows="1"');
     $form->addGroup($group, null, null, '</td>');
-    $tmp_matches = array();
-    $tmp_matches = $a_matches;
-//	$form->addRule('answer['.$i.']', get_lang('ThisFieldIsRequired'), 'required');
+    $form->addElement('html', '</tr>');
    }
    $form->addElement('html', '<tr><td>');
 
@@ -237,7 +222,7 @@ if (!class_exists('Matching')):
    $form->addElement('html', '</td><td valign="top">');
    // Match to column
    $form->addElement('html', '<div>');
-/*   $form->addElement('html', '<table width="100%" border="0">');
+   $form->addElement('html', '<table width="100%" border="0">');
    $tmp_matches = array();
    $tmp_matches = $a_matches;
  //  $match_lang_var = array();
@@ -255,22 +240,21 @@ if (!class_exists('Matching')):
     $tmp_matches = array();
     $tmp_matches = $a_matches;
    }
-   $form->addElement('html', '</table>');*/
+   $form->addElement('html', '</table>');
 
    $form->addElement('html', '</div>');
 
    // End Match to column
    $form->addElement('html', '</td><td valign="top">');
 
-   $form->addElement('html', '<div style="text-align:left"><table width="90%" align="right" border="0">');
+   $form->addElement('html', '<div style="text-align:left"><table width="100%" border="0">');
    for ($i = 1; $i <= $nb_options; ++$i) {
     $form->addElement('html', '<tr><td>');
- /*   $group = array();
-    $group[] = FormValidator :: createElement ('html_editor', 'option['.$i.']',null, 'id="option['.$i.']" style="margin-left: 0em;"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '350px', 'Height' => ''.$formsize_px.'')); 
-    $form->addGroup($group, null, null, '</td>');*/
-	$form->add_html_editor('option[' . $i . ']','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '350px', 'Height' => ''.$formsize_px.''));
-//    $form->addRule('option['.$i.']', get_lang('ThisFieldIsRequired'), 'required');
-    $form->addElement('html', '</td><td valign="top" style="padding-top:10px;">'.chr(64 + $i).'</td></tr>');
+    $group = array();
+    $group[] = FormValidator :: createElement ('html_editor', 'option['.$i.']',null, 'id="option['.$i.']" style="margin-left: 0em;"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '350px', 'Height' => ''.$formsize_px.''));
+  //  $group[] = FormValidator :: createElement('textarea', 'option[' . $i . ']', null, 'id="option[' . $i . ']" cols="40" rows="1"');
+    $form->addGroup($group, null, null, '</td>');
+    $form->addElement('html', '</tr>');
    }
    $form->addElement('html', '<tr><td colspan="2">');
    /*$group = array();
@@ -307,7 +291,7 @@ if (!class_exists('Matching')):
      }
 
      $form->addElement('html', '</table></td><td valign="top">'); */
-   /*$form->addElement('html', '<table width="100%" border="0">');
+   $form->addElement('html', '<table width="100%" border="0">');
    for ($i = 1; $i <= $nb_options; ++$i) {
     $group = array();
     $form->addElement('html', '<tr><td id="alpha['.$i.']" valign="top" style="text-align:center;height:103px"><br/>');
@@ -320,22 +304,21 @@ if (!class_exists('Matching')):
 
     $form->addElement('html', '</tr>');
    }
-   $form->addElement('html', '</table>');*/
-   $form->addElement('html', '</td></tr><tr>');
+   $form->addElement('html', '</table></td></tr><tr>');
 
    $form->addElement('html', '<td>&nbsp;</td>');
    $form->addElement('html', '<td style="padding-left:250px;">');
 
    $group = array();
    if ($navigator_info['name'] == 'Internet Explorer' && ($navigator_info['version'] >= '6')) {	
-    $group[] = FormValidator :: createElement('submit', 'lessMatches', '', 'class="button_less"');
-    $group[] = FormValidator :: createElement('submit', 'moreMatches', '', 'class="button_more"');
+    $group[] = FormValidator :: createElement('submit', 'lessMatches', '', 'style="background:url(\'../img/form-minus.png\') no-repeat;width:35px;height:40px;border:0px;"');
+    $group[] = FormValidator :: createElement('submit', 'moreMatches', '', 'style="background:url(\'../img/form-plus.png\') no-repeat;width:35px;height:40px;border:0px;"');
    } else {
  //   $group[] = FormValidator :: createElement('style_submit_button', 'moreMatches', get_lang('Add'), 'class="plus" style="margin-left:3px;float:right"');
  //   $group[] = FormValidator :: createElement('style_submit_button', 'lessMatches', get_lang('Delete'), 'class="minus" style="float:right"');
-	  $group[] = FormValidator :: createElement('submit', 'lessMatches', '', 'class="button_less"');
-      $group[] = FormValidator :: createElement('submit', 'moreMatches', '', 'class="button_more"');
-   	   }
+	  $group[] = FormValidator :: createElement('html', '<input type="image" value="moreMatches" src="../img/form-plus.png" name="moreMatches" style="border:0px;margin-left:3px;float:right;background:transparent;">');
+	  $group[] = FormValidator :: createElement('html', '<input type="image" value="lessMatches" src="../img/form-minus.png" name="lessMatches" style="border:0px;float:right;background:transparent;">');
+   }
    $form->addGroup($group);
    $form->addElement('html', '</td>');
 
@@ -345,13 +328,13 @@ if (!class_exists('Matching')):
    $group = array();
 
    if ($navigator_info['name'] == 'Internet Explorer' && ($navigator_info['version'] >= '6')) {	
-    $group[] = FormValidator :: createElement('submit', 'lessOptions', '', 'class="button_less"');
-    $group[] = FormValidator :: createElement('submit', 'moreOptions', '', 'class="button_more"');
+    $group[] = FormValidator :: createElement('submit', 'lessOptions', '', 'style="background:url(\'../img/form-minus.png\') no-repeat;width:35px;height:40px;border:0px;"');
+    $group[] = FormValidator :: createElement('submit', 'moreOptions', '', 'style="background:url(\'../img/form-plus.png\') no-repeat;width:35px;height:40px;border:0px;"');
    } else {
  //   $group[] = FormValidator :: createElement('style_submit_button', 'lessOptions', get_lang('Delete'), 'class="minus"');
  //   $group[] = FormValidator :: createElement('style_submit_button', 'moreOptions', get_lang('Add'), 'class="plus"');
-   	$group[] = FormValidator :: createElement('submit', 'lessOptions', '', 'class="button_less"');
-    $group[] = FormValidator :: createElement('submit', 'moreOptions', '', 'class="button_more"');
+	  $group[] = FormValidator :: createElement('html', '<input type="image" value="moreOptions" src="../img/form-plus.png" name="moreOptions" style="border:0px;float:right;background:transparent;">');
+	  $group[] = FormValidator :: createElement('html', '<input type="image" value="lessOptions" src="../img/form-minus.png" name="lessOptions" style="border:0px;float:right;background:transparent;">');
    }
    $form->addGroup($group);
    $form->addElement('html', '</td>');

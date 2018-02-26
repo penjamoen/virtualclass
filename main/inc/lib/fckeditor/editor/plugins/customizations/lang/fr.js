@@ -8,8 +8,8 @@ FCKLang['Dir']                = 'ltr' ;
 
 FCKLang['BrowseServer']       = 'Parcourir le serveur' ;
 FCKLang['Folder']             = 'Dossier' ;
-FCKLang['CreateNewFolder']    = 'Créer un dossier' ;
-FCKLang['UploadFile']         = 'Uploader un ficher' ;
+FCKLang['CreateNewFolder']    = 'Create a folder' ;
+FCKLang['UploadFile']         = 'Upload a file' ;
 FCKLang['Upload']             = 'Télécharger' ;
 FCKLang['UploadSelectFileFirst'] = "Veuillez choisir un document avant d'appuyer sur le bouton d'import" ;
 

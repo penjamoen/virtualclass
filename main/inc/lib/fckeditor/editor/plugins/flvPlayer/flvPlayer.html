@@ -45,7 +45,7 @@ document.write( FCKTools.GetStyleHtml( GetCommonDialogCss() ) ) ;
 						</table>
 					</td>
 				</tr>
-				<tr>
+			<!--<tr>
 					<td valign="top" colspan=3>
 						<table cellspacing="0" cellpadding="0" width="100%" border="0">
 							<tr>
@@ -74,8 +74,9 @@ document.write( FCKTools.GetStyleHtml( GetCommonDialogCss() ) ) ;
 							</tr>
 						</table>
 					</td>
-				</tr>
-
+				</tr>-->
+				<input type="hidden" name="txtImgURL" id="txtImgURL">
+				<input type="hidden" name="txtPlaylist" id="txtPlaylist">
 				<tr>
 					<td valign="top" colspan=3>&nbsp;</td>
 				</tr>
@@ -84,7 +85,7 @@ document.write( FCKTools.GetStyleHtml( GetCommonDialogCss() ) ) ;
 						<fieldset>
 							<legend><span fcklang="DlgFLVPlayerMovieAttrs">Movie Attributes</span></legend>
 								<table cellspacing="0" cellpadding="0" width="100%" border="0">
-									<tr>
+							<!--<tr>
 										<td valign="top" colspan=2>
 											<table cellspacing="0" cellpadding="0" width="100%" border="0">
 												<tr>
@@ -113,15 +114,16 @@ document.write( FCKTools.GetStyleHtml( GetCommonDialogCss() ) ) ;
 												</tr>
 											</table>
 										</td>
-									</tr>
-
+									</tr>-->
+									<input style="width: 100%" type="hidden" name="txtWMURL" id="txtWMURL">
+									<input style="width: 100%" type="hidden" name="txtRURL" id="txtRURL">
 									<tr>
 										<td valign="top" colspan=2>
 											<input type="checkbox" class="CheckBox" id="chkAutoplay">
 											<span fckLang="DlgFLVPlayerAutoplay">Autoplay</span>
 										</td>
 									</tr>
-									<tr>
+								<!--<tr>
 										<td valign="top" colspan=2>
 											<input type="checkbox" class="CheckBox" id="chkLoop">
 											<span fckLang="DlgFLVPlayerLoop">Loop</span>
@@ -132,14 +134,16 @@ document.write( FCKTools.GetStyleHtml( GetCommonDialogCss() ) ) ;
 											<input type="checkbox" class="CheckBox" checked id="chkDownload">
 											<span fckLang="DlgFLVPlayerDownload">Downloadable</span>
 										</td>
-									</tr>
+									</tr>-->
+									<input  type="hidden" name="chkLoop" id="chkLoop">
+									<input  type="hidden" name="chkDownload" id="chkDownload">
 									<tr>
 										<td valign="top" colspan=2>
 											<input type="checkbox" class="CheckBox" checked id="chkFullscreen">
 											<span fckLang="DlgFLVPlayerFullscreen">Allow Fullscreen</span>
 										</td>
 									</tr>
-									<tr>
+								<!--<tr>
 										<td><span fckLang="DlgFLVPlayerDispPlaylist">Display Playlist</span>&nbsp;</td>
 										<td>
 											<select name="selDispPlaylist" id="selDispPlaylist" style="width:120px;" disabled onchange="updatePlaylistOption();">
@@ -158,8 +162,10 @@ document.write( FCKTools.GetStyleHtml( GetCommonDialogCss() ) ) ;
 											<input type="checkbox" class="CheckBox" id="chkPLThumbs" disabled>
 											<span fckLang="DlgFLVPlayerPLThumbs">Display Thumbnails in Playlist</span>
 										</td>
-									</tr>
-
+									</tr>-->
+									<input type="hidden" name="selDispPlaylist" id="selDispPlaylist">
+									<input type="hidden" name="txtPLDim" id="txtPLDim">
+									<input type="hidden" name="chkPLThumbs" id="chkPLThumbs">
 								</table>
 						</fieldset>
 					</td>
@@ -176,7 +182,7 @@ document.write( FCKTools.GetStyleHtml( GetCommonDialogCss() ) ) ;
 										<td valign="top"><span fckLang="DlgFLVPlayerHeight">Movie Height (px)</span>&nbsp;</td>
 										<td valign="top"><input type="text" size="5" id="txtHeight"></td>
 									</tr>
-									<tr>
+								<!--<tr>
 										<td><span fckLang="DlgFLVPlayerBgColor">Bg Color</span>&nbsp;</td>
 										<td><input id="txtBgColor" type="text" size="8">
 										<input type="button" fckLang="DlgFLVPlayerBtnSelect" value="Select..." onclick="SelectColor1()">
@@ -211,7 +217,13 @@ document.write( FCKTools.GetStyleHtml( GetCommonDialogCss() ) ) ;
 											<input type="checkbox" class="CheckBox" checked id="chkShowDigits">
 											<span fckLang="DlgFLVPlayerShowDigits">Display Time</span>
 										</td>
-									</tr>
+									</tr>-->
+									<input type="hidden" name="txtBgColor" id="txtBgColor">
+									<input type="hidden" name="txtToolbarColor" id="txtToolbarColor">
+									<input type="hidden" name="txtToolbarTxtColor" id="txtToolbarTxtColor">
+									<input type="hidden" name="txtToolbarTxtRColor" id="txtToolbarTxtRColor">
+									<input type="hidden" name="chkShowNavigation" id="chkShowNavigation">
+									<input type="hidden" name="chkShowDigits" id="chkShowDigits">
 									<tr>
 										<td><span fckLang="DlgFLVPlayerAlign">Align</span>&nbsp;</td>
 										<td>

@@ -40,6 +40,7 @@ $langMe = "eu";
 $langSystemAnnouncements = "Avisos do sistema";
 $langHelpMaj = "Axuda";
 $langNotRegistered = "Non rexistrado";
+$langAdmin = "Administrador da plataforma";
 $Login = "Entrada";
 $langRegisterForCourse = "Rexistrarse nun curso";
 $langUnregisterForCourse = "Desinscribirse dun curso";

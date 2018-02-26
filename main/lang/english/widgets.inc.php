@@ -1,7 +1,6 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$SomeFieldsAreEmpty = "Some fields are empty";
 $ManageWidgets = "Manage widgets";
 $AddRSSAsWidget = "Add RSS feed as a widget";
 $Tools = "Tools";
@@ -77,16 +76,5 @@ $LocationSidebarRight = "Sidebar right";
 $LocationHeader = "Header";
 $LocationFooter = "Footer";
 $LocationMain = "Main area";
-$Loading = "Loading";
-$TabbedRss = "Tabbed RSS";
-$AddTabbedRss = "Add a tabbed RSS feed";
-$EditTabbedRss = "Edit tabbed RSS feed";
-$DeleteTabbedRss = "Delete a tabbed RSS feed";
-$TabbedRssTitle = "Title";
-$TabbedRssUrl = "URL";
-$TabbedRssNumberItems = "Number of items to be displayed";
-$TabbedRssStore = "Save tabbed RSS feed";
-$TabbedRSSExplanation = "This widget allows you to group several RSS feeds in one widget using tabs. Every RSS feed will be displayed in a separate tab";
-$SelectWikiPage = "Select wiki page";
-$WikiExplanation = "With this widget you can display one or more wiki pages on your training homepage. The widget will always display the latest version of the page. Using this widget you can make your training a true collaborative portal";
+$ActivateInLocation = "Activate in location";
 ?>

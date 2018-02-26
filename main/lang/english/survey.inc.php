@@ -206,7 +206,4 @@ $ThereAreNotQuestionsForthisSurvey = "There are not questions for this survey";
 $MChoice = "M.Choice";
 $Pageend = "Page break";
 $Printview = "Print view";
-$ShowFilterAttribute = "Show filter attribute";
-$HideFilterAttribute = "Hide filter attribute";
-$CourseHome = "Course Home";
 ?>

@@ -5,104 +5,169 @@
 * @author Patrick Cool
 * @package dokeos.admin
 */
-$language_file = array('courses');
+
+
 include_once('../inc/global.inc.php');
-?>
-<html>
-   <head>
-      <?php
-      if (isset($_GET['style']) AND $_GET['style']<>'') {
+if (isset($_GET['style']) AND $_GET['style']<>'')
+{
 	$style=Security::remove_XSS($_GET['style']);
+	//$htmlHeadXtra[] = '<link href="../css/'.$_GET['style'].'/default.css" rel="stylesheet" type="text/css">';
 	echo '<link href="../css/'.$style.'/default.css" rel="stylesheet" type="text/css">';
-} else {
+}
+else
+{
 	$currentstyle = api_get_setting('stylesheets');
 	echo '<link href="../css/'.$currentstyle.'/default.css" rel="stylesheet" type="text/css">';
 }
-      ?>
-      <style>
-#main{
-	margin: auto;
-	width: 900px;
-	height: 100%;
-}
-#content_with_menu{
-	float: right;
-	width: 700px;
-}
-.headerinner{
-	margin: auto;
-	overflow:hidden; /* IE needs */
-	height:50px;
-	width: 910px;
-        position:relative;
-}
-#dokeostabs{
-	float: left;
-	padding: 0;
-	margin-left: 0;
-       width: 710px;
-}
-#header2 {
-       width: 920px;
-}
-      </style>
-   </head>
-<body>
-<div id="wrapper">
-
-<div id="header">
-	<div id="header1">
-		<div class="headerinner">
-			<div id="top_corner"></div> 
-			<div id="languageselector"></div>
-			<div id="institution">
-				<a href="javascript:void(0)" target="_top"><?php echo api_get_setting('siteName'); ?></a>
-				-&nbsp;
-                                <a href="javascript:void(0)" target="_top"><?php echo api_get_setting('Institution'); ?></a>			
-                        </div>             
-	</div>
-	</div>
-
-	<div id="header2">
-		<div class="headerinner">
-			<ul id="logout">
-                           <li><span>
-                                 <a href="javascript:void(0)" target="_top"><span><?php echo get_lang('Logout'); ?>&nbsp;(admin)</span></a>
-                              </span></li>
-                        </ul>
-                        <ul id="dokeostabs">
-                           <a href="javascript:void(0)" target="_top"><li class="tab_mycampus"><div><span><?php echo get_lang('Home'); ?></span></div></li></a>
-                           <a href="javascript:void(0)" target="_top"><li id="current" class="tab_mycourses_current"><div><span><?php echo get_lang('Courses'); ?></span></div></li></a>
-                           <a href="javascript:void(0)" target="_top"><li class="tab_myagenda"><div><span><?php echo get_lang('Agenda'); ?></span></div></li></a>
-                           <a href="javascript:void(0)" target="_top"><li class="tab_session_my_space"><div><span><?php echo get_lang('Reporting'); ?></span></div></li></a>
-                           <a href="javascript:void(0)" target="_top"><li class="tab_platform_admin"><div><span><?php echo get_lang('PlatformAdmin'); ?></span></div></li></a>
-                        </ul><div style="clear: both;" class="clear"> </div>		</div>
-	</div>
-		
-	</div>
 
 
+//Display::display_header($tool_name);
+include(api_get_path(INCLUDE_PATH).'banner.inc.php');
 
- <!-- end of the whole #header section -->
-<div class="clear">&nbsp;</div>
-<div id="main"> <!-- start of #main wrapper for #content and #menu divs -->
-<!--   Begin Of script Output   -->
-	<div class="maxcontent_"><div id="content"><div id="content_with_menu"><div class="course_list_category">Default category</div>
-                 <ul class="courseslist">
-                    <li>
-                       <div class="independent_course_item" style="padding: 8px; clear:both;">
-                          <a href="javascript:void(0)"><div class="coursestatusicons"><img src="<?php echo api_get_path(WEB_IMG_PATH); ?>miscellaneous22x22.png" alt="miscellaneous22x22.png" title="miscellaneous22x22.png"></div>
-                             <strong>Training</strong></a>
-                          <br/>TRAINING - John Doe</div></li>
-                 </ul></div>
-              <div id="main_left_content">	
-                 <div style="height: 98px;" class="menu" id="menu">
-                    <h3 class="tablet_title"><?php echo get_lang('Account'); ?></h3>
-                    <a href="javascript:void(0)"><img src="<?php echo api_get_path(WEB_IMG_PATH); ?>pixel.gif" alt="Create a course" title="Create a course" class="homepage_button homepage_create_course" align="absmiddle"><?php echo get_lang('CourseCreate'); ?></a><br><a href="javascript:void(0);"><img src="<?php echo api_get_path(WEB_IMG_PATH); ?>pixel.gif" alt="Sort courses" title="Sort courses" class="homepage_button homepage_catalogue" align="absmiddle"><?php echo get_lang('SortMyCourses'); ?></a></div></div><div class="clear"></div></div> <div class="clear">&nbsp;</div> <!-- 'clearing' div to make sure that footer stays below the main and right column sections -->
-</div> <!-- end of #main" started at the end of banner.inc.php -->
-</div>
-<div class="push"></div>
-</div> <!-- end of #wrapper section -->
-
-</body>
-</html>
+?>
+<!-- start of #main wrapper for #content and #menu divs -->
+  <!--   Begin Of script Output   -->
+  <div class="maincontent">
+    <h3>tool title</h3>
+    <div id="courseintro">
+      <p>This is the introduction text.
+    </div>
+    <div id="courseintro_icons">
+    <a href="#"><?php Display::display_icon('edit.png', get_lang('Edit')); ?></a><a href="#"><?php Display::display_icon('delete.png', get_lang('Delete')); ?></a></div>
+    <div class="normal-message"> Normal Message </div>
+    <div class="error-message"> Error Message </div>
+    <table width="750">
+      <tr>
+        <td>
+        <table>
+            <tr>
+              <td width="220">
+              <table id="smallcalendar">
+                  <tr id="title">
+                    <td width="10%"><a href="#"><<</a></td>
+                    <td width="80%" colspan="5" align="center"> 2006</td>
+                    <td width="10%"><a href="#">>></a></td>
+                  </tr>
+                  <tr>
+                    <td class="weekdays">Mon</td>
+                    <td class="weekdays">Tue</td>
+                    <td class="weekdays">Wed</td>
+                    <td class="weekdays">Thu</td>
+                    <td class="weekdays">Fri</td>
+                    <td class="weekdays">Sat</td>
+                    <td class="weekdays">Sun</td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="days_weekend">1</td>
+                  </tr>
+                  <tr>
+                    <td class="days_week">2</td>
+                    <td class="days_week">3</td>
+                    <td class="days_week">4</td>
+                    <td class="days_week">5</td>
+                    <td class="days_week">6</td>
+                    <td class="days_weekend">7</td>
+                    <td class="days_weekend">8</td>
+                  </tr>
+                  <tr>
+                    <td class="days_week">9</td>
+                    <td class="days_week">10</td>
+                    <td class="days_week">11</td>
+                    <td class="days_week">12</td>
+                    <td class="days_week">13</td>
+                    <td class="days_weekend">14</td>
+                    <td class="days_weekend">15</td>
+                  </tr>
+                  <tr>
+                    <td class="days_week">16</td>
+                    <td class="days_week">17</td>
+                    <td class="days_week">18</td>
+                    <td class="days_week">19</td>
+                    <td class="days_week">20</td>
+                    <td class="days_weekend">21</td>
+                    <td class="days_weekend">22</td>
+                  </tr>
+                  <tr>
+                    <td class="days_week">23</td>
+                    <td class="days_today">24</td>
+                    <td class="days_week">25</td>
+                    <td class="days_week">26</td>
+                    <td class="days_week">27</td>
+                    <td class="days_weekend">28</td>
+                    <td class="days_weekend">29</td>
+                  </tr>
+                  <tr>
+                    <td class="days_week">30</td>
+                    <td class="days_week">31</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td width="500">
+          <table width="100%">
+            <tr>
+              <td></td>
+              <td align="right"></td>
+            </tr>
+          </table>
+          <table class="data_table" width="100%">
+            <tr>
+              <th style="width:100px"><a href="#">Firstname</a>&nbsp;&#8595; </th>
+              <th style="width:100px"><a href="#">Lastname</a></th>
+            </tr>
+            <tr class="row_even">
+              <td >Firstname</td>
+              <td >Lastname</td>
+            </tr>
+            <tr class="row_odd">
+              <td >Julio</td>
+              <td >Montoya</td>
+            </tr>
+            <tr class="row_even">
+              <td >Patrick</td>
+              <td >Cool</td>
+            </tr>
+          </table>
+          <table width="100%">
+            <tr>
+              <td></td>
+              <td align="right"></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="menu" style="width:200px">
+    <form action="#" method="post" id="loginform" name="loginform"></br>
+      <label>Username</label></br>
+      <input type="text" name="login" id="login" size="15" value="" /></br>
+      <label>Password</label></br>
+      <input type="password" name="password" id="password" size="15" /></br>
+  	  <button class="login" type="submit" name="submitAuth"disabled="disabled" >Enter</button>
+    </form>
+    <div class="menusection"><span class="menusectioncaption">User</span>
+      <ul class="menulist">
+        <li><a href="#">Course Management</a></li>
+        <li><a href="#">Create Course</a></li>
+      </ul>
+    </div>
+    <div class="note"><b>Example notice</b><br />
+      To modify this notice, go to the administration area of the portal.</div>
+  </div>
+<?php
+Display::display_footer();
+?>

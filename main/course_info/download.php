@@ -52,7 +52,7 @@ $content_type = '';
 if (in_array(strtolower($extension), array('xml','csv')) && api_is_platform_admin(true)) {
 	$content_type = 'application/force-download';
 }
-elseif (strtolower($extension) == 'zip' && $_cid && ($is_courseAdmin || api_is_platform_admin())) {
+elseif (strtolower($extension) == 'zip' && $_cid && $is_courseAdmin) {
 	$content_type = 'application/force-download';
 }
 

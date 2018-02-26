@@ -148,9 +148,9 @@ if (Database::num_rows($result_coachs) > 0) {
 		$i++;
 
 		if (api_is_western_name_order()) {
-			echo '<tr class="'.$css_class.'"><td>'.$firstname.'</td><td>'.$lastname.'</td><td>'.$s_connection_time.'</td><td><a href="course.php?type=coach&user_id='.$id_coach.'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a></td><td><a href="student.php?type=coach&user_id='.$id_coach.'">'.Display::return_icon('pixel.gif','',array('class'=>'toolactionplaceholdericon actionstatisticsdetails')).'</a></td></tr>';
+			echo '<tr class="'.$css_class.'"><td>'.$firstname.'</td><td>'.$lastname.'</td><td>'.$s_connection_time.'</td><td><a href="course.php?type=coach&user_id='.$id_coach.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a></td><td><a href="student.php?type=coach&user_id='.$id_coach.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a></td></tr>';
 		} else {
-			echo '<tr class="'.$css_class.'"><td>'.$lastname.'</td><td>'.$firstname.'</td><td>'.$s_connection_time.'</td><td><a href="course.php?type=coach&user_id='.$id_coach.'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a></td><td><a href="student.php?type=coach&user_id='.$id_coach.'">'.Display::return_icon('pixel.gif','',array('class'=>'toolactionplaceholdericon actionstatisticsdetails')).'</a></td></tr>';
+			echo '<tr class="'.$css_class.'"><td>'.$lastname.'</td><td>'.$firstname.'</td><td>'.$s_connection_time.'</td><td><a href="course.php?type=coach&user_id='.$id_coach.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a></td><td><a href="student.php?type=coach&user_id='.$id_coach.'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a></td></tr>';
 		}
 
 		if (api_is_western_name_order(PERSON_NAME_DATA_EXPORT)) {

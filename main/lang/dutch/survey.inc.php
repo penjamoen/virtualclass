@@ -206,7 +206,4 @@ $ThereAreNotQuestionsForthisSurvey = "Er zijn geen vragen aan deze enquête verbo
 $MChoice = "Meerkeuze";
 $Pageend = "Pagina onderbreking";
 $Printview = "Print afbeelding";
-$ShowFilterAttribute = "Toon filterattributen";
-$HideFilterAttribute = "Verberg filterattributen";
-$CourseHome = "Cursus startpagina";
 ?>

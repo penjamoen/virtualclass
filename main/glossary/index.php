@@ -23,22 +23,40 @@ api_protect_course_script(true);
 require_once (api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php');
 
 // additional javascript
-//$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
+$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
 $htmlHeadXtra[] = javascript_glossary();
-if (isset($_GET['action']) && $_GET['action'] != 'import') {
 $htmlHeadXtra[] = '<script>
   $(document).ready(function (){
     $("div.label").attr("style","width: 100%;text-align:left");
-    $("div.row").attr("style","width: 100%;text-align:left");
-    $("div.formw").attr("style","width: 100%;text-align:left");
+    $("div.row").attr("style","width: 100%;;text-align:left");
+    $("div.formw").attr("style","width: 100%;;text-align:left");
   });
 </script>';
+// setting the tool constants
+$tool = TOOL_GLOSSARY;
+
+// tracking
+event_access_tool(TOOL_GLOSSARY);
+
+// displaying the header
+
+if (isset($_GET['action']) && ($_GET['action'] == 'addglossary' || $_GET['action'] == 'edit_glossary')) {
+	$tool='GlossaryManagement';
+	$interbreadcrumb[] = array ("url"=>"index.php", "name"=> get_lang('Glossary'));
 }
+
+Display::display_tool_header(get_lang(ucfirst($tool)));
+
+// Tool introduction
+Display::display_introduction_section(TOOL_GLOSSARY);
+
 // This code must be replaced by JQUERY
-$htmlHeadXtra[] ='<script type="text/javascript">
-function showGlossary(str,start) {	
-	if (str=="") {
-	    return;
+echo '<script type="text/javascript">
+function showGlossary(str,start)
+{	
+	if (str=="")
+	  {
+	  return;
 	  }
 	if (window.XMLHttpRequest)
 	  {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -61,105 +79,27 @@ function showGlossary(str,start) {
 	xmlhttp.send();
 }
 	
-function showDefintion(name) {	
-        $.ajax({
-          url: "showglossary.php?action=showterm&q="+name,
-          context: document.body,
-          success: function(data){
-            $("#whiteboard").html(data);
-          }
-        });
+function showDefintion(name)
+{	
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+	xmlhttp.onreadystatechange=function()
+	  {
+	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+	    {
+		 document.getElementById("whiteboard").innerHTML=xmlhttp.responseText;
+	    }
+	  }
+	xmlhttp.open("GET","showglossary.php?action=showterm&q="+name,true);
+	xmlhttp.send();
 }
 </script>';
-
-// Display the glossary main page
-if (!isset($_GET['action'])) {
-    $htmlHeadXtra[] ="<script type=\"text/javascript\">
-        $(document).ready(function() {
-            showGlossary('A - Z','0');
-        });
-    </script>";
-}
-
-// setting the tool constants
-$tool = TOOL_GLOSSARY;
-
-// tracking
-event_access_tool(TOOL_GLOSSARY);
-
-// displaying the header
-
-if (isset($_GET['action']) && ($_GET['action'] == 'addglossary' || $_GET['action'] == 'edit_glossary')) {
-	$tool='GlossaryManagement';
-	$interbreadcrumb[] = array ("url"=>"index.php", "name"=> get_lang('Glossary'));
-}
-// Editor config
-$editor_config = array('ToolbarSet' => 'Glossary', 'Width' => '100%', 'Height' => '250');
-
-// Add form
-if ($_GET['action'] == 'addnew') {
-$add_form = new FormValidator('glossary','post', api_get_self().'?'.api_get_cidreq().'&action='.Security::remove_XSS($_GET['action']));
-$add_form->addElement('text', 'glossary_title', get_lang('TermName'), array('size'=>'30','class'=>'focus'));	
-$add_form->addElement('html_editor', 'glossary_comment', get_lang('Definition'), 'style="vertical-align:middle"', $editor_config);
-$add_form->addElement('style_submit_button', 'SubmitGlossary', get_lang('Validate'), 'class="save"');
-$add_form->addRule('glossary_title', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');	
-    // The validation or display
-    if ($add_form->validate()) {
-        $check = Security::check_token('post');	
-        if ($check) {
-                $values = $add_form->exportValues();
-                $saved = save_glossary($values);		   		
-        }
-        Security::clear_token();
-        header('Location:index.php?'.api_get_cidReq());
-        exit;
-    } else {
-        $token = Security::get_token();
-        $add_form->addElement('hidden','sec_token');
-        $add_form->setConstants(array('sec_token' => $token));	
-        $defaults['glossary_comment'] = ' ';
-        $add_form->setDefaults($defaults);
-    }
-}  else if ($_GET['action'] == 'editterm') { // Edit form
-        $edit_form = new FormValidator('glossary','post', api_get_self().'?'.api_get_cidreq().'&action='.Security::remove_XSS($_GET['action']).'&glossary_id='.Security::remove_XSS($_GET['glossary_id']));
-        $edit_form->addElement('hidden', 'glossary_id');
-        $edit_form->addElement('text', 'glossary_title', get_lang('TermName'),array('size'=>'30'));
-        $edit_form->addElement('html_editor', 'glossary_comment', get_lang('Definition'), 'style="vertical-align:middle"', $editor_config);
-        $edit_form->addElement('style_submit_button', 'SubmitGlossary', get_lang('SaveDefinition'), 'class="save"');
-
-        // setting the defaults
-        $defaults = get_glossary_information(Security::remove_XSS($_GET['glossary_id']));
-        $edit_form->setDefaults($defaults);
-
-        // setting the rules
-        $edit_form->addRule('glossary_title', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');	
-
-        // The validation or display
-        if ($edit_form->validate()) {
-                $check = Security::check_token('post');	
-                if ($check) {
-                        $values = $edit_form->exportValues();
-                        update_glossary($values);		   		
-                }
-                Security::clear_token();
-                header('Location:index.php?'.api_get_cidReq());
-                exit;
-        } else {
-                $token = Security::get_token();
-                $edit_form->addElement('hidden','sec_token');
-                $edit_form->setConstants(array('sec_token' => $token));		
-        }
-} else if(isset($_GET['action']) && $_GET['action'] == 'delete_glossary') { //To delete glossary
-	delete_glossary(Security::remove_XSS($_GET['glossary_id']));
-        header('Location:index.php?'.api_get_cidReq());
-        exit;
-}
-
-
-Display::display_tool_header(get_lang(ucfirst($tool)));
-// Tool introduction
-Display::display_introduction_section(TOOL_GLOSSARY);
-
 
 /*
  * ====================
@@ -168,14 +108,13 @@ Display::display_introduction_section(TOOL_GLOSSARY);
  */
 echo '<div class="actions">';
 
-if (api_is_allowed_to_edit(null,true)) {
-    if (isset($_GET['action'])) {
-        echo '<a href="'.api_get_self().'?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('Back'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('Back').'</a>';
-    }  
-    echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=addnew">'.Display::return_icon('pixel.gif', get_lang('NewTerm'), array('class' => 'toolactionplaceholdericon toolglossaryadd')) .'&nbsp;&nbsp;'.get_lang('NewTerm').'</a>';
-    echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=import">'.Display::return_icon('pixel.gif',get_lang('ImportGlossaryTerms'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')).' '.get_lang('ImportGlossaryTerms').'</a>';        
-} else {
-    echo get_lang('Glossary');
+if (api_is_allowed_to_edit(null,true))
+{
+	echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=addnew">'.Display::return_icon('glossary_add_32.png',get_lang('New Term'),array('style'=>'vertical-align:middle;')).'&nbsp;&nbsp;'.get_lang('NewTerm').'</a>';
+}
+else
+{
+	echo 'Glossary';
 }
 echo '</div>';
 
@@ -186,134 +125,95 @@ echo '</div>';
  * ====================
  */
  echo '<div id="content" class="rel">';
-// Glossary 
-echo '<div id="wrapper_glossary_content">';
-if (!isset($_GET['action'])) {
-    // Glossary list
-    echo '<div id="glossarylist">&nbsp;</div>';
-}
-if(isset($_GET['action']) && ($_GET['action'] == 'addnew' || $_GET['action'] == 'editterm')) {
-    // Wrapper for add edit form + image map
-    echo '<div id="wrapper_glossary_form">';
-    //To show Add and Edit Definition form
-    echo '<div id="glossary_form">';
-    if($_GET['action'] == 'addnew') {
-        api_display_tool_title(get_lang('AddDefinition'));
-        $add_form->display();
-    } elseif($_GET['action'] == 'editterm') {
-        api_display_tool_title(get_lang('TermEdit'));
-        $edit_form->display();
-    }
-    // Close add/edit form
-    echo '</div>';
- 
-    // Add image map
-    echo '<div id="glossary_image_map">';
-    echo '<a href="index.php?'.api_get_cidReq().'"><img class="abs" src="../img/imagemap90.png" style="margin:30px 30px 0 0; right:0; top:0;"></a>';
-    
-    // Close "image map"
-    echo '</div>';
 
-   // Close glossary wrapper form
-    echo '</div>';
- 
-} else if (isset($_GET['action']) && $_GET['action'] == 'import') {
-    $form = new FormValidator('glossary_import','post', api_get_self().'?'.api_get_cidreq().'&action='.Security::remove_XSS($_GET['action']));    
-    $form->addElement('file', 'file_import', get_lang('UploadFileToImport').' (xls, csv)');
-    $allowed_ext_types = array ('xls', 'csv');
-    $form->addRule('file_import', get_lang('ExtensionNotAllowed'), 'filetype', $allowed_ext_types);
-    $form->addRule('file_import', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');
-    $form->addElement('style_submit_button', 'ImportGlossary', get_lang('Import'), 'class="save" style="margin-right:400px;"');
-    
-    // The validation or display
-    if ($form->validate()) {
-            $check = Security::check_token('post');	
-            if ($check) {                
-                  require_once api_get_path(LIBRARY_PATH) . 'excelreader/reader.php';                
-                  $import_data = array();
-                  // Get the extension of the document.
-                  $path_info = pathinfo($_FILES['file_import']['name']);
-                  $excel_type = $path_info['extension'];
-    
-                  // Check if the document is an Excel document
-                  if ($excel_type != 'xls' && $excel_type != 'csv') { return; }
-                  
-                  switch ($excel_type) {                      
-                      case 'xls':
-                          // Read the Excel document
-                          $data = new Spreadsheet_Excel_Reader();
-                          // Set output Encoding.
-                          $data->setOutputEncoding($charset);
-                          // Reading the xls document.
-                          $data->read($_FILES['file_import']['tmp_name']);                  
-                          for ($i = 1; $i <= $data->sheets[0]['numRows']; $i++) {  
-                             for ($x = 1; $x <= $data->sheets[0]['numCols']; $x++) {
-                                 if (preg_match('/^[A-Za-z]$/', trim($data->sheets[0]['cells'][$i][$x]))) {
-                                    break;                            
-                                 }
-                                 // get name
-                                 if ($x == 1) {                                     
-                                     if (empty($data->sheets[0]['cells'][$i][$x])) { break; }                                     
-                                     $import_data[$i]['glossary_title'] = isset($data->sheets[0]['cells'][$i][$x])?api_convert_encoding($data->sheets[0]['cells'][$i][$x], $charset, 'UTF-8'):'';
-                                 }
-                                 // get description
-                                 if ($x == 2) {
-                                     $import_data[$i]['glossary_comment'] = isset($data->sheets[0]['cells'][$i][$x])?api_convert_encoding($data->sheets[0]['cells'][$i][$x], $charset, 'UTF-8'):'';
-                                 }
-                             }
-                          }
-                          $count = 0;
-                          if (!empty($import_data)) {                      
-                            foreach ($import_data as $values) {
-                                $saved = save_glossary($values);
-                                if ($saved) {
-                                    $count++;
-                                }                                
-                            }
-                          }
-                          echo '<div class="confirmation-message">'.get_lang('Imported').' '.intval($count).' '.get_lang('GlossaryTerms').'</div>';
-                          break;
-                     case 'csv':
-                            $result = array ();
-                            $handle = fopen($_FILES['file_import']['tmp_name'], "r");
-                            if($handle === false) { return $result; }		
-                            $keys = fgetcsv($handle, 4096, ";");
-                            $count = 0;
-                            while (($row_tmp = fgetcsv($handle, 4096, ";")) !== FALSE) {   
-                                if (preg_match('/^[A-Za-z]$/', trim($row_tmp[0])) || empty($row_tmp[0])) {
-                                    continue;
-                                }
-                                $values = array ();
-                                $values['glossary_title'] = api_convert_encoding($row_tmp[0], $charset, 'UTF-8');
-                                $values['glossary_comment'] = api_convert_encoding($row_tmp[1], $charset, 'UTF-8');
-                                $saved = save_glossary($values);
-                                if ($saved) {
-                                    $count++;    
-                                }
-                            }
-                            fclose($handle);
-                            echo '<div class="confirmation-message">'.get_lang('Imported').' '.intval($count).' '.get_lang('GlossaryTerms').'</div>';
-                         break;
-                  }
-            }
-            Security::clear_token();
-    } else {
-            $token = Security::get_token();
-            $form->addElement('hidden','sec_token');
-            $form->setConstants(array('sec_token' => $token));	       
-            api_display_tool_title(get_lang('ImportGlossaryTerms'));
-            $form->display();            
-    }
-} else {
+echo '<table align="left" cellpadding="0" width="100%"><tr><td colspan="2"><div class="div_glossary" style="width:100%;">';
+echo '<tr><td valign="top"><div class="div_glossary" style="height:400px;width:90%;"><div id="glossarylist"></div></div></td>';
+
+$editor_config = array('ToolbarSet' => 'Glossary', 'Width' => '100%', 'Height' => '250');
+
+if(isset($_GET['action']) && ($_GET['action'] == 'addnew' || $_GET['action'] == 'editterm'))
+{
+	//To show Add and Edit Definition form
+	echo '<td><div class="div_glossary" ><div id="whiteboard"><table align="left" cellpadding="5" width="100%"><tr>';
+
+	echo '<td width="100%"><div class="div_glossary" style="width:96%;height:420px;border:0px;"><table align="left" width="100%"><tr><td width="80%" valign="top" align="left"><table width="100%"><tr><td width="96%" align="left"><div style="width:96%" >';
+	if($_GET['action'] == 'addnew')
+	{
+	echo '<h3 class="orange">'.get_lang('AddDefinition').'</h3></div></td></tr><tr><td>';
+	$form = new FormValidator('glossary','post', api_get_self().'?'.api_get_cidreq().'&action='.Security::remove_XSS($_GET['action']));
+	$form->addElement('text', 'glossary_title', get_lang('TermName'), array('size'=>'30','class'=>'focus'));
+//	$form->addElement('textarea', 'glossary_comment', get_lang('Definition'), array('rows'=>'10','cols'=>'60'));		
+	$form->addElement('html_editor', 'glossary_comment', get_lang('Definition'), 'style="vertical-align:middle"', $editor_config);
+	$form->addElement('style_submit_button', 'SubmitGlossary', get_lang('Validate'), 'class="save"');
+	$form->addRule('glossary_title', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');	
+		// The validation or display
+		if ($form->validate()) {
+			$check = Security::check_token('post');	
+			if ($check) {
+		   		$values = $form->exportValues();
+		   		save_glossary($values);		   		
+			}
+			Security::clear_token();			
+			echo '<script>window.location.href="index.php?'.api_get_cidReq().'"</script>';
+		} else {
+			$token = Security::get_token();
+			$form->addElement('hidden','sec_token');
+			$form->setConstants(array('sec_token' => $token));	
+			$defaults['glossary_comment'] = ' ';
+			$form->setDefaults($defaults);
+			$form->display();
+		}
+	}
+	elseif($_GET['action'] == 'editterm')
+	{
+		echo '<h3 class="orange">'.get_lang('TermEdit').'</h3></div></td></tr><tr><td>';
+		$form = new FormValidator('glossary','post', api_get_self().'?'.api_get_cidreq().'&action='.Security::remove_XSS($_GET['action']).'&glossary_id='.Security::remove_XSS($_GET['glossary_id']));
+		$form->addElement('hidden', 'glossary_id');
+		$form->addElement('text', 'glossary_title', get_lang('TermName'),array('size'=>'30'));
+	//	$form->addElement('textarea', 'glossary_comment', get_lang('Definition'), array('rows'=>'10','cols'=>'60'));	
+		$form->addElement('html_editor', 'glossary_comment', get_lang('Definition'), 'style="vertical-align:middle"', $editor_config);
+		$form->addElement('style_submit_button', 'SubmitGlossary', get_lang('SaveDefinition'), 'class="save"');
+		
+		// setting the defaults
+		$defaults = get_glossary_information(Security::remove_XSS($_GET['glossary_id']));
+		$form->setDefaults($defaults);
+		
+		// setting the rules
+		$form->addRule('glossary_title', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');	
+		
+		// The validation or display
+		if ($form->validate()) {
+			$check = Security::check_token('post');	
+			if ($check) {
+		   		$values = $form->exportValues();
+		   		update_glossary($values);		   		
+			}
+			Security::clear_token();
+			echo '<script>window.location.href="index.php?'.api_get_cidReq().'"</script>';
+		} else {
+			$token = Security::get_token();
+			$form->addElement('hidden','sec_token');
+			$form->setConstants(array('sec_token' => $token));		
+			$form->display();
+		}
+	}
+	echo '</td></tr></table></td>';
+	echo '<td valign="top" width="30%">';	
+	echo '</td></tr>';	
+	echo '</table></td></tr></table></div></td></tr></table>';
+	echo '<a href="index.php?'.api_get_cidReq().'"><img class="abs" src="../img/imagemap90.png" style="margin:30px 30px 0 0; right:0; top:0;"></a>';
+}
+elseif(isset($_GET['action']) && $_GET['action'] == 'delete_glossary')
+{
+	//To delete glossary
+	delete_glossary(Security::remove_XSS($_GET['glossary_id']));
+	echo '<script>window.location.href="index.php?'.api_get_cidReq().'"</script>';	
+}
+else
+{
 	//To show the list of glossary and the whiteboard to choose the Definition.	
-	echo '<div id="whiteboard">
-            <table width="100%">
-            <tr>
-            <td width="70%" valign="top" align="center"  style="background: url(../img/whiteboard.png) no-repeat 100px 5px;">
-            <table cellspacing="5" cellpadding="5" width="50%">
-            <tr>
-            <td>&nbsp;</td>
-            </tr>';
+
+	echo '<td width="70%"><div align="center"><div class="div_glossary" style="width:96%;height:400px;"><div id="whiteboard"><table width="100%"><tr><td width="70%" valign="top" align="center"  style="background: url(../img/whiteboard.png) no-repeat 100px 5px;"><table cellspacing="5" cellpadding="5" width="50%"><tr><td>&nbsp;</td></tr>';
 	for($i=1;$i<=26;$i++)
 	{
 		if($i == 1 || $i == 6 || $i == 11 || $i == 15 || $i == 19 || $i == 23)
@@ -330,21 +230,24 @@ if(isset($_GET['action']) && ($_GET['action'] == 'addnew' || $_GET['action'] == 
 			echo '</tr>';		
 		}	
 	}
-	echo '<tr>
-            <td>&nbsp;</td>
-            </tr>
-            </table>
-            </td>
-            </tr>
-            </table>
-            </div>';
+	echo '<tr><td>&nbsp;</td></tr></table></td></tr></table></div></div></div></td>';
 }
-echo '<div id="glossary_image"><img class="abs" src="../img/instructor_analysis.png" style="margin:0 0px 50px 0; right:0; bottom:0;"></div>';
-?>
-</div><!--close glossary wrapper>
-<?php
+
+echo '</tr></table>';
+
+echo '<img class="abs" src="../img/instructor_analysis.png" style="margin:0 0px 50px 0; right:0; bottom:0;">';
+
 // ending div#content
 echo '</div>';
+
+//execute showGlossary('A - Z','0');
+if(!isset($_GET['action'])){
+    echo '<script type="text/javascript">';
+    echo 'showGlossary(\'A - Z\',\'0\');';
+    echo '</script>';
+}
+
+
 
 // bottom actions bar
 echo '<div class="actions">';
@@ -353,7 +256,6 @@ echo '</div>';
 // footer
 Display::display_footer();
 
-// These functions must be moved to /main/inc/lib and create a class called GlossaryManager
 /*
  * ==========================================
  * end of html document - only php functions after there
@@ -384,8 +286,7 @@ function save_glossary($values)
 	if (glossary_exists($values['glossary_title']))
 	{
 		// display the feedback message
-		//Display::display_error_message('GlossaryTermAlreadyExistsYouShouldEditIt');
-                return false;
+		Display::display_error_message('GlossaryTermAlreadyExistsYouShouldEditIt');
 	} else {
 		$sql = "INSERT INTO $t_glossary (name, description, display_order, session_id)
 				VALUES(
@@ -401,9 +302,9 @@ function save_glossary($values)
 			api_item_property_update(api_get_course_info(), TOOL_GLOSSARY, $id, 'GlossaryAdded', api_get_user_id());
 		}
 		$_SESSION['max_glossary_display'] = get_max_glossary_item();
-                return $id;
+		// display the feedback message
+		//Display::display_confirmation_message(get_lang('TermAdded'));
 	}
-        return false;
 }
 
 /**
@@ -755,7 +656,7 @@ function javascript_glossary()
 	return "<script type=\"text/javascript\">
 			function confirmation (name)
 			{
-				if (confirm(\" ". get_lang("TermConfirmDelete") ." : \"+ name + \" ?\"))
+				if (confirm(\" ". get_lang("TermConfirmDelete") ." \"+ name + \" ?\"))
 					{return true;}
 				else
 					{return false;}

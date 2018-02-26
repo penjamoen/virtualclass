@@ -115,7 +115,7 @@ $OptionalParameters = "Optional parameters";
 $FailedConectionDatabase = "The database connection has failed. This is generally due to the wrong user, the wrong password or the wrong database prefix being set above. Please review these settings and try again.";
 $EncryptMethodUserPass = "Encryption method";
 $UpgradeFromDokeos16x = "Upgrade from Dokeos 1.6.x";
-$UpgradeFromDokeos18x = "Upgrade 1.8.x portal";
+$UpgradeFromDokeos18x = "Upgrade from Dokeos 1.8.x";
 $InstallationStep1Help = "Dokeos installation step 1: installation language";
 $InstallationStep2Help = "Dokeos installation step 2: requirements";
 $InstallationStep3Help = "Dokeos installation step 3: licence";
@@ -127,5 +127,4 @@ $Up2DateManualDokeosCom = "Read a more up to date installation manual on http://
 $MysqlConnectionOk = "Mysql connection is ok";
 $ApplySettingsToGroups = "Default";
 $IfStillTypingPleaseContinue = "If still is typing please continue";
-$UpgradeFromDokeos20x = "Upgrade 2.x portal";
 ?>

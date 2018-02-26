@@ -89,8 +89,4 @@ $GroupsFromClasses = "Csoportok osztályokból";
 $GroupsFromClassesInfo = "Az opció használatával csoportokat hozhat létre a kurzusára feliratkozott osztályok felhasználásával.";
 $Group = "Csoport";
 $ForumOfGroup = "Csoport fóruma:";
-$BackToGroupList = "Vissza a csoport listához";
-$DeleteGroup = "Csoport(ok) törlése";
-$PublicPrivateGroup = "Csoport";
-$JoinGroup = "Csatlakozás a csoporthoz";
 ?>

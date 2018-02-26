@@ -220,7 +220,7 @@ else
 		if(!empty($parent_id)) echo $link;
 		echo '</a>';
 	}
-	echo '<a href="'.api_get_self().'?category='.Security::remove_XSS($category).'&amp;action=add">'.Display::return_icon('pixel.gif',get_lang('AddACategory'), array('class' => 'toolactionplaceholdericon toolactioncreatefolder')).get_lang("AddACategory");
+	echo '<a href="'.api_get_self().'?category='.Security::remove_XSS($category).'&amp;action=add">'.Display::return_icon('folder_new1.png').get_lang("AddACategory");
 	if(!empty($category)) echo ' '.get_lang('Into').' '.Security::remove_XSS($category);
 	echo '</a>';
 	echo '</div>';
@@ -233,10 +233,10 @@ else
 		{
 		?>
 		  <div>
-			<a href="<?php echo api_get_self(); ?>?category=<?php echo Security::remove_XSS($enreg['code']); ?>"><?php Display::display_icon('pixel.gif', get_lang('OpenNode'),array('class'=>'actionplaceholdericon actionnewfolder')); ?></a>
-			<a href="<?php echo api_get_self(); ?>?category=<?php echo Security::remove_XSS($category); ?>&amp;action=edit&amp;id=<?php echo Security::remove_XSS($enreg['code']); ?>"><?php echo Display::return_icon('pixel.gif', get_lang('EditNode'), array('class' => 'actionplaceholdericon actionedit')); ?></a>
-			<a href="<?php echo api_get_self(); ?>?category=<?php echo Security::remove_XSS($category); ?>&amp;action=delete&amp;id=<?php echo Security::remove_XSS($enreg['code']); ?>" onclick="javascript:if(!confirm('<?php echo addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset)); ?>')) return false;"><?php echo Display::return_icon('pixel.gif', get_lang('DeleteNode'), array('class' => 'actionplaceholdericon actiondelete'));?></a>
-			<a href="<?php echo api_get_self(); ?>?category=<?php echo Security::remove_XSS($category); ?>&amp;action=moveUp&amp;id=<?php echo Security::remove_XSS($enreg['code']); ?>&amp;tree_pos=<?php echo $enreg['tree_pos']; ?>"><?php echo Display::return_icon('pixel.gif', get_lang('UpInSameLevel'), array('class' => 'actionplaceholdericon actionup'));?></a>
+			<a href="<?php echo api_get_self(); ?>?category=<?php echo Security::remove_XSS($enreg['code']); ?>"><?php Display::display_icon('folder_new_22.png', get_lang('OpenNode')); ?></a>
+			<a href="<?php echo api_get_self(); ?>?category=<?php echo Security::remove_XSS($category); ?>&amp;action=edit&amp;id=<?php echo Security::remove_XSS($enreg['code']); ?>"><?php Display::display_icon('edit.png', get_lang('EditNode')); ?></a>
+			<a href="<?php echo api_get_self(); ?>?category=<?php echo Security::remove_XSS($category); ?>&amp;action=delete&amp;id=<?php echo Security::remove_XSS($enreg['code']); ?>" onclick="javascript:if(!confirm('<?php echo addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset)); ?>')) return false;"><?php Display::display_icon('delete.png', get_lang('DeleteNode'));?></a>
+			<a href="<?php echo api_get_self(); ?>?category=<?php echo Security::remove_XSS($category); ?>&amp;action=moveUp&amp;id=<?php echo Security::remove_XSS($enreg['code']); ?>&amp;tree_pos=<?php echo $enreg['tree_pos']; ?>"><?php Display::display_icon('up.gif', get_lang('UpInSameLevel'));?></a>
 			<?php echo $enreg['name']; ?>
 			(<?php echo $enreg['children_count']. ' '.get_lang('langCategories'); ?> - <?php echo $enreg['nbr_courses']; ?> <?php echo get_lang("Courses"); ?>)
 		  </div>

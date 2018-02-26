@@ -1,8 +1,43 @@
 <?php  // $Id: document.php 16494 2008-10-10 22:07:36Z yannoo $
 
-/* For licensing terms, see /dokeos_license.txt */
+/*
+==============================================================================
+	Dokeos - elearning and course management software
+
+	Copyright (c) 2004-2008 Dokeos SPRL
+	Copyright (c) 2003 Ghent University (UGent)
+	Copyright (c) 2001 Universite catholique de Louvain (UCL)
+	Copyright (c) various contributors
+
+	For a full list of contributors, see "credits.txt".
+	The full license can be read in "license.txt".
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	See the GNU General Public License for more details.
+
+	Contact address: Dokeos, rue du Corbeau, 108, B-1030 Brussels, Belgium
+	Mail: info@dokeos.com
+==============================================================================
+*/
 
 /**
+*	These files are a complete rework of the forum. The database structure is
+*	based on phpBB but all the code is rewritten. A lot of new functionalities
+*	are added:
+* 	- forum categories and forums can be sorted up or down, locked or made invisible
+*	- consistent and integrated forum administration
+* 	- forum options: 	are students allowed to edit their post?
+* 						moderation of posts (approval)
+* 						reply only forums (students cannot create new threads)
+* 						multiple forums per group
+*	- sticky messages
+* 	- new view option: nested view
+* 	- quoting a message
+*
 *	@Author Patrick Cool <patrick.cool@UGent.be>, Ghent University
 *	@Copyright Ghent University
 *	@Copyright Patrick Cool
@@ -11,7 +46,10 @@
 */
 
 // name of the language file that needs to be included
-$language_file = array ( 'forum', 'group');
+$language_file = array (
+	'forum',
+	'group'
+);
 
 // including the global dokeos file
 require ('../inc/global.inc.php');
@@ -78,9 +116,12 @@ if ($origin=='learnpath') {
 echo '<div class="actions">';
 	// TODO set link to
 	$url = 'index.php?curdirpath='.Security::remove_XSS($_GET['dir']);
-	echo '<a href="'.$url.'">'.Display::return_icon('pixel.gif', get_lang('Groups'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('Forum').'</a>';
+	echo '<a href="'.$url.'">'.Display::return_icon('go_previous_32.png', get_lang('Forum')).get_lang('Forum').'</a>';
 
 echo '</div>';
+
+// Display the tool title
+// api_display_tool_title($nameTools);
 
 // Tool introduction
 Display::display_introduction_section(TOOL_FORUM);
@@ -102,4 +143,6 @@ echo '<div class="actions">';
 echo '</div>';
 
 // footer
-Display :: display_footer();
+if ($origin!='learnpath') {
+	Display :: display_footer();
+}

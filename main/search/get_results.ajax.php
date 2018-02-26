@@ -2,47 +2,38 @@
 require_once('../inc/global.inc.php');
 
 require_once(api_get_path(LIBRARY_PATH).'search/DokeosQuery.php');
-require_once api_get_path(LIBRARY_PATH).'course.lib.php';
 
-$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.js"></script>'; 
-$htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.css" type="text/css" media="screen" />';
+echo '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.js"></script>';
+echo '<link rel="stylesheet" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.css" type="text/css" media="screen" />';
 
-// Get resource only of trainings where user is registered
-$course_id_list = CourseManager::get_course_id_list_by_user_id(api_get_user_id());
-$training_list_query = array();
-foreach ($course_id_list as $course_code) {
-	$training_list_query[] = dokeos_get_boolean_query(XAPIAN_PREFIX_COURSEID . $course_code);
-}
-//$training_query = xapian_get_boolean_query(XAPIAN_PREFIX_COURSEID . api_get_course_id());
-$my_training_list_query = dokeos_join_queries($training_list_query, null, 'OR');
-$query_rs = dokeos_query_query($_GET['input'], 0, 10000, $my_training_list_query);
-if ($query_rs) {
+$training_query = xapian_get_boolean_query(XAPIAN_PREFIX_COURSEID . api_get_course_id());
+$query_rs = dokeos_query_query($_GET['input'], 0, 10000, array($training_query));
+
+if($query_rs)
+{
 	$i = 0;
-	foreach($query_rs[1] as $document) {
+	foreach($query_rs[1] as $document)
+	{
 		$thickbox = '';
 		$i++;
 		
 		$extension = strtolower(pathinfo($document['url'], PATHINFO_EXTENSION));
 		$fullFilename = $shortFilename = pathinfo($document['url'], PATHINFO_FILENAME);
-		if(strlen($fullFilename)>20 & $document['toolid'] == TOOL_DOCUMENT) {
+		if(strlen($fullFilename)>20)
+		{
 			$shortFilename = substr($fullFilename, 0, 20).'...';
-		} else {
-			$shortFilename = $document['title'];
-			if (strlen($fullFilename)>20) {
-			  $shortFilename = substr($document['title'], 0, 20).'...';
-			}
 		}
-
-		$thumb_sys_path = api_get_path(SYS_COURSE_PATH).api_get_course_path($document['courseid']).'/temp/thumb_'.pathinfo($document['url'], PATHINFO_FILENAME).'.png';
-		$thumb_web_path = api_get_path(WEB_COURSE_PATH).api_get_course_path($document['courseid']).'/temp/thumb_'.pathinfo($document['url'], PATHINFO_FILENAME).'.png';
+		
+		$thumb_sys_path = api_get_path(SYS_COURSE_PATH).api_get_course_path().'/temp/thumb_'.pathinfo($document['url'], PATHINFO_FILENAME).'.png';
+		$thumb_web_path = api_get_path(WEB_COURSE_PATH).api_get_course_path().'/temp/thumb_'.pathinfo($document['url'], PATHINFO_FILENAME).'.png';
 		$thumb_width = 200;
 		$thumb_height = 115;	
 		$margin = '';
-        $play_clip = '';
+  $play_clip = '';
 
 		// create video thumbnail
 		if(in_array($extension, array('wmv','mpg','mpeg','mov','avi','flv'))) {
-   $play_clip = '<img align="center" style="position:absolute;margin-left:75px;margin-top:35px;" src="'.api_get_path(WEB_IMG_PATH).'media_playback_start_black_32.png" />';
+   $play_clip = '<img align="center" style="position:absolute;margin-left:75px;margin-top:35px;" src="../img/media_playback_start_black_32.png" />';
 			// check if the ffmpeg extension is available
 			$extension_soname = 'ffmpeg'.PHP_SHLIB_SUFFIX;
 			// load extension
@@ -51,9 +42,7 @@ if ($query_rs) {
 			}
 
 			if(!file_exists($thumb_sys_path)) {
-				$url = str_replace(api_get_path(WEB_PATH), api_get_path(SYS_PATH), $document['url']);
-				$movie = new ffmpeg_movie($url, false);
-				if(!$movie)continue;
+				$movie = new ffmpeg_movie($document['url'], false);
 				$frame = $movie->getFrame($movie->getFrameCount()/2);
 				if(!$frame)continue;
 				$width = $frame->getWidth();
@@ -66,7 +55,7 @@ if ($query_rs) {
 			$document['thumbnail'] = $thumb_web_path;
 			if($extension == 'flv')
 			{
-				$document['url'] = api_get_path(WEB_PATH).'main/search/view_video.php?path='.urlencode($document['url']).'&width=800&height=500';
+				$document['url'] = 'view_video.php?path='.urlencode($document['url']).'&width=800&height=500';
 				$thickbox = 'thickbox';
 			}
 		}
@@ -105,7 +94,7 @@ if ($query_rs) {
 		
 		else if(in_array($extension, array('swf')))
 		{
-			$document['url'] = api_get_path(WEB_PATH).'main/search/view_flash.php?path='.urlencode($document['url']).'&width=800&height=600';
+			$document['url'] = 'view_flash.php?path='.urlencode($document['url']).'&width=800&height=600';
 			$document['thumbnail'] = api_get_path(WEB_IMG_PATH).'48x48file_flash.png';
 			$thickbox = 'thickbox';
 			$margin = 'margin-top:20px;';
@@ -130,9 +119,9 @@ if ($query_rs) {
 			$document['thumbnail'] = api_get_path(WEB_IMG_PATH).'48x48file_presentation.png';
 			$margin = 'margin-top:20px;';
 		}  else if($extension == 'mp3') {
-   $play_clip = '<img align="center" style="position:absolute;margin-left:22px;margin-top:32px;" src="'.api_get_path(WEB_IMG_PATH).'media_playback_start_black_32.png" />';
+   $play_clip = '<img align="center" style="position:absolute;margin-left:22px;margin-top:32px;" src="../img/media_playback_start_black_32.png" />';
    $document['thumbnail'] = api_get_path(WEB_IMG_PATH).'alsaconf';
-   $document['url'] = api_get_path(WEB_PATH).'main/search/view_mp3.php?path='.urlencode($document['url']).'&width=500&height=300';
+   $document['url'] = 'view_mp3.php?path='.urlencode($document['url']).'&width=500&height=300';
    $thickbox = 'thickbox';
    $margin = 'margin-top:15px;';
   }
@@ -158,20 +147,15 @@ if ($query_rs) {
    }
 
    if ($width >= 300 && $height >= 200) {
-    $real_width = ' width = "200" ';
-    $real_height = ' height = "115" ';
+    $real_widht = "200";
+    $real_height = "115";
   }
   
-  // clean empties contents
-  if (empty($document['thumbnail'])) {
-    continue;
-  }
-
 		echo '
 		<a href="'.$document['url'].'" target="'.$target.'" class="'.$thickbox.'" title="'.$fullFilename.'">
 			<div id="thumb_'.$i.'" class="big_button four_buttons rounded grey_border button_notext">
    '.$play_clip.'
-				<img align="center" '.$real_width.' '.$real_height.' style="'.$margin.'" src="'.$document['thumbnail'].'" />
+				<img align="center" widht="'.$real_widht.'" height="'.$real_height.'" style="'.$margin.'" src="'.$document['thumbnail'].'" />
 				<p style="width:100%; height:20px;left:0px; padding-top:5px; background-color:#ddd; position: absolute; bottom: 0px; margin:0px;">
 					'.$shortFilename.'
 				</p>
@@ -183,5 +167,5 @@ if ($query_rs) {
 }
 else
 {
-	echo utf8_encode(get_lang('NoResults'));
+	echo get_lang('NoResults');
 }

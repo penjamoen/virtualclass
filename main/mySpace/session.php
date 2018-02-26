@@ -86,8 +86,8 @@ if ($export_csv) {
 
 if ($nb_sessions > 0) {
 	echo '<div class="actions" align="right">
-			<a href="javascript: void(0);" onclick="javascript: window.print();">'.Display::return_icon('pixel.gif',get_lang('Print'),array('class'=>'toolactionplaceholdericon toolactionprint32')).'&nbsp;'.get_lang('Print').'</a>
-			<a href="'.api_get_self().'?export=csv">'.Display::return_icon('pixel.gif',get_lang('ExportAsCSV'),array('class'=>'toolactionplaceholdericon toolactionexportcourse')).'&nbsp'.get_lang('ExportAsCSV').'</a>
+			<a href="javascript: void(0);" onclick="javascript: window.print();"><img align="absbottom" src="../img/printmgr.gif">&nbsp;'.get_lang('Print').'</a>
+			<a href="'.api_get_self().'?export=csv"><img align="absbottom" src="../img/excel.gif">&nbsp;'.get_lang('ExportAsCSV').'</a>
 		  </div>';
 	$table = new SortableTable('tracking', 'count_sessions_coached');
 	$table -> set_header(0, get_lang('Title'));
@@ -112,9 +112,9 @@ if ($nb_sessions > 0) {
 		}
 
 		if (isset($_GET['id_coach']) && $_GET['id_coach'] != '') {
-			$row[] = '<a href="student.php?id_session='.$session['id'].'&id_coach='.intval($_GET['id_coach']).'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a>';
+			$row[] = '<a href="student.php?id_session='.$session['id'].'&id_coach='.intval($_GET['id_coach']).'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a>';
 		} else {
-			$row[] = '<a href="course.php?id_session='.$session['id'].'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a>';
+			$row[] = '<a href="course.php?id_session='.$session['id'].'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a>';
 		}
 		$all_data[] = $row;
 	}

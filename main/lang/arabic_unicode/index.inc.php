@@ -40,6 +40,7 @@ $langMe = "أنا ";
 $langSystemAnnouncements = "إعلانات النظام ";
 $langHelpMaj = "مساعدة";
 $langNotRegistered = "غير مسجل";
+$langAdmin = "لوحة تحكم الإدارة";
 $Login = "تسجيل الدخول";
 $langRegisterForCourse = "تسجيل في مقرر ";
 $langUnregisterForCourse = "إلغاء التسجيل من مقرر ";

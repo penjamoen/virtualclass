@@ -16,10 +16,7 @@
 /*
  * HTTP HEADER
  */
-// Load header file if there is no course ID
-if ($_cid == -1) { // In the future we should have only ONE header file
-    require_once api_get_path(INCLUDE_PATH).'header.inc.php';
-} else {
+
 //Give a default value to $charset. Should change to UTF-8 some time in the future.
 //This parameter should be set in the platform configuration interface in time.
 if(empty($charset))
@@ -49,6 +46,7 @@ if(empty($document_language))
   //if there was no valid iso-code, use the english one
   $document_language = 'en';
 }
+
 /*
  * HTML HEADER
  */
@@ -93,7 +91,7 @@ if (!empty($mycourseid) && $mycourseid != -1)
 {
 	if (api_get_setting('allow_course_theme') == 'true')
 	{
-		$mycoursetheme=api_get_course_setting('course_theme', null, true);
+		$mycoursetheme=api_get_course_setting('course_theme');
 		if (!empty($mycoursetheme) && $mycoursetheme!=-1)
 		{
 			if(!empty($mycoursetheme) && $mycoursetheme != $my_style)
@@ -157,15 +155,9 @@ if (!empty($scorm_css_header))
 	}
 }
 
-// A lot of portals are using old themes that doesn't exists anymore, this change should be done in the migration file
-$theme_exists = true;
-if (!file_exists(api_get_path(SYS_CODE_PATH).'css/'.$my_style.'/default.css')) {
-	$theme_exists = false;
-}
-if(empty($my_style) || $theme_exists === false) {// If course theme in 1.8 platform doesn't exists then we are loading the platform theme
-	$my_style = $platform_theme;
-}
-if($my_style!='') {
+
+if($my_style!='')
+{
 ?>
 <style type="text/css" media="screen, projection">
 /*<![CDATA[*/
@@ -185,7 +177,7 @@ if($my_style!='') {
 <link href="http://www.dokeos.com" rel="Copyright" />
 <link rel="shortcut icon" href="<?php echo api_get_path(WEB_PATH); ?>favicon.ico" type="image/x-icon" />
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset ?>" />
-<meta name="Generator" content="Dokeos"/>
+<meta name="Generator" content="Dokeos">
 <script language="javascript" src="<?php echo api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js'; ?>" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -218,25 +210,6 @@ if ( ( navigator.userAgent.toLowerCase().indexOf('msie') != -1 ) && ( navigator.
 $htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/js/jquery-ui-1.8.1.custom.min.js"></script>';
 $htmlHeadXtra[] = '<link type="text/css" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/css/ui-lightness/jquery-ui-1.8.1.custom.css" rel="stylesheet" />';
 $htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/dokeos.js.php" language="javascript"></script>';
-$htmlHeadXtra[] = '<script type="text/javascript">
-        (function ($) {
-           try {
-                var a = $.ui.mouse.prototype._mouseMove; 
-                $.ui.mouse.prototype._mouseMove = function (b) { 
-                b.button = 1; a.apply(this, [b]); 
-                } 
-            }catch(e) {}
-        } (jQuery));
-    </script>';
-
-
-$device_info = api_get_navigator();
-$device = $device_info['device'];
-$get_machine = $device['machine'];
-
-if ($get_machine == 'ipad' || $get_machine == 'android') { // Load only when the device is an IPAD
-  $htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.ui.touch-punch.min"></script>';
-}
 // Display the chat notification
 require_once api_get_path(LIBRARY_PATH).'message.lib.php';
 MessageManager::display_chat_notifications();
@@ -248,69 +221,6 @@ if ( isset($htmlHeadXtra) && $htmlHeadXtra )
 	{
 		echo($this_html_head);
 	}
-}
-
-
-// Check if we have a CSS with tablet support
-$css_name = api_get_setting('stylesheets');
-// Check if we have a CSS with tablet support    
-$css_info = array();
-if (isset($GLOBALS['_cid']) && $GLOBALS['_cid'] != -1) {
-    // if We are inside a course
-    $css_name = api_get_setting('allow_course_theme') == 'true'?(api_get_course_setting('course_theme', null, true)?api_get_course_setting('course_theme', null, true):api_get_setting('stylesheets')):api_get_setting('stylesheets');
-    $css_info = api_get_css_info($css_name);
-} else {    
-    $css_info = api_get_css_info();    
-}
-$css_type = !is_null($css_info['type']) ? $css_info['type'] : '';
-
-if ($css_type == 'tablet') {
-?>
-<script type="text/javascript">
-    $(function(){
-       $(window).scroll(function(){
-         $("#footer").css({"left":"0","bottom":"0"});
-       });       
-       // center image and text inside menu header
-       if ($("#dokeostabs li").length > 0) {
-           $("#dokeostabs li").each(function(){          
-                var image_bg = $(this).css("background-image");
-                var image_path = image_bg.replace(/"/g,"").replace(/url\(|\)$/ig, "");
-                var tab_text = $(this).find("span").html();
-                var menu_img = '<img src="'+image_path+'" style="vertical-align:middle;" />&nbsp;';
-                $(this).find("span").html(menu_img+tab_text);
-                $(this).css("background-image", "none");
-           });
-       }       
-    });
-</script>
-<?php
-} else {
-?>
-<script type="text/javascript">
-    $(function(){
-    if(navigator.platform == 'iPad' || navigator.platform == 'iPhone' || navigator.platform == 'iPod'){
-        function footerStaticDinamic(){
-            $("#footer").css({"left":"0","bottom":"0"});
-         }
-        
-        footerStaticDinamic();  
-        $(window).scroll(function(){
-           footerStaticDinamic();  
-        });
-         
-    } else {
-         function footerStatic(){
-            $("#footer").css({"left":"0","bottom":"0","position":"fixed"});
-         }
-        footerStatic();  
-       $(window).scroll(function(){
-         footerStatic();  
-       });
-     }   
-    });
-</script>
-<?php
 }
 ?>
 <?php
@@ -354,16 +264,9 @@ if ($css_type == 'tablet') {
 <div id="main">
 	<div id="generic_tool_header">
 		<div id="header_background">
-		<?php global $tool_name,$_cid,$_course;
-                ?>
+		<?php global $tool_name;?>
 		<?php if (strcmp($tool_name,'Chat') == 0) $target = '_parent'; else $target = '_self';?>
-                        <?php if ($_cid == -1) {?>
-                            <a href="<?php echo api_get_path(WEB_PATH); ?>index.php" id="back2home" target="<?php echo $target ?>"><img src="<?php echo api_get_path(WEB_IMG_PATH);?>spacer.gif" width="42px" height="37px" /></a>
-                        <?php } else {
-                            $course_path = !empty($_course['path']) ? $_course['path'] : $_course['directory'];
-                            ?>
-                            <a href="<?php echo api_get_path(WEB_COURSE_PATH).$course_path; ?>/index.php" id="back2home" target="<?php echo $target ?>"><img src="<?php echo api_get_path(WEB_IMG_PATH);?>spacer.gif" width="42px" height="37px" /></a>
-                        <?php }?>
+			<a href="<?php echo api_get_path(WEB_COURSE_PATH).$_course['path']; ?>/index.php" id="back2home" target="<?php echo $target ?>"><img src="<?php echo api_get_path(WEB_IMG_PATH);?>spacer.gif" width="42px" height="37px" /></a>
 		</div>
 		<?php
 			// name of training
@@ -373,5 +276,4 @@ if ($css_type == 'tablet') {
 	</div>
 <?php
  }
-}
 ?>

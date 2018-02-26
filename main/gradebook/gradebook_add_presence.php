@@ -116,7 +116,7 @@ if ($form->validate()) {
 	Display::display_tool_header(get_lang('NewPresence'));
 
 	echo '<div class="actions">';
-	echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.$select_cat.'&amp;'.api_get_cidreq().'">'.Display::return_icon('pixel.gif',get_lang('Gradebook'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('Gradebook').'</a>';
+	echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.$select_cat.'&amp;'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png',get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook')).get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook').'</a>';
 	echo '</div>';
 	
 	// displaying a warning

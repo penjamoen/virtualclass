@@ -33,8 +33,10 @@ $this_section = SECTION_COURSES;
 // Access restrictions
 api_protect_course_script(true);
 
+define('DOKEOS_COURSEDESCRIPTION', true);
+
 // setting breadcrumbs
-$interbreadcrumb[] = array ('url' => 'index.php', 'name' => get_lang('CourseProgram'));
+$interbreadcrumb[] = array ("url" => "index.php", "name" => get_lang('CourseProgram'));
 
 // Database table definitions
 $tbl_course_description = Database::get_course_table(TABLE_COURSE_DESCRIPTION);
@@ -45,11 +47,9 @@ if (api_get_setting('show_glossary_in_documents') != 'none'){
   if (api_get_setting('show_glossary_in_documents') == 'ismanual') {
     $htmlHeadXtra[] = '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"></script>';
   } else {
-    $htmlHeadXtra[] = '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'jwplayer/jwplayer.min.js"/></script>';
     $htmlHeadXtra[] = '<script language="javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/glossary_description.js"/></script>';
   }
 }
-
 
 // variable initialisation
 $session_id = api_get_session_id();
@@ -59,13 +59,20 @@ $action = isset($_GET['action'])?Security::remove_XSS($_GET['action']):'';
 $edit = isset($_POST['edit'])?Security::remove_XSS($_POST['edit']):'';
 $add = isset($_POST['add'])?Security::remove_XSS($_POST['add']):'';
 
-if(intval($description_id) == 1) $interbreadcrumb[] = array ('url' => '#', 'name' => get_lang('Objectives'));
-if(intval($description_id) == 2) $interbreadcrumb[] = array ('url' => '#', 'name' => get_lang('HumanAndTechnicalResources'));
-if(intval($description_id) == 3) $interbreadcrumb[] = array ('url' => '#', 'name' => get_lang('Assessment'));
-if(intval($description_id) == 4) $interbreadcrumb[] = array ('url' => '#', 'name' => get_lang('GeneralDescription'));
-if(intval($description_id) == 5) $interbreadcrumb[] = array ('url' => '#', 'name' => get_lang('Other'));
+if(intval($description_id) == 1) $interbreadcrumb[] = array ("url" => "#", "name" => get_lang('Objectives'));
+if(intval($description_id) == 2) $interbreadcrumb[] = array ("url" => "#", "name" => get_lang('HumanAndTechnicalResources'));
+if(intval($description_id) == 3) $interbreadcrumb[] = array ("url" => "#", "name" => get_lang('Assessment'));
+if(intval($description_id) == 4) $interbreadcrumb[] = array ("url" => "#", "name" => get_lang('GeneralDescription'));
+if(intval($description_id) == 5) $interbreadcrumb[] = array ("url" => "#", "name" => get_lang('Other'));
 
+// Display the header
+Display :: display_tool_header();
 
+// Display the tool title
+//api_display_tool_title(get_lang('CourseProgram'));
+
+// Display the tool introduction
+Display::display_introduction_section(TOOL_COURSE_DESCRIPTION);
 
 $show_description_list = true;
 $show_peda_suggest = true;
@@ -77,12 +84,12 @@ $default_description_titles[2]= get_lang('HumanAndTechnicalResources');
 $default_description_titles[3]= get_lang('Assessment');
 $default_description_titles[4]= get_lang('GeneralDescription');
 $default_description_titles[5]= get_lang('Agenda');
-$default_description_class = array();
-$default_description_class[1]= 'skills';
-$default_description_class[2]= 'resources';
-$default_description_class[3]= 'assessment';
-$default_description_class[4]= 'prerequisites';
-$default_description_class[5]= 'other';
+$default_description_icon = array();
+$default_description_icon[1]= 'skills_48.png';
+$default_description_icon[2]= 'resources_48.png';
+$default_description_icon[3]= 'new_quiz.png';
+$default_description_icon[4]= 'prerequesties_48.png';
+$default_description_icon[5]= 'other_48.png';
 $question = array();
 $question[1]= get_lang('ObjectivesQuestions');
 $question[2]= get_lang('HumanAndTechnicalResourcesQuestions');
@@ -108,7 +115,7 @@ event_access_tool(TOOL_COURSE_DESCRIPTION);
 ==============================================================================
 */
 
-$condition_session = api_get_session_condition($session_id, false, true);
+$condition_session = api_get_session_condition($session_id, false);
 $current_session_id = api_get_session_id();
 
 
@@ -118,7 +125,7 @@ $result = Database::query($sql, __FILE__, __LINE__);
 while ($row = Database::fetch_array($result)) {
   $default_description_titles[$row['description_type']] = $row['title'];
 }
-$show_form = false;
+
 $actions = array('add','delete','edit');
 
 if ((api_is_allowed_to_edit(null,true) && !is_null($description_type)) || in_array($action,$actions)) {
@@ -128,17 +135,17 @@ if ((api_is_allowed_to_edit(null,true) && !is_null($description_type)) || in_arr
 
 	// Delete a description block
 	if ($action == 'delete') {	
-		$sql = "DELETE FROM $tbl_course_description WHERE id='".Database::escape_string($description_id)."'";
+		$sql = "DELETE FROM $tbl_course_description WHERE id='".$description_id."'";
 		Database::query($sql, __FILE__, __LINE__);
 		//update item_property (delete)
-		api_item_property_update(api_get_course_info(), TOOL_COURSE_DESCRIPTION, $description_id, 'delete', api_get_user_id());
+		api_item_property_update(api_get_course_info(), TOOL_COURSE_DESCRIPTION, Database::escape_string($description_id), 'delete', api_get_user_id());
 		Display :: display_confirmation_message(get_lang('CourseDescriptionDeleted'));
 	}
 	// Add or edit a description block
 	else {
 
 		if (!empty($description_type)) {			
-			$sql = "SELECT * FROM $tbl_course_description WHERE description_type='".Database::escape_string($description_type)."' AND session_id='".Database::escape_string($current_session_id)."'";		
+			$sql = "SELECT * FROM $tbl_course_description WHERE description_type='$description_type' AND session_id='$current_session_id'";		
 			$result = Database::query($sql, __FILE__, __LINE__);					
 			if ($description = Database::fetch_array($result)) {
 				$default_description_titles[$description_type] = $description['title'];
@@ -157,11 +164,12 @@ if ((api_is_allowed_to_edit(null,true) && !is_null($description_type)) || in_arr
 					$description_type=5;
 			}			
 		}
-
+		//Se borro: echo ' <style> .row{} <\style> por que hacia conflicto en apartado personalizado con los estilos propios del formvalidator
 		// Build the form
-	
-		$form = new FormValidator('course_description','POST','index.php?'.api_get_cidreq());
+		
+		$form = new FormValidator('course_description','POST','index.php?'.api_get_cidreq(),'','style="width: 100%;"');
 		$renderer = & $form->defaultRenderer();		
+	//	$form->addElement('header', '', $default_description_titles[$description_type]);
 		$form->addElement('hidden', 'description_type');
 
 		if ($action == 'edit' || intval($edit) == 1 ) {
@@ -173,7 +181,7 @@ if ((api_is_allowed_to_edit(null,true) && !is_null($description_type)) || in_arr
 		}
 
 		if (($description_type >= ADD_BLOCK) || $default_description_title_editable[$description_type] || $action == 'add' || intval($edit) == 1) {
-			$renderer->setElementTemplate('<div class="row"><div>'.get_lang('Title').' {element}</div></div>', 'title');
+			$renderer->setElementTemplate('<div class="row"><div style="width:100%;float:right;">'.get_lang('Title').' {element}</div></div>', 'title');
 			$form->add_textfield('title', get_lang('Title'), true, array('size'=>'width: 350px;','class'=>'focus'));
 			$form->applyFilter('title','html_filter');
 		}
@@ -181,13 +189,14 @@ if ((api_is_allowed_to_edit(null,true) && !is_null($description_type)) || in_arr
 		if (api_get_setting('wcag_anysurfer_public_pages')=='true') {
 			WCAG_rendering::prepare_admin_form($description_content, $form);
 		} else {
-			$renderer->setElementTemplate('<div class="row"><div>{element}</div></div>', 'contentDescription');
+			$renderer->setElementTemplate('<div class="row"><div style="width:100%;float:right;">{element}</div></div>', 'contentDescription');
 			//$form->add_html_editor('contentDescription',get_lang('Content'), true, false, $html_editor_config);
 			$form->add_html_editor('contentDescription', get_lang('Content'), false, false, array('ToolbarSet' => 'TrainingDescription', 'Width' => '100%', 'Height' => '275', 'FullPage' => true));
 			//$form->add_html_editor('contentDescription', '', false, false, array('ToolbarSet' => 'TrainingDescription', 'Width' => '100%', 'Height' => '275', 'FullPage' => true,'InDocument' => true,));
 		}
+	//	$form->addElement('html','<div style="padding-left:60%;">');
 		$form->addElement('style_submit_button', null, get_lang('Save'), 'class="save"');
-
+	//	$form->addElement('html','</div>');
 		// Set some default values
 		$default['title'] = $default_description_titles[$description_type];
 		$default['contentDescription'] = $description_content;
@@ -196,7 +205,6 @@ if ((api_is_allowed_to_edit(null,true) && !is_null($description_type)) || in_arr
 		//if ($description_id >= ADD_BLOCK) {
 			//$default['description_id'] = ADD_BLOCK;
 		//}
-                $show_form = false;
 		$form->setDefaults($default);		
 		// If form validates: save the description block
 		if ($form->validate()) {
@@ -211,10 +219,10 @@ if ((api_is_allowed_to_edit(null,true) && !is_null($description_type)) || in_arr
 			if ($description['description_type'] > ADD_BLOCK) {
 				if ($description['add']=='1') { //if this element has been submitted for addition
 					$result = Database::query($sql, __FILE__, __LINE__);
-					$sql = "INSERT IGNORE INTO $tbl_course_description SET description_type='".Database::escape_string($description_type)."', title = '".Database::escape_string(Security::remove_XSS($title,COURSEMANAGERLOWSECURITY))."', content = '".Database::escape_string(Security::remove_XSS($content,COURSEMANAGERLOWSECURITY))."', session_id = '".Database::escape_string($current_session_id)."' ";
+					$sql = "INSERT IGNORE INTO $tbl_course_description SET description_type='$description_type', title = '".Database::escape_string(Security::remove_XSS($title,COURSEMANAGERLOWSECURITY))."', content = '".Database::escape_string(Security::remove_XSS($content,COURSEMANAGERLOWSECURITY))."', session_id = '$current_session_id' ";
 					Database::query($sql, __FILE__, __LINE__);
 				} else {
-					$sql = "UPDATE $tbl_course_description SET  title = '".Database::escape_string(Security::remove_XSS($title,COURSEMANAGERLOWSECURITY))."', content = '".Database::escape_string(Security::remove_XSS($content,COURSEMANAGERLOWSECURITY))."' WHERE description_type='".Database::escape_string($description_type)."' AND session_id = '".Database::escape_string($current_session_id)."'";
+					$sql = "UPDATE $tbl_course_description SET  title = '".Database::escape_string(Security::remove_XSS($title,COURSEMANAGERLOWSECURITY))."', content = '".Database::escape_string(Security::remove_XSS($content,COURSEMANAGERLOWSECURITY))."' WHERE description_type='$description_type' AND session_id = '$current_session_id'";
 					Database::query($sql, __FILE__, __LINE__);
 				}
 			} else {
@@ -222,9 +230,9 @@ if ((api_is_allowed_to_edit(null,true) && !is_null($description_type)) || in_arr
 				if (!$default_description_title_editable[$description_type]) {
 					$title = $default_description_titles[$description_type];
 				}
-				$sql = "DELETE FROM $tbl_course_description WHERE description_type = '".Database::escape_string($description_type)."' AND session_id = '".Database::escape_string($current_session_id)."'";
+				$sql = "DELETE FROM $tbl_course_description WHERE description_type = '".$description_type."' AND session_id = '$current_session_id'";
 				Database::query($sql, __FILE__, __LINE__);
-				$sql = "INSERT INTO $tbl_course_description SET description_type = '".Database::escape_string($description_type)."', title = '".Database::escape_string(Security::remove_XSS($title,COURSEMANAGERLOWSECURITY))."', content = '".Database::escape_string(Security::remove_XSS($content,COURSEMANAGERLOWSECURITY))."', session_id = '".Database::escape_string($current_session_id)."'";
+				$sql = "INSERT INTO $tbl_course_description SET description_type = '".$description_type."', title = '".Database::escape_string(Security::remove_XSS($title,COURSEMANAGERLOWSECURITY))."', content = '".Database::escape_string(Security::remove_XSS($content,COURSEMANAGERLOWSECURITY))."', session_id = '$current_session_id' ";
 				Database::query($sql, __FILE__, __LINE__);
 			}
 			$id = Database::insert_id();
@@ -232,133 +240,129 @@ if ((api_is_allowed_to_edit(null,true) && !is_null($description_type)) || in_arr
 				//insert into item_property
 				api_item_property_update(api_get_course_info(), TOOL_COURSE_DESCRIPTION, $id, 'CourseDescriptionAdded', api_get_user_id());
 			}
-                        header('Location: '.api_get_path(WEB_CODE_PATH).'course_description/index.php?'.api_get_cidreq());
-                        exit;
-			//Display :: display_confirmation_message(get_lang('CourseDescriptionUpdated'));
+			Display :: display_confirmation_message(get_lang('CourseDescriptionUpdated'));
 		}
 		// Show the form
 		else {
-                    $show_form = true;
+			// menu top
+			//***********************************
+			if (api_is_allowed_to_edit(null,true)) {
+				$categories = array ();
+
+				foreach ($default_description_titles as $id => $title) {
+					$categories[$id] = $title;
+				}
+				$categories[ADD_BLOCK] = get_lang('NewBloc');
+
+				$i=1;
+				echo '<div class="actions">';
+				ksort($categories);
+				foreach ($categories as $id => $title) {
+					if ($i==5) {
+						echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=add">'.Display::return_icon($default_description_icon[$id], $title, array('width'=>'32','height'=>'32','style'=>'vertical-align:middle')).' '.$title.'</a>';
+						break;
+					} else {
+						echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&description_type='.$id.'">'.Display::return_icon($default_description_icon[$id], $title, array('width'=>'32','height'=>'32','style'=>'vertical-align:middle')).' '.$title.'</a>';
+						$i++;
+					}
+				}
+				echo '</div>';
+			}
+			//***********************************
+
+			// start the content div
+			echo '<div id="content">';
+
+			if ($show_peda_suggest) {
+				if (isset ($question[$description_id])) {
+					$message = '<strong>'.get_lang('QuestionPlan').'</strong><br />';
+					$message .= $question[$description_id];
+					Display::display_normal_message($message, false);
+				}
+			}
+			if (api_get_setting('wcag_anysurfer_public_pages')=='true') {
+				echo (WCAG_Rendering::editor_header());
+			}
+			$form->display();
+			if (api_get_setting('wcag_anysurfer_public_pages')=='true') {
+				echo (WCAG_Rendering::editor_footer());
+			}
+			$show_description_list = false;
 		}
 	}
 }
 
-// Display the header
-Display :: display_tool_header();
-// Display the tool introduction
-Display::display_introduction_section(TOOL_COURSE_DESCRIPTION);
+// Show the list of all description blocks
+if ($show_description_list) {
+	$sql = "SELECT * FROM $tbl_course_description $condition_session ORDER BY id ";
+	$result = Database::query($sql, __FILE__, __LINE__);
+	$descriptions = array();
+	while ($description = Database::fetch_object($result)) {
+		$descriptions[$description->description_type] = $description;
+		//reload titles to ensure we have the last version (after edition)
+		$default_description_titles[$description->description_type] = $description->title;
+	}
 
-if ($show_form === false) {
-    // Show the list of all description blocks
-    if ($show_description_list) {
-            $sql = "SELECT * FROM $tbl_course_description $condition_session ORDER BY description_type ";
-            $result = Database::query($sql, __FILE__, __LINE__);
-            $descriptions = array();
-            while ($description = Database::fetch_object($result)) {
-                    $descriptions[$description->description_type] = $description;
-                    //reload titles to ensure we have the last version (after edition)
-                    $default_description_titles[$description->description_type] = $description->title;
+	// the actions (categories of content in this case)
+	if (api_is_allowed_to_edit(null,true)) {
+		$categories = array ();
+
+		foreach ($default_description_titles as $id => $title) {
+			$categories[$id] = $title;
+		}
+		$categories[ADD_BLOCK] = get_lang('NewBloc');
+
+		$i=1;
+		echo '<div class="actions">';
+		ksort($categories);
+		foreach ($categories as $id => $title) {
+		/*	if ($i==5) {				
+				echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=add">'.Display::return_icon($default_description_icon[$id], $title, array('width'=>'32','height'=>'32','style'=>'vertical-align:middle')).' '.$title.'</a>';
+				break;
+			} else {
+				echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&description_type='.$id.'">'.Display::return_icon($default_description_icon[$id], $title, array('width'=>'32','height'=>'32','style'=>'vertical-align:middle')).' '.$title.'</a>';
+				$i++;
+			}*/
+            // We are displaying only 5 first items
+            if ($i <= 5) {
+			  echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&description_type='.$id.'">'.Display::return_icon($default_description_icon[$id], $title, array('width'=>'32','height'=>'32','style'=>'vertical-align:middle')).' '.$title.'</a>';
             }
+			$i++;
+		}
+		echo '</div>';
 
-            // the actions (categories of content in this case)
-            if (api_is_allowed_to_edit(null,true)) {
-                    $categories = array ();
+	}
 
-                    foreach ($default_description_titles as $id => $title) {
-                            $categories[$id] = $title;
-                    }
-                    $categories[ADD_BLOCK] = get_lang('NewBloc');
+	// start the content div
+	echo '<div id="content">';
+		echo '<div style="margin:0 auto; width:90%;">';
 
-                    $i=1;
-                    echo '<div class="actions">';
-                    ksort($categories);
-                    foreach ($categories as $id => $title) {
-                            // We are displaying only 5 first items
-                            if ($i <= 5) {
-                                    echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&description_type='.$id.'">'.Display::return_icon('pixel.gif', $title, array('class' => 'toolactionplaceholdericon toolaction'.$default_description_class[$id])).' '.$title.'</a>';
-                            }
-                            $i++;
-                    }
-                    echo '</div>';
+		// the actual content
+		if (isset($descriptions) && count($descriptions) > 0) {
+			foreach ($descriptions as $id => $description) {
+	
+				echo '<div class="section_white">';
+				echo '<div class="sectiontitle">'.$description->title.'</div>';	
+				echo '<div class="sectioncontent">';
+				echo text_filter($description->content);
+				echo '</div>';
+				if (api_is_allowed_to_edit()) {
+					//delete
+					echo '<a class="float_r" style="margin:10px 20px 10px 0;" href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=delete&amp;description_id='.$description->id.'" onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset)).'\')) return false;">';
+					echo Display::return_icon('delete.png', get_lang('Delete'));
+					echo '</a> ';
 
-            }
-
-            // start the content div
-            echo '<div id="content">';
-
-            // the actual content
-            if (isset($descriptions) && count($descriptions) > 0) {
-                    foreach ($descriptions as $id => $description) {
-                            echo '<div class="section_white">';
-                            echo '	<div class="sectiontitle">'.$description->title.'</div>';	
-                            echo '	<div class="sectioncontent">';
-                            echo 	text_filter($description->content);
-                            echo '	</div>';
-                            echo '</div>';
-                            echo '<div class="float_r">';
-                            if (api_is_allowed_to_edit()) {
-                                    //delete
-                                    echo '<a class="" href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=delete&amp;description_id='.$description->id.'" onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset)).'\')) return false;">';
-                                    echo Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete'));
-                                    echo '</a> ';
-                                    //edit
-                                    echo '<a class="" href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=edit&amp;description_id='.$description->id.'&amp;description_type='.$description->description_type.'">';
-                                    echo Display::return_icon('pixel.gif', get_lang('Modify'), array('class' => 'actionplaceholdericon actionedit'));
-                                    echo '</a> ';
-                            }
-                            echo '</div>';
-                            echo '<div>&nbsp;</div>';
-                            echo '<div>&nbsp;</div>';
-                    }
-            } else {
-                    echo '<em>'.get_lang('ThisCourseDescriptionIsEmpty').'</em>';
-            }
-    }
-} else {
-    // menu top
-    //***********************************
-    if (api_is_allowed_to_edit(null,true)) {
-            $categories = array ();
-
-            foreach ($default_description_titles as $id => $title) {
-                    $categories[$id] = $title;
-            }
-            $categories[ADD_BLOCK] = get_lang('NewBloc');
-
-            $i=1;
-            echo '<div class="actions">';
-            ksort($categories);
-            foreach ($categories as $id => $title) {
-                    if ($i==5) {
-                            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=add">'.Display::return_icon('pixel.gif', $title, array('class' => 'toolactionplaceholdericon toolaction'.$default_description_class[$id])).' '.$title.'</a>';
-                            break;
-                    } else {
-                            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&description_type='.$id.'">'.Display::return_icon('pixel.gif', $title, array('class' => 'toolactionplaceholdericon toolaction'.$default_description_class[$id])).' '.$title.'</a>';
-                            $i++;
-                    }
-            }
-            echo '</div>';
-    }
-    //***********************************
-
-    // start the content div
-    echo '<div id="content">';
-
-    if ($show_peda_suggest) {
-            if (isset ($question[$description_id])) {
-                    $message = '<strong>'.get_lang('QuestionPlan').'</strong><br />';
-                    $message .= $question[$description_id];
-                    Display::display_normal_message($message, false);
-            }
-    }
-    if (api_get_setting('wcag_anysurfer_public_pages')=='true') {
-            echo (WCAG_Rendering::editor_header());
-    }
-    $form->display();
-    if (api_get_setting('wcag_anysurfer_public_pages')=='true') {
-            echo (WCAG_Rendering::editor_footer());
-    }
-    $show_description_list = false;
+					//edit
+					echo '<a class="float_r" style="margin:10px 20px 10px 0;" href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=edit&amp;description_id='.$description->id.'&amp;description_type='.$description->description_type.'">';
+					echo Display::return_icon('edit_link.png', get_lang('Edit'));
+					echo '</a> ';
+				}
+				echo '</div>';
+			}
+		} else {
+			echo '<em>'.get_lang('ThisCourseDescriptionIsEmpty').'</em>';
+		}
+	echo '</div>';
 }
 
 // close the content div

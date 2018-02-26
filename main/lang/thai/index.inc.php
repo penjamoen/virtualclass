@@ -40,6 +40,7 @@ $langMe = "ฉัน";
 $langSystemAnnouncements = "ประกาศข่าวภายใน";
 $langHelpMaj = "ช่วยเหลือ";
 $langNotRegistered = "ยังไม่ลงทะเบียน";
+$langAdmin = "ผู้ดูแลระบบ";
 $Login = "เข้าระบบ";
 $langRegisterForCourse = "ลงทะเบียนวิชา";
 $langUnregisterForCourse = "ยกเลิกการลงทะเบียนในรายวิชา";

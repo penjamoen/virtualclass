@@ -43,8 +43,9 @@ function get_navigation_items($include_admin_tools = false)
 	global $_user;
 	global $_course;
 
-	if (!empty($_course['db_name'])) {
-            $database = $_course['db_name'];
+	if (!empty($_course['db_name']))
+	{
+		$database = $_course['db_name'];
 	}
 
 	$navigation_items = array ();
@@ -65,7 +66,6 @@ function get_navigation_items($include_admin_tools = false)
 		$navigation_items['home']['image'] = 'home.gif';
 		$navigation_items['home']['link'] = api_get_path(REL_COURSE_PATH).$_SESSION['_course']['path'].'/index.php';
 		$navigation_items['home']['name'] = get_lang("CourseHomepageLink");
-                $navigation_items['home']['langname'] = 'home';
 
 		/*
 		--------------------------------------------------------------
@@ -78,6 +78,9 @@ function get_navigation_items($include_admin_tools = false)
 		while ($row = Database::fetch_array($sql_result))
 		{
 			$navigation_items[$row['id']] = $row;
+			/*
+			if (!stristr($row['link'], 'http://'))
+			*/
 			if (stripos($row['link'], 'http://') === false && stripos($row['link'], 'https://') === false)
 			{
 				$navigation_items[$row['id']]['link'] = api_get_path(REL_CODE_PATH).$row['link'];
@@ -86,10 +89,9 @@ function get_navigation_items($include_admin_tools = false)
 				*/
 				if ($row['image'] != 'scormbuilder.gif' && $row['image'] != 'blog.png')
 				{
-					$navigation_items[$row['id']]['name'] = get_lang(ucfirst($navigation_items[$row['id']]['name']));                                        
-                    $navigation_items[$row['id']]['langname'] = $row['name'];
-				}                
-			}            
+					$navigation_items[$row['id']]['name'] = get_lang(ucfirst($navigation_items[$row['id']]['name']));
+				}
+			}
 		}
 		/*
 		--------------------------------------------------------------
@@ -102,7 +104,8 @@ function get_navigation_items($include_admin_tools = false)
 		if ($include_admin_tools)
 		{
 
-			$course_settings_sql = "	SELECT name,image FROM $course_tools_table WHERE link='course_info/infocours.php'";
+			$course_settings_sql = "	SELECT name,image FROM $course_tools_table
+															WHERE link='course_info/infocours.php'";
 			$sql_result = Database::query($course_settings_sql);
 			$course_setting_info = Database::fetch_array($sql_result);
 			$course_setting_visual_name = get_lang(ucfirst($course_setting_info['name']));
@@ -111,13 +114,13 @@ function get_navigation_items($include_admin_tools = false)
 				$navigation_items['course_settings']['image'] = $course_setting_info['image'];
 				$navigation_items['course_settings']['link'] = api_get_path(REL_CODE_PATH).'course_info/infocours.php';
 				$navigation_items['course_settings']['name'] = $course_setting_visual_name;
-                $navigation_items['course_settings']['langname'] = $course_setting_info['name'];                                
 			}
 		}
 	}
 	foreach($navigation_items as $key => $navigation_item)
 	{
-		if (strstr($navigation_item['link'], '?')) {
+		if (strstr($navigation_item['link'], '?'))
+		{
 			//link already contains a parameter, add course id parameter with &
 			$parameter_separator = '&amp;';
 		}
@@ -266,16 +269,10 @@ function show_navigation_menu()
  */
 function show_navigation_tool_shortcuts($orientation = SHORTCUTS_HORIZONTAL)
 {
-	$navigation_items = get_navigation_items(false);    
+	$navigation_items = get_navigation_items(false);
 	foreach ($navigation_items as $key => $navigation_item)
 	{
 
-        if (empty($navigation_item['langname'])) {continue;}
-        
-		$class = 'toolactionplaceholdericon toolshortcut_'.strtolower($navigation_item['langname']);
-                
-                //echo $navigation_item['langname'] .'<br />';
-                
 		if (strpos($navigation_item['link'],'chat')!==false && api_get_course_setting('allow_open_chat_window')==true)
 	    {
 	    	/*
@@ -296,11 +293,9 @@ function show_navigation_tool_shortcuts($orientation = SHORTCUTS_HORIZONTAL)
   if (api_get_setting('show_navigation_menu') == 'text') {
    echo $navigation_item['name'];
   } elseif (api_get_setting('show_navigation_menu') == 'iconstext') {
-		 //echo '<img src="'.api_get_path(WEB_IMG_PATH).$navigation_item['image'].'" alt="'.$navigation_item['name'].'"/>'.'&nbsp;&nbsp;'.$navigation_item['name'];
-		 echo Display::return_icon('pixel.gif', $navigation_item['name'], array('class' => $class)).$navigation_item['name'];
+		 echo '<img src="'.api_get_path(WEB_IMG_PATH).$navigation_item['image'].'" alt="'.$navigation_item['name'].'"/>'.'&nbsp;&nbsp;'.$navigation_item['name'];
   } else {
-		 //echo '<img src="'.api_get_path(WEB_IMG_PATH).$navigation_item['image'].'" alt="'.$navigation_item['name'].'"/>';
-		 echo Display::return_icon('pixel.gif', $navigation_item['name'], array('class' => $class));
+		 echo '<img src="'.api_get_path(WEB_IMG_PATH).$navigation_item['image'].'" alt="'.$navigation_item['name'].'"/>';
   }
 		echo '</a>';
 		if($orientation == SHORTCUTS_VERTICAL)

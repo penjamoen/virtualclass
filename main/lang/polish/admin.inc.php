@@ -642,6 +642,4 @@ $FieldMadeUnchangeable = "Edycja pola jest wy&#322;&#261;czona: u&#380;ytkownik 
 $CannotDeleteField = "Nie mo&#380;na skasowa&#263; pola";
 $DaysBefore = "dni przed";
 $DaysAfter = "dni po";
-$Trainings = "Kursy";
-$Street = "Ulica";
 ?>

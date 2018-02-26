@@ -189,55 +189,9 @@ function save_data($users) {
 			if ($send_mail) {
 				$recipient_name = api_get_person_name($user['FirstName'], $user['LastName'], null, PERSON_NAME_EMAIL_ADDRESS);
 				$emailsubject = '['.api_get_setting('siteName').'] '.get_lang('YourReg').' '.api_get_setting('siteName');
-
-			/*	$emailbody = get_lang('Dear').' '.api_get_person_name($user['FirstName'], $user['LastName']).",\n\n".get_lang('YouAreReg')." ".api_get_setting('siteName')." ".get_lang('WithTheFollowingSettings')."\n\n".get_lang('Username')." : $user[UserName]\n".get_lang('Pass')." : $user[Password]\n\n".get_lang('Address')." ".api_get_setting('siteName')." ".get_lang('Is')." : ".api_get_path('WEB_PATH')." \n\n".get_lang('Problem')."\n\n".get_lang('Formula').",\n\n".api_get_person_name(api_get_setting('administratorName'), api_get_setting('administratorSurname'))."\n".get_lang('Manager')." ".api_get_setting('siteName')."\nT. ".api_get_setting('administratorTelephone')."\n".get_lang('Email')." : ".api_get_setting('emailAdministrator')."";
-				$sender_name = api_get_person_name(api_get_setting('administratorName'), api_get_setting('administratorSurname'), null, PERSON_NAME_EMAIL_ADDRESS);
-				$email_admin = api_get_setting('emailAdministrator');*/
-
+				$emailbody = get_lang('Dear').' '.api_get_person_name($user['FirstName'], $user['LastName']).",\n\n".get_lang('YouAreReg')." ".api_get_setting('siteName')." ".get_lang('WithTheFollowingSettings')."\n\n".get_lang('Username')." : $user[UserName]\n".get_lang('Pass')." : $user[Password]\n\n".get_lang('Address')." ".api_get_setting('siteName')." ".get_lang('Is')." : ".api_get_path('WEB_PATH')." \n\n".get_lang('Problem')."\n\n".get_lang('Formula').",\n\n".api_get_person_name(api_get_setting('administratorName'), api_get_setting('administratorSurname'))."\n".get_lang('Manager')." ".api_get_setting('siteName')."\nT. ".api_get_setting('administratorTelephone')."\n".get_lang('Email')." : ".api_get_setting('emailAdministrator')."";
 				$sender_name = api_get_person_name(api_get_setting('administratorName'), api_get_setting('administratorSurname'), null, PERSON_NAME_EMAIL_ADDRESS);
 				$email_admin = api_get_setting('emailAdministrator');
-				
-				global $language_interface;
-				$table_emailtemplate 	= Database::get_main_table(TABLE_MAIN_EMAILTEMPLATES);	
-				$sql = "SELECT * FROM $table_emailtemplate WHERE description = 'Userregistration' AND language= '".$language_interface."'";
-				$result = api_sql_query($sql, __FILE__, __LINE__);
-				while($row = Database::fetch_array($result))
-				{				
-					$content = $row['content'];
-				}
-				if(empty($content))
-				{
-					$content = get_lang('Dear')." {Name} ,\n\n";
-					$content .= get_lang('YouAreReg')." {siteName} ".get_lang('WithTheFollowingSettings')."\n\n";
-					$content .= get_lang('Username').": {username} \n";	
-					$content .= get_lang('Pass')." :{password} \n\n";
-					$content .= get_lang('Address')." {siteName} ".get_lang('Is')." - {url} \n\n";
-					$content .= get_lang('Problem')."\n\n".get_lang('Formula').",\n";
-					$content .= "{administratorSurname} \n";
-					$content .= get_lang('Manager')."\n";
-					$content .= "{administratorTelephone} \n";
-					$content .= get_lang('Email')." : {emailAdministrator}";
-				}
-				$content =  str_replace('{Name}',stripslashes(api_get_person_name($firstname, $lastname)), $content); 
-				$content =  str_replace('{siteName}',api_get_setting('siteName'), $content); 
-				$content =  str_replace('{username}',$username, $content); 
-				$content =  str_replace('{password}',stripslashes($password), $content); 			
-				$content =  str_replace('{administratorSurname}',api_get_person_name(api_get_setting('administratorName'), api_get_setting('administratorSurname')), $content); 
-				$content =  str_replace('{administratorTelephone}',api_get_setting('administratorTelephone'), $content); 
-				$content =  str_replace('{emailAdministrator}',api_get_setting('emailAdministrator'), $content); 
-
-				if ($_configuration['multiple_access_urls'] == true) {
-					$access_url_id = api_get_current_access_url_id();
-					if ($access_url_id != -1) {
-						$url = api_get_access_url($access_url_id);
-						$content =  str_replace('{url}',$url['url'], $content); 					
-					}
-				}
-				else {
-					$content =  str_replace('{url}',$_configuration['root_web'], $content); 				
-				}
-				$emailbody = $content;
-
 				@api_mail($recipient_name, $user['Email'], $emailsubject, $emailbody, $sender_name, $email_admin);
 			}
 		}
@@ -431,13 +385,6 @@ Display :: display_header($tool_name);
 
 // display the tool title
 //api_display_tool_title($tool_name);
-
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_list.php">'.Display::return_icon('pixel.gif',get_lang('UserList'), array('class' => 'toolactionplaceholdericon toolactionadminusers')).get_lang('UserList').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_add.php">'.Display::return_icon('pixel.gif',get_lang('AddUsers'), array('class' => 'toolactionplaceholdericon toolactionaddusertocourse')).get_lang('AddUsers').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_export.php">'.Display::return_icon('pixel.gif',get_lang('Export'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('Export').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_fields.php">'.Display::return_icon('pixel.gif',get_lang('ManageUserFields'), array('class' => 'toolactionplaceholdericon toolactionsprofile')).get_lang('ManageUserFields').'</a>';
-echo '</div>';
 
 // start the content div
 echo '<div id="content" class="maxcontent">';

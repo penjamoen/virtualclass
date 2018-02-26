@@ -6,45 +6,23 @@ require_once dirname(__FILE__) . '/search_processor.class.php';
  * Process links before pass it to search listing scripts
  */
 class link_processor extends search_processor {
-    public $links = array();
-    
-    /**
-     * check if multisite is enable
-     * @global configuration $_configuration
-     * @param string $courseid
-     * @return bool 
-     */
-    function is_enabled_multisite($courseid){
-        //check if multisite is enable
-        global $_configuration;
-        if($_configuration['multiple_access_urls']){
-            require_once api_get_path(LIBRARY_PATH).'urlmanager.lib.php';
-            $url = new UrlManager();
-            $access_url_id = api_get_current_access_url_id();
-            $exist_relation = $url->relation_url_course_exist($courseid, $access_url_id);
-            return $exist_relation > 0 ? true : false;
-        }
-        return true;;
-    }
-    
+	public $links = array();
+
     function link_processor($rows) {
         $this->rows = $rows;
 
         // group all links together
         foreach ($rows as $row_id => $row_val) {
+            $link_id = $row_val['xapian_data'][SE_DATA]['link_id'];
             $courseid = $row_val['courseid'];
-            $exist_relation = $this->is_enabled_multisite($courseid);
-            if($exist_relation) {
-                $link_id = $row_val['xapian_data'][SE_DATA]['link_id'];
-                $item = array(
-                  'courseid' => $courseid,
-                  'score' => $row_val['score'],
-                  'link_id' => $link_id,
-                  'row_id' => $row_id,
-                  );
-                $this->links[$courseid]['links'][] = $item;
-                $this->links[$courseid]['total_score'] += $row_val['score'];
-            }
+            $item = array(
+              'courseid' => $courseid,
+              'score' => $row_val['score'],
+              'link_id' => $link_id,
+              'row_id' => $row_id,
+              );
+            $this->links[$courseid]['links'][] = $item;
+            $this->links[$courseid]['total_score'] += $row_val['score'];
         }
 
     }

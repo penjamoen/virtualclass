@@ -27,11 +27,13 @@ require_once api_get_path(LIBRARY_PATH).'tracking.lib.php';
 
 // Additional javascript
 $htmlHeadXtra[] = '<script type="text/javascript">
+
 function show_image(image,width,height) {
 	width = parseInt(width) + 20;
 	height = parseInt(height) + 20;
 	window_x = window.open(image,\'windowX\',\'width=\'+ width + \', height=\'+ height + \'\');
 }
+
 </script>';
 
 $editMainUserInfo = Security::remove_XSS($_REQUEST['editMainUserInfo']);
@@ -214,18 +216,14 @@ if ($allowedToEditContent)
 
 // Actions
 echo '<div class="actions">';
-$return_back = '<a href="user.php?'.api_get_cidreq().'&amp;origin='.$origin.'">'.Display::return_icon('pixel.gif',get_lang('BackUser'),array('class'=>'toolactionplaceholdericon toolactionback')).get_lang('BackUser').'</a>';
-if (isset($_GET['from_page']) && $_GET['from_page']=='wiki') {
-  $return_back = '<a href="../wiki/index.php?'.api_get_cidreq().'&action=allpages&group_id=">'.Display::return_icon('wiki.png',get_lang('Back')).get_lang('Back').'</a>';
-}
-echo $return_back;
+echo '<a href="user.php?'.api_get_cidreq().'&amp;origin='.$origin.'">'.Display::return_icon('back.png',get_lang('BackUser')).get_lang('BackUser').'</a>';
 if (api_is_allowed_to_edit()) {
 	if (!is_numeric($_GET['editMainUserInfo'])) {
-		echo '<a href="userInfo.php?'.api_get_cidreq().'&amp;origin='.$origin.'&amp;editMainUserInfo='.$userIdViewed.'">'.Display::return_icon('pixel.gif',get_lang('EditUser'),array('class'=>'toolactionplaceholdericon tooledithome')).get_lang('EditUser').'</a>';
+		echo '<a href="userInfo.php?'.api_get_cidreq().'&amp;origin='.$origin.'&amp;editMainUserInfo='.$userIdViewed.'">'.Display::return_icon('edit.png',get_lang('EditUser')).get_lang('EditUser').'</a>';
 	} else {
-		echo '<a href="userInfo.php?'.api_get_cidreq().'&amp;origin='.$origin.'&amp;uInfo='.$userIdViewed.'">'.Display::return_icon('pixel.gif',get_lang('ViewUser'),array('class'=>'toolactionplaceholdericon toolactionunknown')).get_lang('ViewUser').'</a>';
+		echo '<a href="userInfo.php?'.api_get_cidreq().'&amp;origin='.$origin.'&amp;uInfo='.$userIdViewed.'">'.Display::return_icon('members.gif',get_lang('ViewUser')).get_lang('ViewUser').'</a>';
 	}
-	echo '<a href="../mySpace/myStudents.php?'.api_get_cidreq().'&amp;origin=user_course&amp;student='.$userIdViewed.'&amp;details=true&amp;course='.$_course['id'].'">'.Display::return_icon('pixel.gif',get_lang('UserStatistics'),array('class'=>'toolactionplaceholdericon toolactionstatistics')).get_lang('UserStatistics').'</a>';
+	echo '<a href="../mySpace/myStudents.php?'.api_get_cidreq().'&amp;origin=user_course&amp;student='.$userIdViewed.'&amp;details=true&amp;course='.$_course['id'].'">'.Display::return_icon('statistics.png',get_lang('UserStatistics')).get_lang('UserStatistics').'</a>';
 }
 echo '</div>';
 
@@ -278,7 +276,7 @@ elseif ($displayMode == "viewDefList")
 
 			// displays commands
 
-			echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&removeDef=", $thisCat['catId'], "\">", "<img src=\"../img/delete.png\" border=\"0\" alt=\"".get_lang('Remove')."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset))."')) return false;\">", "</a>", "<a href=\"".api_get_self()."?".api_get_cidreq()."&editDef=", $thisCat['catId'], "\">", Display::return_icon('pixel.gif',get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).get_lang('Edit')."\" />", "</a>", "<a href=\"".api_get_self()."?".api_get_cidreq()."&moveUpDef=", $thisCat['catId'], "\">", "<img src=\"../img/up.gif\" border=\"0\" alt=\"".get_lang('MoveUp')."\">", "</a>", "<a href=\"".api_get_self()."?".api_get_cidreq()."&moveDownDef=", $thisCat['catId'], "\">", "<img src=\"../img/down.gif\" border=\"0\" alt=\"".get_lang('MoveDown')."\">", "</a>\n";
+			echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&removeDef=", $thisCat['catId'], "\">", "<img src=\"../img/delete.png\" border=\"0\" alt=\"".get_lang('Remove')."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset))."')) return false;\">", "</a>", "<a href=\"".api_get_self()."?".api_get_cidreq()."&editDef=", $thisCat['catId'], "\">", "<img src=\"../img/edit.png\" border=\"0\" alt=\"".get_lang('Edit')."\" />", "</a>", "<a href=\"".api_get_self()."?".api_get_cidreq()."&moveUpDef=", $thisCat['catId'], "\">", "<img src=\"../img/up.gif\" border=\"0\" alt=\"".get_lang('MoveUp')."\">", "</a>", "<a href=\"".api_get_self()."?".api_get_cidreq()."&moveDownDef=", $thisCat['catId'], "\">", "<img src=\"../img/down.gif\" border=\"0\" alt=\"".get_lang('MoveDown')."\">", "</a>\n";
 		} // end for each
 
 	} // end if ($catList)
@@ -476,20 +474,21 @@ elseif ($displayMode == "viewContentList") // default display
 				{
 					echo	"<td>",
 							"<a href=\"".api_get_self()."?".api_get_cidreq()."&editMainUserInfo=$userIdViewed\">",
-                            Display::return_icon('pixel.gif',get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')),
+							"<img border=\"0\" alt=\"\" src=\"../img/edit.png\" />",
 							"</a>",
 							"</td>";
 				}
-                                if ($is_allowedToTrack) {
+                                if ($is_allowedToTrack)
+                                {
                                    echo	"<td>",
-                                    "<a href=\"../mySpace/myStudents.php?".api_get_cidreq()."&origin=user_course&student=$userIdViewed&details=true&course=".$_course['id']."\">",
-                                    Display::return_icon('pixel.gif',get_lang('Tracking').' : '.$userIdViewed,array('class'=>'actionplaceholdericon actiontracking')),             
-                                    "</a>",
-                                    "</td>";
-                                  
+							"<a href=\"../mySpace/myStudents.php?".api_get_cidreq()."&origin=user_course&student=$userIdViewed&details=true&course=".$_course['id']."\">",
+							"<img border=\"0\" alt=\"".get_lang('Tracking')." : $userIdViewed\" src=\"../img/statistics.png\" />",
+							"</a>",
+							"</td>";
                                 }
 				echo "</tr>",
 				"</table>";
+				//"<p><a href=\"mailto:",$mainUserInfo['email'],"\">",$mainUserInfo['email'],"</a>",
 
 				if (api_get_setting("show_email_addresses") == "true")
 				{
@@ -556,8 +555,7 @@ elseif ($displayMode == "viewContentList") // default display
 			{
 				echo	"<br><br>\n",
 						"<a href=\"".api_get_self()."?".api_get_cidreq()."&editContent=",$thisCat['catId'],"&uInfo=",$userIdViewed,"\">",
-						//"<img src=\"../img/edit.png\" border=\"0\" alt=\"edit\">",
-                        Display::return_icon('pixel.gif',get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')),
+						"<img src=\"../img/edit.png\" border=\"0\" alt=\"edit\">",
 						"</a>\n";
 			}
 

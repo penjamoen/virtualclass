@@ -16,7 +16,7 @@ $language_file = 'admin';
 $cidReset = true;
 
 // including the global Dokeos file
-require_once ('../inc/global.inc.php');
+require ('../inc/global.inc.php');
 
 // setting the tabs
 $this_section = SECTION_PLATFORM_ADMIN;

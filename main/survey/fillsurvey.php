@@ -40,9 +40,8 @@ if (isset($_GET['origin'])) {
 	$origin =  Security::remove_XSS($_GET['origin']);
 	$origin_string = '&origin='.$origin;
 }
-if ($origin == 'learnpath') {
-$htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
-}
+
+//$htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
 $htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/customInput.jquery.js" language="javascript"></script>';
 
 // breadcrumbs
@@ -64,6 +63,67 @@ if ($origin == 'learnpath') {
 		$('input').customInput();
 	});
 	</script>	
+<style>
+	/* wrapper divs */
+.custom-checkbox, .custom-radio { position: relative; }
+	
+/* input, label positioning */
+.custom-checkbox input, 
+.custom-radio input {
+	position: absolute;
+	left: 2px;
+	top: 3px;
+	margin: 0;
+	z-index: 0;
+}
+
+.custom-checkbox label, 
+.custom-radio label {
+	display: block;
+	position: relative;
+	z-index: 1;
+	font-size: 1.0em;
+	padding-right: 1em;
+	line-height: 1;
+	padding: .5em 0 .5em 30px;
+	margin: 0 0 .3em;
+	cursor: pointer;
+}
+
+.custom-checkbox label {
+	background: url(../img/checkbox.gif) no-repeat; 
+}
+
+.custom-radio label { 
+	background: url(../img/radiobutton.gif) no-repeat; 
+}
+.custom-checkbox label, .custom-radio label {
+	background-position: -10px -14px;
+	
+}
+
+.custom-checkbox label.hover,
+.custom-checkbox label.focus,
+.custom-radio label.hover,
+.custom-radio label.focus {
+	background-position: -10px -114px;	
+}
+
+.custom-checkbox label.checked, 
+.custom-radio label.checked {
+	background-position: -10px -214px;	
+}
+
+.custom-checkbox label.checkedHover, 
+.custom-checkbox label.checkedFocus {
+	background-position: -10px -314px;	
+}
+
+.custom-checkbox label.focus, 
+.custom-radio label.focus {
+	outline: 1px dotted #ccc;	
+}
+	</style>
 <?php
 
 // start the content div
@@ -142,7 +202,6 @@ if ($survey_invitation['answered'] == 1 && !isset($_GET['user_id']))
 // checking if there is another survey with this code.
 // If this is the case there will be a language choice
 $sql = "SELECT * FROM $table_survey WHERE code='".Database::escape_string($survey_invitation['survey_code'])."'";
-
 $result = Database::query($sql, __FILE__, __LINE__);
 
 if (Database::num_rows($result) > 1)
@@ -182,8 +241,8 @@ else
 
 // getting the survey information
 $survey_data = survey_manager::get_survey($survey_invitation['survey_id']);
-//echo '<pre>';print_r($survey_data);echo '</pre>';exit;
-
+//echo '<pre>';print_r($survey_data);echo '</pre>';
+//echo $survey_data['form_fields'];echo '-<br>-';echo $survey_data['show_form_profile'];
 $survey_data['survey_id'] = $survey_invitation['survey_id'];
 //print_r($survey_data);
 // storing the answers
@@ -307,7 +366,7 @@ if (count($_POST)>0)
 
 // displaying the survey title and subtitle (appears on every page)
 //echo '<div id="content">';
-echo '<div class="actions" style="height:auto;min-height:300px;">';
+echo '<div class="actions" style="height:auto;min-height:400px;">';
 echo '<div id="survey_title">'.$survey_data['survey_title'].'</div>';
 echo '<div id="survey_subtitle">'.$survey_data['survey_subtitle'].'</div>';
 
@@ -621,20 +680,18 @@ if ($survey_data['form_fields'] && $survey_data['anonymous'] == 0 && is_array($u
 // displaying the survey thanks message
 if (isset($_POST['finish_survey']))
 {
-	echo '<div id="survey_content" class="survey_content"><strong>'.get_lang('SurveyFinished').'</strong> <br />'.$survey_data['survey_thanks'].'<br/><br/><a href="../../courses/'.api_get_course_id().'/index.php">'.get_lang('CourseHome').'</div>';
+	echo '<div id="survey_content" class="survey_content"><strong>'.get_lang('SurveyFinished').'</strong> <br />'.$survey_data['survey_thanks'].'</div>';
 	survey_manager::update_survey_answered($survey_data['survey_id'], $survey_invitation['user'], $survey_invitation['survey_code']);
 	unset($_SESSION['paged_questions']);
 	unset($_SESSION['page_questions_sec']);
  // Close content
  echo '</div>';
  
- echo '</div>';
-
-if ($origin != 'learnpath') {
-        echo '<div class="actions"></div>';
+/* echo '<div class="actions">';
+ echo '&nbsp;';
+ echo '</div>';*/
 	Display :: display_footer();
-}
-exit();
+	exit();
 }
 
 // sets the random questions
@@ -1182,17 +1239,6 @@ if (isset($_GET['show']))
 	}
 	echo '<form id="question" name="question" method="post" action="' . api_get_self() .'?'.$add_parameters. 'course=' . $g_c . '&invitationcode=' . $g_ic . '&show=' . $show . '&cidReq=' . $g_cr .$origin_string. '&count='.$brecount.'">';
 	echo '<input type="hidden" name="language" value="'.$p_l.'" />';
-	echo '<div style="padding-right:20px;">';
-	if (($show < $numrows))
-	{
-		//echo '<a href="'.api_get_self().'?survey_id='.$survey_id.'&amp;show='.$limit.'">NEXT</a>';
-		  echo '<button type="submit" name="next_survey_page" class="next">'.get_lang('Validate').'   </button>';
-	}
-	if ($show >= $numrows)
-	{
-		echo '<button type="submit" name="finish_survey" class="next">'.get_lang('FinishSurvey').'  </button>';
-	}
-	echo '</div><br/><br/>';
 	if(is_array($questions) && count($questions)>0)
 	{
 		foreach ($questions as $key=>$question)
@@ -1205,7 +1251,7 @@ if (isset($_GET['show']))
 	}
 
 	echo '</div>'; // close the action div
-/*	echo '<div style="padding-right:20px;">';
+	echo '<div style="padding-right:20px;">';
 	if (($show < $numrows))
 	{
 		//echo '<a href="'.api_get_self().'?survey_id='.$survey_id.'&amp;show='.$limit.'">NEXT</a>';
@@ -1215,7 +1261,7 @@ if (isset($_GET['show']))
 	{
 		echo '<button type="submit" name="finish_survey" class="next">'.get_lang('FinishSurvey').'  </button>';
 	}
-	echo '</div>';*/
+	echo '</div>';
 	echo '</form>';
 
 // Displaying the form with the questions
@@ -1249,9 +1295,7 @@ echo '</div>';
 //echo '<div class="actions">';
 //echo '</div>';
 // Footer
-if ($origin != 'learnpath') {
-Display::display_footer(); 
-}
+Display :: display_footer();
 
 /**
  * Check if this survey has ended. If so, display message and exit rhis script

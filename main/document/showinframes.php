@@ -39,7 +39,7 @@ if (!empty($_GET['nopages'])) {
 	$nopages=Security::remove_XSS($_GET['nopages']);
 	if ($nopages==1) {
 		require_once api_get_path(INCLUDE_PATH).'reduced_header.inc.php';
-		echo '<div id="content"><br/><br/><div class="confirmation-message">'.get_lang('FileNotFound').'</div></div>';
+		Display::display_error_message(get_lang('FileNotFound'));
 	}
 	exit;
 }
@@ -51,7 +51,7 @@ $interbreadcrumb[]= array ('url'=>'./document.php', 'name'=> get_lang('Documents
 
 $nameTools = get_lang('Documents');
 
-$file = Security::remove_XSS($_GET['file']);
+$file = Security::remove_XSS(urldecode($_GET['file']));
 /*
 ==============================================================================
 		Main section
@@ -82,41 +82,28 @@ $curdirpathurl = Security::remove_XSS($_REQUEST['curdirpath']);
 
 Display :: display_tool_header($nameTools, "Doc");
 echo '<div class="actions">';
-echo '<a href="document.php?'.api_get_cidreq().'&curdirpath='.$curdirpathurl.$req_gid.'">'.Display::return_icon('pixel.gif',get_lang('Documents'),array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('Documents').'</a>';
+echo '<a href="document.php?'.api_get_cidreq().'&curdirpath='.urlencode($curdirpathurl).$req_gid.'">'.Display::return_icon('go_previous_32.png',get_lang('Documents')).' '.get_lang('Documents').'</a>';
 if ($is_allowed_to_edit) {
 	if (!$is_certificate_mode) {
-	  echo '<a href="create_document.php?'.api_get_cidreq().'&amp;dir='.$curdirpathurl.$req_gid.'">'.Display::return_icon('pixel.gif', get_lang('CreateDoc'), array('class' => 'toolactionplaceholdericon toolactiondocumentcreate')).' '.get_lang('CreateDoc').'</a>';
+		echo '<a href="create_document.php?'.api_get_cidreq().'&amp;dir='.urlencode($curdirpathurl).$req_gid.'">'.Display::return_icon('create_doc.png',get_lang('CreateDoc')).' '.get_lang('CreateDoc').'</a>';
 	} else {
-	  echo '<a href="create_document.php?'.api_get_cidreq().'&amp;dir='.$curdirpathurl.$req_gid.'&amp;certificate=true&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('CreateCertificate'), array('class' => 'toolactionplaceholdericon toolactiondocumentcreate')).' '.get_lang('CreateCertificate').'</a>';
+		echo '<a href="create_document.php?'.api_get_cidreq().'&amp;dir='.urlencode($curdirpathurl).$req_gid.'&amp;certificate=true&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('create_doc.png',get_lang('CreateCertificate')).' '.get_lang('CreateCertificate').'</a>';
 	}
-	echo '<a href="template_gallery.php?doc=N&dir='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('Templates'), array('class' => 'toolactionplaceholdericon toolactiontemplates')).' '.get_lang('Templates').'</a>';
-	echo '<a href="mediabox.php?curdirpath='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('Mediabox'), array('class' => 'toolactionplaceholdericon toolactionmediabox')).' '.get_lang('Mediabox').'</a>';
-	echo '<a href="upload.php?'.api_get_cidreq().'&amp;path='.$curdirpathurl.$req_gid.'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('UplUpload'), array('class' => 'toolactionplaceholdericon toolactionupload')).' '.get_lang('UplUpload').'</a>';
+	echo '<a href="template_gallery.php?doc=N&'.  api_get_cidreq().'">'.Display::return_icon('tools_wizard_48.png',get_lang('Templates')).' '.get_lang('Templates').'</a>';
+	echo '<a href="mediabox.php?curdirpath='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'">'.Display::return_icon('mediaplayer.png',get_lang('Mediabox')).' '.get_lang('Mediabox').'</a>';
+	echo '<a href="upload.php?'.api_get_cidreq().'&amp;path='.$curdirpathurl.$req_gid.'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('up.png',get_lang('UplUpload')).' '.get_lang('UplUpload').'</a>';
 }
 echo '</div>';
 ?>
 <?php
 if (file_exists($file_url_sys)) {
   $url = $file_url_web.'?'.api_get_cidreq().'&rand='.mt_rand(1,10000);
-  $path_info = pathinfo($file_url_sys);
-  // Check only HTML documents
-  if ($path_info['extension'] == 'html') {
-      $get_file_content = file_get_contents($file_url_sys);
-      $matches = preg_match('/<embed/i', $get_file_content,$matches);
-      // Only for files that has embed tags
-      if (count($matches) > 0) {
-          $get_file_content = str_replace(array('wmode="opaque"','wmode="transparent"'), "", $get_file_content);
-          $get_file_content = str_replace(array('<embed'), array('<embed wmode="opaque" '), $get_file_content);
-          file_put_contents($file_url_sys, $get_file_content);
-      }
-  }
-
 } else {
   $url = 'showinframes.php?nopages=1';
 }
 ?>
 <div id="content_with_secondary_actions">
-<iframe id="content_id" name="content_id" src ="<?php echo $url; ?>" width="100%" height="700" frameborder="0">
+<iframe id="content_id" src ="<?php echo $url; ?>" width="100%" height="700" frameborder="0">
   <p>Your browser does not support iframes.</p>
 </iframe>
 </div>

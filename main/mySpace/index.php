@@ -92,12 +92,7 @@ function rsort_users($a, $b) {
 $is_coach = api_is_coach();
 $is_platform_admin = api_is_platform_admin();
 
-// why teacher role if is emtpy?
 $view = isset($_GET['view']) ? $_GET['view'] : 'teacher';
-
-if ($is_platform_admin) {
-    $view = 'admin';
-}
 
 $menu_items = array();
 global $_configuration;
@@ -133,10 +128,16 @@ if (api_is_allowed_to_create_course()) {
 		if (!$is_coach && !$is_platform_admin) {
 			$view = 'teacher';
 		}
-		$menu_items[] = '<a href="trainings.php">'.Display::return_icon('pixel.gif',get_lang('TrackTrainings'), array('class' => 'toolactionplaceholdericon toolactionadmincourse')).get_lang('TrackTrainings').'</a>';
+		//if ($view == 'teacher') {
+			//$menu_items[] = Display::return_icon('adminUsers.png',get_lang('TeacherInterface')).get_lang('TeacherInterface');
+			$menu_items[] = '<a href="trainings.php">'.Display::return_icon('admincourse.png',get_lang('TrackTrainings')).get_lang('TrackTrainings').'</a>';
+			//$title = get_lang('YourCourseList');
+  /* $title = '';
+		} else {
+			$menu_items[] = '<a href="'.api_get_self().'?view=teacher">'.Display::return_icon('adminUsers.png',get_lang('TeacherInterface')).get_lang('TeacherInterface').'</a>';
+		}*/
 	}
 }
-
 if ($is_coach) {
 	if ($nb_teacher_courses == 0 && !$is_platform_admin) {
 		$view = 'coach';
@@ -145,7 +146,7 @@ if ($is_coach) {
 		$menu_items[] = get_lang('CoachInterface');
 		$title = get_lang('YourStatistics');
 	} else {
-		$menu_items[] = '<a href="'.api_get_self().'?view=coach">'.Display::return_icon('pixel.gif',get_lang('TrackTrainings'), array('class' => 'toolactionplaceholdericon toolactiontutorview')).get_lang('CoachInterface').'</a>';
+		$menu_items[] = '<a href="'.api_get_self().'?view=coach">'.get_lang('CoachInterface').'</a>';
 	}
 }
 if ($is_platform_admin) {
@@ -154,8 +155,7 @@ if ($is_platform_admin) {
 	}
 	//if ($view == 'admin') {
 		//$menu_items[] = Display::return_icon('adminsession.png', get_lang('AdminInterface')).get_lang('AdminInterface');
-// var $menu_items		
-                $menu_items[] = '<a href="trainings.php?view=admin">'.Display::return_icon('pixel.gif',get_lang('TrackSessions'), array('class' => 'toolactionplaceholdericon toolactionatimesession')).get_lang('TrackSessions').'</a>';
+		$menu_items[] = '<a href="trainings.php?view=admin">'.Display::return_icon('adminsession.png', get_lang('TrackSessions')).get_lang('TrackSessions').'</a>';
 		$title = get_lang('CoachList');
 	/*} else {
 		$menu_items[] = '<a href="'.api_get_self().'?view=admin">'.Display::return_icon('adminsession.png', get_lang('AdminInterface')).get_lang('AdminInterface').'</a>';
@@ -168,9 +168,8 @@ if ($_user['status'] == DRH) {
 }
 
 echo '<div class="actions print_invisible">';
-	echo '<a href="index.php">'.Display::return_icon('pixel.gif',get_lang('Report'), array('class' => 'toolactionplaceholdericon toolactionstatistics')).get_lang('Report').'</a>';
-// var $menu_items,	 
-        $nb_menu_items = count($menu_items);
+	echo '<a href="index.php">'.Display::return_icon('report_32.png', get_lang('Report')).get_lang('Report').'</a>';
+	$nb_menu_items = count($menu_items);
 	if ($nb_menu_items > 1) {
 		foreach ($menu_items as $key => $item) {
 			echo $item;
@@ -180,8 +179,8 @@ echo '<div class="actions print_invisible">';
 		}
 	}
 
-	echo (isset($_GET['display']) &&  $_GET['display'] == 'useroverview')? '' : '<a href="'.api_get_self().'?export=csv&view='.$view.'">'.Display::return_icon('pixel.gif',get_lang('ExportAsXLS'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('ExportAsXLS').'</a>';
-	echo '<a href="javascript:void(0);" onclick="javascript: window.print()">'.Display::return_icon('pixel.gif',get_lang('Print'), array('class' => 'toolactionplaceholdericon toolactionprint32')).get_lang('Print').'</a> ';
+	echo (isset($_GET['display']) &&  $_GET['display'] == 'useroverview')? '' : '<a href="'.api_get_self().'?export=csv&view='.$view.'"><img align="absbottom" src="../img/excel_32.png">&nbsp;'.get_lang('ExportAsXLS').'</a>';
+	echo '<a href="javascript:void(0);" onclick="javascript: window.print()"><img align="absbottom" src="../img/print32.png">&nbsp;'.get_lang('Print').'</a> ';
 echo '</div>';
 
 echo '<div id="content">'; 
@@ -202,6 +201,7 @@ if ($is_coach && $view == 'coach') {
 
 if ($view == 'coach' || $view == 'drh') {
 	$nb_students = count($students);
+
 	$total_time_spent = 0;
 	$total_courses = 0;
 	$avg_total_progress = 0;
@@ -484,9 +484,8 @@ if (api_is_allowed_to_create_course() && $view == 'teacher') {
 			get_lang('AvgAssignments', '')
 		);	
 		
-		//$html_table = $table->get_all_table_html();
-        $all_data = Tracking::get_course_data(null,null,1,null,false);
-		//$html_table = $table->get_table_html();
+		
+		$html_table = $table->get_table_html();
   echo '<br/>';
 		include(api_get_path(SYS_CODE_PATH).'mySpace/charts/trainings.js.php');
   echo '<br/>';
@@ -631,7 +630,7 @@ if ($is_platform_admin && $view == 'admin') {
 			$table_row[] = $nb_students;
 			$table_row[] = $nb_courses;
 			$table_row[] = $nb_sessions;
-			$table_row[] = '<center><a href="session.php?id_coach='.$coaches['user_id'].'">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails')).'</a></center>';
+			$table_row[] = '<center><a href="session.php?id_coach='.$coaches['user_id'].'"><img src="'.api_get_path(WEB_IMG_PATH).'2rightarrow.gif" border="0" /></a></center>';
 			$all_datas[] = $table_row;
 
 			if ($is_western_name_order) {

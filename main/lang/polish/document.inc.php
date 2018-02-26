@@ -106,5 +106,4 @@ $ReadOnly = "Tylko do odczytu";
 $ReadOnlyFile = "Ten plik jest tylko do odczytu";
 $FileNotFound = "Plik nie istnieje";
 $TemplateTitleResources = "Zasoby";
-$TemplateTitleGlossary = "S&#322;ownik poj&#281;&#263;";
 ?>

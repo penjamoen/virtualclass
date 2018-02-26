@@ -40,6 +40,7 @@ $langMe = "我";
 $langSystemAnnouncements = "系统公告";
 $langHelpMaj = "帮助";
 $langNotRegistered = "未注册";
+$langAdmin = "平台管理";
 $Login = "&#30331;&#24405;";
 $langRegisterForCourse = "注册课程";
 $langUnregisterForCourse = "注销课程";

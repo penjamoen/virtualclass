@@ -74,12 +74,10 @@ Display :: display_header($tool_name);
 echo '<div id="content" class="maxcontent">';
 
 // Check access rights
-if(!api_is_session_admin()){
-	if (!api_is_allowed_to_create_course()) {
-		Display :: display_error_message(get_lang("NotAllowed"));
-		Display::display_footer();
-		exit;
-	}
+if (!api_is_allowed_to_create_course()) {
+	Display :: display_error_message(get_lang("NotAllowed"));
+	Display::display_footer();
+	exit;
 }
 // Get all course categories
 $table_course_category = Database :: get_main_table(TABLE_MAIN_CATEGORY);
@@ -106,10 +104,10 @@ $form->applyFilter('category_code', 'html_filter');
 CourseManager::select_and_sort_categories($categories_select);
 $form->addElement('static',null,null, get_lang('TargetFac'));
 
-$form->add_textfield('wanted_code', get_lang('Code'),false,array('size'=>'$maxlength','maxlength'=>$maxlength));
+/*$form->add_textfield('wanted_code', get_lang('Code'),false,array('size'=>'$maxlength','maxlength'=>$maxlength));
 $form->applyFilter('wanted_code', 'html_filter');
-$form->addRule('wanted_code',get_lang('Max'),'maxlength',$maxlength);
-//$form->addElement('hidden','wanted_code','');
+$form->addRule('wanted_code',get_lang('Max'),'maxlength',$maxlength);*/
+$form->addElement('hidden','wanted_code','');
 
 $titular= &$form->add_textfield('tutor_name', get_lang('Professors'),null,array('size'=>'60','disabled'=>'disabled'));
 $form->addElement('static',null,null,get_lang('ExplicationTrainers'));
@@ -173,7 +171,7 @@ if ($form->validate()) {
                 // Display image
                 echo '<div style="float: right; text-align: right; width: 30%;margin-right:20px;">';
                 echo Display::return_icon('KnockOnWood.png',get_lang('CreateSite'));
-                echo '</div><div class="clear"></div></div>';
+                echo '</div></div>';
                
 		echo '<button onclick="redirect_page()" class="back"  type="button"  name="submit_save" id="submit_save">'.get_lang('Enter').'</button><br/><br/>';
                 

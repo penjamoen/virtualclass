@@ -30,7 +30,6 @@ $langLinkURL = "URL da ligazón";
 $langWelcomeToOnlineConf = "Benvido á <b>Conferencia Online</b>";
 $langNoLinkAvailable = "Non hai ligazóns dispoñibles";
 $langChat_reset_by = "reiniciar o chat";
-$langAdmin = "Administrador da plataforma";
 $OrFile = "Ou ficheiro";
 $langCallSent = "Enviouse a chamada para chat. Esperando a aprovación da outra persoa.";
 $langChatDenied = "A túa chamada non foi admitida pola outra persoa.";

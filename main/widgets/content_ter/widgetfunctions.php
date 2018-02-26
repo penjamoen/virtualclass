@@ -39,11 +39,7 @@ switch ($_POST['action']) {
 		break;
 	case 'editcontent_ter' : 
 		content_ter_display_form ($_POST['content_ter_id']);
-		break;
-	case 'savecontentorder'	:
-		if($_POST['widget'] == 'content_ter'){
-			save_content_ter_order($_POST['content_ter']);
-	}
+		break;		
 }
 switch ($_GET ['action']) {
 	case 'get_widget_information' :
@@ -105,7 +101,7 @@ function content_ter_get_content() {
 			</style>';	
 	
 	if (api_is_allowed_to_edit ()) {
-		echo '<a href="' . api_get_path ( WEB_PATH ) . 'main/widgets/content_ter/widgetfunctions.php?action=addcontent_ter" title="' . get_lang ( 'AddContent' ) . '" class="dialoglink">' . Display::return_icon ( 'new_test.gif' ) . ' ' . get_lang ( 'AddContent' ) . '</a>';
+		echo '<a href="' . api_get_path ( WEB_PATH ) . 'main/widgets/content_ter/widgetfunctions.php?action=addcontent_ter" title="' . get_lang ( 'Addcontent' ) . '" class="dialoglink">' . Display::return_icon ( 'new_test.gif' ) . ' ' . get_lang ( 'AddContent' ) . '</a>';
 		;
 	}
 	
@@ -191,25 +187,12 @@ function content_ter_get_content() {
 		$sql = "SELECT *, content_ter.id as content_ter_id, content_ter.title as content_ter_title FROM $table_content_ter ORDER BY content_ter.display_order DESC";
 	}
 	$result = Database::query ( $sql, __FILE__, __LINE__ );
-	echo '<script>';
-	echo '$("div.contentterwrapper").sortable({ 
-			handle:	".contentmovehandle",
-			update: function(){ 
-				var parameters = "action=savecontentorder&widget=content_ter&"+$(this).sortable("serialize"); 
-				$.post("'.api_get_path(WEB_CODE_PATH).'widgets/content_ter/widgetfunctions.php", parameters, function(theResponse){
-					$("#debug").html(theResponse);
-				});
-				}
-			});';	
-	echo '</script>';
-	echo '<div class="contentterwrapper">';
 	while ( $row = Database::fetch_array ( $result, 'ASSOC' ) ) {
 		$content_ter = '';
 		echo '<div id="content_ter_' . $row ['content_ter_id'] . '" class="content_ter" style="border: 1px solid #ddd; margin-bottom: 10px; padding: 5px;">';
 		echo '<div class="content_ter_title">' . $row ['content_ter_title'];
 		if (api_is_allowed_to_edit ()) {
 			echo '<span class="content_teractions">';
-			Display::display_icon('draggable.png', get_lang('Move'), array('height' => '22px', 'class' => 'contentmovehandle'));
 			echo '<a href="' . api_get_path ( WEB_PATH ) . 'main/widgets/content_ter/widgetfunctions.php?action=editcontent_ter&content_ter_id=' . $row ['content_ter_id'] . '" title="' . get_lang ( 'EditContent' ) . '" class="dialoglink">' . Display::return_icon ( 'edit.png' ) . '</a>';
 			echo '<a href="' . $row ['content_ter_id'] . '" title="' . get_lang ( 'DeleteContent' ) . '" class="deletecontent_ter">' . Display::return_icon ( 'delete.png' ) . '</a>';
 			echo '</span>';
@@ -230,14 +213,14 @@ function content_ter_get_content() {
 		if ($row ['comments_allowed']) {
 			echo '<div class="content_ter_number_of_comments"><a href="' . $row ['content_ter_id'] . '"><span class="number">' . ( int ) $comment [$row ['content_ter_id']] . '</span> ' . get_lang ( 'Comments' ) . '</a></div>';
 			if (!api_is_anonymous()){
-				echo '<div class="content_ter_add_comment"><a href="' . $row ['content_ter_id'] . '" title="' . get_lang ( 'AddContent' ) . '" class="">' . get_lang ( 'AddComment' ) . '</a></div>';
+				echo '<div class="content_ter_add_comment"><a href="' . $row ['content_ter_id'] . '" title="' . get_lang ( 'Addcontent' ) . '" class="">' . get_lang ( 'AddComment' ) . '</a></div>';
 			}
 		}
 		echo '<div class="content_ter_list" style="display:none;"></div>';
 		echo '</div>';
 		echo '</div>';
 	}
-	echo '</div>';
+
 }
 
 function content_ter_get_content_ter_info($content_ter_id=0){
@@ -292,7 +275,7 @@ function content_ter_display_form($content_ter_id=0) {
 	$group [] = & HTML_QuickForm::createElement ( 'radio', 'content_ter_comments_allowed', null, get_lang ( 'Yes' ), 1 );
 	$group [] = & HTML_QuickForm::createElement ( 'radio', 'content_ter_comments_allowed', null, get_lang ( 'No' ), 0 );
 	$form->addGroup ( $group, 'content_ter_comments_allowed', get_lang ( 'AreCommentsAllowed' ), '&nbsp;' );
-	$form->addElement ( 'style_submit_button', 'submit_add_content_ter', get_lang ( 'SaveContent' ), 'class="add"' );
+	$form->addElement ( 'style_submit_button', 'submit_add_content_ter', get_lang ( 'Savecontent' ), 'class="add"' );
 	
 	// setting the rules
 	$form->addRule ( 'content_ter_title', '<div class="required">' . get_lang ( 'ThisFieldIsRequired' ), 'required' );
@@ -385,10 +368,6 @@ function content_ter_display_form($content_ter_id=0) {
 function content_ter_save($formelements) {
 	global $_course, $_user;
 	
-	// access restriction
-	if (!api_is_allowed_to_edit ()) {
-		return false;
-	}
 	// database table definitions
 	$table_documents = Database::get_course_table ( TABLE_DOCUMENT );
 	if (!empty($_course) AND is_array($_course)){
@@ -531,12 +510,6 @@ function content_ter_install() {
 }
 
 function content_ter_comment_display_form() {
-	// access restriction
-	/*
-	if (!api_is_allowed_to_edit ()) {
-		return false;
-	}
-	*/
 	require_once (api_get_path ( LIBRARY_PATH ) . 'formvalidator/FormValidator.class.php');
 	
 	// we have to do this without ajax because the current fckeditor implementation in Dokeos does not support ajaxsubmit (too many changes)
@@ -551,7 +524,7 @@ function content_ter_comment_display_form() {
 	$form->addElement ( 'style_submit_button', 'submit_add_comment', get_lang ( 'SaveComment' ), 'class="add submit_add_comment"' );
 	
 	// setting the rules
-	$form->addRule ( 'comment_title', '<div class="required">' . get_lang ( 'ThisFieldIsRequired' ), 'required' );
+	$form->addRule ( 'content_ter_title', '<div class="required">' . get_lang ( 'ThisFieldIsRequired' ), 'required' );
 	
 	// default values
 	$defaults ['action'] = 'save_comment';
@@ -716,31 +689,6 @@ function delete_content_ter($content_ter_id) {
 	if (!empty($_course) AND is_array($_course)){
 		include_once (api_get_path ( LIBRARY_PATH ) . 'document.lib.php');
 		DocumentManager::delete_document ( $_course, $content_ter_info ['path'], api_get_path(SYS_COURSE_PATH).$_course['path']."/document");
-	}
-}
-
-function save_content_ter_order($content){
-	global $_course;
-
-	// access restriction
-	if (!api_is_allowed_to_edit ()) {
-		return false;
-	}
-
-	// database table definitions
-	if (!empty($_course) AND is_array($_course)){
-		$table_content = Database::get_course_table ('content_ter');
-	} else {
-		$table_content = Database::get_main_table ('content_ter');
-	}
-
-	$max = count($content);
-
-	$counter = $max;
-	foreach ($content as $key=>$contentid){
-		$sql = "UPDATE $table_content SET display_order = '".Database::escape_string($counter)."' WHERE id = '".Database::escape_string($contentid)."'";
-		$result = Database::query ( $sql, __FILE__, __LINE__ );
-		$counter--;
 	}
 }
 ?>

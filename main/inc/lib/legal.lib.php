@@ -199,7 +199,7 @@ class LegalManager {
 			$versions[]=$legal[0];
 			$languages[]=$legal[1];
 			if (strlen($legal[2])>2000)
-				$legal[2]= $legal[2];//substr($legal[2],0,2000).' ... ';
+				$legal[2]= substr($legal[2],0,2000).' ... ';
 			if ($legal[4]==0)
 				$legal[4]= get_lang('HTMLText');
 			elseif($legal[4]==1)

@@ -192,7 +192,7 @@ function handle_plugins()
 
 			// Fourth column: a link to edit the plugin
 			echo "\t\t<div style=\"float:left; width: 10%;\">\n";
-			echo "\t\t\t<a href=\"settings.php?category=Plugins&amp;action=edit&amp;plugin=".$testplugin."\">".Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionedit'))."</a>";
+			echo "\t\t\t<a href=\"settings.php?category=Plugins&amp;action=edit&amp;plugin=".$testplugin."\">".Display::return_icon('edit.png')."</a>";
 			echo "\t\t</div>\n";			
 
 			if(empty($usedplugins))

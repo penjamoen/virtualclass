@@ -176,5 +176,4 @@ $Feedback3 = "Üçüncü Mesaj";
 $FProgress = "&#304;lerleme";
 $PutATimeLimit = "Süre s&#305;n&#305;r&#305; ayarla";
 $StandardTask = "Standart Görev";
-$ThePageHasBeenExportedToDocArea = "Sayfa belge arac&#305;na aktar&#305;ld&#305;";
 ?>

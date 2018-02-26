@@ -124,7 +124,4 @@ $InstallationStep5Help = "Dokeos namestitveni korak 5: konfiguracijske nastavitv
 $InstallationStep6Help = "Dokeos namestitveni korak 6: zadnja preverka pred namestitvijo";
 $InstallationInstallationProcessHelp = "Dokeos namestitveni proces";
 $Up2DateManualDokeosCom = "Preberite ažuriran vodič po namestitvi na http://www.dokeos.com";
-$MysqlConnectionOk = "MySQL poveza je uspela";
-$ApplySettingsToGroups = "Privzeto";
-$IfStillTypingPleaseContinue = "Če še vedno tipkate, prosim, nadaljujte";
 ?>

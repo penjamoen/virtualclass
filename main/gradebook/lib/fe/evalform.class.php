@@ -277,9 +277,7 @@ class EvalForm extends FormValidator
 	protected function build_add_form() {
 		$this->setDefaults(array (
 		'hid_user_id' => $this->evaluation_object->get_user_id(), 'hid_category_id' => $this->evaluation_object->get_category_id(), 'hid_course_code' => $this->evaluation_object->get_course_code(), 'date' => time()));
-		$this->addElement('html','<table width="100%"><tr><td align="center" width="150px">'.Display::return_icon('pixel.gif',get_lang('TrackTrainings'), array('class' => 'pen')).'
-                   </td>');
-                /*<img align="center" src="../img/exam_64.png">*/
+		$this->addElement('html','<table width="100%"><tr><td align="center" width="150px"><img align="center" src="../img/exam_64.png"></td>');
 		$this->addElement('html','<td>');	
 		$this->build_basic_form(0);
 		$this->addElement('html','</td></tr></table>');
@@ -300,7 +298,7 @@ class EvalForm extends FormValidator
 		'hid_id' => $this->evaluation_object->get_id(), 'name' => $this->evaluation_object->get_name(), 'description' => $this->evaluation_object->get_description(), 'hid_user_id' => $this->evaluation_object->get_user_id(), 'hid_course_code' => $this->evaluation_object->get_course_code(), 'hid_category_id' => $this->evaluation_object->get_category_id(), 'date' => $this->evaluation_object->get_date(), 'weight' => $this->evaluation_object->get_weight(), 'max' => $this->evaluation_object->get_max(), 'visible' => $this->evaluation_object->is_visible()));
 		$id_current=isset($this->id)?$this->id :null;
 		$this->addElement('hidden', 'hid_id',$id_current);
-		$this->addElement('html','<table width="100%"><tr><td align="center" width="150px">'.Display::return_icon('pixel.gif','',array('class'=>'pen')).'</td>');
+		$this->addElement('html','<table width="100%"><tr><td align="center" width="150px"><img align="center" src="../img/exam_64.png"></td>');
 		$this->addElement('html','<td>');
 		$this->build_basic_form(1);
 		$this->addElement('html','</td></tr></table>');

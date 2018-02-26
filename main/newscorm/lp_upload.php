@@ -54,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'
 	switch($type){
 		case 'scorm':
 			require_once('scorm.class.php');
-                        require_once api_get_path(LIBRARY_PATH).'searchengine.lib.php';
 			$oScorm = new scorm();
 			$manifest = $oScorm->import_package($_FILES['user_file'],$current_dir);
 			if(!empty($manifest)){
@@ -71,19 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'
 			$oScorm->set_proximity($proximity);
 			$oScorm->set_maker($maker);
 			$oScorm->set_jslib('scorm_api.php');
-                        if (api_get_setting('search_enabled') === 'true' && extension_loaded('xapian')) {
-                            $searchkey = new SearchEngineManager();
-                            $searchkey->course_code = api_get_course_id();
-                            $searchkey->idobj = $oScorm->get_id();
-                            $searchkey->value = $_REQUEST['terms'];
-                            $searchkey->tool_id = TOOL_LEARNPATH;
-                            
-                            $learn = new learnpath(api_get_course_id(), $oScorm->get_id(), api_get_user_id());
-                            $learn->search_engine_save();
-                            
-                        }
-                        
-                        
 			break;
 		case 'aicc':
 			require_once('aicc.class.php');
@@ -103,8 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'
 			break;
 		case 'oogie':
 			require_once('openoffice_presentation.class.php');
-			//$take_slide_name = empty($_POST['take_slide_name']) ? false : true;
-                        $take_slide_name = true;
+			$take_slide_name = empty($_POST['take_slide_name']) ? false : true;
 			$o_ppt = new OpenofficePresentation($take_slide_name);
 			$first_item_id = $o_ppt -> convert_document($_FILES['user_file']);
 			break;

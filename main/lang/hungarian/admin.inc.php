@@ -679,9 +679,4 @@ $TabsMyGradebook = "Leckekönyvem fül";
 $VisioUseRtmptTitle = "Használja az rtmpt protokollt";
 $EnableSearchTitle = "Full-text keresési lehet&#337;ség";
 $AddUrl = "URL hozzáadása";
-$GlobalAgenda = "Központi naptár";
-$ExportCourses = "Kurzusok exportálása";
-$Visibility = "Láthatóság";
-$GroupPermissions = "Csoport jogosultságok";
-$Notes = "Jegyzetek";
 ?>

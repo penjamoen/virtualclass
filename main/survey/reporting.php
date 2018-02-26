@@ -152,12 +152,73 @@ Display::display_tool_header();
 		$('input').customInput();
 	});
 	</script>	
+<style>
+	/* wrapper divs */
+.custom-checkbox, .custom-radio { position: relative; }
+	
+/* input, label positioning */
+.custom-checkbox input, 
+.custom-radio input {
+	position: absolute;
+	left: 2px;
+	top: 3px;
+	margin: 0;
+	z-index: 0;
+}
+
+.custom-checkbox label, 
+.custom-radio label {
+	display: block;
+	position: relative;
+	z-index: 1;
+	font-size: 1.0em;
+	padding-right: 1em;
+	line-height: 1;
+	padding: .5em 0 .5em 30px;
+	margin: 0 0 .3em;
+	cursor: pointer;
+}
+
+.custom-checkbox label {
+	background: url(../img/checkbox.gif) no-repeat; 
+}
+
+.custom-radio label { 
+	background: url(../img/radiobutton.gif) no-repeat; 
+}
+.custom-checkbox label, .custom-radio label {
+	background-position: -10px -14px;
+	
+}
+
+.custom-checkbox label.hover,
+.custom-checkbox label.focus,
+.custom-radio label.hover,
+.custom-radio label.focus {
+	background-position: -10px -114px;	
+}
+
+.custom-checkbox label.checked, 
+.custom-radio label.checked {
+	background-position: -10px -214px;	
+}
+
+.custom-checkbox label.checkedHover, 
+.custom-checkbox label.checkedFocus {
+	background-position: -10px -314px;	
+}
+
+.custom-checkbox label.focus, 
+.custom-radio label.focus {
+	outline: 1px dotted #ccc;	
+}
+	</style>	
 <?php
 
 echo '<div class="actions">';
 if($_REQUEST['action'] == 'questionreport')
 {
-	echo '<a href="reporting.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.strtolower(get_lang('Report')), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackTo').' '.strtolower(get_lang('Report')).'</a>';
+	echo '<a href="reporting.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('go_previous_32.png',get_lang('BackTo').' '.strtolower(get_lang('Report'))).' '.get_lang('BackTo').' '.strtolower(get_lang('Report')).'</a>';
 
 	// determining the offset of the sql statement (the n-th question of the survey)
 		if (!isset($_REQUEST['question']))
@@ -194,24 +255,24 @@ if($_REQUEST['action'] == 'questionreport')
 }
 elseif(isset($_REQUEST['action']))
 {
-echo '<a href="reporting.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.strtolower(get_lang('Report')), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackTo').' '.strtolower(get_lang('Report')).'</a>';
+echo '<a href="reporting.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('go_previous_32.png',get_lang('BackTo').' '.strtolower(get_lang('Report'))).' '.get_lang('BackTo').' '.strtolower(get_lang('Report')).'</a>';
 }
 else
 {	
-echo '<a href="survey.php?'.  api_get_cidreq().'&survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.strtolower(get_lang('Report')), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackTo').' '.strtolower(get_lang('Survey')).'</a>';
+echo '<a href="survey.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('go_previous_32.png',get_lang('BackTo').' '.strtolower(get_lang('Survey'))).' '.get_lang('BackTo').' '.strtolower(get_lang('Survey')).'</a>';
 }
 if($_REQUEST['action'] == 'userreport' && isset($_REQUEST['user']))
 {
-	echo '<a href="reporting.php?action=deleteuserreport&amp;survey_id='.Security::remove_XSS($_GET['survey_id']).'&amp;user='.Security::remove_XSS($_GET['user']).'" >'.Display::return_icon('pixel.gif', get_lang('Delete'),array('class'=>'toolactionplaceholdericon tooldeletegroup')).' '.get_lang('DeleteSurveyByUser').'</a>';
+	echo '<a href="reporting.php?action=deleteuserreport&amp;survey_id='.Security::remove_XSS($_GET['survey_id']).'&amp;user='.Security::remove_XSS($_GET['user']).'" >'.Display::return_icon('delete.png', get_lang('Delete')).' '.get_lang('DeleteSurveyByUser').'</a>';
 
 	// export the user report
-	echo '<a href="javascript: void(0);" onclick="document.form1a.submit();">'.Display::return_icon('pixel.gif', get_lang('ExportAsCSV'),array('class'=>'toolactionplaceholdericon toolactionexportcourse')).' '.get_lang('ExportAsCSV').'</a> ';
-	echo '<a href="javascript: void(0);" onclick="document.form1b.submit();">'.Display::return_icon('pixel.gif', get_lang('ExportAsXLS'),array('class'=>'toolactionplaceholdericon toolactioniconexcel')).' '.get_lang('ExportAsXLS').'</a> ';	
+	echo '<a href="javascript: void(0);" onclick="document.form1a.submit();">'.Display::return_icon('csv.gif', get_lang('ExportAsCSV')).' '.get_lang('ExportAsCSV').'</a> ';
+	echo '<a href="javascript: void(0);" onclick="document.form1b.submit();">'.Display::return_icon('excel.gif', get_lang('ExportAsXLS')).' '.get_lang('ExportAsXLS').'</a> ';	
 }
 
 if($_REQUEST['action'] == 'completereport')
 {
-    echo '<a class="survey_export_link" href="javascript: void(0);" onclick="document.form1b.submit();"><img align="absbottom" '.api_get_path(WEB_IMG_PATH).''.Display::return_icon('pixel.gif',get_lang('ExportAsXLS'),array('class'=>'toolactionplaceholdericon toolactionexportcourse')).''.get_lang('ExportAsXLS').'</a>';
+	echo '<a class="survey_export_link" href="javascript: void(0);" onclick="document.form1b.submit();"><img align="absbottom" src="'.api_get_path(WEB_IMG_PATH).'survey_reporting_complete.png">&nbsp;'.get_lang('ExportAsXLS').'</a>';
 }
 echo '</div>';
 
@@ -224,10 +285,10 @@ SurveyUtil::handle_reporting_actions();
 // content
 if (!$_GET['action'] OR $_GET['action'] == 'overview') {
 	$myweb_survey_id = $survey_id;
-	echo '<div class="section"><div class="sectiontitle"><a href="reporting.php?action=questionreport&amp;survey_id='.$myweb_survey_id.'">'.Display::return_icon('pixel.gif',get_lang('DetailedReportByQuestion'),array("class" => "surveyreportplaceholdericon toolactiondokeos_question")).' '.get_lang('DetailedReportByQuestion').'</a></div><div class="sectioncontent">'.get_lang('DetailedReportByQuestionDetail').' </div></div>';
-	echo '<div class="section"><div class="sectiontitle"><a href="reporting.php?action=userreport&amp;survey_id='.$myweb_survey_id.'">'.Display::return_icon('pixel.gif',get_lang('DetailedReportByUser'),array("class" => "surveyreportplaceholdericon toolactionsurvey_reporting_user")).' '.get_lang('DetailedReportByUser').'</a></div><div class="sectioncontent">'.get_lang('DetailedReportByUserDetail').'.</div></div>';
-	echo '<div class="section"><div class="sectiontitle"><a href="reporting.php?action=comparativereport&amp;survey_id='.$myweb_survey_id.'">'.Display::return_icon('pixel.gif',get_lang('ComparativeReport'),array("class" => "surveyreportplaceholdericon toolactionsurvey_reporting_comparative")).' '.get_lang('ComparativeReport').'</a></div><div class="sectioncontent">'.get_lang('ComparativeReportDetail').'.</div></div>';
-	echo '<div class="section"><div class="sectiontitle"><a href="reporting.php?action=completereport&amp;survey_id='.$myweb_survey_id.'">'.Display::return_icon('pixel.gif',get_lang('CompleteReport'),array("class" => "surveyreportplaceholdericon toolactionexcel_32","style"=>"margin-left:-4px;padding-right:8px")).' '.get_lang('CompleteReport').'</a></div><div class="sectioncontent">'.get_lang('CompleteReportDetail').'</div></div>';
+	echo '<div class="section"><div class="sectiontitle"><a href="reporting.php?action=questionreport&amp;survey_id='.$myweb_survey_id.'">'.Display::return_icon('dokeos_question.png',get_lang('DetailedReportByQuestion')).' '.get_lang('DetailedReportByQuestion').'</a></div><div class="sectioncontent">'.get_lang('DetailedReportByQuestionDetail').' </div></div>';
+	echo '<div class="section"><div class="sectiontitle"><a href="reporting.php?action=userreport&amp;survey_id='.$myweb_survey_id.'">'.Display::return_icon('survey_reporting_user.png',get_lang('DetailedReportByUser')).' '.get_lang('DetailedReportByUser').'</a></div><div class="sectioncontent">'.get_lang('DetailedReportByUserDetail').'.</div></div>';
+	echo '<div class="section"><div class="sectiontitle"><a href="reporting.php?action=comparativereport&amp;survey_id='.$myweb_survey_id.'">'.Display::return_icon('survey_reporting_comparative.png',get_lang('ComparativeReport')).' '.get_lang('ComparativeReport').'</a></div><div class="sectioncontent">'.get_lang('ComparativeReportDetail').'.</div></div>';
+	echo '<div class="section"><div class="sectiontitle"><a href="reporting.php?action=completereport&amp;survey_id='.$myweb_survey_id.'">'.Display::return_icon('excel_32.png',get_lang('CompleteReport')).' '.get_lang('CompleteReport').'</a></div><div class="sectioncontent">'.get_lang('CompleteReportDetail').'</div></div>';
 }
 
 // close the content div

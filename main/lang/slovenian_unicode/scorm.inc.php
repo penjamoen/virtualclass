@@ -53,5 +53,4 @@ $Attempt = "Poskus";
 $MoveTheCurrentForum = "Premakni tekoči forum";
 $WarningWhenEditingScorm = "Opozorilo !<br /> Pri urejanju/popravljanju vsebine koraka scorm-a lahko pride do spremembe v poročilih o izvajanju te učne poti ali do okvare koraka samega.";
 $AdditionalProfileField = "Dodaj polje uporabniškega profila";
-$UpdateAiccSource = "Ažuriraj AICC vir";
 ?>

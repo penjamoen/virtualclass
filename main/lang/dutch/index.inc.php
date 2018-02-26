@@ -40,6 +40,7 @@ $langMe = "mezelf";
 $langSystemAnnouncements = "Mededelingen";
 $langHelpMaj = "Help";
 $langNotRegistered = "Niet geregistreerd";
+$langAdmin = "Platformbeheerder";
 $Login = "Login";
 $langRegisterForCourse = "Inschrijven voor cursus";
 $langUnregisterForCourse = "Uitschrijven uit cursus";
@@ -70,7 +71,4 @@ $Inbox = "Postvak In";
 $Comppose = "Opstellen";
 $PendingInvitations = "Onafgedane uitnodigingen";
 $EditPublicPages = "Publieke pagina\'s bewerken";
-$Programme = "Programma";
-$AvailableFrom = "beschikbaar van";
-$To = "tot";
 ?>

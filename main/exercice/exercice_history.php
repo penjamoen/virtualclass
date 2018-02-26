@@ -92,9 +92,7 @@ Display::display_tool_header($nameTools,"Exercise");
 
 ?>
 <div class="actions">
-<a href="exercice.php?cidReq=<?php echo Security::remove_XSS($_GET['cidReq']); ?>&show=result">
-    <img class="toolactionplaceholdericon toolactionback" title="Documents" alt="Documents" src="../img/pixel.gif" /><?php echo get_lang('BackToResultList') ?>
-</a>
+<a href="exercice.php?cidReq=<?php echo Security::remove_XSS($_GET['cidReq']); ?>&show=result"><img src="../img/go_previous_32.png"/><?php echo get_lang('BackToResultList') ?></a>
 </div>
 <div id="content">
 <table class="data_table">

@@ -50,8 +50,6 @@ $language_file = 'forum';
 
 // including the global dokeos file
 require '../inc/global.inc.php';
-require_once api_get_path(LIBRARY_PATH).'forummanager.lib.php';
-require_once api_get_path(LIBRARY_PATH).'searchengine.lib.php';
 //$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" type="text/javascript" language="javascript"></script>';
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.ui.all.js" type="text/javascript" language="javascript"></script>';
 $htmlHeadXtra[] = '<script type="text/javascript" language="javascript">
@@ -80,8 +78,6 @@ api_protect_course_script(true);
 require_once(api_get_path(LIBRARY_PATH).'/text.lib.php');
 require_once (api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php');
 require_once (api_get_path(LIBRARY_PATH).'groupmanager.lib.php');
-require_once '../newscorm/learnpath.class.php';
-require_once '../newscorm/learnpathItem.class.php';
 $nameTools=get_lang('Forums');
 
 /*
@@ -114,7 +110,6 @@ $search_forum=isset($_GET['search']) ? Security::remove_XSS($_GET['search']) : '
 
 // breadcrumbs
 $interbreadcrumb[]=array("url" => "index.php?gradebook=$gradebook&search=".$search_forum,"name" => $nameTools);
-
 
 if (isset($_GET['action']) && $_GET['action']=='add' ) {
 
@@ -181,14 +176,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'notify' AND isset($_GET['conte
 	echo '<div class="actions">';
 	echo '<span>'.search_link().'</span>';
 	if (api_is_allowed_to_edit(false,true)) {
-		echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&gradebook='.$gradebook.'&action=add&amp;content=forumcategory"> '.Display::return_icon('pixel.gif',get_lang('AddForumCategory'),array('class' => 'toolactionplaceholdericon toolactionnewforumcategory')).get_lang('AddForumCategory').'</a>';
+		echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&gradebook='.$gradebook.'&action=add&amp;content=forumcategory"> '.Display::return_icon('forum_category_new.png', get_lang('AddForumCategory')).' '.get_lang('AddForumCategory').'</a>';
 		if (is_array($forum_categories_list) and !empty($forum_categories_list)) {
-			echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&gradebook='.$gradebook.'&action=add&amp;content=forum'.$add_params_for_lp.'"> '.Display::return_icon('pixel.gif',get_lang('AddForum'),array('class' => 'toolactionplaceholdericon toolactionnewforum')).get_lang('AddForum').'</a>';
+			echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&gradebook='.$gradebook.'&action=add&amp;content=forum"> '.Display::return_icon('forum_new.png', get_lang('AddForum')).' '.get_lang('AddForum').'</a>';
 		}
-		if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0) {
-		  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=add_item&type=step&lp_id='.$_GET['lp_id'].'">' . Display::return_icon('pixel.gif', get_lang('Content'),array('class'=>'toolactionplaceholdericon toolactionauthorcontent')).get_lang("Content") . '</a>';
-		  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=admin_view&lp_id='.$_GET['lp_id'].'">' . Display::return_icon('pixel.gif', get_lang('Scenario'),array('class'=>'toolactionplaceholdericon toolactionauthorscenario')).get_lang("Scenario") . '</a>';
-		  }
 	}
 	echo '</div>';
 
@@ -257,9 +248,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'notify' AND isset($_GET['conte
 			// make the categories sortable	
 			$("#categories li div div ul").sortable({
 				connectWith: "#categories li div div ul",
-                handle: $(".move"),
-                cancel: ".nodrag",
-                start: function(event, ui) {
+                                handle: $(".move"),
+                                start: function(event, ui) {
 					parentElement = ui.item.parent();
 					category_before = getCategoryId(parentElement);
 				},
@@ -282,17 +272,18 @@ if (isset($_GET['action']) && $_GET['action'] == 'notify' AND isset($_GET['conte
 					if(category_before != category_after){
 						$.ajax({
 							url: "index.php?action=changeForumCategory&itemId="+itemId+"&categoryId="+category_after,
-							success: function(){
+							complete: function(){
 								//we update the order of all links of the new category
 								window.location.href = "index.php?action=updateRecordsListings&disporder="+disparr;
 								return;
-						      }
+						      	}
 				      		});
-                      return false;
+				      	return;
 					}
+
 				},
 				stop: function(event, ui) {
-                    var order = $(this).sortable("serialize") + "&action=updateRecordsListings";
+                                        var order = $(this).sortable("serialize") + "&action=updateRecordsListings";
 					var record = order.split("&");
 					var recordlen = record.length;
 					var disparr = new Array();
@@ -305,27 +296,27 @@ if (isset($_GET['action']) && $_GET['action'] == 'notify' AND isset($_GET['conte
 					return;
 
 				}
-			});
+			}).disableSelection();
 
 
 	//Allow th change the categories order
 	$("#categories").sortable({
-        connectWith: "#categories",
-        cancel: ".nodrag",
-        handle: $(".move1"),
-        update: function(event, ui) {
-        var order = $(this).sortable("serialize") + "&action=updateRecordsListings"; 			
+            connectWith: "#categories",
+            handle: $(".move1"),
+            update: function(event, ui) {
+                var order = $(this).sortable("serialize") + "&action=updateRecordsListings"; 			
 		var record = order.split("&");
 		var recordlen = record.length;			
 		var disparr = new Array();
-		for(var i=0;i<(recordlen-1);i++) {				
+		for(var i=0;i<(recordlen-1);i++)
+		{				
 			var recordval = record[i].split("=");
 			disparr[i] = recordval[1];
 		}
 		//update the order of all categories
 		window.location.href = "index.php?action=updateRecordsListings&type=categories&disporder="+disparr;
 	}
-	});
+	}).disableSelection();
 
 });
 
@@ -408,33 +399,38 @@ if ($action == "updateRecordsListings"){
 			}
                         echo '<li id="recordsArray_'.$forum_category['cat_id'].'" class="category">' .
 					'<div class="'.$parent_draggable.$draggable.' rounded move1">';
-                        // group forum title
+			// group forum title
                         echo '<div style="float:left">';
-                        echo '<a href="viewforumcategory.php?'.api_get_cidreq().'&forumcategory='.prepare4display($forum_category['cat_id']).'" '.class_visible_invisible(prepare4display($forum_category['visibility'])).'>'.Display::return_icon('pixel.gif',$forum_category['cat_title'],array('class' => 'actionplaceholdericon actionfolder')).'&nbsp;'.prepare4display($forum_category['cat_title']).$session_displayed.'</a>'. $session_img ;
+                        echo '<a href="viewforumcategory.php?'.api_get_cidreq().'&forumcategory='.prepare4display($forum_category['cat_id']).'" '.class_visible_invisible(prepare4display($forum_category['visibility'])).'>'.Display::return_icon('folder_new_22.png',$forum_category['cat_title']).'&nbsp;'.prepare4display($forum_category['cat_title']).$session_displayed.'</a>'. $session_img ;
                         if ($forum_category['cat_comment']<>'' AND trim($forum_category['cat_comment'])<>'&nbsp;') {  
-                            echo ' : <span class="forum_description">'.prepare4display($forum_category['cat_comment']).'</span>';
-                        }
+				echo ' : <span class="forum_description">'.prepare4display($forum_category['cat_comment']).'</span>';
+			}
                         echo '</div>';
                         echo '<div style="float:right">';
                         // actions icons for each group forum
 			if (api_is_allowed_to_edit(false,true) && !($forum_category['session_id']==0 && intval($session_id)!=0)) {
-                        echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=edit&amp;content=forumcategory&amp;id=".prepare4display($forum_category['cat_id'])."\">".Display::return_icon('pixel.gif',get_lang('Edit'),array('class' => 'actionplaceholdericon actionedit'))."</a>";
-                        echo '&nbsp;&nbsp;&nbsp;';
-                        echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=delete&amp;content=forumcategory&amp;id=".prepare4display($forum_category['cat_id'])."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang("DeleteForumCategory"),ENT_QUOTES,$charset))."')) return false;\">".Display::return_icon('pixel.gif',get_lang('Delete'),array('class' => 'actionplaceholdericon actiondelete'))."</a>";
-                        echo '&nbsp;&nbsp;&nbsp;';
-                        display_visible_invisible_icon('forumcategory', prepare4display($forum_category['cat_id']), prepare4display($forum_category['visibility']));
-                        display_lock_unlock_icon('forumcategory',prepare4display($forum_category['cat_id']), prepare4display($forum_category['locked']));
+                                echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=edit&amp;content=forumcategory&amp;id=".prepare4display($forum_category['cat_id'])."\">".icon('../img/edit_link.png',get_lang('Edit'))."</a>";
+                                echo '&nbsp;&nbsp;&nbsp;';
+                                echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=delete&amp;content=forumcategory&amp;id=".prepare4display($forum_category['cat_id'])."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang("DeleteForumCategory"),ENT_QUOTES,$charset))."')) return false;\">".icon('../img/delete_link.png',get_lang('Delete'))."</a>";
+                                echo '&nbsp;&nbsp;&nbsp;';
+				display_visible_invisible_icon('forumcategory', prepare4display($forum_category['cat_id']), prepare4display($forum_category['visibility']));
+                                display_lock_unlock_icon('forumcategory',prepare4display($forum_category['cat_id']), prepare4display($forum_category['locked']));
+				
+				
+				
+				
+			//	display_up_down_icon('forumcategory',prepare4display($forum_category['cat_id']), $forum_categories_list);
 			}
 				
 		$i=1;
 		
-    // ending directory forum div
-
-    echo '</div>';
-    echo '</div>';
+		// ending directory forum div
 		
-    // style column titles only if !empty forum
-	$column_titles_already_showed = false;
+                echo '</div>';
+                echo '</div>';
+		
+// style column titles only if !empty forum
+			$column_titles_already_showed = false;
 
 	//	echo '<tr><td colspan="7">';
 		echo '<div id="contentWrap"><div id="contentLeft"><ul style="" class="dragdrop category_'.$forum_category['cat_id'].'">';
@@ -515,10 +511,10 @@ if ($action == "updateRecordsListings"){
 
 
 				if ($show_forum) {
-					$form_count++;
-					$mywhatsnew_post_info=isset($whatsnew_post_info[$forum['forum_id']]) ? $whatsnew_post_info[$forum['forum_id']]: null;				
-                    echo "\t<tr class='".$css_class."'>\n";
-				if(api_is_allowed_to_edit ()) echo "<td width='5%'>".Display::return_icon('pixel.gif',get_lang('Drag'), array('class' => 'actionplaceholdericon actionsdraganddrop'))."</td>";
+						$form_count++;
+						$mywhatsnew_post_info=isset($whatsnew_post_info[$forum['forum_id']]) ? $whatsnew_post_info[$forum['forum_id']]: null;				
+				echo "\t<tr class='".$css_class."'>\n";
+				if(api_is_allowed_to_edit ()) echo "<td width='5%'><img  src='../img/drag-and-drop.png'></td>";
 				// Showing the image
 						if(!empty($forum['forum_image'])) {
 
@@ -534,15 +530,20 @@ if ($action == "updateRecordsListings"){
 								echo "<img src=\"$image_path\" $img_attributes>";
 							}
 						}
-				echo "\t\t<td class='nodrag' width='30%' colspan=\"2\" style=\"text-align:left;\">";
+				echo "\t\t<td width='30%' colspan=\"2\" style=\"padding-left:30px ; text-align:left;\">";
 				if ($forum['forum_of_group']!=='0') {
 							if (is_array($mywhatsnew_post_info) and !empty($mywhatsnew_post_info)) {
-								echo Display::return_icon('pixel.gif',get_lang('GroupForum'), array('class' => 'actionplaceholdericon actionsmembers'));
+								echo icon('../img/forumgroup.png');
 							} else {
-								echo Display::return_icon('pixel.gif',get_lang('GroupForum'), array('class' => 'actionplaceholdericon actionsmembers'));
+								echo icon('../img/group_22.png', get_lang('GroupForum'));
 							}
 						} else {
-							   echo Display::return_icon('pixel.gif',get_lang('Forum'), array('class' => 'actionplaceholdericon actionforum'));
+
+								//if (is_array($mywhatsnew_post_info) and !empty($mywhatsnew_post_info)) {
+									echo icon('../img/forum_middle.png', get_lang('Forum'));
+								/*} else {
+									echo icon('../img/forum_middle.png');
+								}*/
 
 						}			
 				}
@@ -565,53 +566,58 @@ if ($action == "updateRecordsListings"){
 						}
 						$forum['forum_of_group']==0?$groupid='':$groupid=$forum['forum_of_group'];
 						echo "<a href=\"viewforum.php?".api_get_cidreq()."&gidReq=".Security::remove_XSS($groupid)."&forum=".prepare4display($forum['forum_id'])."\" ".class_visible_invisible(prepare4display($forum['visibility'])).">".prepare4display($forum['forum_title']).$session_displayed.'</a>'.$forum_title_group_addition.'<br />'.prepare4display($forum['forum_comment'])."</td>\n";
-                        $number_threads=isset($forum['number_of_threads']) ? $forum['number_of_threads'] : null;
-                        $number_posts  =isset($forum['number_of_posts']) ? $forum['number_of_posts'] : null;
-                        echo "\t\t<td class='nodrag' width='8%'>".$number_threads."</td>\n";
-                        echo "\t\t<td class='nodrag' width='8%'>".$number_posts."</td>\n";
-                        // the last post in the forum
-                        if ($forum['last_poster_name']<>'') {
-                            $name=$forum['last_poster_name'];
-                            $poster_id=0;
-                        } else {
-                            $name = api_get_person_name($forum['last_poster_firstname'], $forum['last_poster_lastname']);
-                            $poster_id=$forum['last_poster_id'];
-                        }
-                        echo "\t\t<td class='nodrag' width='30%'>";
-                        if (!empty($forum['last_post_id'])) {
+				$number_threads=isset($forum['number_of_threads']) ? $forum['number_of_threads'] : null;
+				$number_posts  =isset($forum['number_of_posts']) ? $forum['number_of_posts'] : null;
+				echo "\t\t<td width='8%'>".$number_threads."</td>\n";
+				echo "\t\t<td width='8%'>".$number_posts."</td>\n";
+				// the last post in the forum
+				if ($forum['last_poster_name']<>'') {
+					$name=$forum['last_poster_name'];
+					$poster_id=0;
+				} else {
+					$name = api_get_person_name($forum['last_poster_firstname'], $forum['last_poster_lastname']);
+					$poster_id=$forum['last_poster_id'];
+				}
+				echo "\t\t<td width='30%'>";
+				if (!empty($forum['last_post_id'])) {
 							echo $forum['last_post_date']."<br /> ".get_lang('By').' '.display_user_link($poster_id, $name);
 						}
-                        echo "</td>\n";
-                        echo "\t\t<td class='nodrag' width='26%' align='right'>";
-                        if (api_is_allowed_to_edit(false,true) && !($forum['session_id']==0 && intval($session_id)!=0)) {
-							echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=edit&amp;content=forum&amp;id=".$forum['forum_id']."\">".Display::return_icon('pixel.gif',get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit'))."</a>";
-							echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=delete&amp;content=forum&amp;id=".$forum['forum_id']."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang("DeleteForum"),ENT_QUOTES,$charset))."')) return false;\">".Display::return_icon('pixel.gif',get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete'))."</a>";
+				echo "</td>\n";
+				echo "\t\t<td width='26%' align='right'>";
+				if (api_is_allowed_to_edit(false,true) && !($forum['session_id']==0 && intval($session_id)!=0)) {
+							echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=edit&amp;content=forum&amp;id=".$forum['forum_id']."\">".icon('../img/edit_link.png',get_lang('Edit'))."</a>";
+							echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=delete&amp;content=forum&amp;id=".$forum['forum_id']."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang("DeleteForum"),ENT_QUOTES,$charset))."')) return false;\">".icon('../img/delete_link.png',get_lang('Delete'))."</a>";
 							display_visible_invisible_icon('forum',$forum['forum_id'], $forum['visibility']);
 							display_lock_unlock_icon('forum',$forum['forum_id'], $forum['locked']);
 						//	display_up_down_icon('forum',$forum['forum_id'], $forums_in_category);
 						}
-						$iconnotify = 'actionplaceholdericon actionsmessage';
+						$iconnotify = 'send_mail.png';
 						$session_forum_noti=isset($_SESSION['forum_notification']['forum']) ? $_SESSION['forum_notification']['forum'] : false;
 						if (is_array($session_forum_noti)) {
 							if (in_array($forum['forum_id'],$session_forum_noti)) {
-								$iconnotify = 'actionplaceholdericon actionsmessagereply';
+								$iconnotify = 'send_mail_checked.png';
 							}
 						}
 
 						if (!api_is_anonymous()  && api_is_allowed_to_session_edit(false,true) ) {		
-							echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=notify&amp;content=forum&amp;id=".$forum['forum_id']."\">".Display::return_icon('pixel.gif',get_lang('NotifyMe'), array('class' => $iconnotify))."</a>";
+							echo "<a class='action' href=\"".api_get_self()."?".api_get_cidreq()."&gradebook=$gradebook&action=notify&amp;content=forum&amp;id=".$forum['forum_id']."\">".icon('../img/'.$iconnotify,get_lang('NotifyMe'))."</a>";
 						}
 				echo "</td>\n";
 				echo "\t</tr>\n";					
+					
 				echo '</table></li>';
-				}// if allowed to edit        
+						
+
+				}// if allowed to edit
+                                
 		} //foreach loop on each forum
                 
-        if($state == false){
-            echo get_lang('ThereAreNoForumsInThisCategory');
-        }
+                if($state == false){
+                    echo get_lang('ThereAreNoForumsInThisCategory');
+                }
 		echo '<br/><br/></ul></div></div>';
 	//	echo '</td></tr>';
+		//end breetha
 		echo '</li>'; //this li is for forum category
 	}		
 	}

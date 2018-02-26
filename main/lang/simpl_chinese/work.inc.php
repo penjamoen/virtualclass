@@ -1,7 +1,7 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$Tools  = "&#24037;&#20855;";
+$Tools  = "工具";
 $SendWork = "上传文件";
 $langTooBig = "没有选择文件或文件太大.";
 $langListDeleted = "整个列表已删除.";

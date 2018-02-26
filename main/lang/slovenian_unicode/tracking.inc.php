@@ -243,9 +243,4 @@ $ViewMinus = "Poglej manj";
 $ResourcesTracking = "Poročilo vira";
 $SelectFieldToAdd = "Izberite polje uporabniškega profila ";
 $AddAdditionalProfileField = "Dodaj polje uporabniškega profila";
-$LastAttempt = "Zadnji poskus";
-$Traffic = "Promet";
-$TrackTrainings = "Tečaji";
-$TrackSessions = "Seje";
-$CompareUsersOnLearnpath = "Primerjaj uporabnike modula";
 ?>

@@ -194,5 +194,4 @@ $YouNeedToHaveFriendsInYourSocialNetwork = "U dient vrienden te hebben in uw soc
 $SeeAllMyGroups = "Zie al mijn groepen";
 $EditGroup = "Groep bewerken";
 $YouAlreadyInviteAllYourContacts = "U heeft al uw contacten al uitgenodigd";
-$Contact = "Contact";
 ?>

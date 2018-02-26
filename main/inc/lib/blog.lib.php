@@ -909,10 +909,10 @@ class Blog {
 		$task_id = (isset($_GET['task_id']) && is_numeric($_GET['task_id'])) ? intval($_GET['task_id']) : 0;
 
 		if(api_is_allowed('BLOG_' . $blog_id, 'article_edit', $task_id))
-			$blog_post_actions .= '<a href="blog.php?action=edit_post&amp;blog_id=' . $blog_id . '&amp;post_id=' . $post_id . '&amp;article_id=' . $blog_post['post_id'] . '&amp;task_id=' . $task_id . '" title="' . get_lang('EditThisPost') . '">'.Display::return_icon('pixel.gif',get_lang('EditThisPost'),array('class'=>'actionplaceholdericon actionedit')).'</a>';
-        
-        if(api_is_allowed('BLOG_' . $blog_id, 'article_delete', $task_id))
-			$blog_post_actions .= '<a href="blog.php?action=view_post&amp;blog_id=' . $blog_id . '&amp;post_id=' . $post_id . '&amp;do=delete_article&amp;article_id=' . $blog_post['post_id'] . '&amp;task_id=' . $task_id . '" title="' . get_lang('DeleteThisArticle') . '" onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset)). '\')) return false;">'.Display::return_icon('pixel.gif',get_lang('DeleteThisArticle'),array('class'=>'actionplaceholdericon actiondelete')).'</a>';
+			$blog_post_actions .= '<a href="blog.php?action=edit_post&amp;blog_id=' . $blog_id . '&amp;post_id=' . $post_id . '&amp;article_id=' . $blog_post['post_id'] . '&amp;task_id=' . $task_id . '" title="' . get_lang('EditThisPost') . '"><img src="../img/edit.png" /></a>';
+
+		if(api_is_allowed('BLOG_' . $blog_id, 'article_delete', $task_id))
+			$blog_post_actions .= '<a href="blog.php?action=view_post&amp;blog_id=' . $blog_id . '&amp;post_id=' . $post_id . '&amp;do=delete_article&amp;article_id=' . $blog_post['post_id'] . '&amp;task_id=' . $task_id . '" title="' . get_lang('DeleteThisArticle') . '" onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset)). '\')) return false;"><img src="../img/delete.png" border="0" /></a>';
 
 		if(api_is_allowed('BLOG_' . $blog_id, 'article_rate'))
 			$rating_select = Blog::display_rating_form('post',$blog_id,$post_id);
@@ -1418,10 +1418,10 @@ class Blog {
 			global $color2;
 
 			echo '<div class="actions">';
-			echo '<a href="' .api_get_self(). '?action=manage_tasks&amp;blog_id=' . $blog_id . '&amp;do=add">'.Display::return_icon('pixel.gif',get_lang('AddTasks'),array('class'=>'actionplaceholdericon actionnewrole22')) . get_lang('AddTasks') . '</a> ';
-			echo '<a href="' .api_get_self(). '?action=manage_tasks&amp;blog_id=' . $blog_id . '&amp;do=assign">'.Display::return_icon('pixel.gif',get_lang('AssignTasks'),array('class'=>'actionplaceholdericon actionnassignerole')) . get_lang('AssignTasks') . '</a>';
+			echo '<a href="' .api_get_self(). '?action=manage_tasks&amp;blog_id=' . $blog_id . '&amp;do=add"><img src="../img/new_role_22.png" border="0" align="middle" alt="'.get_lang('AddTasks').'" />' . get_lang('AddTasks') . '</a> ';
+			echo '<a href="' .api_get_self(). '?action=manage_tasks&amp;blog_id=' . $blog_id . '&amp;do=assign"><img src="../img/loginmanager.png" border="0" align="middle" alt="'.get_lang('AssignTasks').'" />' . get_lang('AssignTasks') . '</a>';
 			?>
-				<a href="<?php echo api_get_self(); ?>?action=manage_rights&amp;blog_id=<?php echo $blog_id ?>" title="<?php echo get_lang('ManageRights') ?>"><?php echo Display::return_icon('pixel.gif', get_lang('RightsManager'),array('class'=>'actionplaceholdericon actionuser_r_management')). get_lang('RightsManager') ?></a>
+				<a href="<?php echo api_get_self(); ?>?action=manage_rights&amp;blog_id=<?php echo $blog_id ?>" title="<?php echo get_lang('ManageRights') ?>"><?php echo Display::return_icon('man_orange_22.png', get_lang('RightsManager')). get_lang('RightsManager') ?></a>
 			<?php
 			echo '</div>';
 
@@ -1450,8 +1450,9 @@ class Blog {
 					system_task,
 					title";
 			$result = Database::query($sql, __FILE__, __LINE__);
-            
-            while($task = Database::fetch_array($result))
+
+
+			while($task = Database::fetch_array($result))
 			{
 				$counter++;
 				$css_class = (($counter % 2) == 0) ? "row_odd" : "row_even";
@@ -1466,8 +1467,8 @@ class Blog {
 							 '<td><span style="background-color: #' . $task['color'] . '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td>',
 							 '<td width="50">',
 							 	'<a href="' .api_get_self(). '?action=manage_tasks&amp;blog_id=' . $task['blog_id'] . '&amp;do=edit&amp;task_id=' . $task['task_id'] . '">',
-								Display::return_icon('pixel.gif',get_lang('EditTask'),array('class'=>'actionplaceholdericon actionedit')) ,
-                                "</a>\n",
+								'<img src="../img/edit.png" border="0" title="' . get_lang('EditTask') . '" />',
+								"</a>\n",
 								'<a href="' . $delete_link . '"',
 								$delete_confirm,
 								'><img src="../img/' . $delete_icon . '" border="0" title="' . $delete_title . '" />',
@@ -1527,7 +1528,7 @@ class Blog {
 						 '<td>' . $assignment['target_date'] . '</td>',
 						 '<td width="50">',
 						 	'<a href="' .api_get_self(). '?action=manage_tasks&amp;blog_id=' . $assignment['blog_id'] . '&amp;do=edit_assignment&amp;task_id=' . $assignment['task_id'] . '&amp;user_id=' . $assignment['user_id'] . '">',
-				            Display::return_icon('pixel.gif',get_lang('EditTask'),array('class'=>'actionplaceholdericon actionedit')),
+							'<img src="../img/edit.png" border="0" title="' . get_lang('EditTask') . '" />',
 							"</a>\n",
 							'<a href="' .api_get_self(). '?action=manage_tasks&amp;blog_id=' . $assignment['blog_id'] . '&amp;do=delete_assignment&amp;task_id=' . $assignment['task_id'] . '&amp;user_id=' . $assignment['user_id'] . '" ',
 							'onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset)). '\')) return false;"',
@@ -2823,27 +2824,24 @@ class Blog {
 
 				$url_start_blog = 'blog.php' ."?". "blog_id=".$info_log[3]. "&amp;".api_get_cidreq();
 				$title = $info_log[0];
-    			//$image = '<img src="../img/blog.png" border="0" align="absmiddle" alt="' . $title . '">'."\n";
-                $image = Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionblog'),$title).   "\n";
+    			$image = '<img src="../img/blog.png" border="0" align="absmiddle" alt="' . $title . '">'."\n";
     			$list_name = '<div style="float: left; width: 35px; height: 22px;"><a href="'.$url_start_blog.'">' . $image . '</a></div><a href="'.$url_start_blog.'">' .$title. '</a>' . $session_img . "\n";
 
 				$list_body_blog[] = $list_name;
 				$list_body_blog[] = $info_log[1];
 
-				$my_image.='<a href="' .api_get_self(). '?action=edit&amp;blog_id=' . $info_log[3] . '">';
-				$my_image.=Display::return_icon('pixel.gif',get_lang('EditBlog'),array('class'=>'actionplaceholdericon actionedit'));
+				$visibility_icon=($info_log[2]==0) ? 'invisible_na' : 'visible_22';
+				$visibility_info=($info_log[2]==0) ? 'Visible' : 'Invisible';
+			 	$my_image.='<a href="' .api_get_self(). '?action=edit&amp;blog_id=' . $info_log[3] . '">';
+				$my_image.='<img src="../img/edit.png" border="0" title="' . get_lang('EditBlog') . '" />';
 				$my_image.="</a>\n";
 				$my_image.='<a href="' .api_get_self(). '?action=delete&amp;blog_id=' . $info_log[3] . '" ';
 				$my_image.='onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset)). '\')) return false;" >';
-				$my_image.=Display::return_icon('pixel.gif',get_lang('DeleteBlog'),array('class'=>'actionplaceholdericon actiondelete')) ;
+				$my_image.='<img src="../img/delete.png" border="0" title="' . get_lang('DeleteBlog') . '" />';
 				$my_image.="</a>\n";
 				$my_image.='<a href="' .api_get_self(). '?action=visibility&amp;blog_id=' . $info_log[3] . '">';
-				if ($info_log[2]==0) {
-                    $my_image.= Display::return_icon('pixel.gif',get_lang('Visible'),array('class'=>'actionplaceholdericon actionvisible invisible'));
-                } else {
-                    $my_image.= Display::return_icon('pixel.gif',get_lang('Invisible'),array('class'=>'actionplaceholdericon actionvisible'));
-                }        
-                $my_image.="</a>\n";
+				$my_image.='<img src="../img/' . $visibility_icon . '.png" border="0" title="' . get_lang($visibility_info) . '" />';
+				$my_image.="</a>\n";
 
 				$list_body_blog[]=$my_image;
 				$my_image='';
@@ -3016,7 +3014,7 @@ function get_blog_post_from_user($course_db_name, $user_id) {
 		if (Database::num_rows($result)!=0) {
 			while ($row=Database::fetch_array($result)) {
 				$return_data.=  '<div class="clear"></div><br />';
-	 			$return_data.=  '<div class="actions" style="margin-left:5px;margin-right:5px;">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionblog')).''.$row['title'].'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div style="float:right;margin-top:-18px"><a href="../blog/blog.php?blog_id='.$row['blog_id'].'&gidReq=&cidReq='.$my_course_id.' " >'.get_lang('SeeBlog').'</a></div></div>';
+	 			$return_data.=  '<div class="actions" style="margin-left:5px;margin-right:5px;"><img src="../img/blog.png" />'.$row['title'].'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div style="float:right;margin-top:-18px"><a href="../blog/blog.php?blog_id='.$row['blog_id'].'&gidReq=&cidReq='.$my_course_id.' " >'.get_lang('SeeBlog').'</a></div></div>';
 	 			$return_data.=  '<br / >';
 				//$return_data.= '<strong>'.$row['title'].'</strong>'; echo '<br>';
 				$return_data.= $row['full_text'];

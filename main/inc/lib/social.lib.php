@@ -65,57 +65,18 @@ class SocialManager extends UserManager {
 	 * @param string
 	 * @author isaac flores paz <florespaz@bidsoftperu.com>
 	 */
-	public static function get_relation_between_contacts ($user_id,$user_friend,$check_in_course_and_session = false) {
+	public static function get_relation_between_contacts ($user_id,$user_friend) {
 		$tbl_my_friend_relation_type = Database :: get_main_table(TABLE_MAIN_USER_FRIEND_RELATION_TYPE);
 		$tbl_my_friend = Database :: get_main_table(TABLE_MAIN_USER_REL_USER);
-        $tbl_course_rel_user = Database::get_main_table(TABLE_MAIN_COURSE_USER);
-        $tbl_session_rel_user = Database::get_main_table(TABLE_MAIN_SESSION_USER);
-        $tbl_session = Database::get_main_table(TABLE_MAIN_SESSION);
-        if ($check_in_course_and_session) {
-            if (api_is_platform_admin()) {
-                return USER_RELATION_TYPE_FRIEND;
-            } else {
-                // Current user is not a platform admin, so we need check if the users exists in our courses or session
-                $sql_check_course = "SELECT course_code FROM $tbl_course_rel_user WHERE user_id='".Database::escape_string($user_id)."' ";
-                $rs_check_course = Database::query($sql_check_course, __FILE_,__LINE__);
-                // Check if users exists inside my course
-                while ($row_course = Database::fetch_array($rs_check_course, 'ASSOC')) {
-                    $sql_check_friend_in_course = "SELECT COUNT(*) AS count FROM $tbl_course_rel_user WHERE course_code = '".$row_course['course_code']."' AND user_id='".Database::escape_string($user_friend)."'";
-                    $rs_check_friend_in_course = Database::query($sql_check_friend_in_course,__FILE__,__LINE__);
-                    $row_check_friend_in_course = Database::fetch_array($rs_check_friend_in_course, 'ASSOC');
-                    $count_friend_in_course = $row_check_friend_in_course['count'];
-                    if ($count_friend_in_course <> 0) {
-                       return USER_RELATION_TYPE_FRIEND;
-                    }
-                 }
-                 // User does not enrolled in my course, so I need check if users is enrolled in my session
-                $sql_check_session = "SELECT id_session FROM $tbl_session_rel_user WHERE id_user='".Database::escape_string($user_id)."' ";
-                $sql_check_session_coach = "SELECT id AS id_session FROM $tbl_session WHERE id_coach='".Database::escape_string($user_id)."' ";
-                $sql_union_session = "$sql_check_session UNION $sql_check_session_coach";
-
-                $rs_check_session = Database::query($sql_union_session, __FILE_,__LINE__);
-                // Check if user exists inside my session
-                while ($row_session = Database::fetch_array($rs_check_session, 'ASSOC')) {
-                    $sql_check_friend_in_session = "SELECT COUNT(*) AS count FROM $tbl_session_rel_user WHERE id_session = '".$row_session['id_session']."' AND id_user='".Database::escape_string($user_friend)."' ";
-                    $rs_check_friend_in_session = Database::query($sql_check_friend_in_session,__FILE__,__LINE__);
-                    $row_check_friend_in_session = Database::fetch_array($rs_check_friend_in_session, 'ASSOC');
-                    $count_check_friend_in_session = $row_check_friend_in_session['count'];
-                    if ($count_check_friend_in_session <> 0) {
-                       return USER_RELATION_TYPE_FRIEND;
-                    }
-                }
-            }
-        } else {
-            $sql= 'SELECT rt.id as id FROM '.$tbl_my_friend_relation_type.' rt ' .
-                  'WHERE rt.id=(SELECT uf.relation_type FROM '.$tbl_my_friend.' uf WHERE  user_id='.((int)$user_id).' AND friend_user_id='.((int)$user_friend).' AND uf.relation_type <> '.USER_RELATION_TYPE_RRHH.' )';
-            $res=Database::query($sql);
-            if (Database::num_rows($res)>0) {
-                $row=Database::fetch_array($res,'ASSOC');
-                return $row['id'];
-            } else {
-                return USER_UNKNOW;
-            }
-        }
+		$sql= 'SELECT rt.id as id FROM '.$tbl_my_friend_relation_type.' rt ' .
+			  'WHERE rt.id=(SELECT uf.relation_type FROM '.$tbl_my_friend.' uf WHERE  user_id='.((int)$user_id).' AND friend_user_id='.((int)$user_friend).' AND uf.relation_type <> '.USER_RELATION_TYPE_RRHH.' )';
+		$res=Database::query($sql);
+		if (Database::num_rows($res)>0) {
+			$row=Database::fetch_array($res,'ASSOC');
+			return $row['id'];
+		} else {
+			return USER_UNKNOW;
+		}
 	}
 
 	/**
@@ -126,138 +87,10 @@ class SocialManager extends UserManager {
 	 * @param bool true will load firstname, lastname, and image name
 	 * @return array
 	 * @author Julio Montoya <gugli100@gmail.com> Cleaning code, function renamed, $load_extra_info option added
-	 * @author isaac flores paz <isaac.flores@dokeos.com>
+	 * @author isaac flores paz <florespaz@bidsoftperu.com>
 	 */
 	public static function get_friends($user_id, $id_group=null, $search_name=null, $load_extra_info = true) {
-            $list_ids_friends=array();
-            $tbl_my_friend        = Database :: get_main_table(TABLE_MAIN_USER_REL_USER);
-            $tbl_course_rel_user  = Database :: get_main_table(TABLE_MAIN_COURSE_USER);
-            $tbl_my_user          = Database :: get_main_table(TABLE_MAIN_USER);
-            $tbl_session_course_rel_user = Database :: get_main_table(TABLE_MAIN_SESSION_COURSE_USER);
-            $sql = 'SELECT friend_user_id FROM '.$tbl_my_friend.' WHERE relation_type NOT IN ('.USER_RELATION_TYPE_DELETED.', '.USER_RELATION_TYPE_RRHH.') AND friend_user_id<>'.((int)$user_id).' AND user_id='.((int)$user_id); 
-            // Get the user info of current user, we need know what is the status profile of the user, if user is student or teacher
-            $current_user_info = api_get_user_info($user_id);
-            $current_user_status = $current_user_info['status'];
-            $include_user_id_list = array();
-            switch ($current_user_status) {
-              case STUDENT :
-                  // Get all info for the student user
-                  self::_get_friend_list($user_id, $current_user_status, $include_user_id_list, $list_ids_friends, $search_name);
-                  // Get indirect friend
-                  self::get_indirect_contact_list($user_id,$include_user_id_list, $list_ids_friends, null, $search_name);
-                  break;
-             case COURSEMANAGER :
-                  // Get all info for the teacher/admin user
-                  if (api_is_platform_admin()) { // User is platform admin
-                      // Admin is allowed see all users of the whole platform
-                      $sql = 'SELECT user_id,lastname,firstname,username FROM '.$tbl_my_user.' u WHERE status <> 6 AND user_id<>"'. Database::escape_string($user_id).'" AND (lastname like "%'.$search_name.'%" OR firstname like "%'.$search_name.'%" OR firstname like "%'.$search_name.'%")';
-                      $res = Database::query($sql, __FILE__,__LINE__);
-                      while ($row_user = Database::fetch_array($res)) {
-                          if (!in_array($row_user['user_id'], $include_user_id_list)) {
-                              $include_user_id_list[] = $row_user['user_id'];
-                              $path = UserManager::get_user_picture_path_by_id($row_user['user_id'], 'web', false, true);
-                              $list_ids_friends[] = array('friend_user_id' => $row_user['user_id'],'firstName' => $row_user['firstname'] , 'lastName' => $row_user['lastname'], 'username' => $row_user['username'], 'image' => $path['file'],'contact_type' => 0);
-                          }
-                      }
-                  } else { // User is teacher and has not admin rights
-                      // Get the courses list where the user is teacher
-                      self::_get_friend_list($user_id, $current_user_status, $include_user_id_list, $list_ids_friends);
-                      // Get indirect friend
-                      self::get_indirect_contact_list($user_id,$include_user_id_list, $list_ids_friends, null, $search_name);
-                  }
-                  break;
-             case SESSIONADMIN:
-                  // Get all info for the session admin user
-                  break;
-             case DRH:
-                  // Get all info for the session admin user
-                  break;
-            }
-            return $list_ids_friends; 
-	}
-        
-        /**
-         * Allow get the friend list according to user ID and platfform status ID
-         * @param integer $user_id
-         * @param string $platform_status
-         * @param array $include_user_id_list
-         * @param array $list_ids_friends 
-         */
-        public static function _get_friend_list ($user_id, $platform_status, &$include_user_id_list, &$list_ids_friends, $search = null) {
-		 $tbl_my_friend = Database :: get_main_table(TABLE_MAIN_USER_REL_USER);
-                 $tbl_course_rel_user = Database :: get_main_table(TABLE_MAIN_COURSE_USER);
-		 $tbl_my_user = Database :: get_main_table(TABLE_MAIN_USER);
-                 $tbl_session = Database :: get_main_table(TABLE_MAIN_SESSION);
-                 $tbl_session_course_rel_user = Database :: get_main_table(TABLE_MAIN_SESSION_COURSE_USER);
-                 $tbl_session_rel_user = Database :: get_main_table(TABLE_MAIN_SESSION_USER);
-                
-                  $sql = 'SELECT course_code FROM '.$tbl_course_rel_user.' WHERE user_id ="'.$user_id.'" AND status = "'.$platform_status.'"';
-                  $rs = Database::query($sql, __FILE__,__LINE__);
-                  while ($row_course = Database::fetch_array($rs)) {
-                      $course_code = $row_course['course_code'];
-                      $sql = "SELECT cru.user_id,lastname,firstname,username FROM ".$tbl_course_rel_user." cru INNER JOIN ".$tbl_my_user." u ON cru.user_id = u.user_id WHERE cru.course_code='".$course_code."' AND cru.user_id <> '".$user_id."'";
-                      if (!is_null($search)) {
-                           $sql = "SELECT cru.user_id,lastname,firstname,username FROM ".$tbl_course_rel_user." cru INNER JOIN ".$tbl_my_user." u ON cru.user_id = u.user_id WHERE cru.course_code='".$course_code."' AND cru.user_id <> '".$user_id."' AND (lastname like '%".$search."%' OR firstname like '%".$search."%' OR firstname like '%".$search."%')"; 
-                      }
-                      $rs_users = Database::query($sql, __FILE__,__LINE__);
-                      // Allow see all students that are subscribed in the courses of the teacher and allow see to students the users where he is subscribed
-                      while ($row_users = Database::fetch_array($rs_users, __FILE__, __LINE__)) {
-                          if (!in_array($row_users['user_id'], $include_user_id_list)) {
-                              $include_user_id_list[] = $row_users['user_id'];
-                              $path = UserManager::get_user_picture_path_by_id($row_users['user_id'],'web',false,true);
-                              $list_ids_friends[] = array('friend_user_id' => $row_users['user_id'],'firstName' => $row_users['firstname'] , 'lastName' => $row_users['lastname'], 'username' => $row_users['username'], 'image' => $path['file'],'contact_type' => 0);
-                          }
-                      }
-                  }
-                  if ($platform_status == STUDENT) {
-                      $session_status = 0;
-                  } elseif ($platform_status == COURSEMANAGER) {
-                      $session_status = 2;
-                  }
-                  
-                  // We need get all users of session where the teacher is tutor, get all users where the users is enrolled
-                  $sql = 'SELECT course_code,id_session FROM '.$tbl_session_course_rel_user.' sru WHERE id_user = "'.$user_id.'" AND status = "'.$session_status.'"';
-                  $rs = Database::query($sql, __FILE__, __LINE__);
-                  while ($row_session = Database::fetch_array($rs)) {
-                      $course_code = $row_session['course_code'];
-                      $session_code = $row_session['id_session'];
-                      $sql = 'SELECT user_id,lastname,firstname,username FROM '.$tbl_session_course_rel_user.' sru INNER JOIN '.$tbl_my_user.' u ON sru.id_user=u.user_id WHERE id_session="'.$session_code.'" AND course_code="'.$course_code.'" AND id_user <> "'.$user_id.'"';
-                      if (!is_null($search)) {
-                      $sql = 'SELECT user_id,lastname,firstname,username FROM '.$tbl_session_course_rel_user.' sru INNER JOIN '.$tbl_my_user.' u ON sru.id_user=u.user_id WHERE id_session="'.$session_code.'" AND course_code="'.$course_code.'" AND id_user <> "'.$user_id.'" AND (lastname like "%'.$search.'%" OR firstname like "%'.$search.'%" OR firstname like "%'.$search.'%")';
-                      }
-                      $rs = Database::query($sql, __FILE__, __LINE__);
-                      while ($row_u_sess =  Database::fetch_array($rs)) {
-                          if (!in_array($row_u_sess['user_id'], $include_user_id_list)) {
-                              $include_user_id_list[] = $row_u_sess['user_id'];
-                              $path = UserManager::get_user_picture_path_by_id($row_u_sess['user_id'],'web',false,true);
-                              $list_ids_friends[] = array('friend_user_id' => $row_u_sess['user_id'],'firstName' => $row_u_sess['firstname'] , 'lastName' => $row_u_sess['lastname'], 'username' => $row_u_sess['username'], 'image' => $path['file'], 'contact_type' => 0);
-                          }
-                      }
-                  }
-                  
-                  // We need get all users of session where the teacher is global tutor, get all users where the users is enrolled
-                  $rs_sess = Database::query('SELECT id FROM '.$tbl_session.' WHERE id_coach = "'.$user_id.'"');
-                  while ($row_sess = Database::fetch_array($rs_sess)) {
-                      $session_code = $row_sess['id'];                                            
-                      $sql = 'SELECT user_id, lastname, firstname, username FROM '.$tbl_session_rel_user.' su INNER JOIN '.$tbl_my_user.' u ON su.id_user=u.user_id WHERE id_session="'.$session_code.'"';
-                      if (!is_null($search)) {
-                      $sql = 'SELECT user_id,lastname,firstname,username FROM '.$tbl_session_rel_user.' su INNER JOIN '.$tbl_my_user.' u ON su.id_user=u.user_id WHERE id_session="'.$session_code.'" AND (lastname like "%'.$search.'%" OR firstname like "%'.$search.'%" OR firstname like "%'.$search.'%")';
-                      }
-                      $rs_sess_user = Database::query($sql, __FILE__, __LINE__);
-                      while ($row_sess_user =  Database::fetch_array($rs_sess_user)) {
-                          if (!in_array($row_sess_user['user_id'], $include_user_id_list)) {
-                              $include_user_id_list[] = $row_sess_user['user_id'];
-                              $path = UserManager::get_user_picture_path_by_id($row_sess_user['user_id'],'web',false,true);
-                              $list_ids_friends[] = array('friend_user_id' => $row_sess_user['user_id'],'firstName' => $row_sess_user['firstname'] , 'lastName' => $row_sess_user['lastname'], 'username' => $row_sess_user['username'], 'image' => $path['file'], 'contact_type' => 0);
-                          }
-                      }
-                  }
-                  
-        }
-        /**
-         * Get contacts from another courses,another sessions
-         */
-        public static function get_indirect_contact_list ($user_id, &$include_user_id_list, &$list_ids_friends, $id_group=null, $search_name=null, $load_extra_info = true) {
+		$list_ids_friends=array();
 		$tbl_my_friend = Database :: get_main_table(TABLE_MAIN_USER_REL_USER);
 		$tbl_my_user = Database :: get_main_table(TABLE_MAIN_USER);
 		$sql='SELECT friend_user_id FROM '.$tbl_my_friend.' WHERE relation_type NOT IN ('.USER_RELATION_TYPE_DELETED.', '.USER_RELATION_TYPE_RRHH.') AND friend_user_id<>'.((int)$user_id).' AND user_id='.((int)$user_id);
@@ -273,16 +106,18 @@ class SocialManager extends UserManager {
 
 		$res = Database::query($sql);
 		while ($row = Database::fetch_array($res, 'ASSOC')) {
-                          if (!in_array($row['friend_user_id'], $include_user_id_list)) {
-                                $include_user_id_list[] = $row['friend_user_id'];
+			if ($load_extra_info) {
 				$path = UserManager::get_user_picture_path_by_id($row['friend_user_id'],'web',false,true);
 				$my_user_info = api_get_user_info($row['friend_user_id']);
-				$list_ids_friends[] = array('friend_user_id'=>$row['friend_user_id'],'firstName'=>$my_user_info['firstName'] , 'lastName'=>$my_user_info['lastName'], 'username'=>$my_user_info['username'], 'image'=>$path['file'], 'contact_type' => 1);
-		
-                          }
-                }
+				$list_ids_friends[] = array('friend_user_id'=>$row['friend_user_id'],'firstName'=>$my_user_info['firstName'] , 'lastName'=>$my_user_info['lastName'], 'username'=>$my_user_info['username'], 'image'=>$path['file']);
+			} else {
+				$list_ids_friends[] = $row;
+			}
+		}
 		return $list_ids_friends;
-        }
+	}
+
+
 	/**
 	 * get list web path of contacts by user id
 	 * @param int user id
@@ -341,6 +176,7 @@ class SocialManager extends UserManager {
 
 		$current_date = date('Y-m-d H:i:s',time());
 		$sql_exist='SELECT COUNT(*) AS count FROM '.$tbl_message.' WHERE user_sender_id='.($user_id).' AND user_receiver_id='.($friend_id).' AND msg_status IN(5,6,7);';
+
 		$res_exist=Database::query($sql_exist);
 		$row_exist=Database::fetch_array($res_exist,'ASSOC');
 
@@ -353,8 +189,8 @@ class SocialManager extends UserManager {
 			$sql_if_exist='SELECT COUNT(*) AS count, id FROM '.$tbl_message.' WHERE user_sender_id='.$user_id.' AND user_receiver_id='.$friend_id.' AND msg_status=7';
 			$res_if_exist=Database::query($sql_if_exist);
 			$row_if_exist=Database::fetch_array($res_if_exist,'ASSOC');
-			if ($row_if_exist['count'] > 0) {
-				$sql_if_exist_up='UPDATE '.$tbl_message.'SET msg_status=5, content = "'.$message_content.'"  WHERE user_sender_id='.$user_id.' AND user_receiver_id='.$friend_id.' AND msg_status = 7 ';       
+			if ($row_if_exist['count']==1) {
+				$sql_if_exist_up='UPDATE '.$tbl_message.'SET msg_status=5, content = "'.$message_content.'"  WHERE user_sender_id='.$user_id.' AND user_receiver_id='.$friend_id.' AND msg_status = 7 ';
 				//$sql_if_exist_up='UPDATE '.$tbl_message.'SET msg_status=5, set content = '.$message_content.' WHERE id='.$row_if_exist['id'].'';
 				Database::query($sql_if_exist_up);
 				return true;
@@ -386,7 +222,7 @@ class SocialManager extends UserManager {
 	public static function get_list_invitation_of_friends_by_user_id ($user_id) {
 		$list_friend_invitation=array();
 		$tbl_message=Database::get_main_table(TABLE_MAIN_MESSAGE);
-		$sql='SELECT distinct user_sender_id, send_date,title,content FROM '.$tbl_message.' WHERE user_receiver_id='.intval($user_id).' AND msg_status = '.MESSAGE_STATUS_INVITATION_PENDING;
+		$sql='SELECT user_sender_id,send_date,title,content FROM '.$tbl_message.' WHERE user_receiver_id='.intval($user_id).' AND msg_status = '.MESSAGE_STATUS_INVITATION_PENDING;
 		$res=Database::query($sql);
 		while ($row=Database::fetch_array($res,'ASSOC')) {
 			$list_friend_invitation[]=$row;
@@ -466,26 +302,27 @@ class SocialManager extends UserManager {
 		$succes = get_lang('MessageSentTo');
 		$succes.= ' : '.api_get_person_name($user_info['firstName'], $user_info['lastName']);
 		if (isset($subject_message) && isset($content_message) && isset($userfriend_id)) {
-                    $send_message = MessageManager::send_message($userfriend_id, $subject_message, $content_message);
-                    if ($send_message) {
-                            echo $succes;
-                    } else {
-                            echo $succes;
-                    }
-                    return false;
+			$send_message = MessageManager::send_message($userfriend_id, $subject_message, $content_message);
+			if ($send_message) {
+				echo $succes;
+			} else {
+				echo $succes;
+			}
+			return false;
 		} elseif (isset($userfriend_id) && !isset($subject_message)) {
-                    $count_is_true=false;
-                    $count_number_is_true=0;
-                    if (isset($userfriend_id) && $userfriend_id>0) {
-                            $message_title = get_lang('Invitation');
-                            $count_is_true = self::send_invitation_friend(api_get_user_id(),$userfriend_id, $message_title, $content_message);
-                            if ($count_is_true) {
-                                    echo api_htmlentities(get_lang('InvitationHasBeenSent'), ENT_QUOTES,$charset);
-                            }else {
-                                    echo api_htmlentities(get_lang('YouAlreadySentAnInvitation'), ENT_QUOTES,$charset);
-                            }
+			$count_is_true=false;
+			$count_number_is_true=0;
+			if (isset($userfriend_id) && $userfriend_id>0) {
+				$message_title = get_lang('Invitation');
+				$count_is_true = self::send_invitation_friend(api_get_user_id(),$userfriend_id, $message_title, $content_message);
 
-                    }
+				if ($count_is_true) {
+					echo api_htmlentities(get_lang('InvitationHasBeenSent'), ENT_QUOTES,$charset);
+				}else {
+					echo api_htmlentities(get_lang('YouAlreadySentAnInvitation'), ENT_QUOTES,$charset);
+				}
+
+			}
 		}
 	}
 
@@ -515,7 +352,7 @@ class SocialManager extends UserManager {
 	        	$res .= '<div class="social-rss-channel-items">';
 		        foreach ($rss->items as $item) {
 		            if ($limit>=0 and $i>$limit) {break;}
-		        	$res .= '<h3>a<a href="'.$item['link'].'">'.$item['title'].'</a></h3>';
+		        	$res .= '<h3><a href="'.$item['link'].'">'.$item['title'].'</a></h3>';
 		            $res .= '<div class="social-rss-item-date">'.api_get_datetime($item['date_timestamp']).'</div>';
 		            $res .= '<div class="social-rss-item-content">'.$item['description'].'</div><br />';
 		            $i++;
@@ -582,14 +419,14 @@ class SocialManager extends UserManager {
 		$s_course_status=$my_course['s'];
 		$s_htlm_status_icon="";
 
-        if ($s_course_status==1) {
-			$s_htlm_status_icon=Display::return_icon('pixel.gif',get_lang('Course'),array('class' => 'actionplaceholdericon actioncourse')).Display::return_icon('pixel.gif',get_lang('Status').': '.get_lang('Teacher'),array('class' => 'actionplaceholdericon actiontrainer'));
+		if ($s_course_status==1) {
+			$s_htlm_status_icon=Display::return_icon('course22.png', get_lang('Course')).' '.Display::return_icon('teachers.gif', get_lang('Status').': '.get_lang('Teacher'),array('style'=>'width:11px; height:11px'));
 		}
 		if ($s_course_status==2) {
-			$s_htlm_status_icon=Display::return_icon('pixel.gif',get_lang('Course'),array('class' => 'actionplaceholdericon actioncourse')).' '.Display::return_icon('pixel.gif',get_lang('Status').': '.get_lang('Teacher'),array('class' => 'actionplaceholdericon actioncoach'));
+			$s_htlm_status_icon=Display::return_icon('course22.png', get_lang('Course')).' '.Display::return_icon('coachs.gif', get_lang('Status').': '.get_lang('GeneralCoach'),array('style'=>'width:11px; height:11px'));
 		}
 		if ($s_course_status==5) {
-			$s_htlm_status_icon=Display::return_icon('pixel.gif',get_lang('Course'),array('class' => 'actionplaceholdericon actioncourse')).' '.Display::return_icon('pixel.gif',get_lang('Status').': '.get_lang('Student'),array('class' => 'actionplaceholdericon actionuser'));
+			$s_htlm_status_icon=Display::return_icon('course22.png', get_lang('Course')).' '.Display::return_icon('students.gif', get_lang('Status').': '.get_lang('Student'),array('style'=>'width:11px; height:11px'));
 		}
 
 		//display course entry
@@ -758,7 +595,7 @@ class SocialManager extends UserManager {
 				echo '<div class="social-background-content" onmouseout="hide_icon_edit()" onmouseover="show_icon_edit()"><center>';
 
 				if (basename($big['file']) != 'unknown_group.png') {
-					echo '<a class="thickbox" href="'.$original['file'].'"><img src="'.$big['file'].'" class="social-groups-image" /> </a><br /><br />';
+					echo '<a class="thickbox" href="'.$original['file'].'"><img src='.$big['file'].' class="social-groups-image" /> </a><br /><br />';
 				} else {
 					echo '<img src='.$big['file'].' class="social-groups-image" /><br /><br />';
 				}
@@ -778,9 +615,9 @@ class SocialManager extends UserManager {
 				echo '<div class="social-background-content" onmouseout="hide_icon_edit()" onmouseover="show_icon_edit()"><center>';
 
 					if ($img_array['file'] != 'unknown.jpg') {
-		    	  		echo '<a class="thickbox" href="'.$big_image.'"><img src="'.$img_array['dir'].$img_array['file'].'" /> </a>';
+		    	  		echo '<a class="thickbox" href="'.$big_image.'"><img src='.$img_array['dir'].$img_array['file'].' /> </a>';
 					} else {
-						echo '<img src="'.$img_array['dir'].$img_array['file'].'" width="110px" />';
+						echo '<img src='.$img_array['dir'].$img_array['file'].' width="110px" />';
 					}
 					if (api_get_user_id() == $user_id) {
 						echo '<div id="edit_image" class="hidden_message" style="display:none"><a href="'.api_get_path(WEB_PATH).'main/auth/profile.php">'.get_lang('EditProfile').'</a></div>';
@@ -795,6 +632,19 @@ class SocialManager extends UserManager {
 	        	echo GroupPortalManager::show_group_column_information($group_id, api_get_user_id(), $show);
 	        }
 		}
+
+        if ($show == 'shared_profile') {
+	  		//check if I already sent an invitation message
+	  		$invitation_sent_list = SocialManager::get_list_invitation_sent_by_user_id(api_get_user_id());
+
+	  		if (is_array($invitation_sent_list) && is_array($invitation_sent_list[$user_id]) && count($invitation_sent_list[$user_id]) >0 ) {
+	  			echo '<a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.Display::return_icon('invitation_friend.png',get_lang('YouAlreadySentAnInvitation')).'&nbsp;&nbsp;'.get_lang('YouAlreadySentAnInvitation').'</a>';
+	  		} else {
+	  			if (!$show_full_profile) {
+	  				echo  '<a href="'.api_get_path(WEB_PATH).'main/messages/send_message_to_userfriend.inc.php?view_panel=2&height=260&width=610&user_friend='.$user_id.'" class="thickbox" title="'.get_lang('SendInvitation').'">'.Display :: return_icon('invitation_22.png', get_lang('SocialInvitationToFriends')).'&nbsp;'.get_lang('SendInvitation').'</a>';
+	  			}
+	  		}
+        }
         echo '</div>';
 
 	}
@@ -1039,24 +889,7 @@ class SocialManager extends UserManager {
 		return $content;
 	}
    
-    public static function removed_friend($friend_id) {
-        $tbl_my_friend = Database :: get_main_table(TABLE_MAIN_USER_REL_USER);
-        $tbl_my_message = Database :: get_main_table(TABLE_MAIN_MESSAGE);
-        $user_id=api_get_user_id();
-        $sql = 'SELECT COUNT(*) as count FROM ' . $tbl_my_friend . ' WHERE user_id=' . ((int)$user_id) . ' AND relation_type<>6 AND friend_user_id='.((int)$friend_id);
-        $result = Database::query($sql, __FILE__, __LINE__);
-        $row = Database :: fetch_array($result, 'ASSOC');
-        if ($row['count'] == 1) {
-                //Delete user friend
-                $sql_i = 'UPDATE ' . $tbl_my_friend . ' SET relation_type=6 WHERE user_id=' . ((int)$user_id).' AND friend_user_id='.((int)$friend_id);
-                $sql_j = 'UPDATE ' . $tbl_my_message . ' SET msg_status=7 WHERE user_receiver_id=' . ((int)$user_id).' AND user_sender_id='.((int)$friend_id);
-                //Delete user
-                $sql_ij = 'UPDATE ' . $tbl_my_friend . ' SET relation_type=6 WHERE user_id=' . ((int)$friend_id).' AND friend_user_id='.((int)$user_id);
-                $sql_ji = 'UPDATE ' . $tbl_my_message . ' SET msg_status=7 WHERE user_receiver_id=' . ((int)$friend_id).' AND user_sender_id='.((int)$user_id);			
-                Database::query($sql_i, __FILE__, __LINE__);
-                Database::query($sql_j, __FILE__, __LINE__);
-                Database::query($sql_ij, __FILE__, __LINE__);
-                Database::query($sql_ji, __FILE__, __LINE__);			
-        }
+    public static function removed_friend($user_id) {
+    // Not implemented yet
     }
 }

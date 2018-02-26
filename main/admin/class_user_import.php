@@ -159,8 +159,6 @@ if ($form->validate()) {
 }
 
 Display :: display_header($tool_name);
-echo '<div id="content">';
-
 api_display_tool_title($tool_name);
 
 if (count($errors) != 0) {
@@ -184,7 +182,7 @@ adam;class01
 </pre>
 </blockquote>
 <?php
-echo '</div>';
+
 /*
 ==============================================================================
 		FOOTER

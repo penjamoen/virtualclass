@@ -31,10 +31,7 @@ require_once '../inc/global.inc.php';
 
 // Including additional libraries.
 require_once "linkfunctions.php";
-require_once '../newscorm/learnpath.class.php';
-require_once '../newscorm/learnpathItem.class.php';
 
-/* @todo: is this used? */
 define('DOKEOS_LINK', true);
 
 // setting the section (for the tabs)
@@ -120,37 +117,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'editlink') {
  $interbreadcrumb[] = array('url' => '#', 'name' => get_lang('EditLink'));
 }
 
-// Variable
-$lp_id = Security::remove_XSS($_GET['lp_id']);
-// Lp object
-if (isset($_SESSION['lpobject'])) {
- if ($debug > 0)
-  error_log('New LP - SESSION[lpobject] is defined', 0);
- $oLP = unserialize($_SESSION['lpobject']);
- if (is_object($oLP)) {
-  if ($debug > 0)
-   error_log('New LP - oLP is object', 0);
-  if ($myrefresh == 1 OR (empty($oLP->cc)) OR $oLP->cc != api_get_course_id()) {
-   if ($debug > 0)
-    error_log('New LP - Course has changed, discard lp object', 0);
-   if ($myrefresh == 1) {
-    $myrefresh_id = $oLP->get_id();
-   }
-   $oLP = null;
-   api_session_unregister('oLP');
-   api_session_unregister('lpobject');
-  } else {
-   $_SESSION['oLP'] = $oLP;
-   $lp_found = true;
-  }
- }
-}
-
-// Add the extra lp_id parameter to some links
-$add_params_for_lp = '';
-if (isset($_GET['lp_id'])) {
-  $add_params_for_lp = "&lp_id=".$lp_id;
-}
 
 // Database Table definitions
 $tbl_link = Database::get_course_table(TABLE_LINK);
@@ -183,16 +149,15 @@ if (api_is_allowed_to_edit ()) {
    connectWith: '.category_0, #categories ul',
    handle   :   $('.move1'),
    cursor   :  'move',
-   cancel: ".nodrag",
    //Event thrown when the drag n drop start
    start: function(event, ui) {
 	  parentElement = ui.item.parent();
     //We keep into the memory the current link category
     category_before = getCategoryId(parentElement);
 	var viewParameter = getUrlViewParameter();	
-	if(category_before == 0 && viewParameter == '') {			      
-            window.location.href = "link.php?urlview=1111111111&fold=Y";
-            return;
+	if(category_before == 0 && viewParameter == '')
+	{			      
+       window.location.href = "link.php?urlview=1111111111&fold=Y";
 	}	
    },
 
@@ -215,24 +180,28 @@ if (api_is_allowed_to_edit ()) {
     }
 			
     //Links' category has changed
-    if (!category_after) {
-        category_after = 0;
-    } 
+		if (!category_after)
+    {
+			category_after = 0;
+		} 
     if(category_before != category_after){
      $.ajax({
-          //We update the link category
-          url: "link.php?action=changeLinkCategory&itemId="+itemId+"&categoryId="+category_after,
-          complete: function(){
-           //we update the order of all links of the new category
-           var viewParameter = getUrlViewParameter();
-           var viewString = "";
-           if(viewParameter.length > 0){
-            viewString = "&urlview="+viewParameter;
-            window.location.href = "link.php?action=updateRecordsListings&disporder="+disparr+viewString;	
-           }
-          }
+      //We update the link category
+      url: "link.php?action=changeLinkCategory&itemId="+itemId+"&categoryId="+category_after,
+      complete: function(){
+       //we update the order of all links of the new category
+       var viewParameter = getUrlViewParameter();
+       var viewString = "";
+       if(viewParameter.length > 0){
+        viewString = "&urlview="+viewParameter;
+       }
+	   
+       window.location.href = "link.php?action=updateRecordsListings&disporder="+disparr+viewString;
+		
+       return;
+      }
      });
-     return false;
+     return;
     }
 			
    },
@@ -257,11 +226,12 @@ if (api_is_allowed_to_edit ()) {
     }
     //Update the links order in the category	
     window.location.href = "link.php?action=updateRecordsListings&disporder="+disparr+viewString;
+	
     return;
 
    }
 		
-  });
+  }).disableSelection();
 
 
   //Allow th change the categories order
@@ -270,7 +240,6 @@ if (api_is_allowed_to_edit ()) {
     connectWith: '#categories',
     cursor   :  'move',
     handle   :  $('.move'),
-    cancel: ".nodrag",
     update: function(event, ui) {
     var order = $(this).sortable("serialize") + '&action=updateRecordsListings';
     var record = order.split("&");
@@ -289,9 +258,9 @@ if (api_is_allowed_to_edit ()) {
     }
     //update the order of all categories	
     window.location.href = "link.php?action=updateRecordsListings&type=categories&disporder="+disparr+viewString;
-    return;
+	
    }
-  });
+  }).disableSelection();
 
  });
 
@@ -339,9 +308,9 @@ $updateRecordsArray = $_GET['disporder'];
 $disporder = $_GET['disporder'];
 
 if ($action == "changeLinkCategory") {
- $itemId = Security::remove_XSS($_GET["itemId"]);
- $categoryId = Security::remove_XSS($_GET["categoryId"]);
- $sql = "UPDATE $tbl_link SET category_id=" . Database::escape_string($categoryId) . " WHERE id = " . Database::escape_string($itemId);
+ $itemId = $_GET["itemId"];
+ $categoryId = $_GET["categoryId"];
+ $sql = "UPDATE $tbl_link SET category_id=" . $categoryId . " WHERE id = " . $itemId;
  $res = Database::query($sql, __FILE__, __LINE__);
  exit;
 }
@@ -356,7 +325,7 @@ if ($action == "updateRecordsListings") {
  $len = sizeof($disparr);
  $listingCounter = $len;
  for ($i = 0; $i < sizeof($disparr); $i++) {
-  $sql = "UPDATE $table_name SET display_order=" . Database::escape_string($listingCounter) . " WHERE id = " . Database::escape_string($disparr[$i]);
+  $sql = "UPDATE $table_name SET display_order=" . $listingCounter . " WHERE id = " . $disparr[$i];
   $res = Database::query($sql, __FILE__, __LINE__);
   $listingCounter = $listingCounter - 1;
  }
@@ -440,7 +409,7 @@ $display_order = $obj->disporder;
 							display_order) VALUES(" . Database::escape_string($lp_id) . ",
 							'link',
 							'" . ($maxid + 1) . "',
-							'" . Database::escape_string($link_title) . "',
+							'" . $link_title . "',
 							'',
 							'" . Database::escape_string($link_id) . "',
 							" . $maxid . ",
@@ -463,23 +432,25 @@ if (api_is_allowed_to_edit(null, true) and isset($_GET['action'])) {
  // Displaying the correct title and the form for adding a category or link. This is only shown when nothing
  // has been submitted yet, hence !isset($submitLink)
  if (($_GET['action'] == "addlink" or $_GET['action'] == "editlink") and empty($_POST['submitLink'])) {
+  /* 	echo '<div class="row">';
+    if ($_GET['action']=="addlink")
+    {echo '<div class="form_header">'.get_lang("LinkAdd").'</div>';}
+    else
+    {echo '<div class="form_header">'.get_lang("LinkMod").'</div>';}
+    echo '</div>'; */
   if ($category == "") {
    $category = 0;
   }
 
   // actions (when adding a link)
   echo '<div class="actions">';
-  echo '<a href="link.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&amp;urlview=' . Security::remove_XSS($_GET['urlview']) . '">' . Display::return_icon('pixel.gif', get_lang('BackToLinksOverview'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('BackToLinksOverview') . '</a>';
-  if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0) {
-  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=add_item&type=step&lp_id='.$_GET['lp_id'].'">' . Display::return_icon('pixel.gif', get_lang('Content'),array('class'=>'toolactionplaceholdericon toolactionauthorcontent')).get_lang("Content") . '</a>';
-  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=admin_view&lp_id='.$_GET['lp_id'].'">' . Display::return_icon('pixel.gif', get_lang('Scenario'),array('class'=>'toolactionplaceholdericon toolactionauthorscenario')).get_lang("Scenario") . '</a>';
-  }
+  echo '<a href="link.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&amp;urlview=' . Security::remove_XSS($_GET['urlview']) . '">' . Display::return_icon('go_previous_32.png', get_lang('BackToLinksOverview')) . get_lang('BackToLinksOverview') . '</a>';
   echo '</div>';
 
   // start the content div
   echo '<div id="content">';
 
-  echo "<form name='add_link' method=\"post\" action=\"" . api_get_self() . "?action=" . Security::remove_XSS($_GET['action']) . "&amp;urlview=" . Security::remove_XSS($urlview) .$add_params_for_lp. "\">";
+  echo "<form name='add_link' method=\"post\" action=\"" . api_get_self() . "?action=" . Security::remove_XSS($_GET['action']) . "&amp;urlview=" . Security::remove_XSS($urlview) . "\">";
   if ($_GET['action'] == "editlink") {
    echo "<input type=\"hidden\" name=\"id\" value=\"" . Security::remove_XSS($_GET['id']) . "\" />";
    $clean_link_id = trim(Security::remove_XSS($_GET['id']));
@@ -502,6 +473,14 @@ if (api_is_allowed_to_edit(null, true) and isset($_GET['action'])) {
 						<input type="text" name="title" size="50" value="' . api_htmlentities($title, ENT_QUOTES, $charset) . '" />
 					</div>
 				</div>';
+  /* 	echo '	<div class="row">
+    <div class="label">
+    '.get_lang('Metadata').'
+    </div>
+    <div class="formw">
+    <a href="../metadata/index.php?eid='.urlencode('Link.'.$clean_link_id).'">'.get_lang('AddMetadata').'</a>
+    </div>
+    </div>'; */
   echo '	<div class="row">
 					<div class="label">
 						' . get_lang('Objective') . '
@@ -565,7 +544,17 @@ if (api_is_allowed_to_edit(null, true) and isset($_GET['action'])) {
    require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
    $specific_fields = get_specific_field_list();
 
+   echo '	<div class="row">
+						<div class="label">
+							' . get_lang('SearchFeatureDoIndexLink') . '?
+						</div>
+						<div class="formw">
+							<input class="checkbox" type="checkbox" name="index_document" id="index_document" checked="checked"><label for="index_document"> ' . get_lang('Yes') . '</label>
+						</div>';
+
    foreach ($specific_fields as $specific_field) {
+    //Author : <input name="A" type="text" />
+
     $default_values = '';
     if ($_GET['action'] == "editlink") {
      $filter = array('course_code' => "'" . api_get_course_id() . "'", 'field_id' => $specific_field['id'], 'ref_id' => Security::remove_XSS($_GET['id']), 'tool_id' => '\'' . TOOL_LINK . '\'');
@@ -614,7 +603,7 @@ if (api_is_allowed_to_edit(null, true) and isset($_GET['action'])) {
 
   // actions (when adding a category)
   echo '<div class="actions">';
-  echo '<a href="link.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&amp;urlview=' . Security::remove_XSS($_GET['urlview']) . '">' . Display::return_icon('pixel.gif', get_lang('BackToLinksOverview'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('BackToLinksOverview') . '</a>';
+  echo '<a href="link.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&amp;urlview=' . Security::remove_XSS($_GET['urlview']) . '">' . Display::return_icon('go_previous_32.png', get_lang('BackToLinksOverview')) . get_lang('BackToLinksOverview') . '</a>';
   echo '</div>';
 
   // start the content div
@@ -633,6 +622,15 @@ if (api_is_allowed_to_edit(null, true) and isset($_GET['action'])) {
 						<input type="text" class="focus" name="category_title" size="50" value="' . $category_title . '" />
 					</div>
 				</div>';
+
+  /* 	echo '	<div class="row">
+    <div class="label">
+    '.get_lang('Description').'
+    </div>
+    <div class="formw">
+    <textarea rows="3" cols="50" name="description">'.api_htmlentities($description,ENT_QUOTES,$charset).'</textarea>
+    </div>
+    </div>'; */
 
   echo '	<div class="row">
 					<div class="label">
@@ -676,13 +674,9 @@ if (empty($_GET['action']) || ($_GET['action'] != 'editlink' && $_GET['action'] 
  echo '<div class="actions">';
  if (api_is_allowed_to_edit(null, true)) {
   $urlview = Security::remove_XSS($urlview);
-  echo "<a href=\"" . api_get_self() . "?" . api_get_cidreq() . "&action=addlink&amp;category=" . (!empty($category) ? $category : '') . "&amp;urlview=$urlview\">" . Display::return_icon('pixel.gif', get_lang('LinkAdd'), array('class' => 'toolactionplaceholdericon toolactionslink')) . '&nbsp;&nbsp;' . get_lang("LinkAdd") . "</a>\n";
-  echo "<a href=\"" . api_get_self() . "?" . api_get_cidreq() . "&action=addcategory&amp;urlview=" . $urlview . "\">" . Display::return_icon('pixel.gif', get_lang("Folder"), array('class' => 'toolactionplaceholdericon toolactioncreatefolder')) . '&nbsp;&nbsp;' . get_lang("Folder") . "</a>";
+  echo "<a href=\"" . api_get_self() . "?" . api_get_cidreq() . "&action=addlink&amp;category=" . (!empty($category) ? $category : '') . "&amp;urlview=$urlview\">" . Display::return_icon('linkplus32.png', get_lang('LinkAdd')) . '&nbsp;&nbsp;' . get_lang("LinkAdd") . "</a>\n";
+  echo "<a href=\"" . api_get_self() . "?" . api_get_cidreq() . "&action=addcategory&amp;urlview=" . $urlview . "\">" . Display::return_icon('folderplus.png', get_lang("Folder")) . '&nbsp;&nbsp;' . get_lang("Folder") . "</a>";
   /* "<a href=\"".api_get_self()."?".api_get_cidreq()."&action=importcsv&amp;urlview=".$urlview."\">".get_lang('CsvImport')."</a>\n", // RH */
-  if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0) {
-  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=add_item&type=step&lp_id='.Security::remove_XSS($_GET['lp_id']).'">' . Display::return_icon('pixel.gif', get_lang('Content'),array('class'=>'toolactionplaceholdericon toolactionauthorcontent')).get_lang("Content") . '</a>';
-  echo '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=admin_view&lp_id='.Security::remove_XSS($_GET['lp_id']).'">' . Display::return_icon('pixel.gif', get_lang('Scenario'),array('class'=>'toolactionplaceholdericon toolactionauthorscenario')).get_lang("Scenario") . '</a>';
-  }
  }
  //making the show none / show all links. Show none means urlview=0000 (number of zeros depending on the
  //number of categories). Show all means urlview=1111 (number of 1 depending on teh number of categories).

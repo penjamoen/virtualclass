@@ -107,7 +107,7 @@ $form = new FormValidator('update_course');
 
 // COURSE SETTINGS
 $form->addElement('html','<div class="section">');
-$form->addElement('html','<div class="sectiontitle"><a name="coursesettings" id="coursesettings"></a>'.Display::return_icon('pixel.gif', get_lang('CourseSettings'), array('class' => 'toolactionplaceholdericon toolsettings')).' '.get_lang('CourseSettings').'</div>');
+$form->addElement('html','<div class="sectiontitle"><a name="coursesettings" id="coursesettings"></a>'.Display::return_icon('settings.png',get_lang('CourseSettings')).' '.get_lang('CourseSettings').'</div>');
 $form->addElement('html','<div class="sectioncontent">');
 $visual_code=$form->addElement('text','visual_code', get_lang('Code'));
 	$visual_code->freeze();
@@ -140,7 +140,7 @@ $form->addElement('html','</div>');
 
 // COURSE ACCESS
 $form->addElement('html','<div class="section">');
-$form->addElement('html','<div class="sectiontitle"><a name="coursesaccess" id="coursesaccess"></a>'.Display::return_icon('pixel.gif', get_lang('CourseAccess'), array('class' => 'toolactionplaceholdericon toolactionadmincourse')).' '.get_lang('CourseAccess').'</div>');
+$form->addElement('html','<div class="sectiontitle"><a name="coursesaccess" id="coursesaccess"></a>'.Display::return_icon('course.png',get_lang('CourseAccess')).' '.get_lang('CourseAccess').'</div>');
 $form->addElement('html','<div class="sectioncontent">');
 $form->addElement('radio', 'visibility', get_lang("CourseAccess"), get_lang('OpenToTheWorld'), COURSE_VISIBILITY_OPEN_WORLD);
 $form->addElement('radio', 'visibility', null, get_lang('OpenToThePlatform'), COURSE_VISIBILITY_OPEN_PLATFORM);
@@ -167,7 +167,7 @@ $form->addElement('html','</div>');
 
 // EMAIL NOTIFICATIONS
 $form->addElement('html','<div class="section">');
-$form->addElement('html','<div class="sectiontitle"><a name="emailnotifications" id="emailnotifications"></a>'.Display::return_icon('pixel.gif', get_lang('EmailNotifications'), array('class' => 'toolactionplaceholdericon toolsettingsnotification')).' '.get_lang('EmailNotifications').'</div>');
+$form->addElement('html','<div class="sectiontitle"><a name="emailnotifications" id="emailnotifications"></a>'.Display::return_icon('mail_32.png',get_lang('EmailNotifications')).' '.get_lang('EmailNotifications').'</div>');
 $form->addElement('html','<div class="sectioncontent">');
 
 $form->addElement('radio', 'email_alert_to_teacher_on_new_user_in_course', get_lang('NewUserEmailAlert'), get_lang('NewUserEmailAlertEnable'), 1);
@@ -194,7 +194,7 @@ $form->addElement('html','</div>');
 
 // USER RIGHTS
 $form->addElement('html','<div class="section">');
-$form->addElement('html','<div class="sectiontitle"><a name="userrights" id="userrights"></a>'.Display::return_icon('pixel.gif', get_lang('UserRights'), array('class' => 'toolactionplaceholdericon toolsettingsuser')).' '.get_lang('UserRights').'</div>');
+$form->addElement('html','<div class="sectiontitle"><a name="userrights" id="userrights"></a>'.Display::return_icon('members.gif',get_lang('UserRights')).' '.get_lang('UserRights').'</div>');
 $form->addElement('html','<div class="sectioncontent">');
 
 $form->addElement('radio', 'allow_user_edit_agenda', get_lang('AllowUserEditAgenda'), get_lang('AllowUserEditAgendaActivate'), 1);
@@ -216,7 +216,7 @@ $form->addElement('html','</div>');
 
 // CHAT SETTINGS
 $form->addElement('html','<div class="section">');
-$form->addElement('html','<div class="sectiontitle"><a name="chatsettings" id="chatsettings"></a>'.Display::return_icon('pixel.gif', get_lang('ConfigChat'), array('class' => 'toolactionplaceholdericon toolactionchat')).' '.get_lang('ConfigChat').'</div>');
+$form->addElement('html','<div class="sectiontitle"><a name="chatsettings" id="chatsettings"></a>'.Display::return_icon('chat.png',get_lang('ConfigChat')).' '.get_lang('ConfigChat').'</div>');
 $form->addElement('html','<div class="sectioncontent">');
 $form->addElement('radio', 'allow_open_chat_window', get_lang('AllowOpenchatWindow'), get_lang('AllowOpenChatWindowActivate'), 1);
 $form->addElement('radio', 'allow_open_chat_window', null, get_lang('AllowOpenChatWindowDeactivate'), 0);
@@ -229,7 +229,7 @@ $form->addElement('html','</div>');
 if (api_get_setting('allow_course_theme') == 'true')
 {
 	$form->addElement('html','<div class="section">');
-	$form->addElement('html','<div class="sectiontitle"><a name="theme" id="theme"></a>'.Display::return_icon('pixel.gif', get_lang('Theming'), array('class' => 'toolactionplaceholdericon toolsettingstheme')).' '.get_lang('Theming').'</div><div style="clear:both;"></div>');
+	$form->addElement('html','<div class="sectiontitle"><a name="theme" id="theme"></a>'.Display::return_icon('theme_32.png',get_lang('Theming')).' '.get_lang('Theming').'</div><div style="clear:both;"></div>');
 	$form->addElement('html','<div class="sectioncontent">');
 
 	//Allow Learning path
@@ -257,7 +257,7 @@ if (api_get_setting('allow_course_theme') == 'true')
 
 // OTHER SETTINGS (the platform settings that have been delegated)
 $form->addElement('html','<div class="section">');
-$form->addElement('html','<div class="sectiontitle"><!--<a href="#other" style="float:right;">'.Display::return_icon('top.gif',get_lang('Top')).'</a>--><a name="other" id="other"></a>'.Display::return_icon('pixel.gif', get_lang('Other'), array('class' => 'toolactionplaceholdericon toolsettingsother1')).' '.get_lang('Other').'</div>');
+$form->addElement('html','<div class="sectiontitle"><!--<a href="#other" style="float:right;">'.Display::return_icon('top.gif',get_lang('Top')).'</a>--><a name="other" id="other"></a>'.Display::return_icon('reference.png',get_lang('Other')).' '.get_lang('Other').'</div>');
 $form->addElement('html','<div class="sectioncontent">');
 $form=platform_settings_for_course($form);
 $form->addElement('style_submit_button', null, get_lang('SaveSettings'), 'class="save"');
@@ -299,9 +299,10 @@ $values['allow_user_image_forum'] = api_get_course_setting('allow_user_image_for
 // get allow_open_chat_window from table
 $values['allow_open_chat_window'] = api_get_course_setting('allow_open_chat_window');
 // get course_theme from table
-$values['course_theme'] = api_get_course_setting('course_theme', null, true);
+$values['course_theme'] = api_get_course_setting('course_theme');
 // get allow_learning_path_theme from table
 $values['allow_learning_path_theme'] = api_get_course_setting('allow_learning_path_theme');
+
 
 $form->setDefaults($values);
 // Validate form
@@ -337,9 +338,6 @@ if ($form->validate() && is_settings_editable()) {
 	
 	Database::query($sql, __FILE__, __LINE__);
 
-        
-        
-        
 	//update course_settings table - this assumes those records exist, otherwise triggers an error
 	$table_course_setting = Database::get_course_table(TABLE_COURSE_SETTING);
 	if($update_values['email_alert_to_teacher_on_new_user_in_course'] != $values['email_alert_to_teacher_on_new_user_in_course']){
@@ -358,21 +356,20 @@ if ($form->validate() && is_settings_editable()) {
 		$sql = "UPDATE $table_course_setting SET value = ".(int)$update_values['email_alert_manager_on_new_quiz']." WHERE variable = 'email_alert_manager_on_new_quiz' ";
 		Database::query($sql,__FILE__,__LINE__);
 	}
-        
-	/*if($update_values['allow_user_edit_agenda'] != $values['allow_user_edit_agenda']){
-		$sql = "UPDATE $table_course_setting SET value = '".$update_values['allow_user_edit_agenda']."' WHERE variable = 'allow_user_edit_agenda' ";
+	if($update_values['allow_user_edit_agenda'] != $values['allow_user_edit_agenda']){
+		$sql = "UPDATE $table_course_setting SET value = ".(int)$update_values['allow_user_edit_agenda']." WHERE variable = 'allow_user_edit_agenda' ";
 		Database::query($sql,__FILE__,__LINE__);
-	}*/
+	}
 	if($update_values['allow_user_edit_announcement'] != $values['allow_user_edit_announcement']){
-		$sql = "UPDATE $table_course_setting SET value = '".$update_values['allow_user_edit_announcement']."' WHERE variable = 'allow_user_edit_announcement' ";
+		$sql = "UPDATE $table_course_setting SET value = ".(int)$update_values['allow_user_edit_announcement']." WHERE variable = 'allow_user_edit_announcement' ";
 		Database::query($sql,__FILE__,__LINE__);
 	}
 	if($update_values['allow_user_image_forum'] != $values['allow_user_image_forum']){
-		$sql = "UPDATE $table_course_setting SET value = '".$update_values['allow_user_image_forum']."' WHERE variable = 'allow_user_image_forum' ";
+		$sql = "UPDATE $table_course_setting SET value = ".(int)$update_values['allow_user_image_forum']." WHERE variable = 'allow_user_image_forum' ";
 		Database::query($sql,__FILE__,__LINE__);
 	}
 	if($update_values['allow_open_chat_window'] != $values['allow_open_chat_window']){
-		$sql = "UPDATE $table_course_setting SET value = '".$update_values['allow_open_chat_window']."' WHERE variable = 'allow_open_chat_window' ";
+		$sql = "UPDATE $table_course_setting SET value = ".(int)$update_values['allow_open_chat_window']." WHERE variable = 'allow_open_chat_window' ";
 		Database::query($sql,__FILE__,__LINE__);
 	}
 	if($update_values['course_theme'] != $values['course_theme']){
@@ -380,7 +377,7 @@ if ($form->validate() && is_settings_editable()) {
 		Database::query($sql,__FILE__,__LINE__);
 	}
 	if($update_values['allow_learningpath_theme'] != $values['allow_learning_path_theme']){
-		$sql = "UPDATE $table_course_setting SET value = '".$update_values['allow_learning_path_theme']."' WHERE variable = 'allow_learning_path_theme' ";
+		$sql = "UPDATE $table_course_setting SET value = ".(int)$update_values['allow_learning_path_theme']." WHERE variable = 'allow_learning_path_theme' ";
 		Database::query($sql,__FILE__,__LINE__);
 	}
 
@@ -405,19 +402,19 @@ if (isset ($_GET['action']) && $_GET['action'] == 'show_message'){
 
 // actions bar
 echo '<div class="actions">';
-echo '<a href="#coursesettings">'.Display::return_icon('pixel.gif', get_lang('CourseSettings'), array('class' => 'toolactionplaceholdericon toolsettings')).' '.get_lang('CourseSettings').'</a>';
-echo '<a href="#coursesaccess">'.Display::return_icon('pixel.gif', get_lang('CourseAccess'), array('class' => 'toolactionplaceholdericon toolactionadmincourse')).' '.get_lang('CourseAccess').'</a>';
-echo '<a href="#emailnotifications">'.Display::return_icon('pixel.gif', get_lang('EmailNotifications'), array('class' => 'toolactionplaceholdericon toolsettingsnotification')).' '.get_lang('EmailNotifications').'</a>';
-echo '<a href="#userrights">'.Display::return_icon('pixel.gif', get_lang('UserRights'), array('class' => 'toolactionplaceholdericon toolsettingsuser')).' '.get_lang('UserRights').'</a>';
-echo '<a href="#chatsettings">'.Display::return_icon('pixel.gif', get_lang('ConfigChat'), array('class' => 'toolactionplaceholdericon toolactionchat')).' '.get_lang('ConfigChat').'</a>';
+echo '<a href="#coursesettings">'.Display::return_icon('settings.png',get_lang('CourseSettings')).' '.get_lang('CourseSettings').'</a>';
+echo '<a href="#coursesaccess">'.Display::return_icon('course.png',get_lang('CourseAccess')).' '.get_lang('CourseAccess').'</a>';
+echo '<a href="#emailnotifications">'.Display::return_icon('mail_32.png',get_lang('EmailNotifications')).' '.get_lang('EmailNotifications').'</a>';
+echo '<a href="#userrights">'.Display::return_icon('members.png',get_lang('UserRights')).' '.get_lang('UserRights').'</a>';
+echo '<a href="#chatsettings">'.Display::return_icon('chat.png',get_lang('ConfigChat')).' '.get_lang('ConfigChat').'</a>';
 if (api_get_setting('allow_course_theme') == 'true'){
-	echo '<a href="#theme">'.Display::return_icon('pixel.gif', get_lang('Theming'), array('class' => 'toolactionplaceholdericon toolsettingstheme')).' '.get_lang('Theming').'</a>';
+	echo '<a href="#theme">'.Display::return_icon('theme_32.png',get_lang('Theming')).' '.get_lang('Theming').'</a>';
 }
 // also display an action (internal anchor) to the other settings if some platform settings have been delegated
 // this $_settingdelegation variable is filled in global.inc.php
 if (!empty($_settingdelegation))
 {
-	echo '<a href="#other">'.Display::return_icon('pixel.gif', get_lang('Other'), array('class' => 'toolactionplaceholdericon toolsettingsother1')).' '.get_lang('Other').'</a>';
+	echo '<a href="#other">'.Display::return_icon('reference.png',get_lang('Other')).' '.get_lang('Other').'</a>';
 }
 echo '</div>';
 
@@ -619,12 +616,6 @@ function save_platform_settings_for_course($values)
 				if (!array_key_exists($subkey,$values['delegated_platform_setting_'.$key])){
 					// we have to add this one because apparently the checkbox was not checked
 
-                                                // clean old variables
-                                                $check = Database::query("SELECT id FROM $table_course_setting WHERE variable = '".Database::escape_string($key)."'");
-                                                if (Database::num_rows($check) > 0) {
-                                                    Database::query("DELETE FROM $table_course_setting WHERE variable = '".Database::escape_string($key)."'");                                                    
-                                                }
-                                    
 						$sql = "INSERT INTO $table_course_setting (variable,subkey,type,category,value) VALUES (
 								'".Database::escape_string($key)."',
 								'".Database::escape_string($subkey)."',
@@ -646,12 +637,6 @@ function save_platform_settings_for_course($values)
 			// we recover the variable of the delegated platform setting
 			$variable = str_replace('delegated_platform_setting_','',$key);
 			
-                        // clean old variables
-                        $check = Database::query("SELECT id FROM $table_course_setting WHERE variable = '".Database::escape_string($variable)."'");
-                        if (Database::num_rows($check) > 0) {
-                            Database::query("DELETE FROM $table_course_setting WHERE variable = '".Database::escape_string($variable)."'");                                                    
-                        }
-                        
 			// if the type is a radio button then we can simply insert it (because the form only contains one value)
 			if ($_settingdelegation[$variable]['type'] == 'radio'){
 				$sql = "INSERT INTO $table_course_setting (variable,subkey,type,category,value,title,comment,subkeytext) VALUES (

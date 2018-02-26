@@ -46,7 +46,7 @@ if(empty($_SESSION['origin_url'])){
 /* Process the form and redirect to origin */
 if(!empty($_POST['submit_email']) && !empty($_POST['email_title']) && !empty($_POST['email_text']))
 {
-	$text = Security::remove_XSS($_POST['email_text'])."\n\n---\n".get_lang('EmailSentFrom')." ".api_get_path(WEB_PATH);
+	$text = Security::remove_XSS($_POST['email_text'])."\n\n---\n".get_lang('EmailSentFromDokeos')." ".api_get_path(WEB_PATH);
 	$email_administrator=Security::remove_XSS($_POST['dest']);
 	$user_id=api_get_user_id();
 	$title=Security::remove_XSS($_POST['email_title']);
@@ -64,12 +64,11 @@ if(!empty($_POST['submit_email']) && !empty($_POST['email_title']) && !empty($_P
 
 /* Header */
 Display::display_header(get_lang('SendEmail'));
-// Start main content
-echo '<div id="content">';
+
 ?>
 <table border="0">
 <form action="" method="POST">
-    <input type="hidden" name="dest" value="<?php echo Security::remove_XSS($_REQUEST['dest']);?>" />
+<input type="hidden" name="dest" value="<?php echo Security::remove_XSS($_REQUEST['dest']);?>" />
 	<tr>
 		<td>
 			<label for="email_address"><?php echo get_lang('EmailDestination');?></label>
@@ -107,8 +106,6 @@ echo '<div id="content">';
 </table>
 
 <?php
-// Close main content
-echo '</div>';
 /* Footer */
 Display::display_footer();
 ?>

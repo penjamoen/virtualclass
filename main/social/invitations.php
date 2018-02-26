@@ -81,13 +81,13 @@ Display :: display_header($tool_name, 'Groups');
 
 // Display actions
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('pixel.gif',get_lang('Home'),array('class' => 'toolactionplaceholdericon toolactionshome')).get_lang('Home').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('pixel.gif', get_lang('Messages'), array('class' => 'toolactionplaceholdericon toolactionsmessage')).get_lang('Messages').$count_unread_message.'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.Display::return_icon('pixel.gif',get_lang('Invitations'), array('class' => 'toolactionplaceholdericon toolactionsinvite')).get_lang('Invitations').$total_invitations.'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.Display::return_icon('pixel.gif',get_lang('ViewMySharedProfile'), array('class' => 'toolactionplaceholdericon toolactionsprofile')).get_lang('ViewMySharedProfile').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.Display::return_icon('pixel.gif',get_lang('Friends'), array('class' => 'toolactionplaceholdericon toolactionsfriend')).get_lang('Friends').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('pixel.gif',get_lang('MyGroups'), array('class' => 'toolactionplaceholdericon toolactionsgroup')).get_lang('Groups').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('pixel.gif',get_lang('Search'),array('class'=>'toolactionplaceholdericon toolactionsearch')).get_lang('Search').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('atom.png',get_lang('Home')).get_lang('Home').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('instant_message.png',get_lang('Messages')).get_lang('Messages').$count_unread_message.'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.Display::return_icon('invitation.png',get_lang('Invitations')).get_lang('Invitations').$total_invitations.'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.Display::return_icon('my_shared_profile.png',get_lang('ViewMySharedProfile')).get_lang('ViewMySharedProfile').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.Display::return_icon('friend.png',get_lang('Friends')).get_lang('Friends').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('group.png',get_lang('Groups')).get_lang('Groups').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('zoom.png',get_lang('Search')).get_lang('Search').'</a>';
 echo '</div>';
 // Start content
 echo '<div id="content">';
@@ -149,7 +149,7 @@ echo '<div id="social-content">';
 		
 		
 		if ($number_loop != 0) {
-			echo api_display_tool_title(get_lang('InvitationReceived'));	
+			echo '<h2>'.get_lang('InvitationReceived').'</h2>';	
 			
 			foreach ($list_get_invitation as $invitation) { 
 				
@@ -165,9 +165,9 @@ echo '<div id="social-content">';
 				        $date		= $invitation['send_date'];  
 				                        
 				    ?>	   	
-					<table class="data_table" cellspacing="0" border="0">
+					<table cellspacing="0" border="0">
 					<tbody>
-						<tr class="row_odd">
+						<tr>
 							<td class="invitation_image">
 								<a href="profile.php?u=<?php echo $sender_user_id; ?>">
 								<img src="<?php echo $friends_profile['file']; ?>" <?php echo $friends_profile['style']; ?> /></a>
@@ -189,7 +189,7 @@ echo '<div id="social-content">';
 							</td>
 						</tr>
 					</tbody>
-					</table><br/>
+					</table>
 				</div>
 				<?php
 			}
@@ -197,7 +197,7 @@ echo '<div id="social-content">';
 		echo '<div class="clear"></div>';
 		
 		if (count($list_get_invitation_sent) > 0 ){	
-			echo api_display_tool_title(get_lang('InvitationSent'));
+			echo '<h2>'.get_lang('InvitationSent').'</h2>';
 			foreach ($list_get_invitation_sent as $invitation) { 
 				$sender_user_id = $invitation['user_receiver_id'];?>
 				<div id="<?php echo 'id_'.$sender_user_id ?>" class="invitation_confirm">
@@ -210,9 +210,9 @@ echo '<div id="social-content">';
 						$content	= Security::remove_XSS($invitation['content']);
 				        $date		= $invitation['send_date'];                  
 				    ?>	   	
-					<table class="data_table" cellspacing="0" border="0">
+					<table cellspacing="0" border="0">
 					<tbody>
-						<tr class="row_odd">
+						<tr>
 							<td class="invitation_image">
 								<a href="profile.php?u=<?php echo $sender_user_id;?>">
 								<img src="<?php echo $friends_profile['file']; ?>" <?php echo $friends_profile['style']; ?> /></a>

@@ -111,7 +111,7 @@ class learnpathItem{
 		$this->db_id = $id;
 
         // get search_did
-        if (api_get_setting('search_enabled')=='true' && extension_loaded('xapian')) {
+        if (api_get_setting('search_enabled')=='true') {
             $tbl_se_ref = Database::get_main_table(TABLE_MAIN_SEARCH_ENGINE_REF);
             $sql = 'SELECT * FROM %s WHERE course_code=\'%s\' AND tool_id=\'%s\' AND ref_id_high_level=%s AND ref_id_second_level=%d LIMIT 1';
             // TODO: verify if it's possible to assume the actual course instead of getting it from db
@@ -229,7 +229,7 @@ class learnpathItem{
 		//error_log('New LP - Deleting from lp_item: '.$sql_del_view,0);
         $res_del_item = Database::query($sql_del_item);
 
-        if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian')) {
+        if (api_get_setting('search_enabled') == 'true') {
         	if (!is_null($this->search_did)) {
         		require_once(api_get_path(LIBRARY_PATH) .'search/DokeosIndexer.class.php');
         		$di = new DokeosIndexer();
@@ -721,7 +721,6 @@ class learnpathItem{
 							$file_content = file_get_contents($abs_path);
 							//get an array of attributes from the HTML source
 							$attributes = learnpathItem::parse_HTML_attributes($file_content,$wanted_attributes);
-							
 							//look at 'src' attributes in this file
 							foreach($wanted_attributes as $attr)
 							{
@@ -905,14 +904,9 @@ class learnpathItem{
 												}
 											}
 											//found some protocol there
-											if(strpos($source,api_get_path(WEB_PATH))!==false || strpos(str_replace('http','https',$source),api_get_path(WEB_PATH)) !==false)
+											if(strpos($source,api_get_path(WEB_PATH))!==false)
 											{
 												//we found the current portal url
-												
-												// if url of doc is with http:// and is the same as portal but with https, replace source url
-												if(strpos(str_replace('http','https',$source),api_get_path(WEB_PATH)) !==false)
-													$source = str_replace('http', 'https', $source);
-												
 												$files_list[] = array($source,'local','url');
 												$in_files_list[] = learnpathItem::get_resources_from_source(TOOL_DOCUMENT,$source,$recursivity+1);
 												if(count($in_files_list)>0)
@@ -2008,7 +2002,7 @@ function get_terms()
         $terms_update_sql = "UPDATE $lp_item SET terms = '". Database::escape_string(api_htmlentities($new_terms_string, ENT_QUOTES, $charset)) . "' WHERE id=".$this->get_id();
         $res = Database::query($terms_update_sql,__FILE__,__LINE__);
         // save it to search engine
-        if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian')) {
+        if (api_get_setting('search_enabled') == 'true') {
             $di = new DokeosIndexer();
             $di->update_terms($this->get_search_did(), $new_terms);
         }

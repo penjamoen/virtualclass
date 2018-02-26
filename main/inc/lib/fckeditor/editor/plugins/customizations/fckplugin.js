@@ -218,7 +218,7 @@ var FCKDialog = ( function()
 {
 	var topDialog ;
 	var baseZIndex ;
-	var cover;
+	var cover ;
 
 	// The document that holds the dialog.
 	var topWindow = window.parent ;
@@ -598,32 +598,32 @@ FCKToolbarItems.GetItem = function( itemName )
 		case 'Templates'		: oItem = new FCKToolbarButton( 'Templates'	, FCKLang.Templates, null, null, null, null, 6 ) ; break ;
 		case 'About'			: oItem = new FCKToolbarButton( 'About'		, FCKLang.About, null, null, true, null, 47  ) ; break ;
 
-		case 'Cut'			: oItem = new FCKToolbarButton( 'Cut'		, FCKLang.Cut, null, null, false, true, 7 ) ; break ;
-		case 'Copy'			: oItem = new FCKToolbarButton( 'Copy'		, FCKLang.Copy, null, null, false, true, 8 ) ; break ;
+		case 'Cut'				: oItem = new FCKToolbarButton( 'Cut'		, FCKLang.Cut, null, null, false, true, 7 ) ; break ;
+		case 'Copy'				: oItem = new FCKToolbarButton( 'Copy'		, FCKLang.Copy, null, null, false, true, 8 ) ; break ;
 		case 'Paste'			: oItem = new FCKToolbarButton( 'Paste'		, FCKLang.Paste, null, null, false, true, 9 ) ; break ;
 		case 'PasteText'		: oItem = new FCKToolbarButton( 'PasteText'	, FCKLang.PasteText, null, null, false, true, 10 ) ; break ;
 		case 'PasteWord'		: oItem = new FCKToolbarButton( 'PasteWord'	, FCKLang.PasteWord, null, null, false, true, FCKConfig.PastewordIcon ) ; break ;
 		case 'Print'			: oItem = new FCKToolbarButton( 'Print'		, FCKLang.Print, null, null, false, true, 12 ) ; break ;
 		case 'SpellCheck'		: oItem = new FCKToolbarButton( 'SpellCheck', FCKLang.SpellCheck, null, null, null, null, 13 ) ; break ;
-		case 'Undo'			: oItem = new FCKToolbarButton( 'Undo'		, FCKLang.Undo, null, null, false, true, 14 ) ; break ;
-		case 'Redo'			: oItem = new FCKToolbarButton( 'Redo'		, FCKLang.Redo, null, null, false, true, 15 ) ; break ;
+		case 'Undo'				: oItem = new FCKToolbarButton( 'Undo'		, FCKLang.Undo, null, null, false, true, 14 ) ; break ;
+		case 'Redo'				: oItem = new FCKToolbarButton( 'Redo'		, FCKLang.Redo, null, null, false, true, 15 ) ; break ;
 		case 'SelectAll'		: oItem = new FCKToolbarButton( 'SelectAll'	, FCKLang.SelectAll, null, null, true, null, 18 ) ; break ;
 		case 'RemoveFormat'		: oItem = new FCKToolbarButton( 'RemoveFormat', FCKLang.RemoveFormat, null, null, false, true, 19 ) ; break ;
 		case 'FitWindow'		: oItem = new FCKToolbarButton( 'FitWindow'	, FCKLang.FitWindow, null, null, true, true, 66 ) ; break ;
 
-		case 'Bold'			: oItem = new FCKToolbarButton( 'Bold'		, FCKLang.Bold, null, null, false, true, 20 ) ; break ;
+		case 'Bold'				: oItem = new FCKToolbarButton( 'Bold'		, FCKLang.Bold, null, null, false, true, 20 ) ; break ;
 		case 'Italic'			: oItem = new FCKToolbarButton( 'Italic'	, FCKLang.Italic, null, null, false, true, 21 ) ; break ;
 		case 'Underline'		: oItem = new FCKToolbarButton( 'Underline'	, FCKLang.Underline, null, null, false, true, 22 ) ; break ;
-		case 'StrikeThrough'            : oItem = new FCKToolbarButton( 'StrikeThrough'	, FCKLang.StrikeThrough, null, null, false, true, 23 ) ; break ;
+		case 'StrikeThrough'	: oItem = new FCKToolbarButton( 'StrikeThrough'	, FCKLang.StrikeThrough, null, null, false, true, 23 ) ; break ;
 		case 'Subscript'		: oItem = new FCKToolbarButton( 'Subscript'		, FCKLang.Subscript, null, null, false, true, 24 ) ; break ;
 		case 'Superscript'		: oItem = new FCKToolbarButton( 'Superscript'	, FCKLang.Superscript, null, null, false, true, 25 ) ; break ;
 
-		case 'OrderedList'		: oItem = new FCKToolbarButton( 'InsertOrderedList', FCKLang.NumberedListLbl, FCKLang.NumberedList, null, false, true, 26 ) ; break ;
-		case 'UnorderedList'            : oItem = new FCKToolbarButton( 'InsertUnorderedList', FCKLang.BulletedListLbl, FCKLang.BulletedList, null, false, true, 27 ) ; break ;
-		case 'Outdent'			: oItem = new FCKToolbarButton( 'Outdent', FCKLang.DecreaseIndent, null, null, false, true, 28 ) ; break ;
-		case 'Indent'			: oItem = new FCKToolbarButton( 'Indent', FCKLang.IncreaseIndent, null, null, false, true, 29 ) ; break ;
-		case 'Blockquote'		: oItem = new FCKToolbarButton( 'Blockquote', FCKLang.Blockquote, null, null, false, true, 73 ) ; break ;
-		case 'CreateDiv'		: oItem = new FCKToolbarButton( 'CreateDiv', FCKLang.CreateDiv, null, null, false, true, 74 ) ; break ;
+		case 'OrderedList'		: oItem = new FCKToolbarButton( 'InsertOrderedList'		, FCKLang.NumberedListLbl, FCKLang.NumberedList, null, false, true, 26 ) ; break ;
+		case 'UnorderedList'	: oItem = new FCKToolbarButton( 'InsertUnorderedList'	, FCKLang.BulletedListLbl, FCKLang.BulletedList, null, false, true, 27 ) ; break ;
+		case 'Outdent'			: oItem = new FCKToolbarButton( 'Outdent'	, FCKLang.DecreaseIndent, null, null, false, true, 28 ) ; break ;
+		case 'Indent'			: oItem = new FCKToolbarButton( 'Indent'	, FCKLang.IncreaseIndent, null, null, false, true, 29 ) ; break ;
+		case 'Blockquote'		: oItem = new FCKToolbarButton( 'Blockquote'	, FCKLang.Blockquote, null, null, false, true, 73 ) ; break ;
+		case 'CreateDiv'		: oItem = new FCKToolbarButton( 'CreateDiv'	, FCKLang.CreateDiv, null, null, false, true, 74 ) ; break ;
 
 		case 'Link'				: oItem = new FCKToolbarButton( 'Link'		, FCKLang.InsertLinkLbl, FCKLang.InsertLink, null, false, true, FCKConfig.LinkIcon ) ; break ;
 		case 'Unlink'			: oItem = new FCKToolbarButton( 'Unlink'	, FCKLang.RemoveLink, null, null, false, true, FCKConfig.UnlinkIcon ) ; break ;
@@ -1006,7 +1006,7 @@ FCKCommands.GetCommand = function( commandName )
 
 	switch ( commandName )
 	{
-		case 'Bold'		:
+		case 'Bold'			:
 		case 'Italic'		:
 		case 'Underline'	:
 		case 'StrikeThrough':
@@ -1181,242 +1181,121 @@ FCK.ResizeToFit = function( width, height, max_width, max_height )
  */
 
 // This is a modification of the original function.
-FCKDocumentProcessor_CreateFakeImage = function(fakeClass, realElement)
+FCKDocumentProcessor_CreateFakeImage = function( fakeClass, realElement )
 {
-    // Premature detection of fake image type is needed here.
-    if ( fakeClass == 'FCK__UnknownObject' )
-    {
-        if ( FCK.IsVideo( realElement ) )
-        {
-            fakeClass = 'FCK__Video' ;
-        }
-    }
-
-    // The original code fragment.
-    var oImg = FCKTools.GetElementDocument( realElement ).createElement( 'IMG' ) ;
-    oImg.className = fakeClass ;
-    oImg.src = FCKConfig.BasePath + 'images/spacer.gif' ;
-    oImg.setAttribute( '_fckfakelement', 'true', 0 ) ;
-    oImg.setAttribute( '_fckrealelement', FCKTempBin.AddElement( realElement ), 0 ) ;
-
-    // Setting width and height for relevant types of fake images.
-    if ( fakeClass == 'FCK__Video' && realElement.nodeName.IEquals( 'div' ) )
+	var oImg = FCKTools.GetElementDocument( realElement ).createElement( 'IMG' ) ;
+	oImg.className = fakeClass ;
+	oImg.src = FCKConfig.BasePath + 'images/spacer.gif' ;
+	oImg.setAttribute( '_fckfakelement', 'true', 0 ) ;
+	oImg.setAttribute( '_fckrealelement', FCKTempBin.AddElement( realElement ), 0 ) ;
+	if ( fakeClass == 'FCK__Video' )
 	{
-        // Specific to the flv player.
-                for ( var i = 0; i < realElement.childNodes.length; i++ )
-                {
-                        if ( realElement.childNodes[i].nodeName.IEquals( 'div' ) )
-                        {
-                                oImg.style.width = realElement.childNodes[i].style.width ;
-                                oImg.style.height = realElement.childNodes[i].style.height ;
-                                break ;
-                        }
-                }
-        }
-    else if ( fakeClass == 'FCK__Video')
+		// Specific to flv player, SWFObject attaching technique.
+		if ( realElement.nodeName.IEquals( 'div' ) )
 		{
-        try
-        {
+			for ( var i = 0; i < realElement.childNodes.length; i++ )
+			{
+				if ( realElement.childNodes[i].nodeName.IEquals( 'div' ) )
+				{
+					oImg.style.width = realElement.childNodes[i].style.width ;
+					oImg.style.height = realElement.childNodes[i].style.height ;
+					break ;
+				}
+			}
+		}
+		// For embedded video.
+		else
+		{
 			var width = realElement.width ;
 			var height = realElement.height ;
 			if ( width )
 			{
-                oImg.style.width = FCKTools.ConvertHtmlSizeToStyle( width.toString() ) ;
+				oImg.style.width = width.toString().indexOf('%') != -1 ? width : ( width + 'px' ) ;
 			}
 			if ( height )
 			{
-                oImg.style.height = FCKTools.ConvertHtmlSizeToStyle( height.toString() ) ;
+				oImg.style.height = height.toString().indexOf('%') != -1 ? height : ( height + 'px' ) ;
 			}
-            if ( realElement.style.width ) {
-                oImg.style.width = realElement.style.width ;
 		}
-            if ( realElement.style.height ) {
-                oImg.style.height = realElement.style.height ;
 	}
-        }
-        catch ( ex ) { }
-    }
-
-    // Setting attributes for detection purpose.
-    if ( fakeClass == 'FCK__Video' )
-    {
-        oImg.setAttribute( '_fckvideo', 'true', 0 ) ;
-        oImg.setAttribute( '_moz_resizing', 'false', 0 ) ;
-    }   
-
 	return oImg ;
 }
 
-// A fake image handler for audio files.
+// A custom handler for audio files when a new tag has been added.
 FCKEmbedAndObjectProcessor.AddCustomHandler( function ( el, fakeImg )
-{
-        if ( !FCK.IsAudio( el ) )
-        {
-                return ;
-        }
+	{
+		if ( !FCK.IsAudio( el ) )
+		{
+			return ;
+		}
 
-        fakeImg.className = 'FCK__MP3' ;
-        fakeImg.setAttribute( '_fckmp3', 'true', 0 ) ;
-} ) ;
+		fakeImg.className = 'FCK__MP3' ;
+		fakeImg.setAttribute( '_fckmp3', 'true', 0 ) ;
+	} ) ;
 
 // Fake images for audio files when the document has been opened.
 FCKDocumentProcessor.AppendNew().ProcessDocument = function ( document )
-{
-    var embeds = document.getElementsByTagName( 'embed' ) ;
-    var embed ;
-    var i = embeds.length - 1 ;
-    while ( i >= 0 && ( embed = embeds[i--] ) )
-    {
-        if ( FCK.IsAudio( embed ) )
-        {
-                var oImg = FCKDocumentProcessor_CreateFakeImage( 'FCK__MP3', embed.cloneNode(true) ) ;
-                oImg.setAttribute( '_fckmp3', 'true', 0 ) ;
-                embed.parentNode.insertBefore( oImg, embed ) ;
-                embed.parentNode.removeChild( embed ) ;
-        }
-    }
-};
+	{
+		var embeds = document.getElementsByTagName( 'embed' ) ;
+		var embed ;
+		var i = embeds.length - 1 ;
+		while ( i >= 0 && ( embed = embeds[i--] ) )
+		{
+			if ( FCK.IsAudio( embed ) )
+			{
+				var oImg = FCKDocumentProcessor_CreateFakeImage( 'FCK__MP3', embed.cloneNode(true) ) ;
+				oImg.setAttribute( '_fckmp3', 'true', 0 ) ;
+				embed.parentNode.insertBefore( oImg, embed ) ;
+				embed.parentNode.removeChild( embed ) ;
+			}
+		}
+	} ;
 
 // A custom handler for video when a new tag has been added.
 FCKEmbedAndObjectProcessor.AddCustomHandler( function ( el, fakeImg )
-{
-    if ( !FCK.IsVideo( el ) )
-    {
-            return ;
-    }
+	{
+		if ( !FCK.IsVideo( el ) )
+		{
+			return ;
+		}
 
-    fakeImg.className = 'FCK__Video' ;
-    fakeImg.setAttribute( '_fckvideo', 'true', 0 ) ;
-    fakeImg.setAttribute( '_moz_resizing', 'false', 0 ) ;
-    
-}) ;
+		fakeImg.className = 'FCK__Video' ;
+		fakeImg.setAttribute( '_fckvideo', 'true', 0 ) ;
+	} ) ;
 
 // Fake images for video when the document has been opened.
 FCKDocumentProcessor.AppendNew().ProcessDocument = function ( document )
-{
-    var embeds = document.getElementsByTagName( 'embed' ) ;
-    var embed;
-    var i = embeds.length - 1 ;
-    while ( i >= 0 && ( embed = embeds[i--] ) )
-    {
-        if ( FCK.IsVideo( embed ) )
-        {
-                var oImg = FCKDocumentProcessor_CreateFakeImage( 'FCK__Video', embed.cloneNode(true) ) ;
-                oImg.setAttribute( '_fckvideo', 'true', 0 ) ;
-                oImg.setAttribute( '_moz_resizing', 'false', 0);
-                embed.parentNode.insertBefore( oImg, embed ) ;
-                embed.parentNode.removeChild( embed ) ;
-        }
-    }
+	{
+		var embeds = document.getElementsByTagName( 'embed' ) ;
+		var embed;
+		var i = embeds.length - 1 ;
+		while ( i >= 0 && ( embed = embeds[i--] ) )
+		{
+			if ( FCK.IsVideo( embed ) )
+			{
+				var oImg = FCKDocumentProcessor_CreateFakeImage( 'FCK__Video', embed.cloneNode(true) ) ;
+				oImg.setAttribute( '_fckvideo', 'true', 0 ) ;
+				embed.parentNode.insertBefore( oImg, embed ) ;
+				embed.parentNode.removeChild( embed ) ;
+			}
+		}
 
-    // For flv player, SWFObject attaching tecnique.
-    var divs = document.getElementsByTagName( 'div' ) ;
-    var div;
-    var i = divs.length - 1 ;
-    while ( i >= 0 && (div = divs[i--]))
-    {
-        if ( FCK.IsVideo( div ) )
-        {
-                var oImg = FCKDocumentProcessor_CreateFakeImage( 'FCK__Video', div.cloneNode(true) ) ;
-                oImg.setAttribute( '_fckvideo', 'true', 0 ) ;
-                oImg.setAttribute( '_moz_resizing', 'false', 0 ) ;
-                div.parentNode.insertBefore( oImg, div ) ;
-                div.parentNode.removeChild( div ) ;
-        }
-    }
-    
-    
-} ;
+		// For flv player, SWFObject attaching tecnique.
+		var divs = document.getElementsByTagName( 'div' ) ;
+		var div;
+		var i = divs.length - 1 ;
+		while ( i >= 0 && ( div = divs[i--] ) )
+		{
+			if ( FCK.IsVideo( div ) )
+			{
+				var oImg = FCKDocumentProcessor_CreateFakeImage( 'FCK__Video', div.cloneNode(true) ) ;
+				oImg.setAttribute( '_fckvideo', 'true', 0 ) ;
+				div.parentNode.insertBefore( oImg, div ) ;
+				div.parentNode.removeChild( div ) ;
+			}
+		}
+	} ;
 
-// Getting the corresponding real element.
-FCK.GetRealElement = function( fakeElement )
-    {
-        var e = FCKTempBin.Elements[ fakeElement.getAttribute('_fckrealelement') ] ;
-        if ( fakeElement.getAttribute('_fckflash') )
-        {
-            if ( fakeElement.style.width.length > 0 )
-                    e.width = FCKTools.ConvertStyleSizeToHtml( fakeElement.style.width ) ;
-
-            if ( fakeElement.style.height.length > 0 )
-                    e.height = FCKTools.ConvertStyleSizeToHtml( fakeElement.style.height ) ;
-        }
-        // Added by Ivan Tcholakov, February 2011.
-        else if (fakeElement.getAttribute('_fckvideo'))
-        {
-            // Resizing a movie according to its fake image size.
-            // The user can resize the fake image on IE and Firefox.
-            if ( !FCKBrowserInfo.IsIE               // This feature has been temporarily disabled for IE, additional tricky changes are needed.
-                && e.nodeName.IEquals( 'div' ) )
-            {
-                if ( e.id )
-                {
-                        try
-                        {
-                            var width = fakeElement.width ;
-                            var height = fakeElement.height ;
-                            
-                            if ( fakeElement.style.width ) {
-                                width = fakeElement.style.width ;
-                            }
-                            
-                            if ( fakeElement.style.height ) {
-                                height = fakeElement.style.height ;
-                            }
-                            width = parseInt( width, 10 ) - 2 ;
-                            height = parseInt( height, 10 ) - 2 ;
-                            if ( width > 0 && height > 0 )
-                            {
-                                width = width.toString() ;
-                                height = height.toString() ;
-
-                                width = parseInt( width, 10 ) ;
-                                height = parseInt( height, 10 ) ;
-                                if ( width > 0 && height > 0 )
-                                {
-                                    var divs = e.getElementsByTagName( 'div' ) ;
-                                    
-                                    if ( typeof divs[ 1 ] != 'undefined' )
-                                    { 
-                                        var div = divs[ 1 ] ;
-                                        if ( div.id && div.id.match( /^player[0-9]*-config$/ ) )
-                                        {
-                                            // This is the hidden div element that contains the movie's settings.
-                                            var config = div.innerHTML ;
-                                            var w ;
-                                            var h ;
-                                            if ( ( w = config.match( /width=([0-9]*)/ ) ) && ( h = config.match( /height=([0-9]*)/)) )
-                                            {
-                                                w = parseInt( w[ 1 ], 10 );
-                                                h = parseInt( h[ 1 ] , 10 );
-                                                if ( Math.abs( width - w ) > 2 || Math.abs( height - h ) > 2 )
-                                                {
-                                                    width = width.toString();
-                                                    height = height.toString();
-                                                    var s = e.innerHTML;
-                                                    // Replacements for div, object, end embed tags.
-                                                    //s = s.replace( /width\s*:\s*[0-9]+/ig , 'width: ' + width ) ;
-                                                    //s = s.replace( /height\s*:\s*[0-9]+/ig , 'height: ' + height ) ;
-                                                    s = s.replace( /width:\s*[0-9]+/ig , 'width: ' + width ) ;
-                                                    s = s.replace( /height:\s*[0-9]+/ig , 'height: ' + height ) ;
-                                                    s = s.replace( /width=[0-9]+/ig , 'width=' + width ) ;
-                                                    s = s.replace( /height=[0-9]+/ig , 'height=' + height ) ;
-                                                    s = s.replace( /width="[0-9]+"/ig , 'width="' + width + '"' ) ;
-                                                    s = s.replace( /height="[0-9]+"/ig , 'height="' + height + '"' ) ;
-                                                    e.innerHTML = s ;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        catch ( ex ) { }
-                }
-            }
-        }
-        //
-        return e ;
-    } ;
 
 /*
  **************************************************************************************
@@ -1473,16 +1352,16 @@ FCK.ContextMenu.RegisterListener( {
 
 // Flash command.
 FCK.ContextMenu.RegisterListener( {
-    AddItems : function ( menu, tag, tagName )
-    {
-            if ( tagName == 'IMG' && tag.getAttribute( '_fckflash' ) &&
-                    !tag.getAttribute( '_fckmp3' ) &&
-                    !tag.getAttribute( '_fckvideo' ) )
-            {
-                    menu.AddSeparator() ;
-                    menu.AddItem( 'Flash', FCKLang.FlashProperties, 38 ) ;
-            }
-    } }
+	AddItems : function ( menu, tag, tagName )
+	{
+		if ( tagName == 'IMG' && tag.getAttribute( '_fckflash' ) &&
+			!tag.getAttribute( '_fckmp3' ) &&
+			!tag.getAttribute( '_fckvideo' ) )
+		{
+			menu.AddSeparator() ;
+			menu.AddItem( 'Flash', FCKLang.FlashProperties, 38 ) ;
+		}
+	} }
 ) ;
 
 // MP3 command.
@@ -1542,13 +1421,6 @@ FCK.ContextMenu.RegisterListener( {
 						menu.AddItem( 'flvPlayer', FCKLang.DlgFLVPlayerTitle, FCKConfig.PluginsPath + 'flvPlayer/flvPlayer.gif' ) ;
 					}
 					break ;
-                                case 'videos' :
-					if ( FCK.Plugins.IsLoaded( 'videoPlayer' ) )
-					{
-						menu.AddSeparator() ;
-						menu.AddItem( 'videoPlayer', FCKLang.DlgVideoPlayerTitle, FCKConfig.PluginsPath + 'videoPlayer/videoPlayer.png' ) ;
-					}
-					break ;
 				default :
 					break ;
 			}
@@ -1578,9 +1450,9 @@ FCK.RegisterDoubleClickHandler(
 FCK.RegisterDoubleClickHandler(
 	function ( tag )
 	{
-		if ( tag.tagName == 'IMG' && tag.getAttribute('_fckflash') &&
-			!tag.getAttribute('_fckmp3') &&
-			!tag.getAttribute('_fckvideo'))
+		if ( tag.tagName == 'IMG' && tag.getAttribute( '_fckflash' ) &&
+			!tag.getAttribute( '_fckmp3' ) &&
+			!tag.getAttribute( '_fckvideo' ) )
 		{
 			FCKCommands.GetCommand( 'Flash' ).Execute() ;
 		}
@@ -1605,17 +1477,26 @@ FCK.RegisterDoubleClickHandler(
 FCK.RegisterDoubleClickHandler(
 	function ( tag )
 	{
-		if ( tag.tagName == 'IMG' && (tag.getAttribute( '_fckvideo' ) || tag.tagName == 'IMG' && tag.getAttribute( '_fckflash' )) )
+		if ( tag.tagName == 'IMG' && tag.getAttribute( '_fckvideo' ) )
 		{
 			switch ( FCK.GetVideoType( tag ) )
 			{
-				case 'embedded_video' :					
-				case 'youtube' :					
-				case 'flv':					
-                                case 'videos':
-					if ( FCK.Plugins.IsLoaded( 'videoPlayer' ) )
+				case 'embedded_video' :
+					if ( FCK.Plugins.IsLoaded( 'fckEmbedMovies' ) )
 					{
-						FCKCommands.GetCommand( 'videoPlayer' ).Execute() ;
+						FCKCommands.GetCommand( 'EmbedMovies' ).Execute() ;
+					}
+					break ;
+				case 'youtube' :
+					if ( FCK.Plugins.IsLoaded( 'youtube' ) )
+					{
+						FCKCommands.GetCommand( 'YouTube' ).Execute() ;
+					}
+					break ;
+				case 'flv':
+					if ( FCK.Plugins.IsLoaded( 'flvPlayer' ) )
+					{
+						FCKCommands.GetCommand( 'flvPlayer' ).Execute() ;
 					}
 					break ;
 				default :
@@ -1640,40 +1521,15 @@ FCK.IsRealImage = function ( tag )
 		return false ;
 	}
 
-    if ( tag.nodeName.IEquals( 'img' ) )
-    {
-        if ( tag.getAttribute( '_fckfakelement' )
-            || tag.getAttribute( '_fckflash' )
-            || tag.getAttribute( '_fckmp3' )
-            || tag.getAttribute( '_fckvideo' )
-            || tag.getAttribute( 'MapNumber' )
-            )
-        {
-            return false ;
-        }
-
-        if ( tag.getAttribute( 'src' ) )
-        {
-            var src = tag.getAttribute( 'src' ).toString().toLowerCase() ;
-            return ( src.indexOf( 'mimetex?' ) == -1
-                    && src.indexOf( 'mimetex.cgi?' ) == -1
-                    && src.indexOf( 'mimetex.exe?' ) == -1
-                    && src.indexOf( 'mathtex?' ) == -1
-                    && src.indexOf( 'mathtex.cgi?' ) == -1
-                    && src.indexOf( 'mathtex.exe?' ) == -1
-                    && src.indexOf( 'mathtran?' ) == -1
-                    && src.indexOf( 'google.com/chart?' ) == -1
-                    && src.indexOf( 'latex?' ) == -1
-                    && src.indexOf( 'sscr=' ) == -1
+	return ( tag.nodeName.IEquals( 'img' )
+		&& !tag.getAttribute( '_fckfakelement' )
+		&& !tag.getAttribute( '_fckflash' )
+		&& !tag.getAttribute( '_fckmp3' )
+		&& !tag.getAttribute( '_fckvideo' )
+		&& !tag.getAttribute( 'MapNumber' )
+		&& !( tag.getAttribute( 'src' ) && tag.getAttribute( 'src' ).toString().indexOf( '/cgi-bin/mimetex' ) >= 0 )
+		&& !( tag.getAttribute( 'src' ) && tag.getAttribute( 'src' ).toString().indexOf( '/cgi-bin/mathtex' ) >= 0 )
 		) ? true : false ;
-        }
-        else
-        {
-            return true ;
-        }
-    }
-
-    return false ;
 } ;
 
 // Checking for audio file reference which is to be used by a flash player.
@@ -1721,11 +1577,11 @@ FCK.IsVideo = function ( tag )
 		return false ;
 	}
 
-	if (tag.nodeName.IEquals('embed'))
+	if ( tag.nodeName.IEquals( 'embed' ) )
 	{
 		if ( !tag.src )
 		{
-                    return false ;
+			return false ;
 		}
 
 		// There are three plugins dealing with video content. Detection looks a bit messy.
@@ -1792,7 +1648,7 @@ FCK.GetVideoType = function ( img )
 		{
 			if ( tag.id.match( /^player[0-9]*-parent$/ ) )
 			{
-				return 'videos' ;
+				return 'flv' ;
 			}
 		}
 	}
@@ -1807,12 +1663,6 @@ FCK.GetVideoType = function ( img )
 	{
 		return 'embedded_video' ;
 	}
-        
-        // Embedded video.
-	if ( /\.(flv|mpg|mpeg|mp4|avi|wmv|mov|asf)/i.test( tag.src ) )
-	{
-		return 'videos' ;
-	}
 
 	// Youtube.
 	if ( /\.youtube\.com/i.test( tag.src ) )
@@ -1823,7 +1673,7 @@ FCK.GetVideoType = function ( img )
 	// FLV player.
 	if ( /\.flv/i.test( tag.src ) )
 	{
-		return 'videos' ;
+		return 'flv' ;
 	}
 
 	var flashvars = FCKDomTools.GetAttributeValue( tag, 'flashvars' ) ;
@@ -1831,7 +1681,7 @@ FCK.GetVideoType = function ( img )
 
 	if ( /\.flv/i.test( flashvars ) )
 	{
-		return 'videos' ;
+		return 'flv' ;
 	}
 
 	return false ;
@@ -2278,17 +2128,4 @@ FCKEvents.prototype.FireEvent = function( eventName, params )
 	}
 
 	return bReturnValue ;
-}
-
-// See http://dev.ckeditor.com/ticket/6322
-if (navigator.userAgent.toLowerCase().match( /msie (\d+)/ )
-        && parseInt( navigator.userAgent.toLowerCase().match( /msie (\d+)/ )[1], 10 ) >= 9) {
-    // For IE9 or higher.
-    FCKTools.RegisterDollarFunction = function( targetWindow )
-    {
-        targetWindow.$ = function( id )
-        {
-            return targetWindow.document.getElementById( id ) ;
-        } ;
-    }
 }

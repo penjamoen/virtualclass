@@ -127,5 +127,4 @@ $Up2DateManualDokeosCom = "Leggi il manuale di installazione aggiornato su http:
 $MysqlConnectionOk = "Il collegamento a MySQL funziona";
 $ApplySettingsToGroups = "Default";
 $IfStillTypingPleaseContinue = "Se ancora stai scrivendo continua per favore";
-$UpgradeFromDokeos20x = "Aggiorna versione 2.x";
 ?>

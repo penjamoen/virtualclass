@@ -20,7 +20,6 @@ require_once (api_get_path(LIBRARY_PATH).'classmanager.lib.php');
 require_once (api_get_path(LIBRARY_PATH).'course.lib.php');
 require_once (api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php');
 
-
 // the section (for the tabs)
 $this_section = SECTION_COURSES;
 
@@ -91,10 +90,10 @@ $nameTools = get_lang('GroupManagement');
 group_header_actions();
 
 // display the header
-Display::display_tool_header(get_lang('Groups'));
+Display::display_header(get_lang('Groups'));
 
 // action handling
-//group_actions();
+group_actions();
 
 // action links
 display_actions();
@@ -132,7 +131,7 @@ function group_header_actions(){
 			break;
 		case 'save_groups':
 			// building the form to create a new group category			
-			build_group_scenario_form();
+			build_group_category_form();
 
 			if ($form->validate()){
 				// exporting the values of the form
@@ -140,9 +139,11 @@ function group_header_actions(){
 
 				// unserializing the group names and the number of users per group
 				$group_names = unserialize(str_replace('*','"',$values['groupnames']));
-				$userspergroup = unserialize(str_replace('*','"',$values['userspergroup']));  
-				$group_category = $values['scenario'];
+				$userspergroup = unserialize(str_replace('*','"',$values['userspergroup']));
 
+				// creating the group category
+				$group_category = GroupManager :: create_category($values['title'], $values['description'], $values['doc_state'], $values['work_state'], $values['calendar_state'], $values['announcements_state'], $values['forum_state'], $values['wiki_state'], $self_reg_allowed, $self_unreg_allowed, $max_member, $values['groups_per_user']);
+				
 				// creating the groups in this newly created category
 				$number_of_created_groups = create_groups($group_names,$userspergroup,$group_category);
 				header('Location: group.php?'.api_get_cidreq().'&action=display_message&msg=GroupsCreated&number_of_groups='.$number_of_created_groups);
@@ -151,6 +152,9 @@ function group_header_actions(){
 	}
 }
 
+function group_actions(){
+
+}
 
 function display_group_creation(){
 	global $form;
@@ -169,53 +173,332 @@ function display_group_creation(){
 
 		echo '<div id="group_to_create" class="section columns2">';
 		echo '	<div class="sectiontitle">';
-		echo 	Display::return_icon('pixel.gif',get_lang('GroupUsers'),array('class' => 'toolactionplaceholdericon toolactionunknown')).get_lang('GroupUsers');
+		echo 	Display::return_icon('members.png',get_lang('GroupUsers'), array('height'=>'32px;')).' '.get_lang('GroupUsers');
 		echo '	</div>';
 		echo '	<div class="sectioncontent">';
 		echo '	</div>';
 		echo '</div>';
 	} elseif ($_GET['action'] == 'save_groups'){
-		
+		echo '<form action="group_creation.php?cidReq='.Security::remove_XSS($_GET['cidReq']).'&action=save_groups2" id="group_creation" name="group_creation2" method="post">';
+
+		// hidden fields that store the group names and the number of users
+		echo '<input type="hidden" name="groupnames" value="'.str_replace('"','*',serialize($_POST['group_name'])).'">';
+		echo '<input type="hidden" name="userspergroup" value="'.str_replace('"','*',serialize($_POST['users_of_group'])).'">';
+
+		// hidden field that stores the selected group category (scenario)
+		echo '<input type="hidden" name="selected_group_category" id="selected_group_category"/>';
+
+		$groupcategories = GroupManager::get_categories();
+
+		foreach ($groupcategories as $key=>$groupcategory){
+			echo '<div id="scenario'.$groupcategory['id'].'" class="section groupcategory">';
+
+			echo '	<div class="sectiontitle">';
+			if (!empty($groupcategory['icon'])) {
+				echo 	Display::return_icon($groupcategory['icon'],$groupcategory['title'], array('style'=>'height: 32px;')).' '.$groupcategory['title'];
+			}  else {
+				echo 	Display::return_icon('dokeos_scenario.png',$groupcategory['title'], array('style'=>'height: 32px;')).' '.$groupcategory['title'];
+			}
+			echo '	</div>';
+
+			echo '	<div class="sectioncontent">';
+			// group description
+			echo $groupcategory['description'];
+
+			// group limit of seats
+			if (api_get_setting('groupscenariofield','limit') == 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('GroupLimit').':</div>';
+				echo '	<div class="formw">';
+				if ($groupcategory['max_student'] == MEMBER_PER_GROUP_NO_LIMIT){
+					echo get_lang('NoLimit'); 
+				} else {
+					echo $groupcategory['max_student'].' '.get_lang('Seats');
+				}
+				echo '	</div>';
+				echo '</div>';
+			}
+			// group self registration
+			if (api_get_setting('groupscenariofield','registration') == 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('GroupSelfRegistration').':</div>';
+				echo '	<div class="formw">';
+				if ($groupcategory['self_reg_allowed'] == 1){
+					echo get_lang('GroupAllowStudentRegistration');
+				} else {
+					echo get_lang('GroupStudentRegistrationDenied');
+				}
+				echo '	</div>';
+				echo '</div>';
+			}
+			// group self UNregistration
+			if (api_get_setting('groupscenariofield','unregistration') == 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('GroupSelfUnregistration').':</div>';
+				echo '	<div class="formw">';
+				if ($groupcategory['self_reg_allowed'] == 1){
+					echo get_lang('GroupAllowStudentUnregistration');
+				} else {
+					echo get_lang('GroupStudentUnregistrationDenied');
+				}		
+				echo '	</div>';
+				echo '</div>';
+			}
+			// public or private group
+			if (api_get_setting('groupscenariofield','publicprivategroup') == 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('PublicPrivateGroup').':</div>';
+				echo '	<div class="formw">&nbsp;dd';
+				switch ($groupcategory['group_state']){
+					case TOOL_PUBLIC:
+						echo get_lang('Public');
+						break;
+					case TOOL_PRIVATE:
+						echo get_lang('Private');
+						break;
+
+				}
+				echo '	</div>';
+				echo '</div>';
+			}
+			// Documents settings
+			if (api_get_setting('groupscenariofield','document') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('GroupDocument').':</div>';
+				echo '	<div class="formw">';
+				switch ($groupcategory['doc_state']){
+					case TOOL_NOT_AVAILABLE:
+						echo get_lang('NotAvailable');
+						break;
+					case TOOL_PUBLIC:
+						echo get_lang('Public');
+						break;
+					case TOOL_PRIVATE:
+						echo get_lang('Private');
+						break;
+
+				}
+				echo '	</div>';
+				echo '</div>';
+			}
+			// Work settings
+			if (api_get_setting('groupscenariofield','work') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('GroupWork').':</div>';
+				echo '	<div class="formw">';
+				switch ($groupcategory['work_state']){
+					case TOOL_NOT_AVAILABLE:
+						echo get_lang('NotAvailable');
+						break;
+					case TOOL_PUBLIC:
+						echo get_lang('Public');
+						break;
+					case TOOL_PRIVATE:
+						echo get_lang('Private');
+						break;
+				}
+				echo '	</div>';
+				echo '</div>';
+			}
+			// Calendar settings
+			if (api_get_setting('groupscenariofield','calendar') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('GroupCalendar').':</div>';
+				echo '	<div class="formw">';
+				switch ($groupcategory['calendar_state']){
+					case TOOL_NOT_AVAILABLE:
+						echo get_lang('NotAvailable');
+						break;
+					case TOOL_PUBLIC:
+						echo get_lang('Public');
+						break;
+					case TOOL_PRIVATE:
+						echo get_lang('Private');
+						break;
+				}
+				echo '	</div>';
+				echo '</div>';
+			}
+			// Announcements settings
+			if (api_get_setting('groupscenariofield','announcements') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('GroupAnnouncements').':</div>';
+				echo '	<div class="formw">';
+				switch ($groupcategory['announcements_state']){
+					case TOOL_NOT_AVAILABLE:
+						echo get_lang('NotAvailable');
+						break;
+					case TOOL_PUBLIC:
+						echo get_lang('Public');
+						break;
+					case TOOL_PRIVATE:
+						echo get_lang('Private');
+						break;
+				}
+				echo '	</div>';
+				echo '</div>';
+			}
+			//Forum settings
+			if (api_get_setting('groupscenariofield','forum') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('GroupForum').':</div>';
+				echo '	<div class="formw">';
+				switch ($groupcategory['forum_state']){
+					case TOOL_NOT_AVAILABLE:
+						echo get_lang('NotAvailable');
+						break;
+					case TOOL_PUBLIC:
+						echo get_lang('Public');
+						break;
+					case TOOL_PRIVATE:
+						echo get_lang('Private');
+						break;
+				}
+				echo '	</div>';
+				echo '</div>';
+			}
+			// Wiki settings
+			if (api_get_setting('groupscenariofield','wiki') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+				echo '<div class="row">';
+				echo '	<div class="label">'.get_lang('GroupWiki').':</div>';
+				echo '	<div class="formw">';
+
+				switch ($groupcategory['wiki_state']){
+					case TOOL_NOT_AVAILABLE:
+						echo get_lang('NotAvailable');
+						break;
+					case TOOL_PUBLIC:
+						echo get_lang('Public');
+						break;
+					case TOOL_PRIVATE:
+						echo get_lang('Private');
+						break;
+				}
+				echo '	</div>';
+				echo '</div>';
+			}
+			echo '<button class="save selectscenario" style="display:none;" name="action" type="submit">'.get_lang('SelectThisScenario').'</button>';
+
+			echo '	</div>'; // close sectioncontent
+			echo '</div>'; // close section
+		}
+		echo '</form>';		
+
+		// custom group category
 		echo '<div id="scenario_custom" class="section">';
 		echo '	<div class="sectiontitle">';
 		echo 	get_lang('CreateNewScenario');
 		echo '	</div>';
 		echo '	<div class="sectioncontent">';
-//		echo 		display_group_category_form();
-		echo   display_group_scenario_form();
+		echo 		display_group_category_form();
 		echo '	</div>';
 		echo '</div>';
 	}
 }
 
-function display_group_scenario_form(){
+function display_group_category_form(){
 	global $form;
 	$form->display();
 }
 
-function build_group_scenario_form(){
+function build_group_category_form(){
 	global $form;
 
+	// Build form
 	$form = new FormValidator('group_category','post','?'.api_get_cidreq().'&action=save_groups');
+	$form->addElement('header', '', $nameTools);
+
+	// group names and number of users per group
 	$form->addElement('hidden', 'groupnames');
 	$form->addElement('hidden', 'userspergroup');
 	$defaults['groupnames']=str_replace('"','*',serialize($_POST['group_name']));	
-	$defaults['userspergroup']=str_replace('"','*',serialize($_POST['users_of_group']));
+	$defaults['userspergroup']=str_replace('"','*',serialize($_POST['users_of_group']));	
 
-/*	$form->addElement('radio', 'scenario', null, get_lang('Tutoring').'<br/><span style="padding-left:20px;">'.get_lang('ScenarioText1').'</span>'.'<br/>'.'<span style="padding-left:20px;">'.get_lang('ScenarioTools1').'</span>', 1);
-	$form->addElement('radio', 'scenario', null, get_lang('Collaboration').'<br/><span style="padding-left:20px;">'.get_lang('ScenarioText2').'</span>'.'<br/>'.'<span style="padding-left:20px;">'.get_lang('ScenarioTools2').'</span>', 2);
-	$form->addElement('radio', 'scenario', null, get_lang('Competition').'<br/><span style="padding-left:20px;">'.get_lang('ScenarioText3').'</span>'.'<br/>'.'<span style="padding-left:20px;">'.get_lang('ScenarioTools3').'</span>', 3);*/
+	// Group name
+	$form->addElement('text', 'title', get_lang('GroupCategoryName'));
 
-	$form->addElement('radio', 'scenario', null, '<b>'.get_lang('Tutoring').'</b>', 1);
-	$form->addElement('html','<table width="100%" border="0"><tr><td width="15%">&nbsp;</td><td>'.get_lang('ScenarioText1').'</td></tr>'.'<tr><td width="15%">&nbsp;</td><td>'.get_lang('ScenarioTools1').'</td></tr></table>');
-	$form->addElement('radio', 'scenario', null, '<b>'.get_lang('Collaboration').'</b>', 2);
-	$form->addElement('html','<table width="100%" border="0"><tr><td width="15%">&nbsp;</td><td>'.get_lang('ScenarioText2').'</td></tr>'.'<tr><td width="15%">&nbsp;</td><td>'.get_lang('ScenarioTools2').'</td></tr></table>');
-	$form->addElement('radio', 'scenario', null, '<b>'.get_lang('Competition').'</b>', 3);
-	$form->addElement('html','<table width="100%" border="0"><tr><td width="15%">&nbsp;</td><td>'.get_lang('ScenarioText3').'</td></tr>'.'<tr><td width="15%">&nbsp;</td><td>'.get_lang('ScenarioTools3').'</td></tr></table>');
-	$form->addElement('style_submit_button', 'submit', get_lang('Ok'), 'class="save"');
+	// Description
+	if (api_get_setting('groupscenariofield','description') == 'true'){
+		$form->addElement('textarea', 'description', get_lang('GroupDescription'), array ('cols' => 50, 'rows' => 6));
+	}
 
-	$defaults['scenario'] = 1;
-	$form->setDefaults($defaults);	
+	// Members per group
+	if (api_get_setting('groupscenariofield','limit') == 'true'){
+		$form->addElement('radio', 'max_member_no_limit', get_lang('GroupLimit'), get_lang('NoLimit'), MEMBER_PER_GROUP_NO_LIMIT);
+		$group = array ();
+		$group[] = & $form->createElement('radio', 'max_member_no_limit', null, get_lang('Max'), 1);
+		$group[] = & $form->createElement('text', 'max_member', null, array ('size' => 2));
+		$group[] = & $form->createElement('static', null, null, get_lang('GroupPlacesThis'));
+		$form->addGroup($group, 'max_member_group', null, '', false);
+		$form->addRule('max_member_group', get_lang('InvalidMaxNumberOfMembers'), 'callback', 'check_max_number_of_members');
+		$defaults['mex_member_group']['max_member_no_limit'] = MEMBER_PER_GROUP_NO_LIMIT;
+	}
+
+	// Self registration
+	if (api_get_setting('groupscenariofield','registration') == 'true'){
+		$form->addElement('radio', 'self_registration_allowed', get_lang('GroupSelfRegistration'), get_lang('Yes'), 1);
+		$form->addElement('radio', 'self_registration_allowed', null, get_lang('No'), 0);
+	}
+
+	// unregistration
+	if (api_get_setting('groupscenariofield','unregistration') == 'true'){
+		$form->addElement('radio', 'self_unregistration_allowed', get_lang('GroupAllowStudentUnregistration'), get_lang('Yes'), 1);
+		$form->addElement('radio', 'self_unregistration_allowed', null, get_lang('No'), 0);
+	}
+
+	// Public or private (meaning ALL tools)
+	if (api_get_setting('groupscenariofield','publicprivategroup') == 'true'){
+		$form->addElement('radio', 'group_state', get_lang('PublicPrivateGroup'), get_lang('NoGroupToolsAvailable'), TOOL_NOT_AVAILABLE);
+		$form->addElement('radio', 'group_state', null, get_lang('Public'), TOOL_PUBLIC);
+		$form->addElement('radio', 'group_state', null, get_lang('Private'), TOOL_PRIVATE);
+	}
+
+	// Documents settings
+	if (api_get_setting('groupscenariofield','document') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+		$form->addElement('radio', 'doc_state', get_lang('PublicPrivateGroup'), get_lang('Public'), TOOL_PUBLIC);
+		$form->addElement('radio', 'doc_state', null, get_lang('Private'), TOOL_PRIVATE);
+	}
+
+	// Work settings
+	if (api_get_setting('groupscenariofield','work') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+		$form->addElement('radio', 'work_state', get_lang('GroupWork'), get_lang('NotAvailable'), TOOL_NOT_AVAILABLE);
+		$form->addElement('radio', 'work_state', null, get_lang('Public'), TOOL_PUBLIC);
+		$form->addElement('radio', 'work_state', null, get_lang('Private'), TOOL_PRIVATE);
+	}
+
+	// Calendar settings
+	if (api_get_setting('groupscenariofield','calendar') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+		$form->addElement('radio', 'calendar_state', get_lang('GroupCalendar'), get_lang('NotAvailable'), TOOL_NOT_AVAILABLE);
+		$form->addElement('radio', 'calendar_state', null, get_lang('Public'), TOOL_PUBLIC);
+		$form->addElement('radio', 'calendar_state', null, get_lang('Private'), TOOL_PRIVATE);
+	}
+
+	// Announcements settings
+	if (api_get_setting('groupscenariofield','announcements') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+		$form->addElement('radio', 'announcements_state', get_lang('GroupAnnouncements'), get_lang('NotAvailable'), TOOL_NOT_AVAILABLE);
+		$form->addElement('radio', 'announcements_state', null, get_lang('Public'), TOOL_PUBLIC);
+		$form->addElement('radio', 'announcements_state', null, get_lang('Private'), TOOL_PRIVATE);
+	}
+
+	//Forum settings
+	if (api_get_setting('groupscenariofield','forum') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+		$form->addElement('radio', 'forum_state', get_lang('GroupForum'), get_lang('NotAvailable'), TOOL_NOT_AVAILABLE);
+		$form->addElement('radio', 'forum_state', null, get_lang('Public'), TOOL_PUBLIC);
+		$form->addElement('radio', 'forum_state', null, get_lang('Private'), TOOL_PRIVATE);
+	}
+
+	// Wiki settings
+	if (api_get_setting('groupscenariofield','wiki') == 'true' AND api_get_setting('groupscenariofield','publicprivategroup') <> 'true'){
+		$form->addElement('radio', 'wiki_state', get_lang('GroupWiki'), get_lang('NotAvailable'), TOOL_NOT_AVAILABLE);
+		$form->addElement('radio', 'wiki_state', null, get_lang('Public'), TOOL_PUBLIC);
+		$form->addElement('radio', 'wiki_state', null, get_lang('Private'), TOOL_PRIVATE);
+	}
+
+	// submit button
+	$form->addElement('style_submit_button', 'submit', get_lang('PropModify'), 'class="save"');
+
+	// setting the default values
+	$form->setDefaults($defaults);
 }
 
 function is_selected($value1,$value2){
@@ -292,12 +575,12 @@ function display_actions(){
 	if (api_is_allowed_to_edit(false,true))
 	{
 		echo '<div class="actions">';
-		echo '<a href="group.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif',get_lang('Groups'),array('class' => 'toolactionplaceholdericon toolactiongroupimage')).get_lang('Groups').'</a>';
-	/*	if (api_get_setting('allow_group_categories') == 'true') {
+		echo '<a href="group.php?'.api_get_cidreq().'">'.Display::return_icon('group.png', get_lang('Groups')).get_lang('Groups').'</a>';
+		if (api_get_setting('allow_group_categories') == 'true') {
 			echo '<a href="group_category.php?'.api_get_cidreq().'&action=add_category">'.Display::return_icon('folder_new.gif', get_lang('AddCategory')).' '.get_lang('AddCategory').'</a>&nbsp;';
 		} else {
 			echo '<a href="group_category.php?'.api_get_cidreq().'">'.Display::return_icon('dokeos_scenario.png', get_lang('Scenario')).' '.get_lang('Scenario').'</a>';
-		}*/
+		}
 		echo '</div>';
 	}
 }
@@ -320,79 +603,11 @@ function check_max_number_of_members($value)
 function create_groups($group_names, $userspergroup, $group_category){
 	$counter = 0;
 	foreach ($group_names as $key=>$groupname){
-	//	$created_groups[] = GroupManager::create_group($groupname,$group_category,'',$userspergroup[$key]);
-		$created_groups[] = create_new_group($groupname,$group_category,'',$userspergroup[$key]);
+		$created_groups[] = GroupManager::create_group($groupname,$group_category,'',$userspergroup[$key]);
 		$counter++;
 	}
 	return $counter;
 }
-
-function create_new_group($name, $category_id, $tutor, $places){
-	global $_course,$_user;
-
-	// Database table initialisation
-	$table_group = Database :: get_course_table(TABLE_GROUP);
-	$table_forums = Database::get_course_table(TABLE_FORUM);
-
-	$sql = "SELECT * FROM $table_group WHERE name = '".$name."'";
-	$rs = Database::query($sql,__FILE__,__LINE__);
-	$num_rows = Database::num_rows($rs);
-	if($num_rows <> 0){
-		$sql = "SELECT * FROM $table_group WHERE name like '".get_lang('Group')." %' ORDER BY id";
-		$rs = Database::query($sql,__FILE__,__LINE__);
-		if (Database::num_rows($rs) == 0) {
-			$group_no = 1;		
-			$new_group_name = get_lang('Group').' '.$group_no;
-		}
-		else {
-			while($row = Database::fetch_array($rs)){
-				$group_name = $row['name'];
-			}							
-			list($grp_name,$grp_id) = split(' ',$group_name);
-			$new_grp_id = $grp_id + 1;		
-			$new_group_name = get_lang('Group').' '.$new_grp_id;
-		}
-		$check = Database::query("SELECT * FROM $table_group WHERE name = '".$new_group_name."'");
-		if(Database::num_rows($check) == 0){		
-		$name = $new_group_name;
-		}	
-	}	
-	
-	isset($_SESSION['id_session'])?$my_id_session = intval($_SESSION['id_session']):$my_id_session=0;
-	$currentCourseRepository = $_course['path'];
-
-	$sql = "INSERT INTO ".$table_group." SET
-				category_id='".Database::escape_string($category_id)."', max_student = '".$places."', work_state = 1, doc_state = 1, forum_state = 1, wiki_state = 1, session_id='".Database::escape_string($my_id_session)."'";
-	Database::query($sql,__FILE__,__LINE__);
-	$lastId = Database::insert_id();
-	
-	$desired_dir_name= '/'.replace_dangerous_char($name,'strict').'_groupdocs';
-	$dir_name = create_unexisting_directory($_course,$_user['user_id'],$lastId,NULL,api_get_path(SYS_COURSE_PATH).$currentCourseRepository.'/document',$desired_dir_name);
-	/* Stores the directory path into the group table */
-	$sql = "UPDATE ".$table_group." SET   name = '".Database::escape_string($name)."', secret_directory = '".$dir_name."' WHERE id ='".$lastId."'";
-	Database::query($sql,__FILE__,__LINE__);	
-
-	$sql="SELECT MAX(forum_order) as sort_max FROM ".$table_forums." WHERE forum_category=0";
-	$result=Database::query($sql,__FILE__,__LINE__);
-	$row=Database::fetch_array($result);
-	$new_max=$row['sort_max']+1;
-
-	if(empty($new_max)){
-		$new_max = null;
-	}
-
-	$sql = "INSERT INTO ".$table_forums."
-		(forum_title, forum_category, allow_anonymous, allow_edit, approval_direct_post, allow_attachments, allow_new_threads, default_view, forum_of_group, forum_group_public_private, forum_order, session_id)
-		VALUES ('".Database::escape_string($name)."', 0, 0, 0, 0, 1, 1, '".api_get_setting('default_forum_view')."', '".$lastId."', 'public', ".$new_max.", ".$my_id_session.")";
-	Database::query($sql,__FILE__,__LINE__);
-	$last_id = Database::insert_id();
-	if ($last_id > 0) {
-		api_item_property_update($_course, TOOL_FORUM, $last_id, 'ForumAdded', api_get_user_id());
-	}
-	
-	return $lastId;
-}
-
 
 // CODE BELOW IS OLD CODE 
 

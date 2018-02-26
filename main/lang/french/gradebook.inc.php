@@ -190,5 +190,4 @@ $CertificateMinimunScoreIsRequiredAndMustNotBeMoreThan = "Un score minimum de ce
 $LinkMod = "Enregistrer";
 $EditLink = "Modifier le lien vers l\'activité online";
 $CategoryDeleted = "La catégorie a été supprimée";
-$XMLLong = "XML";
 ?>

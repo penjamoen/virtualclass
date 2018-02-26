@@ -24,10 +24,6 @@ if(($path!='/') && (!DocumentManager::get_document_id($_course,$path)))
 	$path='/';
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'downloadfolder') {
-    $path = str_replace(' ', '_', $path);
-}
-
 //zip library for creation of the zipfile
 include(api_get_path(LIBRARY_PATH).'pclzip/pclzip.lib.php');
 

@@ -203,14 +203,10 @@ class SortableTable extends HTML_Table {
 			$params['totalItems'] = $total_number_of_items;
 			$params['urlVar'] = $this->param_prefix.'page_nr';
 			$params['currentPage'] = $this->page_nr;
-			//$params['prevImg'] = '<img src="'.api_get_path(WEB_CODE_PATH).'img/go-previous.png"  alt="'.get_lang('PreviousPage').'" title="'.get_lang('PreviousPage').'" style="vertical-align: middle;"/>';
-            $params['prevImg'] = Display::return_icon('pixel.gif',get_lang('PreviousPage'),array('class'=>'actionplaceholdericon actionprev_navigation','style'=>'vertical-align: middle;'));
-			//$params['nextImg'] = '<img src="'.api_get_path(WEB_CODE_PATH).'img/go-next.png"  alt="'.get_lang('NextPage').'" title="'.get_lang('NextPage').'" style="vertical-align: middle;"/>';
-            $params['nextImg'] = Display::return_icon('pixel.gif',get_lang('NextPage'),array('class'=>'actionplaceholdericon actionnext_navigation','style'=>'vertical-align: middle;'));
-			//$params['firstPageText'] = '<img src="'.api_get_path(WEB_CODE_PATH).'img/go-first.png"  alt="'.get_lang('FirstPage').'" title="'.get_lang('FirstPage').'" style="vertical-align: middle;"/>';
-            $params['firstPageText'] = Display::return_icon('pixel.gif',get_lang('FirstPage'),array('class'=>'actionplaceholdericon actiongo_first','style'=>'vertical-align: middle;'));
-			//$params['lastPageText'] = '<img src="'.api_get_path(WEB_CODE_PATH).'img/go-last.png"  alt="'.get_lang('LastPage').'" title="'.get_lang('LastPage').'" style="vertical-align: middle;"/>';
-            $params['lastPageText'] =Display::return_icon('pixel.gif',get_lang('LastPage'),array('class'=>'actionplaceholdericon actiongo_last','style'=>'vertical-align: middle;'));
+			$params['prevImg'] = '<img src="'.api_get_path(WEB_CODE_PATH).'img/go-previous.png"  alt="'.get_lang('PreviousPage').'" title="'.get_lang('PreviousPage').'" style="vertical-align: middle;"/>';
+			$params['nextImg'] = '<img src="'.api_get_path(WEB_CODE_PATH).'img/go-next.png"  alt="'.get_lang('NextPage').'" title="'.get_lang('NextPage').'" style="vertical-align: middle;"/>';
+			$params['firstPageText'] = '<img src="'.api_get_path(WEB_CODE_PATH).'img/go-first.png"  alt="'.get_lang('FirstPage').'" title="'.get_lang('FirstPage').'" style="vertical-align: middle;"/>';
+			$params['lastPageText'] = '<img src="'.api_get_path(WEB_CODE_PATH).'img/go-last.png"  alt="'.get_lang('LastPage').'" title="'.get_lang('LastPage').'" style="vertical-align: middle;"/>';
 			$params['firstPagePre'] = '';
 			$params['lastPagePre'] = '';
 			$params['firstPagePost'] = '';

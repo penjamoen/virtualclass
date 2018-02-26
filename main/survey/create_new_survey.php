@@ -32,7 +32,7 @@ require_once (api_get_path(LIBRARY_PATH) . 'formvalidator/FormValidator.class.ph
 
 require_once '../newscorm/learnpath.class.php';
 require_once '../newscorm/learnpathItem.class.php';
-require_once api_get_path(LIBRARY_PATH)  . 'searchengine.lib.php';
+
 $htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
 
 // Additional javascript
@@ -153,10 +153,6 @@ if ($_GET['action'] == 'edit' && is_numeric($survey_id)) {
 if ($_GET['action'] == 'edit' AND isset($survey_id) AND is_numeric($survey_id)) {
  $defaults = $survey_data;
  $defaults['survey_id'] = $survey_id;
- //get the keyword
- $searchkey = new SearchEngineManager();
- $keyword = $searchkey->getKeyWord(TOOL_SURVEY, $survey_id);
- $defaults['search_terms'] = $keyword;
  /*
    $defaults['survey_share'] = array();
    $defaults['survey_share']['survey_share'] = $survey_data['survey_share'];
@@ -235,12 +231,7 @@ $form->addElement('checkbox', 'anonymous', get_lang('Anonymous'));
 
 $form->addElement('textarea', 'survey_introduction', get_lang('SurveyIntroduction'), array('rows' => '2', 'cols' => '75'));
 $form->addElement('textarea', 'survey_thanks', get_lang('SurveyThanks'), array('rows' => '2', 'cols' => '75'));
-if (api_get_setting('search_enabled') == 'true') {
-   //TODO: include language file
-    $form->addElement('hidden','index_document',1);
-    $form->addElement('hidden','language',api_get_setting('platformLanguage'));
-    $form->addElement('textarea','search_terms',get_lang('SearchKeywords'),array ('cols' => '65'));
-}
+
 
 /*
   // Aditional Parameters
@@ -388,7 +379,7 @@ if ($form->validate()) {
   Display::display_confirmation_message($return['message'], false);
  } else {
   // redirecting to the survey page (whilst showing the return message
-  header('location:survey.php?'.  api_get_cidreq().'&survey_id=' . $return['id'] . '&message=' . $return['message'] . $add_lp_param);
+  header('location:survey.php?survey_id=' . $return['id'] . '&message=' . $return['message'] . $add_lp_param);
  }
 } else {
  // Displaying the header
@@ -398,7 +389,7 @@ if ($form->validate()) {
  //api_display_tool_title($tool_name);
  // actions
  $actions = '<div class="actions">';
- $actions .= '<a href="survey_list.php?' . api_get_cidReq() . '">' . Display::return_icon('pixel.gif', get_lang('BackToSurvey'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('BackToSurvey') . '</a>';
+ $actions .= '<a href="survey_list.php?' . api_get_cidReq() . '">' . Display::return_icon('go_previous_32.png', get_lang('BackToSurvey')) . get_lang('BackToSurvey') . '</a>';
  $actions .= '</div>';
  echo $actions;
 

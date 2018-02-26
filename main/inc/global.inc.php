@@ -279,7 +279,7 @@ if(defined('DOKEOS_HOMEPAGE') && DOKEOS_HOMEPAGE === true && api_get_setting('ac
 
 
 // include the local (contextual) parameters of this course or section
-require_once $includePath.'/local.inc.php';
+require $includePath.'/local.inc.php';
 
 // registering the delegated platform settings in $_setting when inside a course
 // this have to happen after the inclusion of local.inc.php

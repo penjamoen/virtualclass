@@ -188,5 +188,4 @@ $FirstLogin = "Pierwsze po&#322;&#261;czenie";
 $AccessDetails = "Szczegó&#322;y dost&#281;pu";
 $DateAndTimeOfAccess = "Data i czas dost&#281;pu";
 $Duration = "Czas trwania";
-$TrackTrainings = "Kursy";
 ?>

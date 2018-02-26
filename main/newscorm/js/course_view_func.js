@@ -113,30 +113,12 @@ function refreshProgressBar(nbr_complete, nbr_total, mode){
  */
 function transparent_flash () {
   $("#content_id").load(function(){
-    $("#content_id").contents().find("embed").each(function(){
-        if($(this).parent()[0]['tagName'].toLowerCase() != 'object'){
-	      h = $(this).height();
-	      w = $(this).width();
-	      src = $(this).attr('src');
-          rc = src.toLowerCase();
-          if(rc.indexOf('.swf') != -1) {
-           obj = '<object width="'+w+'" height="'+h+'">\n\
-	        <param name="wmode" value="transparent" >\n\
-	        <param value="true" name="allowfullscreen" >\n\
-	        <param value="always" name="allowscriptaccess" >\n\
-	        <param name="movie" value="'+src+'" >\n\
-	            <embed height="'+h+'" width="'+w+'"\n\
-	            type="application/x-shockwave-flash"\n\
-	            src="'+src+'" \n\
-	            wmode="transparent" play="true" loop="true" menu="true">\n\
-	            </embed>\n\
-	        </object>';
-            $(this).after(obj);
-            $(this).remove();
-          }
-	      
-	     
-        }
-    }) ;
+     $("#content_id").contents().find("object").prepend("<param name='wmode' value='transparent' />");
+     $("#content_id").contents().find("object").append("<embed wmode='transparent' />");
+     $("#content_id").contents().find("object").each(function(){
+     if($(this).parent()[0]['tagName'] !='OBJECT'){
+       $(this).attr("wmode", "transparent").wrap('<div>');
+     }
+   });
  });
 }

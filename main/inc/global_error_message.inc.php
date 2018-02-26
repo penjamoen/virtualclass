@@ -47,7 +47,7 @@ $TechnicalIssuesDescription = 'This portal is currently experiencing technical i
 
 if (is_int($global_error_code) && $global_error_code > 0) {
 
-	$theme = 'dokeos2_tablet/';
+	$theme = 'dokeos_blue/';
 	$css_path = 'main/css/';
 	$css_file = $css_path.$theme.'default.css';
 
@@ -152,12 +152,13 @@ if (is_int($global_error_code) && $global_error_code > 0) {
 			<meta http-equiv="Content-Type" content="text/html; charset={ENCODING}" />
 			<style type="text/css" media="screen, projection"> 
 			/*<![CDATA[*/
-			@import "main/css/dokeos2_tablet/default.css";
+			@import "main/css/dokeos2_orange/default.css";
+			@import "main/css/dokeos2_orange/course.css";
 			/*]]>*/
 			</style> 
 			<style type="text/css" media="print"> 
 			/*<![CDATA[*/
-			@import "main/css/dokeos2_tablet/print.css";
+			@import "main/css/dokeos2_orange/print.css";
 			/*]]>*/
 			</style> 	
 		</head>
@@ -178,7 +179,7 @@ if (is_int($global_error_code) && $global_error_code > 0) {
 			<div id="header2">
 				<div class="headerinner">
 					<ul id="dokeostabs">
-						<li id="current"><a href="#"><div><span>Installation</span></div></a></li>
+						<li id="current"><span>Installation</span></li>
 					</ul>
 					<div style="clear: both;" class="clear"> </div>
 				</div>

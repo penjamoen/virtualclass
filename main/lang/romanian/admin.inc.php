@@ -969,5 +969,4 @@ $SteelGrey = "Steel Grey";
 $TastyOlive = "Maslina gustoasa";
 $AddNews  = "Aduga stiri";
 $ExportCourses = "Export cursuri";
-$SelectASession = "Selectare sesiune";
 ?>

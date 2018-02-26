@@ -40,6 +40,7 @@ $langMe = "me";
 $langSystemAnnouncements = "News";
 $langHelpMaj = "Help";
 $langNotRegistered = "Not Registered";
+$langAdmin = "Portal admin";
 $Login = "Login";
 $langRegisterForCourse = "Enroll in a course";
 $langUnregisterForCourse = "Unregister from a course";
@@ -70,8 +71,4 @@ $Inbox = "Inbox";
 $Comppose = "Comppose";
 $PendingInvitations = "Pending invitations";
 $EditPublicPages = "Edit home";
-$Programme = "Programme";
-$AvailableFrom = "available from";
-$To = "to";
-$OpenCourses = "Open Courses";
 ?>

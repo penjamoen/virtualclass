@@ -1,7 +1,6 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$SomeFieldsAreEmpty = "Sommige velden zijn leeg";
 $ManageWidgets = "Widgets beheren";
 $AddRSSAsWidget = "RSS als widget toevoegen";
 $Tools = "Functionaliteiten";
@@ -47,7 +46,7 @@ $NavigationDocument = "Document";
 $NavigationText = "Tekst";
 $NavigationUrl = "Link";
 $SaveModifiedNavigationItem = "Het navigatie-item is gewijzigd.";
-$SaveNewNavigationItem = "OK";
+$SaveNewNavigationItem = "Het navigatie-item is opgeslagen";
 $NewNavigationIsSaved = "Het navigatie-item is opgeslagen";
 $SavingNavigationItems = "Bezig met het opslaan van de navigatie-items";
 $WidgetSettingsAreSaved = "De widget instellingen zijn opgeslagen";
@@ -77,16 +76,5 @@ $LocationSidebarRight = "Kolom rechts";
 $LocationHeader = "Bovenaan";
 $LocationFooter = "Onderaan";
 $LocationMain = "Hoofdgebied";
-$Loading = "Bezig met laden";
-$TabbedRss = "RSS in tabs";
-$AddTabbedRss = "Voeg een RSS feed in een tab toe";
-$EditTabbedRss = "Wijzig een RSS feed in een tab";
-$DeleteTabbedRss = "Verwijder een RSS feed in een tab";
-$TabbedRssTitle = "Titel";
-$TabbedRssUrl = "URL";
-$TabbedRssNumberItems = "Aantal items die weergegeven moeten worden";
-$TabbedRssStore = "RSS feed in tab opslaan";
-$TabbedRSSExplanation = "Met deze widget kunt u meerdere RSS feeds in één overzichtelijke widget groeperen. Elke RSS feed wordt in een afzonderlijke tab van deze widget weergegeven. ";
-$SelectWikiPage = "Selecteer wiki pagina";
-$WikiExplanation = "Met deze widget kunt u één of meerdere wiki pagina\'s weergeven op de startpagina van uw training. De widget zal altijd de laatste versie van de wiki pagina weergeven waardoor u van uw training een werkelijke collaboratief portaal kunt maken.";
+$ActivateInLocation = "Activeer in volgende locatie";
 ?>

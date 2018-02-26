@@ -53,12 +53,12 @@ if (!class_exists('FreeAnswer')):
 	$form->addElement('html', '<div style="float:right;padding-right:25px;"><img style="cursor: pointer;" src="../img/SmallFormFilled.png" alt="" onclick="lowlineform()" />&nbsp;<img style="cursor: pointer;" src="../img/BigFormClosed.png" alt="" onclick="highlineform()" /></div>');
 
    // Main container
-   $form->addElement('html', '<div id="leftcontainer" class="quiz_answer_small_squarebox">');
-// $form->addElement('text', 'weighting', get_lang('Weighting'), 'size="5"');
-// $form->addElement('html_editor', 'open_answer', get_lang('OpenAnswer'), 'cols="55" rows="10"');
+   $form->addElement('html', '<div style="float:left;width:57%">');
+   //$form->addElement('text', 'weighting', get_lang('Weighting'), 'size="5"');
+   //$form->addElement('html_editor', 'open_answer', get_lang('OpenAnswer'), 'cols="55" rows="10"');
    $form->addElement('html_editor', 'open_answer',$openanswer_lang_var,'style="vertical-align:middle"',array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '200'));
-// $form->addElement('html', '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>');
-// $form->addElement('html', '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>');
+//   $form->addElement('html', '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>');
+//   $form->addElement('html', '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>');
 
    if (!empty($this->id)) {
     $answer = new Answer($this->id);

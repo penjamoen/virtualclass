@@ -77,15 +77,13 @@ switch ($action) {
 		//deprecated variables?
 		//$my_current_friend		 = Security::remove_XSS($_POST['friend_id']);
 		//$my_denied_current_friend= Security::remove_XSS($_POST['denied_friend_id']);
-		
+		$my_delete_friend        = Security::remove_XSS($_POST['delete_friend_id']);
 		//$friend_id_qualify       = Security::remove_XSS($_POST['user_id_friend_q']);
 		//$type_friend_qualify     = Security::remove_XSS($_POST['type_friend_q']); //filtered?
 		//$is_my_friend            = Security::remove_XSS($_POST['is_my_friend']); //filtered?
 
 		if (isset($_POST['delete_friend_id'])) {
-			//SocialManager::remove_user_rel_user($my_delete_friend);
-                    $my_delete_friend        = intval($_POST['delete_friend_id']);
-                    SocialManager::removed_friend($my_delete_friend);
+			SocialManager::remove_user_rel_user($my_delete_friend);
 		}
 		/*
 		if(isset($_POST['user_id_friend_q']) && isset($_POST['type_friend_q'])) {
@@ -172,12 +170,15 @@ switch ($action) {
 					$table_users 			= Database :: get_main_table(TABLE_MAIN_USER);
 	
 					//------Forum messages
+	
 					$forum_result = get_all_post_from_user($user_id, $course_db);
 					$all_result_data = 0;
 					if ($forum_result !='') {
 						echo '<div id="social-forum-main-title">';
 						echo api_xml_http_response_encode(get_lang('Forum'));
-						echo '</div>';												
+						echo '</div>';
+						
+						
 						echo '<div style="background:#FAF9F6; padding:0px;" >';
 						echo api_xml_http_response_encode($forum_result);
 						echo '</div>';

@@ -99,39 +99,9 @@ if($_GET['action'] == 'delete')
 }
 
 
-$htmlHeadXtra[] ='<script type="text/javascript">
-$(document).ready(function() { 
-	$(function() {
-		$("#contentLeft ul").sortable({ opacity: 0.6, cursor: "move", update: function() {
-                    var order = $(this).sortable("serialize") + "&action=changeCourseSessionOrder";
-                    var record = order.split("&");
-                    var recordlen = record.length;
-                    var disparr = new Array();
-                    for (var i=0;i<(recordlen-1);i++) {
-                        var recordval = record[i].split("=");
-                        disparr[i] = recordval[1];			 
-                    }
-                    $.ajax({
-                    type: "GET",
-                    url: "'.api_get_path(WEB_AJAX_PATH).'courses_session.ajax.php?action=changeCourseSessionOrder&disporder="+disparr,
-                    success: function(msg){}
-		})			
-		}
-		});
-	});
-
-});
-</script> ';
 
 
 Display::display_header($tool_name);
-
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/catalogue_management.php">' . Display::return_icon('pixel.gif',get_lang('Catalogue'), array('class' => 'toolactionplaceholdericon toolactioncatalogue')) . get_lang('Catalogue') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/topic_list.php">' . Display :: return_icon('pixel.gif', get_lang('Topics'),array('class' => 'toolactionplaceholdericon toolactiontopic')) . get_lang('Topics') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/programme_list.php">' . Display :: return_icon('pixel.gif', get_lang('Programmes'),array('class' => 'toolactionplaceholdericon toolactionprogramme')) . get_lang('Programmes') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_list.php">' . Display :: return_icon('pixel.gif', get_lang('SessionList'),array('class' => 'toolactionplaceholdericon toolactionsession')) . get_lang('Sessions') . '</a>';
-echo '</div>';
 
 // Start content page
 echo '<div id="content">';
@@ -143,42 +113,27 @@ if (!empty($_GET['warn'])) {
 api_display_tool_title($tool_name);
 ?>
 <!-- General properties -->
-<br/>
-<div class="section">
-<div class="sectiontitle"><?php echo get_lang('SessionSettings'); ?>&nbsp;&nbsp;<a href="session_edit.php?page=resume_session.php&id=<?php echo $id_session; ?>"><?php echo Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')); ?></a></div>	
-<div class="sectionvalue">
-<table class="data_table" width="100%" cellpadding="3">
-<!--<tr>
-  <th colspan="2"><?php echo get_lang('GeneralProperties'); ?>
-  	<a href="session_edit.php?page=resume_session.php&id=<?php echo $id_session; ?>"><?php Display::display_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')); ?></a></th>
-  </th>
-</tr>-->
+<table class="data_table" width="100%">
 <tr>
-	<td width="15%" align="right"><?php echo get_lang('SessionName');?> :</td>
-	<td width="85%"><?php echo $session['name'] ?></td>
+  <th colspan="2"><?php echo get_lang('GeneralProperties'); ?>
+  	<a href="session_edit.php?page=resume_session.php&id=<?php echo $id_session; ?>"><?php Display::display_icon('edit.png', get_lang('Edit')); ?></a></th>
+  </th>
 </tr>
 <tr>
-	<td width="15%" align="right"><?php echo get_lang('GeneralCoach'); ?> :</td>
-	<td width="85%"><?php echo api_get_person_name($session['firstname'], $session['lastname']).' ('.$session['username'].')' ?></td>
+	<td><?php echo get_lang('SessionName');?> :</td>
+	<td><?php echo $session['name'] ?></td>
+</tr>
+<tr>
+	<td><?php echo get_lang('GeneralCoach'); ?> :</td>
+	<td><?php echo api_get_person_name($session['firstname'], $session['lastname']).' ('.$session['username'].')' ?></td>
 </tr>
 <?php if(!empty($session_category)): ?>
 <tr>
-	<td width="15%" align="right"><?php echo get_lang('SessionCategory') ?></td>
-	<td width="85%"><?php echo $session_category;  ?></td>
+	<td><?php echo get_lang('SessionCategory') ?></td>
+	<td><?php echo $session_category;  ?></td>
 </tr>
 <?php endif; ?>
 <tr>
-	<td width="15%" align="right"><?php echo get_lang('Agenda'); ?> :</td>
-	<td width="85%">
-	<?php
-		if($session['date_start']=='00-00-0000')
-			echo get_lang('NoTimeLimits');
-		else
-			echo get_lang('From').' '.$session['date_start'].' '.get_lang('To').' '.$session['date_end'];
-		 ?>
-	</td>
-</tr>
-<!--<tr>
 	<td><?php echo get_lang('Date'); ?> :</td>
 	<td>
 	<?php
@@ -188,10 +143,10 @@ api_display_tool_title($tool_name);
 			echo get_lang('From').' '.$session['date_start'].' '.get_lang('To').' '.$session['date_end'];
 		 ?>
 	</td>
-</tr>-->
+</tr>
 
 <!-- show nb_days_before and nb_days_after only if they are different from 0 -->
-<!--<tr>
+<tr>
 	<td>
 		<?php echo api_ucfirst(get_lang('DaysBefore')) ?> :
 	</td>
@@ -215,88 +170,56 @@ api_display_tool_title($tool_name);
 	<td>
 		<?php if ($session['visibility']==1) echo get_lang('ReadOnly'); elseif($session['visibility']==2) echo get_lang('Visible');elseif($session['visibility']==3) echo api_ucfirst(get_lang('Invisible'))  ?>
 	</td>
-</tr>-->
+</tr>
 
 </table>
-</div>
-	</div>
+
+<br />
 
 <!--List of courses -->
-<table style="width:100%" id="table_question_list" class="data_table data_table_exercise">
-    <tr>
-  <td colspan="4"><div class="row"><div class="form_header"><?php echo get_lang('Courses'); ?>
-  	<a href="add_courses_to_session.php?page=resume_session.php&id_session=<?php echo $id_session; ?>"><?php echo Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')); ?></a></div></div></td>  
+<table class="data_table" width="100%">
+<tr>
+  <th colspan="4"><?php echo get_lang('CourseList'); ?>
+  	<a href="add_courses_to_session.php?page=resume_session.php&id_session=<?php echo $id_session; ?>"><?php Display::display_icon('edit.png', get_lang('Edit')); ?></a></th>
+  </th>
 </tr>
+<tr>
   <tr>
-  <th width="8%">Move</th>
-  <th width="25%"><?php echo get_lang('CourseTitle'); ?></th>
-  <th width="15%"><?php echo get_lang('CourseCoach'); ?></th>
-  <th width="8%"><?php echo get_lang('Volume'); ?></th>
-  <th width="12%"><?php echo get_lang('Schedule'); ?></th>
-  <th width="7%"><?php echo get_lang('Frequency'); ?></th>
-  <th width="10%"><?php echo get_lang('Users'); ?></th>
+  <th width="35%"><?php echo get_lang('CourseTitle'); ?></th>
+  <th width="30%"><?php echo get_lang('CourseCoach'); ?></th>
+  <th width="20%"><?php echo get_lang('UsersNumber'); ?></th>
   <th width="15%"><?php echo get_lang('Actions'); ?></th>
 </tr>
-</table>
+</tr>
+<?php
+if($session['nbr_courses']==0){
+	echo '
+		<tr>
+			<td colspan="4">'.get_lang('NoCoursesForThisSession').'</td>
+		</tr>';
+}
+else {
+	// select the courses
+	$sql = "SELECT code,title,visual_code, nbr_users
+			FROM $tbl_course,$tbl_session_rel_course			
+			WHERE course_code = code			
+			AND	id_session='$id_session'
+			ORDER BY title";
 
- <div id="contentWrap"><div id="contentLeft"><ul id="categories" class="dragdrop nobullets  ui-sortable">
-                          
-             <?php
-             
-             // select the courses
-            $sql = "SELECT code,title,visual_code, nbr_users
-                            FROM $tbl_course,$tbl_session_rel_course			
-                            WHERE course_code = code			
-                            AND	id_session='$id_session'
-                            ORDER BY position";
-
-            $result=Database::query($sql,__FILE__,__LINE__);
-            $courses=Database::store_result($result);
-             
-            foreach ($courses as $course) {
+	$result=Database::query($sql,__FILE__,__LINE__);
+	$courses=Database::store_result($result);
+	foreach($courses as $course){
 		//select the number of users
+
 		$sql = " SELECT count(*) FROM $tbl_session_rel_user sru, $tbl_session_rel_course_rel_user srcru
-				WHERE  srcru.id_session = sru.id_session AND srcru.course_code = '".Database::escape_string($course['code'])."'
+				WHERE srcru.id_user = sru.id_user AND srcru.id_session = sru.id_session AND srcru.course_code = '".Database::escape_string($course['code'])."'
 				AND srcru.id_session = '".intval($id_session)."'";
 
 		$rs = Database::query($sql, __FILE__, __LINE__);
 		$course['nbr_users'] = Database::result($rs,0,0);
 
-		//course properties
-		$tbl_session_course	= Database::get_main_table(TABLE_MAIN_SESSION_COURSE);
-		$sql_property = "SELECT * FROM $tbl_session_course WHERE id_session = ".intval($id_session). " AND course_code = '".Database::escape_string($course['code'])."'";
-		$res_property = Database::query($sql_property,__FILE__,__LINE__);
-		$row_property = Database::fetch_array($res_property);
-		
-		$schedule = $row_property['repeats_on'];
-		if($schedule == 'M')$schedule_day = 'Monday';
-		if($schedule == 'T')$schedule_day = 'Tuesday';
-		if($schedule == 'W')$schedule_day = 'Wednesday';
-		if($schedule == 'TH')$schedule_day = 'Thursday';
-		if($schedule == 'F')$schedule_day = 'Friday';
-		if($schedule == 'ST')$schedule_day = 'Saturday';
-		if($schedule == 'S')$schedule_day = 'Sunday';
-		if($schedule == 'NULL')$schedule_day = '';
-
-		list($from_hours, $from_mins) = split(':', $row_property['time_from']);
-		list($to_hours, $to_mins) = split(':', $row_property['time_to']);
-		
-		if($from_hours > 6 && $from_hours < 13){$ampm = 'AM';}else{$ampm = 'PM';}		
-
-		$schedule = $schedule_day.'&nbsp;&nbsp;'.$from_hours.'-'.$to_hours.'&nbsp;'.$ampm;
-
-		if($from_hours == '00'){
-			$schedule = '';
-		}
-
-		if($row_property['repeats'] != 'NULL'){
-			$frequency = $row_property['repeats'];
-		}
-		else {
-			$frequency = '';
-		}
-
 		// Get coachs of the courses in session
+
 		$sql = "SELECT user.lastname,user.firstname,user.username FROM $tbl_session_rel_course_rel_user session_rcru, $tbl_user user
 				WHERE session_rcru.id_user = user.user_id AND session_rcru.id_session = '".intval($id_session)."' AND session_rcru.course_code ='".Database::escape_string($course['code'])."' AND session_rcru.status=2";
 		$rs = Database::query($sql,__FILE__,__LINE__);
@@ -319,56 +242,31 @@ api_display_tool_title($tool_name);
 
 		$orig_param = '&origin=resume_session';
 		//hide_course_breadcrumb the parameter has been added to hide the name of the course, that appeared in the default $interbreadcrumb
-		if($i%2 == 0){
-			$class = "row_odd";
-		}
-		else {
-			$class = "row_even";
-		}
-               
-                echo '<li id="recordsArray_'.$id_session.'|'.$course['code'].'" class="category" style="opacity: 1;">';
-                echo '<div>';                
-                echo '<table width="100%" class="data_table">	
-		<tr class="'.$class.'">
-                    <td align="center" width="8%" style="cursor:pointer">'.Display::return_icon('pixel.gif', get_lang('Move'), array('class' => 'actionplaceholdericon actiondragdrop')).'</td>
-                    <td width="25%">'.$course['title'].' ('.$course['visual_code'].')</td>
-                    <td width="15%">'.$coach.'</td>
-                    <td width="8%">'.$row_property['hours'].'</td>
-                    <td width="12%">'.($schedule?$schedule:'&nbsp;').'</td>
-                    <td width="7%">'.($frequency?$frequency:'&nbsp;').'</td>
-                    <td width="10%">'.$course['nbr_users'].'</td>
-                    <td width="15%">
-                            <a href="../tracking/courseLog.php?id_session='.$id_session.'&cidReq='.$course['code'].$orig_param.'&hide_course_breadcrumb=1">'.Display::return_icon('pixel.gif', get_lang('Tracking'), array('class' => 'actionplaceholdericon actionstatistics')).'</a>&nbsp;
-                            <a href="session_course_edit.php?id_session='.$id_session.'&page=resume_session.php&course_code='.$course['code'].''.$orig_param.'">'.Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')).'</a>
-                            <a href="'.api_get_self().'?id_session='.$id_session.'&action=delete&idChecked[]='.$course['code'].'" onclick="javascript:if(!confirm(\''.get_lang('ConfirmYourChoice').'\')) return false;">'.Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')).'</a>
-                    </td>
-		</tr></table>';
-		$i++;
-                
-                echo '</div>';
-                echo '</li>';
-                
-                
-            }
-            
-             ?>
-             
-             
+		echo '
+		<tr>
+			<td>'.$course['title'].' ('.$course['visual_code'].')</td>
+			<td>'.$coach.'</td>
+			<td>'.$course['nbr_users'].'</td>
+			<td>
+				<a href="../tracking/courseLog.php?id_session='.$id_session.'&cidReq='.$course['code'].$orig_param.'&hide_course_breadcrumb=1">'.Display::return_icon('statistics.png', get_lang('Tracking')).'</a>&nbsp;
+				<a href="session_course_edit.php?id_session='.$id_session.'&page=resume_session.php&course_code='.$course['code'].''.$orig_param.'">'.Display::return_icon('edit.png', get_lang('Edit')).'</a>
+				<a href="'.api_get_self().'?id_session='.$id_session.'&action=delete&idChecked[]='.$course['code'].'" onclick="javascript:if(!confirm(\''.get_lang('ConfirmYourChoice').'\')) return false;">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>
+			</td>
+		</tr>';
+	}
+}
+?>
+</table>
+
 <br />
 
-<!--List of participants -->
-<div class="row"><div class="form_header"><?php echo get_lang('Participants'); ?>
-  	<a href="add_users_to_session.php?page=resume_session.php&id_session=<?php echo $id_session; ?>"><?php echo Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')); ?></a></div></div>
-
+<!--List of courses -->
 <table class="data_table" width="100%">
-  <tr>
-  <th width="5%"><?php echo get_lang('Photo'); ?></th>
-  <th width="10%"><?php echo get_lang('Code'); ?></th>
-  <th width="20%"><?php echo get_lang('FirstName'); ?></th>
-  <th width="15%"><?php echo get_lang('LastName'); ?></th>
-  <th width="15%"><?php echo get_lang('Login'); ?></th>
-  <th width="20%"><?php echo get_lang('Email'); ?></th>
-  <th width="15%"><?php echo get_lang('Actions'); ?></th>
+<tr>
+  <th colspan="4"><?php echo get_lang('UserList'); ?>
+  	<a href="add_users_to_session.php?page=resume_session.php&id_session=<?php echo $id_session; ?>"><?php Display::display_icon('edit.png', get_lang('Edit')); ?></a></th>
+  </th>
+</tr>
 </tr>
 <?php
 if($session['nbr_users']==0){
@@ -376,11 +274,12 @@ if($session['nbr_users']==0){
 		<tr>
 			<td colspan="2">'.get_lang('NoUsersForThisSession').'</td>
 		</tr>';
-} else {
+}
+else {
 
 	// classe development, obsolete for the moment
 	$order_clause = api_sort_by_first_name() ? ' ORDER BY firstname, lastname' : ' ORDER BY lastname, firstname';
-	$sql = 'SELECT '.$tbl_user.'.user_id, lastname, firstname, username, official_code, email
+	$sql = 'SELECT '.$tbl_user.'.user_id, lastname, firstname, username
 			FROM '.$tbl_user.'
 			INNER JOIN '.$tbl_session_rel_user.'
 				ON '.$tbl_user.'.user_id = '.$tbl_session_rel_user.'.id_user
@@ -389,37 +288,21 @@ if($session['nbr_users']==0){
 	$result=Database::query($sql,__FILE__,__LINE__);
 	$users=Database::store_result($result);
 	$orig_param = '&origin=resume_session&id_session='.$id_session; // change breadcrumb in destination page
-        $i = 0;
 	foreach($users as $user){
-		$image_path = UserManager::get_user_picture_path_by_id($user['user_id'], 'web', false, true);
-		$user_profile = UserManager::get_picture_user($user['user_id'], $image_path['file'], 22, 'small_', ' width="22" height="22" ');
-		if (!api_is_anonymous()) {
-			$photo = '<center><a href="'.api_get_path(WEB_PATH).'whoisonline.php?origin=user_list&id='.$user['user_id'].'" title="'.get_lang('Info').'"  ><img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($user['firstname'],$user['lastname']).'"  title="'.api_get_person_name($user['firstname'], $user['lastname']).'" /></a></center>';
-		} else {
-			$photo = '<center><img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($user['firstname'], $user['lastname']).'" title="'.api_get_person_name($user['firstname'], $user['lastname']).'" /></center>';
-		}	
-		if($i%2 == 0){
-			$class = "row_odd";
-		}
-		else {
-			$class = "row_even";
-		}
-		echo '<tr class="'.$class.'">
-		  <td width="5%">'.$photo.'</td>	
-		  <td width="10%">'.$user['official_code'].'</td>	
-		  <td width="20%">'.$user['firstname'].'</td>	
-		  <td width="15%">'.$user['lastname'].'</td>	
-		  <td width="15%">'.$user['username'].'</td>	
-		  <td width="20%">'.$user['email'].'</td>			  
-		  <td width="15%"><a href="../mySpace/myStudents.php?student='.$user['user_id'].''.$orig_param.'">'.Display::return_icon('pixel.gif', get_lang('Tracking'), array('class' => 'actionplaceholdericon actionstatistics')).'</a>&nbsp;
-		  <a href="session_course_user.php?id_user='.$user['user_id'].'&id_session='.$id_session.'">'.Display::return_icon('pixel.gif', get_lang('BlockCoursesForThisUser'), array('class' => 'actionplaceholdericon actioncourse')).'</a>&nbsp;
-		  <a href="'.api_get_self().'?id_session='.$id_session.'&action=delete&user='.$user['user_id'].'" onclick="javascript:if(!confirm(\''.get_lang('ConfirmYourChoice').'\')) return false;">'.Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')).'</a></td>	
-		</tr>';
-                $i++;
+		echo '<tr>
+					<td width="90%">
+						<b>'.api_get_person_name($user['firstname'], $user['lastname']).' ('.$user['username'].')</b>
+					</td>
+					<td>
+						<a href="../mySpace/myStudents.php?student='.$user['user_id'].''.$orig_param.'">'.Display::return_icon('statistics.png', get_lang('Reporting')).'</a>&nbsp;
+						<a href="session_course_user.php?id_user='.$user['user_id'].'&id_session='.$id_session.'">'.Display::return_icon('course22.png', get_lang('BlockCoursesForThisUser')).'</a>&nbsp;
+						<a href="'.api_get_self().'?id_session='.$id_session.'&action=delete&user='.$user['user_id'].'" onclick="javascript:if(!confirm(\''.get_lang('ConfirmYourChoice').'\')) return false;">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>
+					</td>
+				  </tr>';
 	}
 }
 ?>
-</table><br/>
+</table>
 <?php
 // End content
 echo '</div>';

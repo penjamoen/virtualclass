@@ -24,10 +24,9 @@ $parameters['sec_token'] = Security::get_token();
 // action menu
 echo '<div class="actions" style="height:22px;">';
 echo '<div style="float:right;">
-		<a href="'.api_get_path(WEB_CODE_PATH).'admin/legal_add.php">'.Display::return_icon('pixel.gif',get_lang('EditTermsAndConditions'),array('class'=>'actionplaceholdericon actionedit'),'').get_lang('EditTermsAndConditions').'</a>&nbsp;&nbsp;
+		<a href="'.api_get_path(WEB_CODE_PATH).'admin/legal_add.php">'.Display::return_icon('edit.png',get_lang('EditTermsAndConditions'),'').get_lang('EditTermsAndConditions').'</a>&nbsp;&nbsp;
 	  </div><br />';
 echo '</div>';
-echo '<div id="content">';
 
 // Actions
 if (isset ($_GET['action'])) {
@@ -45,8 +44,6 @@ $table->set_header(3, get_lang('Changes'), false, 'width="60px"');
 $table->set_header(4, get_lang('Type'), false, 'width="60px"');
 $table->set_header(5, get_lang('Date'), false, 'width="50px"');
 $table->display();
-
-echo '</div>';
 
 // this 2 "mask" function are here just because the SortableTable
 function get_legal_data_mask($id, $params=null, $row=null) {

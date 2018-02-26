@@ -10,22 +10,11 @@
 */
 $home_path = '';
 
-if (isset($GLOBALS['_cid']) && $GLOBALS['_cid'] != -1) {
-    // if We are inside a course
-    $css_name = api_get_setting('allow_course_theme') == 'true'?(api_get_course_setting('course_theme', null, true)?api_get_course_setting('course_theme', null, true):api_get_setting('stylesheets')):api_get_setting('stylesheets');
-    $css_info = api_get_css_info($css_name);
-} else {
-    $css_info = api_get_css_info();    
-}
-// Check if we have a CSS with tablet support
-$css_type = !is_null($css_info['type']) ? $css_info['type'] : '';
-
 ?>
 <div id="wrapper">
 
 <div id="header">
 	<div id="header1">
-        <?php if (api_get_setting('allow_course_theme') == 'true' && $css_type != 'tablet'): ?>
 		<div class="headerinner">
 			<div id="top_corner"></div> 
 			<div id="languageselector">
@@ -46,29 +35,7 @@ $css_type = !is_null($css_info['type']) ? $css_info['type'] : '';
 				}
 				?>
 			</div>
-                        
-                        <!-- Search resources -->
-                        <?php if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian') && !api_is_anonymous()) { ?>
-                       
-                            <div class="head-search" style="position: absolute; top:0px; right:0px;padding: 10px;">
-                            <form  method="POST" onsubmit="return h_search();" style="position:relative;">
-                                <span>
-                                    
-                                    <input type="text" id="input" name="input" class="input-h-search" id="example-text-input">                               
-                                    </span>
-                                    <span>
-                                    <input type="image" src="<?php echo api_get_path(WEB_IMG_PATH).'button_search.png'; ?>" id="btn-h-search"/>
-                                    <!--button id="submitBt" class="search" style="height:28px;"><php echo get_lang('Search'); ?></button-->
-                                    </span>
-                            </form>
 		</div>
-                        
-                        <?php } ?>
-                        
-	</div>
-    <?php endif; ?>    
-        
-        
 	</div>
 
 
@@ -97,25 +64,7 @@ $css_type = !is_null($css_info['type']) ? $css_info['type'] : '';
 			if(isset($_course) && array_key_exists('name', $_course))
 				echo '<span id="global_course_name">'.$_course['name'].'</span>';
 			?>
-			<?php if(isset($GLOBALS['display_learner_view']) && $GLOBALS['display_learner_view'] === true && api_is_allowed_to_edit()) : ?>
-			<div class="learner_view">
-				<?php if(empty($_GET['learner_view'])) : 
-				$GLOBALS['learner_view'] = false;
-				?>
-				<a href="<?php echo api_get_self() ?>?learner_view=true">
-					<?php echo get_lang('ViewHomeAsLearner')?>
-				</a>
-				<?php 
-				else : 
-				$GLOBALS['learner_view'] = true;
-				?>
-				<a href="<?php echo api_get_self() ?>">
-					<?php echo get_lang('ViewHomeAsTrainer')?>
-				</a>
-				<?php endif; ?>
-			</div>
-			<?php endif; ?>
-		</div>	
+		</div>		
 	</div>
 	<?php } ?>
 
@@ -200,13 +149,13 @@ function display_tabs(){
 		}
 
 		// Gradebook
-	/*	if (api_get_setting('gradebook_enable') == 'true') {
+		if (api_get_setting('gradebook_enable') == 'true') {
 			if (api_get_setting('show_tabs', 'my_gradebook') == 'true') {
 				$navigation['mygradebook'] = $possible_tabs['mygradebook'];
 			} else{
 				$menu_navigation['mygradebook'] = $possible_tabs['mygradebook'];
 			}
-		}*/
+		}
 	
 		// Reporting
 		if (api_get_setting('show_tabs', 'reporting') == 'true') {
@@ -225,13 +174,12 @@ function display_tabs(){
 	
 	
 		// Social Networking 
-            if (api_get_setting('allow_social_tool')=='true') {
 		if (api_get_setting('show_tabs', 'social') == 'true') {
 			$navigation['social'] = $possible_tabs['social'];
 		} else{
 			$menu_navigation['social'] = $possible_tabs['social'];
 		}
-            }
+
 		if(api_is_platform_admin(true)) {
 			if (api_get_setting('show_tabs', 'platform_administration') == 'true') {
 				$navigation['platform_admin'] = $possible_tabs['platform_admin'];
@@ -244,13 +192,11 @@ function display_tabs(){
 	// Displaying the tabs
 	foreach($navigation as $section => $navigation_info) {
 		if(isset($GLOBALS['this_section'])) {
-			$current = ($section == $GLOBALS['this_section'] ? ' id="current" class="tab_'.$section.'_current"' : ' class="tab_'.$section.'"');
-			$class_icon_tab = ($section == $GLOBALS['this_section'] ? ' class="icon_tab_'.$section.'_current"' : ' class="icon_tab_'.$section.'"');
-                        
-                } else {
+			$current = ($section == $GLOBALS['this_section'] ? ' id="current"' : '');
+		} else {
 			$current = '';
 		}
-               echo "<a href='".$navigation_info['url']."' target='_top'><li ".$current."><div><span>".$navigation_info['title']."</span></div></li></a>";
+		echo '<li'.$current.'><a href="'.$navigation_info['url'].'" target="_top"><span>'.$navigation_info['title'].'</span></a></li>'."\n";
 	}
 
 
@@ -464,7 +410,7 @@ function get_tabs() {
 	} else {
 		// Link to my progress
 		$navigation['session_my_progress']['url'] = api_get_path(WEB_CODE_PATH).'auth/my_progress.php';
-		$navigation['session_my_progress']['title'] = get_lang('MySpace');
+		$navigation['session_my_progress']['title'] = get_lang('MyProgress');
 	}
 
 	// Social

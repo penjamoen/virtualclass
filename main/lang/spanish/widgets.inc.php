@@ -1,7 +1,6 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$SomeFieldsAreEmpty = "Algunos campos están vacíos";
 $ManageWidgets = "Administrador de Widgets";
 $AddRSSAsWidget = "Agregar RSS feed como Widget";
 $Tools = "Herramientas";
@@ -77,14 +76,5 @@ $LocationSidebarRight = "Barra Lateral Derecha";
 $LocationHeader = "Ubicación de Encabezado";
 $LocationFooter = "Ubicación de Pie de Página";
 $LocationMain = "Ubicación";
-$Loading = "Cargando";
-$TabbedRss = "RSS con pestañas";
-$AddTabbedRss = "Agregar una pestaña a RSS";
-$EditTabbedRss = "Editar la pestaña de RSS";
-$DeleteTabbedRss = "Eliminar una pestaña RSS feed";
-$TabbedRssTitle = "Título";
-$TabbedRssUrl = "URL";
-$TabbedRssNumberItems = "Número de elemento para ser mostrados";
-$TabbedRssStore = "Guardar una pestaña RSS feed";
-$SelectWikiPage = "Seleccione la página Wiki";
+$ActivateInLocation = "Activar en la ubicación";
 ?>

@@ -70,7 +70,7 @@ $interbreadcrumb[] = array ('url' => 'survey.php?survey_id='.$survey_id, 'name' 
 
 
 // Displaying the header
-Display::display_tool_header($tool_name);
+Display::display_header($tool_name);
 
 // Checking the parameters
 if (!is_numeric($survey_id))
@@ -79,12 +79,6 @@ if (!is_numeric($survey_id))
 	Display::display_footer();
 	exit;
 }
-
-echo '<div class="actions">';
-echo '<a href="survey.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.strtolower(get_lang('Survey')), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackTo').' '.strtolower(get_lang('Survey')).'</a>';
-echo '</div>';
-
-echo '<div id="content">';
 
 // Getting all the people who have filled this survey
 $answered_data = survey_manager::get_people_who_filled_survey($survey_id);
@@ -161,7 +155,6 @@ while ($row = mysql_fetch_assoc($res))
 }
 // closing the table
 echo '</table>';
-echo '</div>';
 
 // Footer
 Display :: display_footer();

@@ -139,5 +139,4 @@ $BackToForum = "Nazaj na forum";
 $BackToForumOverview = "Nazaj na pregled forumov";
 $BackToThread = "Nazaj na nit";
 $ForumcategoryLocked = "Kategorija foruma je zaklenjena";
-$ThereAreNoForumsInThisCategory = "V tej kategoriji ni forumov";
 ?>

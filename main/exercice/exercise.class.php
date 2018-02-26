@@ -69,30 +69,7 @@ if (!class_exists('Exercise')):
    $TBL_QUESTIONS = Database::get_course_table(TABLE_QUIZ_QUESTION);
    $TBL_EXERCICES_SCENARIO = Database::get_course_table(TABLE_QUIZ_SCENARIO);
 
-   // Check if scenario does not exists
-   $sql_count = "SELECT count(*) AS count FROM $TBL_EXERCICES_SCENARIO WHERE exercice_id='" . Database::escape_string($id) . "' AND scenario_type='" . $this->scenario . "'";
-   $rs = Database::query($sql_count,__FILE__,__LINE__);
-   $row = Database::fetch_array($rs);
-   // Count the matches
-   $count_scenario = $row['count'];
-   // If matches is zero then the scenario does not exists and we must create one
-   if ($count_scenario == 0) {
-      $session_id = api_get_session_id();
-      $sql = "SELECT id,title,description,sound,type,random,active, results_disabled, max_attempt,start_time,end_time,feedback_type,expired_time FROM $TBL_EXERCICES WHERE id='" . Database::escape_string($id) . "'";
-      $rs = Database::query($sql,__FILE__,__LINE__);
-      $rowquiz = Database::fetch_object($rs);
-      // Sql for create a new scenario
-      $sql_scenario = "INSERT INTO $TBL_EXERCICES_SCENARIO (exercice_id, scenario_type,
-      title, description, sound, type, random, active, results_disabled,
-      max_attempt, start_time, end_time, feedback_type,
-      expired_time, session_id) VALUES('".$rowquiz->id."','".$this->scenario."',
-      '".Database::escape_string($rowquiz->title)."','".Database::escape_string($rowquiz->description)."','".$rowquiz->sound."',
-      '".$rowquiz->type."','".$rowquiz->random."','".$rowquiz->active."',
-      '".$rowquiz->results_disabled."','".$rowquiz->max_attempt."','".$rowquiz->start_time."',
-      '".$rowquiz->end_time."','".$rowquiz->feedback_type."','".$rowquiz->expired_time."',
-      '".$session_id."')";
-      $rs_scenario = Database::query($sql_scenario, __FILE__, __LINE__);
-   }
+   #$TBL_REPONSES           = Database::get_course_table(TABLE_QUIZ_ANSWER);
 
    if (is_numeric($this->scenario)) {
      $sql = "SELECT title,description,sound,type,random,active, results_disabled, max_attempt,start_time,end_time,feedback_type,expired_time FROM $TBL_EXERCICES_SCENARIO WHERE exercice_id='" . Database::escape_string($id) . "' AND scenario_type='" . $this->scenario . "'";
@@ -660,8 +637,8 @@ if (!class_exists('Exercise')):
     $tbl_quiz_scenario = Database::get_course_table(TABLE_QUIZ_SCENARIO);
     $session_id = api_get_session_id();
      $sql = "UPDATE $tbl_quiz_scenario SET
-						title='" . Database::escape_string($quiz->title) . "',
-						description='" . Database::escape_string($quiz->description) . "'";
+						title='" . $quiz->title . "',
+						description='" . $quiz->description . "'";
      $sql .= ", sound='" . $quiz->sound . "',
 						type='" . $quiz->type . "',
 						random='" . $quiz->random . "',
@@ -1039,7 +1016,7 @@ if (!class_exists('Exercise')):
 
      $defaults = array();
 
-     /*if (api_get_setting('search_enabled') === 'true') {
+     if (api_get_setting('search_enabled') === 'true') {
       require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
 
       $form->addElement('checkbox', 'index_document', '', get_lang('SearchFeatureDoIndexDocument'));
@@ -1062,7 +1039,7 @@ if (!class_exists('Exercise')):
        }
       }
       $form->addElement('html', '</div>');
-     }*/
+     }
     }
    }
    // submit
@@ -1087,20 +1064,17 @@ if (!class_exists('Exercise')):
     $form->addElement('html', '<div>');
     $form->addElement('html', '<div align="center"> ');
     // Div container of image and message for the self evaluation/ Exam
-    $form->addElement('html', '<div class="squarebox_white" style="width:875px;height:60px;background:#FFFFFF;"> ');
-    
+    $form->addElement('html', '<div class="squarebox_white" style="width:400px;height:90px;background:#FFFFFF;"> ');
+
     // Self Evaluation / Exam description
     
     if (!is_null($this->scenario)) {
      $timer_id = 'enabletimercontroltotalminutes'.$this->scenario;
      $form -> addElement ('hidden','scenario',$this->scenario);
      if ($this->scenario == 1) {
-      /*$title_scenario = get_lang('QuizSelfEvaluationTitle');
+      $title_scenario = get_lang('QuizSelfEvaluationTitle');
       $body_scenario = get_lang('QuizSelfEvaluationMessage');
-      $scenario_image = "../img/self_eval.png";*/
-	  $title_scenario = get_lang('QuizScenario');
-	  $body_scenario = get_lang('QuizSelfEvaluationMessage');
-	  $scenario_image = "../img/dokeos_exam.png";
+      $scenario_image = "../img/self_eval.png";
      } elseif ($this->scenario == 2) {
       $title_scenario = get_lang('QuizExamTitle');
       $body_scenario = get_lang('QuizExamMessage');
@@ -1114,35 +1088,18 @@ if (!class_exists('Exercise')):
     }*/
 
     // Message
-    $form->addElement('html', '<div style="float:left;height:60px;width:700px;text-align:left;padding-top:10px;"><div style="margin-left:5px;"> '.$title_scenario.'</div><div style="margin-left:5px;"> '.$body_scenario.'</div>');
+    $form->addElement('html', '<div style="float:left;height:90px;width:300px;text-align:left;"><div style="margin-left:5px;"> '.$title_scenario.'</div><div style="margin-left:5px;"> '.$body_scenario.'</div>');
     $form->addElement('html', '</div>');
 
     // Self evaluation Image
-    $form->addElement('html', '<div style="float:right;height:60px;width:100px;">'.Display::return_icon('pixel.gif','',array('class'=>'dokeos_exam')).'');
+    $form->addElement('html', '<div style="float:right;height:90px;width:100px;"><img style="margin-top:10px" src="'.$scenario_image.'" />');
     $form->addElement('html', '</div>');
-    // Clear
-    $form->addElement('html', '<div style="clear: both; font-size: 0;"></div>');
-    $form->addElement('html', '</div>');
- //   $form->addElement('html', '</div>');
- //   $form->addElement('html', '</div>');
-    // Indexing document
-     if (api_get_setting('search_enabled') === 'true') {
-      require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
-      //$form->addElement('checkbox', 'index_document', '', get_lang('SearchFeatureDoIndexDocument'));
 
-      $form->addElement('hidden','index_document', 1);
-      $form->addElement('hidden','language', api_get_setting('platformLanguage'));
-      $form->addElement('html', '<div class="row">');
-      //$form->addElement('html', '<div class="label">' . get_lang('SearchFeatureDocumentLanguage') . '</div>');
-      //$form->addElement('html', '<div class="formw">' . api_get_languages_combo() . '</div>');
-      //$form->addElement('textarea','search_terms','<br/>'.get_lang('SearchEngineKeywords').': ',array ('rows' => '3', 'cols' => '50'));
-      $form->addElement('html', '</div>');
-     }
- // $form->addElement('text', 'enabletimercontroltotalminutes', get_lang('Minutes'), array('style' => 'width : 35px', 'id' => $timer_id));
-	$timer = array();
-	$timer[] = FormValidator :: createElement('text', 'enabletimercontroltotalminutes', get_lang('Minutes'), array('style' => 'width : 35px', 'id' => $timer_id));
-    $timer[] = FormValidator :: createElement('static', 'minutes', get_lang('Minutes'));//, '<span>' . get_lang('RandomQuestionsHelp') . '</span>'
-    $form->addGroup($timer, null, get_lang('Chronometer'),'&nbsp;&nbsp;'.get_lang('Minutes'));
+    $form->addElement('html', '</div>');
+ //   $form->addElement('html', '</div>');
+ //   $form->addElement('html', '</div>');
+
+    $form->addElement('text', 'enabletimercontroltotalminutes', get_lang('Minutes'), array('style' => 'width : 35px', 'id' => $timer_id));
 
     //-------------------------- START DATE / END DATE FOR DOKEOS 2.0 ---------------------------------//
     $form->addElement('datepicker', 'start_time', get_lang('ExeStartTime'), array('form_name' => 'exercise_admin'.$this->scenario));
@@ -1157,17 +1114,14 @@ if (!class_exists('Exercise')):
     $random[] = FormValidator :: createElement('select', 'randomQuestions', null, $option);
     $random[] = FormValidator :: createElement('static', 'help', 'help');//, '<span>' . get_lang('RandomQuestionsHelp') . '</span>'
     $form->addGroup($random, null, get_lang('RandomQuestions'), '<br />');
-    $attempt_option = range(0, 10);
-    $attempt_option[0] = get_lang('Infinite');
-    $form->addElement('select', 'exerciseAttempts', get_lang('ExerciseAttempts'), $attempt_option);
+
     //------------------------- FEEDBACK CONFIGURATION FOR DOKEOS 2.0 ---------------------------------//
     // feedback type
     $radios_feedback = array();
-	$radios_feedback[] = FormValidator :: createElement('static', '', null, get_lang('FeedbackType'));
     $radios_feedback[] = FormValidator :: createElement('radio', 'exerciseFeedbackType', null, get_lang('ExerciseAtTheEndOfTheTest'), '0');
     $radios_feedback[] = FormValidator :: createElement('radio', 'exerciseFeedbackType', null, get_lang('NoFeedback'), '2');
     $radios_feedback[] = FormValidator :: createElement('radio', 'exerciseFeedbackType', null, get_lang('DirectFeedback'), '3');
-    $form->addGroup($radios_feedback, null, '');	
+    $form->addGroup($radios_feedback, null, get_lang('FeedbackType'));
 
     $feedback_option[0] = get_lang('ExerciseAtTheEndOfTheTest');
     $feedback_option[2] = get_lang('NoFeedback');
@@ -1179,10 +1133,9 @@ if (!class_exists('Exercise')):
      //	$form -> addElement('select', 'exerciseFeedbackType',get_lang('FeedbackType'),$feedback_option,'onchange="javascript:feedbackselection()"');
      // test type
      $radios = array();
-	 $radios[] = FormValidator :: createElement('static', '', null, get_lang('QuestionsPerPage'));
      $radios[] = FormValidator :: createElement('radio', 'exerciseType', null, get_lang('QuestionsPerPageOne'), '2');
      $radios[] = FormValidator :: createElement('radio', 'exerciseType', null, get_lang('QuestionsPerPageAll'), '1');
-     $form->addGroup($radios, null, '');
+     $form->addGroup($radios, null, get_lang('QuestionsPerPage'));
     } else {
      // if is Directfeedback but has not questions we can allow to modify the question type
      if ($this->selectNbrQuestions() == 0) {
@@ -1200,13 +1153,12 @@ if (!class_exists('Exercise')):
     }
     //------------------------- SHOW RESULT OPTION FOR DOKEOS 2.0 -------------------------//
     $radios_results_disabled = array();
-	$radios_results_disabled[] = FormValidator :: createElement('static', '', null, get_lang('ShowResultsToStudents'));
     $radios_results_disabled[] = FormValidator :: createElement('radio', 'results_disabled', null, get_lang('Yes'), '0');
     $radios_results_disabled[] = FormValidator :: createElement('radio', 'results_disabled', null, get_lang('No'), '1');
-    $form->addGroup($radios_results_disabled, null, '');
+    $form->addGroup($radios_results_disabled, null, get_lang('ShowResultsToStudents'));
    }
    //------------------------- FORM TITLE FOR DOKEOS 2.0 ---------------------------------//
-    $form->addElement('text', 'exerciseTitle', get_lang('ExerciseName'), 'class="focus";size="50"');	
+    $form->addElement('text', 'exerciseTitle', get_lang('ExerciseName'), 'class="focus";style="width:300px;"');	
 	
 	if(api_get_setting('show_quizcategory') == 'true')
 	{
@@ -1216,10 +1168,9 @@ if (!class_exists('Exercise')):
 		$quiz_category = array();
 		$quizcat = 'Select';
 		$quizcat_id = '0';
-		$quiz_level = array('Select','Prerequistie','Beginner','Intermediate','Advanced');		
-		$numberofquestion = array('Select','1','2','3','4','5','6','7','8','9','10');
-		$quizlevel = "Select,Prerequistie,Beginner,Intermediate,Advanced";
-		$quizlevel_id = "0,1,2,3,4";
+		$quiz_level = array('Select','Beginner','Intermediate','Expert');
+		$numberofquestion = array('1','2','3','4','5','6','7','8','9','10');
+		$quizlevel = "Select,Beginner,Intermediate,Expert";
 		$query = "SELECT * FROM $TBL_QUIZ_CATEGORY ORDER BY display_order";
 		$result = api_sql_query($query, __FILE__, __LINE__);
 		$quiz_category[] = "Select";
@@ -1231,65 +1182,80 @@ if (!class_exists('Exercise')):
 		
 		if(isset($_GET['exerciseId']))
 		{
-			$form->addElement('html', '<br/><br/><br/><div class="quiz_content_actions" style="width:60%;float:left;"><div class="quiz_header" align="left">'.get_lang('QuestionCategories').'</div><br/><table align="left" width="100%" border="0"><tr><td align="right"><img src="../img/add_22.png" id="addButton_'.$this->scenario.'">&nbsp;&nbsp;<img src="../img/wrong.png" id="removeButton_'.$this->scenario.'"></td></tr></table>');
-
-			$query = "SELECT * FROM $TBL_QUIZ_TYPE WHERE exercice_id = ".$_GET['exerciseId']." AND scenario_type = ".$this->scenario;
+			$query = "SELECT * FROM $TBL_QUIZ_TYPE WHERE exercice_id = ".$_GET['exerciseId'];
 			$result = api_sql_query($query, __FILE__, __LINE__);
 			$count_rows = Database::num_rows($result);	
 			if($count_rows == 0)
 			{
 				$count_rows = 1;
-				$form->addElement('html', '<table width="100%" border="0"><tr><td width="45%">'.get_lang('Category').'</td><td width="25%">'.get_lang('Level').'</td><td width="30%">'.get_lang('Numberofquestion').'</td></tr><tr><td colspan="3"><div id="TextBoxesGroup_'.$this->scenario.'"><div id="TextBoxDiv1_'.$this->scenario.'">');		
-				$form->addElement('html','</div></div></td></tr></table>');		
-				$form->addElement('hidden','quizcategory_'.$this->scenario.'',$quizcat);
-				$form->addElement('hidden','quizcategory_id_'.$this->scenario.'',$quizcat_id);
-				$form->addElement('hidden','quiz_level_'.$this->scenario.'',$quizlevel);
-				$form->addElement('hidden','quiz_level_id_'.$this->scenario.'',$quizlevel_id);
-				$form->addElement('hidden','counter_'.$this->scenario.'',$count_rows);
+				$form->addElement('html', '<table width="100%"><tr><td><div id="TextBoxesGroup"><div id="TextBoxDiv1">');
+				$form->addElement('html','<table width="100%" cellspacing="2"><tr><td width="30%">');
+				$form->addElement('select', 'quizcategory_1', get_lang('Category'),$quiz_category);	
+				$form->addElement('html','</td><td width="25%">');
+				$form->addElement('select', 'quizlevel_1', get_lang('Level'),$quiz_level);	
+				$form->addElement('html','</td><td width="30%">');
+				$form->addElement('select', 'numberofquestion_1', get_lang('Numberofquestion'), $numberofquestion);	
+				$form->addElement('html','</td>');
+				$form->addElement('html','</td><td width="15%" style="vertical-align:bottom;"><img src="../img/add_22.png" id="addButton">&nbsp;&nbsp;<img src="../img/wrong.png" id="removeButton"></td></tr></table></div></div>');
+				$form->addElement('html','</td></tr></table>');		
+				$form->addElement('hidden','quizcategory',$quizcat);
+				$form->addElement('hidden','quizcategory_id',$quizcat_id);
+				$form->addElement('hidden','quiz_level',$quizlevel);
+				$form->addElement('hidden','counter',$count_rows);
 			}
 			else
 			{
 				$i = 1;
-				$form->addElement('html', '<table width="100%"><tr><td><div id="TextBoxesGroup_'.$this->scenario.'">');
+				$form->addElement('html', '<table width="100%"><tr><td><div id="TextBoxesGroup">');
 				while($row = Database::fetch_array($result))
 				{
-					$db_quizlevel = $row['quiz_level'];				
+					$db_quizlevel = $row['quiz_level'];
+					if($db_quizlevel == "Beginner")
+					{
+						$db_quizlevel = 1;
+					}
+					elseif($db_quizlevel == "Intermediate")
+					{
+						$db_quizlevel = 2;
+					}
+					elseif($db_quizlevel == "Expert")
+					{
+						$db_quizlevel = 3;
+					}
 				
-				$form->addElement('html','<div id="TextBoxDiv'.$i."_".$this->scenario.'"><table width="100%"><tr><td width="45%">');
+				$form->addElement('html','<div id="TextBoxDiv'.$i.'"><table width="100%" cellspacing="2"><tr><td width="30%">');
 				if($i == 1)
 				{
-				$form->addElement('select', 'quizcategory_'.$i.'_'.$this->scenario, get_lang('Category'),$quiz_category);
+				$form->addElement('select', 'quizcategory_'.$i, get_lang('Category'),$quiz_category);
 				$form->addElement('html','</td><td width="25%">');
-				$form->addElement('select', 'quizlevel_'.$i.'_'.$this->scenario, get_lang('Level'),$quiz_level);	
-				$form->addElement('html','</td><td width="30%" align="right">');
-				$form->addElement('select', 'numberofquestion_'.$i.'_'.$this->scenario, get_lang('Numberofquestion'), $numberofquestion);		
+				$form->addElement('select', 'quizlevel_'.$i, get_lang('Level'),$quiz_level);	
+				$form->addElement('html','</td><td width="30%">');
+				$form->addElement('select', 'numberofquestion_'.$i, get_lang('Numberofquestion'), $numberofquestion);		
 				$form->addElement('html','</td>');
-				$form->addElement('html','</tr></table>');			
+				$form->addElement('html','<td width="15%" style="vertical-align:bottom;"><img src="../img/add_22.png" id="addButton">&nbsp;&nbsp;<img src="../img/wrong.png" id="removeButton"></td></tr></table>');
 				}
 				else
 				{
-				$form->addElement('select', 'quizcategory_'.$i.'_'.$this->scenario, '',$quiz_category);
+				$form->addElement('select', 'quizcategory_'.$i, '',$quiz_category);
 				$form->addElement('html','</td><td width="25%">');
-				$form->addElement('select', 'quizlevel_'.$i.'_'.$this->scenario, '',$quiz_level);	
-				$form->addElement('html','</td><td width="30%" align="right">');
-				$form->addElement('select', 'numberofquestion_'.$i.'_'.$this->scenario, '', $numberofquestion);		
+				$form->addElement('select', 'quizlevel_'.$i, '',$quiz_level);	
+				$form->addElement('html','</td><td width="30%">');
+				$form->addElement('select', 'numberofquestion_'.$i, '', $numberofquestion);		
 				$form->addElement('html','</td>');
 				$form->addElement('html','<td width="15%">&nbsp;</td></tr></table>');
 				}	
-				$form->addElement('hidden','quizcategory_'.$this->scenario.'',$quizcat);
-				$form->addElement('hidden','quizcategory_id_'.$this->scenario.'',$quizcat_id);
-				$form->addElement('hidden','quiz_level_'.$this->scenario.'',$quizlevel);
-				$form->addElement('hidden','quiz_level_id_'.$this->scenario.'',$quizlevel_id);
-				$form->addElement('hidden','counter_'.$this->scenario.'',$count_rows);
-				$defaults['quizcategory_'.$i.'_'.$this->scenario] = $row['category_id'];
-				$defaults['quizlevel_'.$i.'_'.$this->scenario] = $db_quizlevel;
-				$defaults['numberofquestion_'.$i.'_'.$this->scenario] = $row['number_of_question'];
+				$form->addElement('hidden','quizcategory',$quizcat);
+				$form->addElement('hidden','quizcategory_id',$quizcat_id);
+				$form->addElement('hidden','quiz_level',$quizlevel);
+				$form->addElement('hidden','counter',$count_rows);
+				$defaults['quizcategory_'.$i] = $row['category_id'];
+				$defaults['quizlevel_'.$i] = $db_quizlevel;
+				$defaults['numberofquestion_'.$i] = $row['number_of_question'];
 				$i++;
 				}
-				$form->addElement('html','</div></div></td></tr></table></div>');
+				$form->addElement('html','</div></div></td></tr></table>');
 			}
 		}
-		$form->addElement('html','</div>');
 	}
    $form->addElement('html', '<br />');
    //------------------------- BUTTON FOR DOKEOS 2.0 --------------------------------------//
@@ -1405,40 +1371,52 @@ if (!class_exists('Exercise')):
    $TBL_QUIZ_TYPE = Database::get_course_table(TABLE_QUIZ_TYPE);
    if ($form -> getSubmitValue('edit') == 'true') {
 	   $id = Security::remove_XSS($_GET['exerciseId']);
-	   $sql = "DELETE FROM $TBL_QUIZ_TYPE WHERE exercice_id = ".Database::escape_string($id)." AND scenario_type = ".$this->scenario;
-	   api_sql_query($sql, __FILE__, __LINE__);
-
-	   $sql = "UPDATE $TBL_QUIZ_TYPE SET current_active = 0 WHERE exercice_id = ".Database::escape_string($id)." AND scenario_type <> ".$this->scenario;
+	   $sql = "DELETE FROM $TBL_QUIZ_TYPE WHERE exercice_id = ".Database::escape_string($id);
 	   api_sql_query($sql, __FILE__, __LINE__);
    }
-   $counter = $form -> getSubmitValue('counter_'.$this->scenario); 
+   $counter = $form -> getSubmitValue('counter');   
    
    for($i=1;$i<=$counter;$i++)
    {	   
-	   $quiz_level = $form -> getSubmitValue('quizlevel_'.$i.'_'.$this->scenario);
+	   $quiz_level = $form -> getSubmitValue('quizlevel_'.$i);
 		
-	   $sql = "INSERT INTO $TBL_QUIZ_TYPE (exercice_id,category_id,quiz_level,number_of_question,scenario_type,current_active,session_id) VALUES(
-				".Database::escape_string($id).",".Database::escape_string($form -> getSubmitValue('quizcategory_'.$i.'_'.$this->scenario)).",'"
-				.Database::escape_string($quiz_level)."',".Database::escape_string($form -> getSubmitValue('numberofquestion_'.$i.'_'.$this->scenario))
-				.",".$this->scenario.", 1, ".api_get_session_id().")";
+	   if($quiz_level == "1")
+	   {		   
+		   $quiz_level = "Beginner";
+	   }
+	   elseif($quiz_level == "2")
+	   {
+		   $quiz_level = "Intermediate";
+	   }
+	   elseif($quiz_level == "3")
+	   {
+		   $quiz_level = "Expert";
+	   }
+
+	   $sql = "INSERT INTO $TBL_QUIZ_TYPE (exercice_id,category_id,quiz_level,number_of_question,session_id) VALUES(
+				".Database::escape_string($id).",".Database::escape_string($form -> getSubmitValue('quizcategory_'.$i)).",'"
+				.Database::escape_string($quiz_level)."',".Database::escape_string($form -> getSubmitValue('numberofquestion_'.$i))
+				.",".api_get_session_id().")";
 		
 	   api_sql_query($sql, __FILE__, __LINE__);
    }
   }
 
   function search_engine_save() {
-   $search_db_path = api_get_path(SYS_PATH).'searchdb';
-   if (is_writable($search_db_path)) {
+   if ($_POST['index_document'] != 1) {
+    return;
+   }
+
    $course_id = api_get_course_id();
 
    require_once(api_get_path(LIBRARY_PATH) . 'search/DokeosIndexer.class.php');
    require_once(api_get_path(LIBRARY_PATH) . 'search/IndexableChunk.class.php');
    require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
 
-   //$specific_fields = get_specific_field_list();
+   $specific_fields = get_specific_field_list();
    $ic_slide = new IndexableChunk();
 
-   /*$all_specific_terms = '';
+   $all_specific_terms = '';
    foreach ($specific_fields as $specific_field) {
     if (isset($_REQUEST[$specific_field['code']])) {
      $sterms = trim($_REQUEST[$specific_field['code']]);
@@ -1451,7 +1429,7 @@ if (!class_exists('Exercise')):
       }
      }
     }
-   }*/
+   }
 
    // build the chunk to index
    $ic_slide->addValue("title", $this->exercise);
@@ -1464,16 +1442,8 @@ if (!class_exists('Exercise')):
        SE_USER => (int) api_get_user_id(),
    );
    $ic_slide->xapian_data = serialize($xapian_data);
-   $exercise_description = !empty($this->description) ? $this->description : $this->exercise;
-
-   if (isset($_POST['search_terms'])) {
-    $add_extra_terms = Security::remove_XSS($_POST['search_terms']).' ';
-    }
-
-    $file_content = $add_extra_terms.$exercise_description;
-    $ic_slide->addValue("content", $file_content);
-
-   //$ic_slide->addValue("content", $exercise_description);
+   $exercise_description = $all_specific_terms . ' ' . $this->description;
+   $ic_slide->addValue("content", $exercise_description);
 
    $di = new DokeosIndexer();
    isset($_POST['language']) ? $lang = Database::escape_string($_POST['language']) : $lang = 'english';
@@ -1490,15 +1460,11 @@ if (!class_exists('Exercise')):
     $sql = sprintf($sql, $tbl_se_ref, $course_id, TOOL_QUIZ, $this->id, $did);
     api_sql_query($sql, __FILE__, __LINE__);
    }
-   } else {
-       return false;
-   }
   }
 
   function search_engine_edit() {
-   // update search enchine and its values table if enabled + check if database has write permissions
-    $search_db_path = api_get_path(SYS_PATH).'searchdb';
-   if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian') && is_writable($search_db_path)) {
+   // update search enchine and its values table if enabled
+   if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian')) {
     $course_id = api_get_course_id();
 
     // actually, it consists on delete terms from db, insert new ones, create a new search engine document, and remove the old one
@@ -1514,10 +1480,10 @@ if (!class_exists('Exercise')):
      require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
 
      $se_ref = Database::fetch_array($res);
-     //$specific_fields = get_specific_field_list();
+     $specific_fields = get_specific_field_list();
      $ic_slide = new IndexableChunk();
 
-     /*$all_specific_terms = '';
+     $all_specific_terms = '';
      foreach ($specific_fields as $specific_field) {
       delete_all_specific_field_value($course_id, $specific_field['id'], TOOL_QUIZ, $this->id);
       if (isset($_REQUEST[$specific_field['code']])) {
@@ -1529,7 +1495,7 @@ if (!class_exists('Exercise')):
         add_specific_field_value($specific_field['id'], $course_id, TOOL_QUIZ, $this->id, $sterm);
        }
       }
-     }*/
+     }
 
      // build the chunk to index
      $ic_slide->addValue("title", $this->exercise);
@@ -1542,17 +1508,8 @@ if (!class_exists('Exercise')):
          SE_USER => (int) api_get_user_id(),
      );
      $ic_slide->xapian_data = serialize($xapian_data);
-     $exercise_description = !empty($this->description) ? $this->description : $this->exercise;
-
-     if (isset($_POST['search_terms'])) {
-       $add_extra_terms = Security::remove_XSS($_POST['search_terms']).' ';
-     }
-
-     $file_content = $add_extra_terms.$exercise_description;
-     $ic_slide->addValue("content", $file_content);
-
-
-     //$ic_slide->addValue("content", $exercise_description);
+     $exercise_description = $all_specific_terms . ' ' . $this->description;
+     $ic_slide->addValue("content", $exercise_description);
 
      $di = new DokeosIndexer();
      isset($_POST['language']) ? $lang = Database::escape_string($_POST['language']) : $lang = 'english';
@@ -1567,17 +1524,13 @@ if (!class_exists('Exercise')):
       $sql = 'DELETE FROM %s WHERE course_code=\'%s\' AND tool_id=\'%s\' AND ref_id_high_level=\'%s\'';
       $sql = sprintf($sql, $tbl_se_ref, $course_id, TOOL_QUIZ, $this->id);
       api_sql_query($sql, __FILE__, __LINE__);
-      
+      //var_dump($sql);
       $sql = 'INSERT INTO %s (id, course_code, tool_id, ref_id_high_level, search_did)
                         VALUES (NULL , \'%s\', \'%s\', %s, %s)';
       $sql = sprintf($sql, $tbl_se_ref, $course_id, TOOL_QUIZ, $this->id, $did);
       api_sql_query($sql, __FILE__, __LINE__);
      }
     }
-   } else {
-       if (!is_writable($search_db_path)) {
-           return false;
-       }
    }
   }
 
@@ -1661,7 +1614,7 @@ if (!class_exists('Exercise')):
     $tbl_quiz_scenario = Database::get_course_table(TABLE_QUIZ_SCENARIO);
     $session_id = api_get_session_id();
     // there are 2 types of scenarios
-/*  $scenario_types = array(1, 2);
+    $scenario_types = array(1, 2);
     foreach ($scenario_types as $scenario) {
     $rs = Database::query("INSERT INTO $tbl_quiz_scenario (exercice_id, scenario_type,
     title, description, sound, type, random, active, results_disabled,
@@ -1672,16 +1625,7 @@ if (!class_exists('Exercise')):
     '".$quiz_data->results_disabled."','".$quiz_data->attempts."','".$quiz_data->start_time."',
     '".$quiz_data->end_time."','".$quiz_data->feedback."','".$quiz_data->expired_time."',
     '".$session_id."')", __FILE__, __LINE__);
-    }*/
-	$rs = Database::query("INSERT INTO $tbl_quiz_scenario (exercice_id, scenario_type,
-    title, description, sound, type, random, active, results_disabled,
-    max_attempt, start_time, end_time, feedback_type,
-    expired_time, session_id) VALUES('".$quiz_data->quiz_id."','1',
-    '".$quiz_data->title."','".$quiz_data->description."','".$quiz_data->sound."',
-    '".$quiz_data->type."','".$quiz_data->random."','".$quiz_data->active."',
-    '".$quiz_data->results_disabled."','".$quiz_data->attempts."','".$quiz_data->start_time."',
-    '".$quiz_data->end_time."','".$quiz_data->feedback."','".$quiz_data->expired_time."',
-    '".$session_id."')", __FILE__, __LINE__);
+    }
     if ($rs !== FALSE) {
       return true;
     } else {

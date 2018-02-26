@@ -168,7 +168,7 @@ function build_edit_icons_cat($cat, $selectcat) {
 	if ($show_message===false) {
 		$visibility_icon= ($cat->is_visible() == 0) ? 'invisible' : 'visible';
 		$visibility_command= ($cat->is_visible() == 0) ? 'set_visible' : 'set_invisible';
-		$modify_icons= '<a href="gradebook_edit_cat.php?editcat=' . $cat->get_id() . '&amp;cidReq='.$cat->get_course_code().'">'.Display::return_icon('pixel.gif',get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit','alt'=>'','align'=>'middle','hspace'=>'20')).'</a>';
+		$modify_icons= '<a href="gradebook_edit_cat.php?editcat=' . $cat->get_id() . '&amp;cidReq='.$cat->get_course_code().'"><img src="../img/navigation/edit.png" border="0" title="' . get_lang('Edit') . '" alt="" align="middle" hspace="20" /></a>';
 	//	$modify_icons .= '&nbsp;<a href="' . api_get_self() . '?deletecat=' . $cat->get_id() . '&amp;selectcat=' . $selectcat . '&amp;cidReq='.$cat->get_course_code().'" onclick="return confirmation();"><img src="../img/delete.png" border="0" title="' . get_lang('DeleteAll') . '" alt="" /></a>';
 
 		//no move ability for root categories
@@ -192,7 +192,7 @@ function build_delete_icons_cat($cat, $selectcat) {
 
 	$show_message=$cat->show_message_resource_delete($cat->get_course_code());
 	if ($show_message===false) {		
-		$modify_icons = '&nbsp;<a href="' . api_get_self() . '?deletecat=' . $cat->get_id() . '&amp;selectcat=' . $selectcat . '&amp;cidReq='.$cat->get_course_code().'" onclick="return confirmation();">'.Display::return_icon('pixel.gif',get_lang('DeleteAll'),array('class'=>'actionplaceholdericon actiondelete','alt'=>'','align'=>'middle','hspace'=>'20')).' </a>';		
+		$modify_icons = '&nbsp;<a href="' . api_get_self() . '?deletecat=' . $cat->get_id() . '&amp;selectcat=' . $selectcat . '&amp;cidReq='.$cat->get_course_code().'" onclick="return confirmation();"><img src="../img/delete_link.png" border="0" title="' . get_lang('DeleteAll') . '" alt="" align="middle" hspace="20" /></a>';		
 
 		return $modify_icons;
 	}
@@ -214,11 +214,11 @@ function build_edit_icons_eval($eval, $selectcat) {
 		if ($eval->get_type() <> 'presence')
 		{
 			//$modify_icons= '<a href="gradebook_edit_eval.php?editeval=' . $eval->get_id() . '&amp;cidReq='.$eval->get_course_code().'">'.Display::return_icon('edit.png', get_lang('Modify')).'</a>';
-			$modify_icons= '<a href="gradebook_edit_eval.php?editeval=' . $eval->get_id() . ' &amp;cidReq='.$eval->get_course_code().'">'.Display::return_icon('pixel.gif',get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit','alt'=>'','align'=>'middle','hspace'=>'15')).'</a>';
+			$modify_icons= '<a href="gradebook_edit_eval.php?editeval=' . $eval->get_id() . ' &amp;cidReq='.$eval->get_course_code().'"><img src="../img/navigation/edit.png" border="0" title="' . get_lang('Edit') . '" alt="" align="middle" hspace="15" /></a>';
 		}
 		else 
 		{
-			$modify_icons= '<a href="gradebook_edit_presence.php?editeval=' . $eval->get_id() . '&amp;cidReq='.$eval->get_course_code().'&amp;course='.Security::remove_XSS($_GET['course']).'">'.Display::return_icon('pixel.gif',get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit','alt'=>'','align'=>'middle','hspace'=>'15')).'</a>';
+			$modify_icons= '<a href="gradebook_edit_presence.php?editeval=' . $eval->get_id() . '&amp;cidReq='.$eval->get_course_code().'&amp;course='.Security::remove_XSS($_GET['course']).'"><img src="../img/navigation/edit.png" border="0" title="' . get_lang('Edit') . '" alt="" align="middle" hspace="15" /></a>';
 		}
 		
 		
@@ -247,7 +247,7 @@ function build_delete_icons_eval($eval, $selectcat) {
 	if ($message_eval===false) {		
 		
 		$view = isset($_GET['view'])?'&amp;view='.Security::remove_XSS($_GET['view']):'';		
-		$modify_icons = '&nbsp;<a href="' . api_get_self() . '?deleteeval=' . $eval->get_id() . '&selectcat=' . $selectcat . ' &amp;cidReq='.$eval->get_course_code().$view.'&amp;course='.Security::remove_XSS($_GET['course']).'" onclick="return confirmation();">'.Display::return_icon('pixel.gif',get_lang('Delete'),array('class'=>'actionplaceholdericon actiondelete','alt'=>'','align'=>'middle','hspace'=>'15')).' </a>';
+		$modify_icons = '&nbsp;<a href="' . api_get_self() . '?deleteeval=' . $eval->get_id() . '&selectcat=' . $selectcat . ' &amp;cidReq='.$eval->get_course_code().$view.'&amp;course='.Security::remove_XSS($_GET['course']).'" onclick="return confirmation();"><img src="../img/delete_link.png" border="0" title="' . get_lang('Delete') . '" alt="" align="middle" hspace="15" /></a>';
 		
 		return $modify_icons;
 	}
@@ -266,7 +266,7 @@ function build_edit_icons_link($link, $selectcat) {
 	if ($message_link===false) {
 		$visibility_icon= ($link->is_visible() == 0) ? 'invisible' : 'visible';
 		$visibility_command= ($link->is_visible() == 0) ? 'set_visible' : 'set_invisible';
-		$modify_icons= '<a href="gradebook_edit_link.php?editlink=' . $link->get_id() . ' &amp;cidReq='.$link->get_course_code().'">'.Display::return_icon('pixel.gif',get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit','alt'=>'','align'=>'middle','hspace'=>'15')).'</a>';
+		$modify_icons= '<a href="gradebook_edit_link.php?editlink=' . $link->get_id() . ' &amp;cidReq='.$link->get_course_code().'"><img src="../img/navigation/edit.png" border="0" title="' . get_lang('Edit') . '" alt="" align="middle" hspace="15" /></a>';
 	/*	$modify_icons .= '&nbsp;<a href="' . api_get_self() . '?deletelink=' . $link->get_id() . '&selectcat=' . $selectcat . ' &amp;cidReq='.$link->get_course_code().'" onclick="return confirmation();"><img src="../img/delete.png" border="0" title="' . get_lang('Delete') . '" alt="" /></a>';
 		//$modify_icons .= '&nbsp;<a href="' . api_get_self() . '?movelink=' . $link->get_id() . '&selectcat=' . $selectcat . '"><img src="../img/deplacer_fichier.gif" border="0" title="' . get_lang('Move') . '" alt="" /></a>';
 		$modify_icons .= '&nbsp;<a href="' . api_get_self() . '?visiblelink=' . $link->get_id() . '&amp;' . $visibility_command . '=&amp;selectcat=' . $selectcat . ' "><img src="../img/' . $visibility_icon . '.gif" border="0" title="' . get_lang('Visible') . '" alt="" /></a>';
@@ -289,7 +289,7 @@ function build_delete_icons_link($link, $selectcat) {
 	$cat=new Category();
 	$message_link=$cat->show_message_resource_delete($link->get_course_code());
 	if ($message_link===false) {		
-		$modify_icons = '&nbsp;<a href="' . api_get_self() . '?deletelink=' . $link->get_id() . '&selectcat=' . $selectcat . ' &amp;cidReq='.$link->get_course_code().'" onclick="return confirmation();">'.Display::return_icon('pixel.gif',get_lang('Delete'),array('class'=>'actionplaceholdericon actiondelete','alt'=>'','align'=>'middle','hspace'=>'15')).' </a>';
+		$modify_icons = '&nbsp;<a href="' . api_get_self() . '?deletelink=' . $link->get_id() . '&selectcat=' . $selectcat . ' &amp;cidReq='.$link->get_course_code().'" onclick="return confirmation();"><img src="../img/delete_link.png" border="0" title="' . get_lang('Delete') . '" alt="" align="middle" hspace="15" /></a>';
 		
 		return $modify_icons;
 	}

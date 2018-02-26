@@ -190,8 +190,4 @@ $CertificateMinimunScoreIsRequiredAndMustNotBeMoreThan = "É necessário uma pontu
 $LinkMod = "Salvar";
 $EditLink = "Modificar o link para a atividade online";
 $CategoryDeleted = "A categoria foi excluida";
-$CSVLong = "CSV (valores separados por vírgula)";
-$PDFLong = "PDF (formato de documento portátil)";
-$XMLLong = "XML (Linguagem de marcação extensível)";
-$XLSLong = "XLS (extensão de arquivo do MS Excel)";
 ?>

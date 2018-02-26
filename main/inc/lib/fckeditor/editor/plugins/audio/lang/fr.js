@@ -2,7 +2,7 @@
 // French language file.
 // Please, use UTF-8 encoding.
 
-FCKLang['DlgAudioTitle'] = 'Insérer un fichier audio' ;
-FCKLang['DlgAudioPlayback'] = 'Aperçu' ;
-FCKLang['DlgAudioAutoplay'] = 'Lecture automatique' ;
+FCKLang['DlgAudioTitle'] = 'Insert audio / Audio properties' ;
+FCKLang['DlgAudioPlayback'] = 'Playback' ;
+FCKLang['DlgAudioAutoplay'] = 'Autoplay' ;
 

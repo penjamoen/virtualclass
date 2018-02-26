@@ -10,8 +10,8 @@
 // This is the visible toolbar set when the editor has "normal" size.
 $config['ToolbarSets']['Normal'] = array(
 	array('Save','FitWindow','PasteWord','-','Undo','Redo'),
-	array('Link','Unlink', 'Source'),
-	array('Image','imgmapPopup','MascotManager','MindmapManager','videoPlayer','MP3','OrderedList','Bold','Italic','Underline','JustifyLeft','JustifyCenter','JustifyRight')
+	array('Link','Unlink'),
+	array('Image','imgmapPopup','MascotManager','MindmapManager','flvPlayer','Flash','EmbedMovies','YouTube','MP3','OrderedList','Bold','Italic','Underline','JustifyLeft','JustifyCenter','JustifyRight')
 );
 
 // This is the visible toolbar set when the editor is maximized.

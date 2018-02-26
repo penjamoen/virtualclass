@@ -142,8 +142,10 @@ if($_POST['form_sent']) {
 
 Display::display_header($tool_name);
 
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/access_url_add_sessions_to_url.php">'.Display::return_icon('pixel.gif',get_lang('AddSessionsToURL'), array('class' => 'toolactionplaceholdericon toolactioncreatecourse')).get_lang('AddSessionsToURL').'</a>';
+echo '<div class="actions" style="height:22px;">';
+echo '<div style="float:right;">
+		<a href="'.api_get_path(WEB_CODE_PATH).'admin/access_url_add_sessions_to_url.php">'.Display::return_icon('course_add.gif',get_lang('AddSessionsToURL'),'').get_lang('AddSessionsToURL').'</a>
+	  </div><br />';
 echo '</div>';
 
 api_display_tool_title($tool_name);

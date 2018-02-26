@@ -79,7 +79,7 @@ $SocialAddToFriends = "Add to my contacts";
 $UserNonRegisteredAtTheCourse = "User not registered in this course";
 $ChangeContactGroup = "Change contact group";
 $Friend = "Friend";
-$ViewMySharedProfile = "My Page";
+$ViewMySharedProfile = "Perso page";
 $UserStatistics = "Reporting for this user";
 $EditUser = "Edit this user";
 $ViewUser = "View this user";
@@ -194,5 +194,4 @@ $YouNeedToHaveFriendsInYourSocialNetwork = "You need to have friends in your soc
 $SeeAllMyGroups = "See all my groups";
 $EditGroup = "Edit group";
 $YouAlreadyInviteAllYourContacts = "You already invite all your contacts";
-$Contact = "Contact";
 ?>

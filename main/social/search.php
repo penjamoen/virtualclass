@@ -35,43 +35,20 @@ function hide_icon_edit(element_html)  {
 	ident="#edit_image";
 	$(ident).hide();
 }		
-
-function action_database_panel (option_id, myuser_id) {
-
-if (option_id==5) {
-	my_txt_subject=$("#txt_subject_id").val();
-} else {
-	my_txt_subject="clear";
-}
-my_txt_content=$("#txt_area_invite").val();
-
-$.ajax({
-	contentType: "application/x-www-form-urlencoded",
-	beforeSend: function(objeto) {
-	$("#display_response_id").html("<img src=\'../inc/lib/javascript/indicator.gif\' />"); },
-	type: "POST",
-	url: "../messages/send_message.php",
-	data: "panel_id="+option_id+"&user_id="+myuser_id+"&txt_subject="+my_txt_subject+"&txt_content="+my_txt_content,
-	success: function(datos) {
-         alert(datos);
-	 $("#display_response_id").html(datos);
-	 self.parent.tb_remove();
-	}
-});	
-}	
+		
 </script>';
 
 Display :: display_header($tool_name);
 
 // Display actions
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('pixel.gif',get_lang('Home'),array('class' => 'toolactionplaceholdericon toolactionshome')).get_lang('Home').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('pixel.gif', get_lang('Messages'), array('class' => 'toolactionplaceholdericon toolactionsmessage')).get_lang('Messages').$count_unread_message.'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.Display::return_icon('pixel.gif',get_lang('Invitations'), array('class' => 'toolactionplaceholdericon toolactionsinvite')).get_lang('Invitations').$total_invitations.'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.Display::return_icon('pixel.gif',get_lang('ViewMySharedProfile'), array('class' => 'toolactionplaceholdericon toolactionsprofile')).get_lang('ViewMySharedProfile').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.Display::return_icon('pixel.gif',get_lang('Friends'), array('class' => 'toolactionplaceholdericon toolactionsfriend')).get_lang('Friends').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('pixel.gif',get_lang('MyGroups'), array('class' => 'toolactionplaceholdericon toolactionsgroup')).get_lang('Groups').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('pixel.gif',get_lang('Search'), array('class' => 'toolactionplaceholdericon toolactionsearch')).get_lang('Search').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('atom.png',get_lang('Home')).get_lang('Home').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('instant_message.png',get_lang('Messages')).get_lang('Messages').$count_unread_message.'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.Display::return_icon('invitation.png',get_lang('Invitations')).get_lang('Invitations').$total_invitations.'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.Display::return_icon('my_shared_profile.png',get_lang('ViewMySharedProfile')).get_lang('ViewMySharedProfile').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.Display::return_icon('friend.png',get_lang('Friends')).get_lang('Friends').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('group.png',get_lang('Groups')).get_lang('Groups').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('zoom.png',get_lang('Search')).get_lang('Search').'</a>';
 echo '</div>';
 // Start content
 echo '<div id="content">';
@@ -84,8 +61,7 @@ echo '<div id="social-content">';
 	echo '<div id="social-content-right">';
 		
 		$query = $_GET['q'];
-        echo '<div>';
-        api_display_tool_title(get_lang('Search'));
+        echo '<div style="float:right;">';
 		echo UserManager::get_search_form($query);
 		echo '</div>';
 
@@ -93,26 +69,26 @@ echo '<div id="social-content">';
 		if ($query != '') {
 			if (isset($query) && $query!='') {		
 				//get users from tags
-				$users = UserManager::get_all_user_tags($query);	
+				$users = UserManager::get_all_user_tags($query, 0, 0, 5);	
 				$groups = GroupPortalManager::get_all_group_tags($query);
-
+				
 				if (empty($users) && empty($groups)) {
                     echo '<br/><br/><br/><br/>';
 					echo get_lang('SorryNoResults');	
 				}
 						
 				$results = array();
-				if (is_array($users) && count($users)> 0) {		
+				if (is_array($users) && count($users)> 0) {
+					
+					echo '<h2>'.get_lang('Users').'</h2>';			
 					foreach($users as $user) {
 						$picture = UserManager::get_picture_user($user['user_id'], $user['picture_uri'],80);
 						$url_open = '<a href="'.api_get_path(WEB_PATH).'main/social/profile.php?u='.$user['user_id'].'">';
 						$url_close ='</a>';
 						$img = $url_open.'<img src="'.$picture['file'].'" />'.$url_close;
 						$user['firstname'] = $url_open.$user['firstname'].$url_close;
-						$user['lastname'] = $url_open.$user['lastname'].$url_close;	
-                        // Link should be removed
-						$link = '<a href="'.api_get_path(WEB_PATH).'main/messages/send_message_to_userfriend.inc.php?view_panel=2&height=260&width=610&user_friend='.$user['user_id'].'" class="thickbox" title="'.get_lang('SendInvitation').'">'.Display :: return_icon('invitation_22.png', get_lang('SocialInvitationToFriends')).'&nbsp;'.get_lang('SendInvitation').'</a>';
-						$results[] = array($img, $user['firstname'],$user['lastname'], $user['tag'], $link);
+						$user['lastname'] = $url_open.$user['lastname'].$url_close;						
+						$results[] = array($img, $user['firstname'],$user['lastname'], $user['tag']);			
 					}					
 					echo '<div class="social-box-container2 quiz_content_actions">';
 					echo '<div id="div_content_table" class="social-box-content2">';					

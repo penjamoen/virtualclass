@@ -138,8 +138,8 @@ $lp_title = Database::result($rs, 0, 0);
 
 echo '<div class ="actions"><div align="left" style="float:left;margin-top:2px;" ><strong>'.$_course['title'].' - '.$lp_title.' - '.$name.'</strong></div>
 	  <div  align="right">
-        <a href="javascript: void(0);" onclick="javascript: window.print();">'.Display::return_icon('pixel.gif',get_lang('Print'),array('class'=>'toolactionplaceholdericon toolactionprint32')).''.get_lang('Print').'</a>
-    		<a href="'.api_get_self().'?export=csv&'.Security::remove_XSS($_SERVER['QUERY_STRING']).'">'.Display::return_icon('pixel.gif',get_lang('ExportAsCSV'),array('class'=>'toolactionplaceholdericon toolactionexportcourse')).''.get_lang('ExportAsCSV').'</a>
+			<a href="javascript: void(0);" onclick="javascript: window.print();"><img align="absbottom" src="../img/printmgr.gif">&nbsp;'.get_lang('Print').'</a>
+			<a href="'.api_get_self().'?export=csv&'.Security::remove_XSS($_SERVER['QUERY_STRING']).'"><img align="absbottom" src="../img/excel.gif">&nbsp;'.get_lang('ExportAsCSV').'</a>
 		 </div></div>
 	<div class="clear"></div>';
 	

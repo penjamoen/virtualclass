@@ -109,9 +109,7 @@ function handle_forum_and_forumcategories() {
 	if ((($action_forum_cat=='add' || $action_forum_cat=='edit') && $_GET['content']=='forum') || $post_submit_forum ) {
 		if ($action_forum_cat=='edit' && $get_id || $post_submit_forum ) {
 			$inputvalues=get_forums(strval(intval($get_id))); // note: this has to be cleaned first
-                        
-                        
-                } else {
+		} else {
 			$inputvalues='';
 		}
 		show_add_forum_form($inputvalues);
@@ -124,10 +122,10 @@ function handle_forum_and_forumcategories() {
 		close_page();
 	}
 	// Delete a forum category
-        if (( isset($_GET['action']) && $_GET['action']=='delete') && isset($_GET['content']) && $get_id) {
-                $id_forum=Security::remove_XSS($get_id);
+	if (( isset($_GET['action']) && $_GET['action']=='delete') && isset($_GET['content']) && $get_id) {
+		$id_forum=Security::remove_XSS($get_id);
 		$list_threads=get_threads($id_forum);
-                
+
 		for ( $i=0; $i < count($list_threads); $i++ ) {
 			$messaje=delete_forum_forumcategory_thread('thread',$list_threads[$i]['thread_id']);
 			$table_link = Database :: get_main_table(TABLE_MAIN_GRADEBOOK_LINK);
@@ -135,18 +133,7 @@ function handle_forum_and_forumcategories() {
 			Database::query($sql_link,__FILE__,__LINE__);
 		}
 		$return_message=delete_forum_forumcategory_thread($_GET['content'],$_GET['id']);
-                if(api_get_setting('search_enabled') == 'true'){
-                    //delete from keyword
-                    $searchkey = new SearchEngineManager();
-                    $searchkey->idobj = $id_forum;
-                    $searchkey->course_code = api_get_course_id();
-                    $searchkey->tool_id = TOOL_FORUM;
-                    $searchkey->deleteKeyWord();
-                    
-                    $forum = new ForumManager($id_forum);
-                    $forum->search_engine_delete();
-                }
-                Display :: display_confirmation_message($return_message,false);
+		Display :: display_confirmation_message($return_message,false);
 	}
 	// Change visibility of a forum or a forum category
 	if (($action_forum_cat=='invisible' || $action_forum_cat=='visible') && isset($_GET['content']) && isset($_GET['id'])) {
@@ -160,7 +147,7 @@ function handle_forum_and_forumcategories() {
 	}
 	// Move a forum or a forum category
 	if ($action_forum_cat=='move' && isset($_GET['content']) && isset($_GET['id']) && isset($_GET['direction'])) {
-		$return_messagshow_add_forum_forme=move_up_down($_GET['content'], $_GET['direction'], $_GET['id']);// note: this has to be cleaned first
+		$return_message=move_up_down($_GET['content'], $_GET['direction'], $_GET['id']);// note: this has to be cleaned first
 		Display :: display_confirmation_message($return_message,false);
 	}
 }
@@ -218,12 +205,9 @@ function show_add_forumcategory_form($inputvalues=array()) {
 function show_add_forum_form($inputvalues=array()) {
 	global $_course;
 	$gradebook=Security::remove_XSS($_GET['gradebook']);
-	$add_params_for_lp = '';
-	if (isset($_GET['lp_id'])) {
-	$add_params_for_lp = "&lp_id=".$_GET['lp_id'];
-	}
 	// initiate the object
-	$form = new FormValidator('forumcategory', 'post', 'index.php?gradebook='.$add_params_for_lp.'');
+	$form = new FormValidator('forumcategory', 'post', 'index.php?gradebook='.$gradebook.'');
+
 	// the header for the form
 	if (!empty($inputvalues)) {
 		$form_title = get_lang('EditForum');
@@ -252,12 +236,7 @@ function show_add_forum_form($inputvalues=array()) {
 	}
 	$form->addElement('select', 'forum_category', get_lang('InForumCategory'), $forum_categories_titles);
 	$form->applyFilter('forum_category', 'html_filter');
-        if(api_get_setting('search_enabled')=='true'){
-            //TODO: include language file
-            $form->addElement('hidden','index_document',1);
-            $form->addElement('hidden','language',api_get_setting('platformLanguage'));
-            $form->addElement('textarea','search_terms',get_lang('SearchKeywords'),array ('cols'=>'40','rows' => '2'));
-        }
+
 	if ($_course['visibility']==COURSE_VISIBILITY_OPEN_WORLD) {
 		// This is for vertical
 		//$form->addElement('radio', 'allow_anonymous', get_lang('AllowAnonymousPosts'), get_lang('Yes'), 1);
@@ -399,7 +378,6 @@ function show_add_forum_form($inputvalues=array()) {
 		$defaults['allow_new_threads_group']['allow_new_threads']=0;
 		$defaults['default_view_type_group']['default_view_type']=api_get_setting('default_forum_view');
 		$defaults['public_private_group_forum_group']['public_private_group_forum']='public';
-                $defaults['search_terms'] = '';
 		if (isset($_GET['forumcategory'])) {
 			$defaults['forum_category']=Security::remove_XSS($_GET['forumcategory']);
 		}
@@ -416,12 +394,6 @@ function show_add_forum_form($inputvalues=array()) {
 		$defaults['default_view_type_group']['default_view_type']=isset($inputvalues['default_view'])?$inputvalues['default_view']:null;
 		$defaults['public_private_group_forum_group']['public_private_group_forum']=isset($inputvalues['forum_group_public_private'])?$inputvalues['forum_group_public_private']:null;
 		$defaults['group_forum']=isset($inputvalues['forum_of_group'])?$inputvalues['forum_of_group']:null;
-                require_once api_get_path(LIBRARY_PATH).'searchengine.lib.php';
-                //get the keyword
-                $searchkey = new SearchEngineManager();
-                $keyword = $searchkey->getKeyWord(TOOL_FORUM, $inputvalues['forum_id']);
-                $defaults['search_terms']=$keyword;
-                
 	}
 	$form->setDefaults($defaults);
 	// The validation or display
@@ -578,7 +550,7 @@ function store_forumcategory($values) {
 function store_forum($values) {
 	global $_course;
 	global $_user;
-        
+
 	$table_forums = Database::get_course_table(TABLE_FORUM);
 
 	// find the max forum_order for the given category. The new forum is added at the end => max cat_order + &
@@ -649,7 +621,7 @@ function store_forum($values) {
 	  			delete_forum_image($values['forum_id']);
 	  		}
 		}
-                
+
 		// storing an edit
 		$sql="UPDATE ".$table_forums." SET
 				forum_title='".$clean_title."',
@@ -667,20 +639,7 @@ function store_forum($values) {
 			WHERE forum_id='".Database::escape_string($values['forum_id'])."'";
 			Database::query($sql,__FILE__,__LINE__);
 			api_item_property_update($_course, TOOL_FORUM, Database::escape_string($values['forum_id']), 'ForumUpdated', api_get_user_id());
-			
-                if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian')) {
-                       //update search engine keyword
-                        $searchkey = new SearchEngineManager();
-                        $searchkey->idobj = (int)$values['forum_id'];
-                        $searchkey->course_code = api_get_course_id();
-                        $searchkey->tool_id = TOOL_FORUM;
-                        $searchkey->value = Security::remove_XSS($_POST['search_terms']);
-                        $searchkey->updateKeyWord();
-                    
-                        $forum = new ForumManager((int)($values['forum_id']));
-                        $forum->search_engine_edit();
-                } 
-                $return_message=get_lang('ForumEdited');
+			$return_message=get_lang('ForumEdited');
 	} else {
 		$sql_image='';
 		if ($image_moved) {
@@ -688,7 +647,7 @@ function store_forum($values) {
 			$sql_image="'".$new_file_name."', ";
 		}
 		$b=$values['forum_comment'];
-                
+
 		$sql="INSERT INTO ".$table_forums."
 			(forum_title, forum_image, forum_comment, forum_category, allow_anonymous, allow_edit, approval_direct_post, allow_attachments, allow_new_threads, default_view, forum_of_group, forum_group_public_private, forum_order, session_id)
 			VALUES ('".Security::remove_XSS($clean_title)."',
@@ -708,27 +667,8 @@ function store_forum($values) {
 		Database::query($sql,__FILE__,__LINE__);
 		$last_id = Database::insert_id();
 		if ($last_id > 0) {
-                      api_item_property_update($_course, TOOL_FORUM, $last_id, 'ForumAdded', api_get_user_id());
+			api_item_property_update($_course, TOOL_FORUM, $last_id, 'ForumAdded', api_get_user_id());
 		}
-		if (isset($_SESSION['oLP']->lp_id) && $last_id > 0) {			
-                      // Get the previous item ID
-                      $parent = 0;
-                      $previous = $_SESSION['oLP']->select_previous_item_id();
-                      // Add quiz as Lp Item
-                      $_SESSION['oLP']->add_item($parent, $previous, TOOL_FORUM, $last_id, $clean_title, '');
-		}
-                if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian')) {
-                      //save search engine keyword
-                      $searchkey = new SearchEngineManager();
-                      $searchkey->idobj = $last_id;
-                      $searchkey->course_code = api_get_course_id();
-                      $searchkey->tool_id = TOOL_FORUM;
-                      $searchkey->value = $_POST['search_terms'];
-                      $searchkey->save();
-
-                      $forum = new ForumManager($last_id);
-                      $forum->search_engine_save();
-                }
 		$return_message = get_lang('ForumAdded');
 	}
 	return $return_message;
@@ -871,43 +811,33 @@ function check_if_last_post_of_thread($thread_id) {
 * @param $content what is it that we want to make (in)visible: forum category, forum, thread, post
 * @param $id the id of the content we want to make invisible
 * @param $current_visibility_status what is the current status of the visibility (0 = invisible, 1 = visible)
-* @param array  additional attributes for the link
-* @param bool   optional, if the function return or display a content html
-* @return void|string
+* @return
 *
 * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University
 * @version february 2006, dokeos 1.8
 */
-function display_visible_invisible_icon($content, $id, $current_visibility_status, $additional_url_parameters='', $return = false) {
+function display_visible_invisible_icon($content, $id, $current_visibility_status, $additional_url_parameters='') {
 	global $origin;
 	$gradebook=Security::remove_XSS($_GET['gradebook']);
 	$id = Security::remove_XSS($id);
-        $output = '';
 	if ($current_visibility_status=='1') {
-		$link  = '<a class="action" href="'.api_get_self().'?'.api_get_cidreq().'&';
+		echo '<a class="action" href="'.api_get_self().'?'.api_get_cidreq().'&';
 		if (is_array($additional_url_parameters)) {
 			foreach ($additional_url_parameters as $key=>$value) {
-				$link .= $key.'='.$value.'&amp;';
+				echo $key.'='.$value.'&amp;';
 			}
 		}
-		$link .= 'action=invisible&amp;content='.$content.'&amp;id='.$id.'&gradebook='.$gradebook.'&amp;origin='.$origin.'">'.Display::return_icon('pixel.gif',get_lang('MakeInvisible'), array('class' => 'actionplaceholdericon actionvisible')).'</a>';
-                $output = $link;
+		echo 'action=invisible&amp;content='.$content.'&amp;id='.$id.'&gradebook='.$gradebook.'&amp;origin='.$origin.'">'.icon('../img/visible_22.png',get_lang('MakeInvisible')).'</a>';
 	}
 	if ($current_visibility_status=='0') {
-		$link = '<a class="action" href="'.api_get_self().'?'.api_get_cidreq().'&';
+		echo '<a class="action" href="'.api_get_self().'?'.api_get_cidreq().'&';
 		if (is_array($additional_url_parameters)) {
 			foreach ($additional_url_parameters as $key=>$value) {
-				$link .= $key.'='.$value.'&amp;';
+				echo $key.'='.$value.'&amp;';
 			}
 		}
-		$link .= 'action=visible&amp;content='.$content.'&amp;id='.$id.'&gradebook='.$gradebook.'&amp;origin='.$origin.'">'.Display::return_icon('pixel.gif',get_lang('MakeVisible'), array('class' => 'actionplaceholdericon actionvisible invisible')).'</a>';
-                $output = $link;
+		echo 'action=visible&amp;content='.$content.'&amp;id='.$id.'&gradebook='.$gradebook.'&amp;origin='.$origin.'">'.icon('../img/invisible_22.png',get_lang('MakeVisible')).'</a>';
 	}
-        if ($return) {
-            return $output;
-        } else {
-            echo $output;
-        }
 }
 
 /**
@@ -916,48 +846,38 @@ function display_visible_invisible_icon($content, $id, $current_visibility_statu
 * @param $content what is it that we want to (un)lock: forum category, forum, thread, post
 * @param $id the id of the content we want to (un)lock
 * @param $current_visibility_status what is the current status of the visibility (0 = invisible, 1 = visible)
-* @param array  additional attributes for the link
-* @param bool   optional, if the function return or display a content html
-* @return void|string
+* @return
 *
 * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University
 * @version february 2006, dokeos 1.8
 */
-function display_lock_unlock_icon($content, $id, $current_lock_status, $additional_url_parameters='', $return = false)
+function display_lock_unlock_icon($content, $id, $current_lock_status, $additional_url_parameters='')
 {
 	$id = Security::remove_XSS($id);
-        $output = '';
 	if ($current_lock_status=='1')
 	{
-		$link = '<a class="action" href="'.api_get_self().'?'.api_get_cidreq().'&';
+		echo '<a class="action" href="'.api_get_self().'?'.api_get_cidreq().'&';
 		if (is_array($additional_url_parameters))
 		{
 			foreach ($additional_url_parameters as $key=>$value)
 			{
-				$link .= $key.'='.$value.'&amp;';
+				echo $key.'='.$value.'&amp;';
 			}
 		}
-		$link .= 'action=unlock&amp;content='.$content.'&amp;id='.$id.'">'.Display::return_icon('pixel.gif',get_lang('Unlock'), array('class' => 'actionplaceholdericon actionlock')).'</a>';
-                $output = $link;
+		echo 'action=unlock&amp;content='.$content.'&amp;id='.$id.'">'.icon('../img/lock_22.png',get_lang('Unlock')).'</a>';
 	}
 	if ($current_lock_status=='0')
 	{
-		$link = '<a class="action" href="'.api_get_self().'?'.api_get_cidreq().'&';
+		echo '<a class="action" href="'.api_get_self().'?'.api_get_cidreq().'&';
 		if (is_array($additional_url_parameters))
 		{
 			foreach ($additional_url_parameters as $key=>$value)
 			{
-				$link .= $key.'='.$value.'&amp;';
+				echo $key.'='.$value.'&amp;';
 			}
 		}
-		$link .= 'action=lock&amp;content='.$content.'&amp;id='.$id.'">'.Display::return_icon('pixel.gif',get_lang('Lock'), array('class' => 'actionplaceholdericon actionunlock')).'</a>';
-                $output = $link;
+		echo 'action=lock&amp;content='.$content.'&amp;id='.$id.'">'.icon('../img/unlock_22.png',get_lang('Lock')).'</a>';
 	}
-        if ($return) {
-            return $output;
-        } else {
-            echo $output;
-        }
 }
 
 /**
@@ -1207,7 +1127,7 @@ function get_forum_categories($id='') {
 
 	//condition for the session
 	$session_id = api_get_session_id();
-	$condition_session = api_get_session_condition($session_id, true, true);
+	$condition_session = api_get_session_condition($session_id);
 
 	if ($id == '') {
 		$sql="SELECT * FROM".$table_categories." forum_categories, ".$table_item_property." item_properties
@@ -1295,7 +1215,7 @@ function get_forums($id='') {
 
 	//condition for the session
 	$session_id = api_get_session_id();
-	$condition_session = api_get_session_condition($session_id, true, true);
+	$condition_session = api_get_session_condition($session_id);
 
 	$forum_list = array();
 	if ($id=='') {
@@ -2031,8 +1951,8 @@ function show_add_post_form($action='', $id='', $form_values='') {
 	$renderer->setElementTemplate('<div class="row"><div style="width:100%;float:right;">{element}</div></div>', 'post_text');
 	$form->addElement('html_editor', 'post_text', get_lang('Text'), null,
 		api_is_allowed_to_edit(null,true)
-			? array('ToolbarSet' => 'Forum', 'Width' => '100%', 'Height' => '300')
-			: array('ToolbarSet' => 'ForumStudent', 'Width' => '100%', 'Height' => '300', 'UserStatus' => 'student')
+			? array('ToolbarSet' => 'Forum', 'Width' => '100%', 'Height' => '400')
+			: array('ToolbarSet' => 'ForumStudent', 'Width' => '100%', 'Height' => '400', 'UserStatus' => 'student')
 	);
 	//$form->applyFilter('post_text', 'html_filter');
 
@@ -3473,7 +3393,7 @@ function search_link() {
 	$return = '';
 
 	if ($origin != 'learnpath') {
-		$return = '<a href="forumsearch.php?'.api_get_cidreq().'&action=search&origin='.$origin.'"> '.Display::return_icon('pixel.gif',get_lang('Search'), array('class' => 'toolactionplaceholdericon toolactionsearch')).' '.get_lang('Search').'</a>';
+		$return = '<a href="forumsearch.php?'.api_get_cidreq().'&action=search&origin='.$origin.'"> '.Display::return_icon('find_32.png', get_lang('Search')).' '.get_lang('Search').'</a>';
 		if (!empty($_GET['search'])) {
 			$return .= ': '.Security::remove_XSS($_GET['search']).' ';
 			$url = api_get_self().'?';
@@ -3483,7 +3403,7 @@ function search_link() {
 				}
 			}
 			$url = $url.implode('&amp;',$url_parameter);
-			$return .= '<a href="'.$url.'">'.Display::return_icon('pixel.gif', get_lang('RemoveSearchResults'),array('class'=>'toolactionplaceholdericon toolactiondelete_32')).'</a>';
+			$return .= '<a href="'.$url.'">'.Display::return_icon('delete_link.png', get_lang('RemoveSearchResults')).'</a>';
 		}
 	}
 	return $return;
@@ -4114,7 +4034,7 @@ function get_thread_user_post($course_db, $thread_id, $user_id )
 					if ($post_counter > 0 ) {
 						$forum_results .='<div id="social-forum">';
 		 				$forum_results .='<div class="clear"></div><br />';
-		 				$forum_results .='<div class="actions" style="margin-left:5px;margin-right:5px;">'.Display::return_icon('pixel.gif','',array('class' => 'toolactionplaceholdericon toolactionforum')).'&nbsp;&nbsp;&nbsp;&nbsp;'.$forum['forum_title'].'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div style="float:right;"><a href="../forum/viewforum.php?cidReq='.$my_course_code.'&gidReq=&forum='.$forum['forum_id'].' " >'.get_lang('SeeForum').'</a></div></div>';
+		 				$forum_results .='<div class="actions" style="margin-left:5px;margin-right:5px;">'.Display::return_icon('forum.png').'&nbsp;&nbsp;&nbsp;&nbsp;'.$forum['forum_title'].'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div style="float:right;"><a href="../forum/viewforum.php?cidReq='.$my_course_code.'&gidReq=&forum='.$forum['forum_id'].' " >'.get_lang('SeeForum').'</a></div></div>';
 		 				$forum_results .='<br / >';
 						$forum_results .=$hand_forums;
 						$forum_results .='</div>';
@@ -4155,190 +4075,16 @@ function get_thread_user_post_limit($course_db, $thread_id, $user_id, $limit=10)
  */
 function show_columns_titles()
 {
-	$output = '<table class="colum_titles" width="100%">';
+	$output = '<table class="colum_titles">';
 	$output .= "\t<tr>\n";
 	if(api_is_allowed_to_edit ()) $output .= "\t\t<th width='5%'>".get_lang('Move')."</th>\n";
-	$output .= "\t\t<th align='left' width='30%' colspan=\"2\">".get_lang('Forum')."</th>\n";
-	$output .= "\t\t<th align='left' width='8%'>".get_lang('Topics')."</th>\n";
-	$output .= "\t\t<th align='left' width='8%'>".get_lang('Posts')."</th>\n";
-	$output .= "\t\t<th align='left' width='30%'>".get_lang('LastPosts')."</th>\n";
+	$output .= "\t\t<th width='30%' colspan=\"2\">".get_lang('Forum')."</th>\n";
+	$output .= "\t\t<th width='8%'>".get_lang('Topics')."</th>\n";
+	$output .= "\t\t<th width='8%'>".get_lang('Posts')."</th>\n";
+	$output .= "\t\t<th width='30%'>".get_lang('LastPosts')."</th>\n";
 	$output .= "\t\t<th width='26%'>".get_lang('Actions')."</th>\n";		
 	$output .= "\t</tr>\n";
 	$output .= '</table>';
 	
 	return $output;
-}
-
-/**
- * Number of threads, used for threads list with sortable 
- */
-function get_number_of_threads() {    
-    global $table_item_property, $table_threads, $table_users, $table_posts, $my_forum;        
-    $visibility = is_allowed_to_edit()?' AND ip.visibility <> 2 ':' AND ip.visibility = 1 ';     
-    $sql = "SELECT count(t.thread_id) as total_number_of_items                    
-                FROM $table_threads t
-                INNER JOIN $table_item_property ip
-                        ON t.thread_id=ip.ref
-                        $visibility
-                        AND ip.tool='".TABLE_FORUM_THREAD."'
-                LEFT JOIN $table_users u
-                        ON t.thread_poster_id=u.user_id
-                LEFT JOIN $table_posts post
-                        ON t.thread_last_post = post.post_id
-                LEFT JOIN $table_users last_poster_users
-                        ON post.poster_id= last_poster_users.user_id
-                WHERE t.forum_id='".intval($my_forum)."'";
-    $rs = Database::query($sql);
-    $obj = Database::fetch_object($rs);
-    return $obj->total_number_of_items;    
-}
-
-/**
- * Threads, used for threads list with sortable 
- */
-function get_threads_data($from, $number_of_items, $column, $direction) {
-	global $table_item_property, $table_threads, $table_posts, $table_users, $origin, $my_forum;
-
-        $origin_string='';
-        if (isset($origin)) {
-            $origin =  Security::remove_XSS($origin);
-            $origin_string = '&origin='.$origin;
-        }
-        
-        $forum_id = intval($my_forum);
-	$data = array();        
-        $visibility = is_allowed_to_edit()?' AND ip.visibility <> 2':' AND ip.visibility = 1';     
-        $sql = "SELECT 
-                    t.thread_id, 
-                    t.thread_title as col1, 
-                    t.thread_replies as col2, 
-                    t.thread_views as col3,                     
-                    t.thread_sticky, t.thread_poster_name, t.thread_date,
-                    ip.visibility,
-                    concat(u.firstname,' ',u.lastname) as col4, 
-                    u.user_id,                           
-                    post.post_id, post.post_title, post.post_text, post.forum_id, post.poster_id, post.poster_name, post.post_date, post.post_notification, post.post_parent_id, post.visible,
-                    last_poster_users.firstname as last_poster_firstname , last_poster_users.lastname as last_poster_lastname, last_poster_users.user_id as last_poster_user_id, t.locked as locked
-                FROM $table_threads t
-                INNER JOIN $table_item_property ip
-                        ON t.thread_id=ip.ref
-                        $visibility
-                        AND ip.tool='".TABLE_FORUM_THREAD."'
-                LEFT JOIN $table_users u
-                        ON t.thread_poster_id=u.user_id
-                LEFT JOIN $table_posts post
-                        ON t.thread_last_post = post.post_id
-                LEFT JOIN $table_users last_poster_users
-                        ON post.poster_id= last_poster_users.user_id
-                WHERE t.forum_id='".$forum_id."'";
-        
-        if (!in_array($direction, array('ASC','DESC'))) {
-                $direction = 'ASC';
-        }
-        $column = intval($column);
-        $from = intval($from);
-        $number_of_items = intval($number_of_items);
-
-        $sql .= " ORDER BY col$column $direction ";
-
-	//$sql .= " ORDER BY t.thread_sticky DESC, t.thread_date DESC ";
-	$sql .= " LIMIT $from,$number_of_items";
-
-        $rs = Database::query($sql);
-
-        if (Database::num_rows($rs) > 0) {
-            $whatsnew_post_info = isset($_SESSION['whatsnew_post_info'])?$_SESSION['whatsnew_post_info']:null;
-            while ($row = Database::fetch_array($rs, 'ASSOC')) {
-                
-                if (api_is_allowed_to_edit(false, true) OR  !($row['thread_replies'] == '0' && $row['visible']=='0')) {            
-                    
-                    // first column
-                    $my_whatsnew_post_info = isset($whatsnew_post_info[$forum_id][$row['thread_id']])?$whatsnew_post_info[$forum_id][$row['thread_id']]:null;
-                    if (is_array($my_whatsnew_post_info) and !empty($my_whatsnew_post_info)) {
-                        //$col[0] = icon('../img/forumthread_new_22.png');
-                        $col[0] = Display::return_icon('pixel.gif',get_lang('forumthread'),array('class'=>'toolactionplaceholdericon toolactionpost'));
-                    } else {
-                       // $col[0] = icon('../img/forumthread_new_22.png');
-                        $col[0] = Display::return_icon('pixel.gif',get_lang('forumthread'),array('class'=>'toolactionplaceholdericon toolactionpost'));
-                        
-                    }
-                    
-                    $col[1] = "<a href=\"viewthread.php?".api_get_cidreq()."&gradebook=".Security::remove_XSS($_GET['gradebook'])."&forum=".Security::remove_XSS($my_forum)."&amp;origin=".$origin."&amp;thread=".$row['thread_id'].$origin_string."&amp;search=".Security::remove_XSS(urlencode($my_search))."\" ".class_visible_invisible($row['visibility']).">".prepare4display($row['col1'])."</a>";
-
-                    $col[2] = $row['col2'];
-                    if ($row['user_id']=='0') {
-                        $name = prepare4display($row['thread_poster_name']);
-                    } else {
-                        $name = api_get_person_name($row['firstname'], $row['lastname']);
-                    }                    
-                    $col[3] = $row['col3'];
-                    
-                    if ($row['last_poster_user_id']=='0') {
-                            $name=$row['poster_name'];
-                    } else {
-                            $name=api_get_person_name($row['last_poster_firstname'], $row['last_poster_lastname']);
-                    }
-                    
-                    if($origin != 'learnpath') {
-                            $col[4] = display_user_link($row['user_id'], $row['col4']);
-                    } else {
-                            $col[4] = $row['col4'];
-                    }
-                    
-                    // if the last post is invisible and it is not the teacher who is looking then we have to find the last visible post of the thread
-                    if (($row['visible']=='1' OR api_is_allowed_to_edit(false,true)) && $origin!='learnpath') {
-                            $last_post = $row['thread_date']." ".get_lang('By').' '.display_user_link($row['last_poster_user_id'], $name);
-                    } elseif ($origin!='learnpath') {
-                            $last_post_sql="SELECT post.*, user.firstname, user.lastname FROM $table_posts post, $table_users user WHERE post.poster_id=user.user_id AND visible='1' AND thread_id='".$row['thread_id']."' ORDER BY post_id DESC";
-                            $last_post_result=Database::query($last_post_sql, __FILE__, __LINE__);
-                            $last_post_row=Database::fetch_array($last_post_result);
-                            $name=api_get_person_name($last_post_row['firstname'], $last_post_row['lastname']);
-                            $last_post=$last_post_row['post_date']." ".get_lang('By').' '.display_user_link($last_post_row['poster_id'], $name);
-                    } else {
-                            $last_post_sql="SELECT post.*, user.firstname, user.lastname FROM $table_posts post, $table_users user WHERE post.poster_id=user.user_id AND visible='1' AND thread_id='".$row['thread_id']."' ORDER BY post_id DESC";
-                            $last_post_result=Database::query($last_post_sql, __FILE__, __LINE__);
-                            $last_post_row=Database::fetch_array($last_post_result);
-                            $name=api_get_person_name($last_post_row['firstname'], $last_post_row['lastname']);
-                            $last_post=$last_post_row['post_date']." ".get_lang('By').' '.$name;
-                    }                   
-                    $col[5] = $last_post;
-                    
-                    $current_forum = get_forum_information($forum_id);
-                    $actions = '';                                        
-                    $attachment_list=get_attachment($row['post_id']);
-                    $id_attach = !empty($attachment_list)?$attachment_list['id']:'';
-                    $sql_post_id="SELECT post_id FROM $table_posts WHERE post_title='".$row['col1']."'";
-                    $result_post_id=Database::query($sql_post_id, __FILE__, __LINE__);
-                    $row_post_id=Database::fetch_array($result_post_id);
-
-                    if ($origin != 'learnpath') {
-                        if (api_is_allowed_to_edit(false,true) && !(api_is_course_coach() && $current_forum['session_id']!=$_SESSION['id_session'])) {
-                                $actions .= "<a href=\"editpost.php?".api_get_cidreq()."&forum=".Security::remove_XSS($forum_id)."&amp;thread=".Security::remove_XSS($row['thread_id'])."&amp;post=".$row_post_id['post_id']."&amp;gidReq=".$_SESSION['toolgroup']."&origin=".$origin."&id_attach=".$id_attach."\">".Display::return_icon('pixel.gif',get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit'))."</a>&nbsp;&nbsp;&nbsp;\n";
-                                $actions .= "<a href=\"".api_get_self()."?".api_get_cidreq()."&forum=".Security::remove_XSS($forum_id)."&amp;action=delete&amp;content=thread&amp;gidReq=".$_SESSION['toolgroup']."&amp;id=".$row['thread_id'].$origin_string."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang("DeleteCompleteThread"),ENT_QUOTES,$charset))."')) return false;\">".Display::return_icon('pixel.gif',get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete'))."</a>&nbsp;&nbsp;&nbsp;\n";
-                                $actions .= display_visible_invisible_icon('thread', $row['thread_id'], $row['visibility'], array("forum"=>$forum_id,'origin'=>$origin,"gidReq"=>$_SESSION['toolgroup']), true);
-                                $actions .= '&nbsp;&nbsp;&nbsp;';
-                                $actions .= display_lock_unlock_icon('thread',$row['thread_id'], $row['locked'], array("forum"=>$forum_id,'origin'=>$origin,"gidReq"=>$_SESSION['toolgroup']), true);
-                                $actions .= '&nbsp;&nbsp;&nbsp;';
-                                $actions .= "<a href=\"viewforum.php?".api_get_cidreq()."&forum=".Security::remove_XSS($forum_id)."&amp;action=move&amp;gidReq=".$_SESSION['toolgroup']."&amp;thread=".$row['thread_id'].$origin_string."\">".Display::return_icon('pixel.gif',get_lang('MoveThread'), array('class' => 'actionplaceholdericon actionmove'))."</a>&nbsp;&nbsp;&nbsp;";
-                        }
-                    }
-                    $iconnotify = 'actionplaceholdericon actionsmessage';
-                    if (is_array(isset($_SESSION['forum_notification']['thread'])?$_SESSION['forum_notification']['thread']:null)) {
-                            if (in_array($row['thread_id'],$_SESSION['forum_notification']['thread'])) {
-                                    $iconnotify = 'actionplaceholdericon actionsmessagereply';
-                            }
-                    }
-                    $icon_liststd = 'group_22.png';
-                    if (!api_is_anonymous() && api_is_allowed_to_session_edit(false,true)) {
-                            $actions .= "<a href=\"".api_get_self()."?".api_get_cidreq()."&amp;forum=".Security::remove_XSS($forum_id)."&origin=".$origin."&amp;action=notify&amp;content=thread&amp;gidReq=".$_SESSION['toolgroup']."&amp;id=".$row['thread_id']."\">".Display::return_icon('pixel.gif',get_lang('NotifyMe'), array('class' => $iconnotify))."</a>&nbsp;&nbsp;&nbsp;\n";
-                    }
-                    if (api_is_allowed_to_edit(null,true) && $origin != 'learnpath') {
-                            $actions .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;forum='.Security::remove_XSS($forum_id).'&origin='.$origin.'&amp;action=liststd&amp;content=thread&amp;gidReq='.$_SESSION['toolgroup'].'&amp;id='.$row['thread_id'].'">'.Display::return_icon('pixel.gif',get_lang('StudentList'), array('class' => 'actionplaceholdericon actionsmembers')).'</a>&nbsp;&nbsp;&nbsp;';
-                    }                 
-                    $col[6] = $actions;                    
-                    $data[] = array($col[0], $col[1], $col[2], $col[3], $col[4], $col[5], $col[6]);                                
-                }
-            }
-        }
-	return $data;
 }

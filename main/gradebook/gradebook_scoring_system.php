@@ -1,20 +1,34 @@
-<?php
+<?php // $Id: $
+/*
+==============================================================================
+	Dokeos - elearning and course management software
 
-/* For licensing terms, see /dokeos_license.txt */
+	Copyright (c) 2008 Dokeos Latinoamerica SAC
+	Copyright (c) 2006 Dokeos SPRL
+	Copyright (c) 2006 Ghent University (UGent)
+	Copyright (c) various contributors
 
-// name of the language file that needs to be included
-$language_file = 'gradebook';
+	For a full list of contributors, see "credits.txt".
+	The full license can be read in "license.txt".
 
-// including the global dokeos file
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	See the GNU General Public License for more details.
+
+	Contact address: Dokeos, rue du Corbeau, 108, B-1030 Brussels, Belgium
+	Mail: info@dokeos.com
+==============================================================================
+*/
+$language_file= 'gradebook';
+//$cidReset= true;
 require_once ('../inc/global.inc.php');
-
-// including additional libraries
 require_once ('lib/be.inc.php');
 require_once ('lib/gradebook_functions.inc.php');
 require_once ('lib/fe/scoredisplayform.class.php');
 require_once ('lib/scoredisplay.class.php');
-
-// access restriction
 api_block_anonymous_users();
 //api_protect_admin_script();
 
@@ -23,7 +37,7 @@ $htmlHeadXtra[]= '
   function plusItem(item)
   {
 		document.getElementById(item).style.display = "inline";
-		document.getElementById("plus-"+item).style.display = "none";
+    	document.getElementById("plus-"+item).style.display = "none";
    	 	document.getElementById("min-"+(item-1)).style.display = "none";
    	 	document.getElementById("min-"+(item)).style.display = "inline";
    	 	document.getElementById("plus-"+(item+1)).style.display = "inline";
@@ -125,7 +139,7 @@ if (isset ($_GET['nouniqueranges'])) {
 }
 // Actions bar
 echo '<div class="actions">';
-echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.Security::remove_XSS($_GET['selectcat']).'&amp;'.api_get_cidreq().'">'.Display::return_icon('pixel.gif',get_lang('Gradebook'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('Gradebook').'</a>';
+echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.Security::remove_XSS($_GET['selectcat']).'&amp;'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png',get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook')).get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook').'</a>';
 echo '</div>';
 
 echo '<div id="content">';

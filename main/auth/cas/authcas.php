@@ -76,14 +76,8 @@ function cas_is_authenticated()
 			else {
 				$user = mysql_fetch_assoc($result);
 				$user_id = intval($user['user_id']);
-                $user_info = api_get_user_info($user_id);
-                $user_language = $user_info['language'];
-                $user_status = $user_info['status'];
-                $firstname = $user_info['firstname'];
-                $lastname = $user_info['lastname'];
-                $email = $user_info['mail'];
-                $auth_source = PLATFORM_AUTH_SOURCE;
-				UserManager::update_user ($user_id, $firstname, $lastname, $login, null, $auth_source, $email, $user_status, '', '', '', '', 1, null, 0, null,$user_language) ;
+				//echo "deb : $status";
+				UserManager::update_user ($user_id, $firstname, $lastname, $login, null, null, $email, $status, '', '', '', '', 1, null, 0, null,'') ;
 
 			}
 		}

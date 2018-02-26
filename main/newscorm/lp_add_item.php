@@ -363,17 +363,17 @@ $view_lang_var = api_convert_encoding(get_lang('ViewRight'), $charset, api_get_s
 echo $_SESSION['oLP']->build_action_menu();
 if (isset($_GET['type']) && $_GET['type'] == 'step') {
   echo '<div class="actions">';
-  echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', $author_lang_var, array('class' => 'toolactionplaceholdericon toolactionback')).$author_lang_var . '</a>';
-  echo '<a href="">' . Display::return_icon('pixel.gif', $content_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorcontent')).$content_lang_var . '</a>';
-  echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', $scenario_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorscenario')).$scenario_lang_var . '</a>';
-  echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', $view_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorpreview')).$view_lang_var . '</a>';
+  echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('go_previous_32.png', $author_lang_var).$author_lang_var . '</a>';
+  echo '<a href="">' . Display::return_icon('content.png', $content_lang_var).$content_lang_var . '</a>';
+  echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('organize.png', $scenario_lang_var).$scenario_lang_var . '</a>';
+  echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('search.png', $view_lang_var).$view_lang_var . '</a>';
 //  echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=edit&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('publication_setup.png', get_lang('Publication')).get_lang("Publication") . '</a>';
   echo '</div>';
 } else {
   echo '<div class="actions">';
-  echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', $author_lang_var, array('class' => 'toolactionplaceholdericon toolactionback')).$author_lang_var . '</a>';
-  echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', $content_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorcontent')).$content_lang_var . '</a>';
-  echo '<a href="lp_gallery.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', $template_lang_var, array('class' => 'toolactionplaceholdericon toolactiontemplates')).$template_lang_var . '</a>';
+  echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('go_previous_32.png', $author_lang_var).$author_lang_var . '</a>';
+  echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('content.png', $content_lang_var).$content_lang_var . '</a>';
+  echo '<a href="lp_gallery.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('tools_wizard_32.png', $template_lang_var).$template_lang_var . '</a>';
 //  echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=document&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('create_doc.png', get_lang('Page')).get_lang("Page") . '</a>';
   echo '</div>';
 }
@@ -557,7 +557,7 @@ $settings_lang_var = api_convert_encoding(get_lang('Publication'), $charset, api
 echo '<div class="actions">';
 //echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&action=build&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('build.png', get_lang('Build')).get_lang("Build") . '</a>';
 //echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('view.png', $view_lang_var).$view_lang_var . '</a>';
-echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=edit&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('pixel.gif', $settings_lang_var, array('class' => 'actionplaceholdericon actionauthorsettings')).$settings_lang_var . '</a>';
+echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=edit&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('publication_setup_22.png', $settings_lang_var).$settings_lang_var . '</a>';
 echo '</div>';
 
 // display the footer

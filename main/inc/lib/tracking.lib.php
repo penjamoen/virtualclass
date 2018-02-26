@@ -308,289 +308,103 @@ class Tracking {
 		return null;
 	}
 	
-        /**
-         * This function gets:
-         * 1. The score average from all SCORM Test items in all LP in a course-> All the answers / All the max scores.
-         * 2. The score average from all Tests (quiz) in all LP in a course-> All the answers / All the max scores.
-         * 3. And finally it will return the average between 1. and 2.
-         * This function does not take the results of a Test out of a LP
-         *
-         * @param   mixed       Array of user ids or an user id
-         * @param   string      Course code
-         * @param   array       List of LP ids
-         * @param   int         Session id (optional), if param $session_id is null(default) it'll return results including sessions, 0 = session is not filtered
-         * @param   bool        Returns an array of the type [sum_score, num_score] if set to true
-         * @param   bool        get only the latest attempts or ALL attempts
-         * @return  string      Value (number %) Which represents a round integer explain in got in 3.
-         */
-	function get_avg_student_score($student_id, $course_code, $lp_ids = array(), $session_id = null, $return_array = false, $get_only_latest_attempt_results = false){
-			$debug = false;
-			if (empty($lp_ids)) {
-				$debug = false;
+	/**
+	 * Get the average score of one or many students in course
+	 * the scores taken in account are "sco" and "quiz" items of a lp
+	 * then an average is done bewteen lps
+	 * then an average is done between students
+	 *
+	 * @param Array or int User id
+	 * @param Course id
+	 * @param Array limit average to listed lp ids
+	 * @return int value of progress or null if no score has been registered
+	 */	
+	function get_avg_student_score($students_id, $course_code, $lp_ids= array()){
+		
+		$course = CourseManager :: get_course_information($course_code);
+		if(empty($course['db_name']))
+		{
+			// problem with course infos
+			return false;
+		}
+		
+		if(!is_array($students_id))
+		{
+			$students_id = array($students_id);
+		}
+		
+		// define tables
+		$tbl_lp = Database :: get_course_table(TABLE_LP_MAIN,$course['db_name']);
+		$tbl_lp_item = Database  :: get_course_table(TABLE_LP_ITEM,$course['db_name']);
+		$tbl_lp_view = Database  :: get_course_table(TABLE_LP_VIEW,$course['db_name']);
+		$tbl_lp_item_view = Database  :: get_course_table(TABLE_LP_ITEM_VIEW,$course['db_name']);
+		
+		// select the views applying students an lp filters in arguments
+		$lp_condition = count($lp_ids) == 0 ? ' ' : ' AND lp_id IN ('.implode(',',$lp_ids).') ';
+				
+		$student_total_ratio = 0;
+		$nb_students_with_score = 0;
+		foreach($students_id as $student_id)
+		{
+			$sql = 'SELECT MAX(id) as id, lp_id 
+					FROM '.$tbl_lp_view.
+					'WHERE user_id = '.intval($student_id).
+					$lp_condition.'
+					GROUP BY lp_id';
+
+			$rs_views = Database::query($sql);
+			$nb_lp_with_score = 0;
+			$lp_total_ratio = 0;
+			while($view = Database::fetch_array($rs_views))
+			{
+				$sql = 'SELECT DISTINCT lp_item_view.lp_item_id, lp_item_view.score, lp_item_view.max_score, lp_item.item_type, lp_item_view.view_count
+						FROM '.$tbl_lp_item_view.' as lp_item_view
+						INNER JOIN '.$tbl_lp_item.' as lp_item
+							ON lp_item_view.lp_item_id = lp_item.id
+						WHERE lp_item.item_type IN ("sco","quiz")
+						AND lp_item_view.lp_view_id = '.$view['id'].'
+						AND lp_item_view.status != "not attempted"
+						ORDER BY lp_item_view.lp_item_id ASC, lp_item_view.view_count DESC';
+				$rs_items = api_sql_query($sql);
+
+				$view_total_ratio = 0;
+				$nb_items_with_score = 0;
+				$last_item_id = 0;
+				while($item_view = Database::fetch_array($rs_items)){
+					if($last_item_id == $item_view['lp_item_id'])
+					{ // we only want the score of the last attempt
+						continue;
+					}
+					$last_item_id = $item_view['lp_item_id'];
+					if(intval($item_view['max_score']) == 0)
+					{
+						//if item is sco, we assume max score is 100, but if item is quiz we assume it's a non-scored quiz
+						if($item_view['item_type'] == 'sco')
+							$item_view['max_score'] = 100;
+						else if($item_view['item_type'] == 'quiz')
+							continue;
+					}
+					$view_total_ratio += $item_view['score'] / $item_view['max_score'];
+					$nb_items_with_score++;					
+				}
+				if($nb_items_with_score > 0){
+					$nb_lp_with_score++;
+					$lp_total_ratio += $view_total_ratio / $nb_items_with_score;
+				}				
+				
 			}
-
-			if ($debug) echo '<h1>Tracking::get_avg_student_score</h1>';
-			// get global tables names
-			$course_table               = Database :: get_main_table(TABLE_MAIN_COURSE);
-			$course_user_table          = Database :: get_main_table(TABLE_MAIN_COURSE_USER);
-			$table_session_course_user  = Database :: get_main_table(TABLE_MAIN_SESSION_COURSE_USER);
-			$tbl_stats_exercices        = Database :: get_statistic_table(TABLE_STATISTIC_TRACK_E_EXERCICES);
-			$tbl_stats_attempts         = Database :: get_statistic_table(TABLE_STATISTIC_TRACK_E_ATTEMPT);
-
-			$course = CourseManager :: get_course_information($course_code);
-
-			if (!empty($course['db_name'])) {
-
-				// get course tables names
-				$tbl_quiz_questions = Database :: get_course_table(TABLE_QUIZ_QUESTION,$course['db_name']);
-				$lp_table           = Database :: get_course_table(TABLE_LP_MAIN,$course['db_name']);
-				$lp_item_table      = Database :: get_course_table(TABLE_LP_ITEM,$course['db_name']);
-				$lp_view_table      = Database :: get_course_table(TABLE_LP_VIEW,$course['db_name']);
-				$lp_item_view_table = Database :: get_course_table(TABLE_LP_ITEM_VIEW,$course['db_name']);
-
-				// Compose a filter based on optional learning paths list given
-
-				$condition_lp = "";
-				if (count($lp_ids) > 0) {
-					$condition_lp =" AND id IN(".implode(',',$lp_ids).") ";
-				}
-
-				// Compose a filter based on optional session id
-				$condition_session = "";
-
-				$session_id = intval($session_id);
-				if (count($lp_ids) > 0) {
-					$condition_session = " AND session_id = $session_id ";
-				} else {
-					$condition_session = " WHERE session_id = $session_id ";
-				}
-
-				// Check the real number of LPs corresponding to the filter in the
-				// database (and if no list was given, get them all)
-
-				if (empty($session_id)) {
-					$sql = "SELECT DISTINCT(id) FROM $lp_table  WHERE session_id = 0 $condition_lp ";
-				} else {
-					$sql = "SELECT DISTINCT(id) FROM $lp_table WHERE 1 $condition_lp ";
-				}
-
-				$res_row_lp   = Database::query($sql);
-				$count_row_lp = Database::num_rows($res_row_lp);
-
-				$lp_list = $use_max_score = array();
-				while ($row_lp = Database::fetch_array($res_row_lp)) {
-					$lp_list[]                     = $row_lp['id'];
-					$use_max_score[$row_lp['id']]  = 1;
-				}
-
-				if ($debug) {
-					echo 'Use max score or not list '; var_dump($use_max_score);
-				}
-
-				// Init local variables that will be used through the calculation
-				$progress = 0;
-
-				// prepare filter on users
-				$condition_user1 = "";
-
-				if (is_array($student_id)) {
-					array_walk($student_id, 'intval');
-					$condition_user1 =" AND user_id IN (".implode(',', $student_id).") ";
-				} else {
-					$condition_user1 =" AND user_id = $student_id ";
-				}
-
-				if ($count_row_lp > 0 && !empty($student_id)) {
-
-					// Getting latest LP result for a student
-					//@todo problem when a  course have more than 1500 users
-					$sql = "SELECT MAX(view_count) as vc, id, progress, lp_id, user_id  FROM $lp_view_table
-                            WHERE lp_id IN (".implode(',',$lp_list).") $condition_user1  GROUP BY lp_id, user_id";
-					if ($debug) echo $sql;
-					$rs_last_lp_view_id = Database::query($sql);
-
-					$global_result = 0;
-
-					if (Database::num_rows($rs_last_lp_view_id) > 0) {
-						// Cycle through each line of the results (grouped by lp_id, user_id)
-						$exe_list = array();
-						while ($row_lp_view = Database::fetch_array($rs_last_lp_view_id)) {
-							$count_items = 0;
-							$lp_partial_total = 0;
-
-							$list = array();
-							$lp_view_id = $row_lp_view['id'];
-							$progress   = $row_lp_view['progress'];
-							$lp_id      = $row_lp_view['lp_id'];
-							$user_id    = $row_lp_view['user_id'];
-							if ($debug) echo '<h2>LP id '.$lp_id.'</h2>';
-
-							if ($get_only_latest_attempt_results) {
-								//if (1) {
-								//Getting lp_items done by the user
-								$sql  = "SELECT DISTINCT lp_item_id FROM $lp_item_view_table WHERE lp_view_id = $lp_view_id ORDER BY lp_item_id";
-								$res_lp_item = Database::query($sql);
-
-								while ($row_lp_item = Database::fetch_array($res_lp_item,'ASSOC')) {
-									$my_lp_item_id = $row_lp_item['lp_item_id'];
-
-									//Getting the most recent attempt
-									$sql = "SELECT lp_iv.id as lp_item_view_id, lp_iv.score as score,lp_i.max_score, lp_iv.max_score as max_score_item_view, lp_i.path, lp_i.item_type, lp_i.id as iid
-                                            FROM $lp_item_view_table as lp_iv INNER JOIN $lp_item_table as lp_i ON lp_i.id = lp_iv.lp_item_id AND (lp_i.item_type='sco' OR lp_i.item_type='".TOOL_QUIZ."') 
-                                            WHERE lp_item_id = $my_lp_item_id AND lp_view_id = $lp_view_id ORDER BY view_count DESC LIMIT 1";
-									$res_lp_item_result = Database::query($sql);
-
-									while ($row_max_score = Database::fetch_array($res_lp_item_result,'ASSOC')) {
-										$list[]= $row_max_score;
-									}
-								}
-							} else {
-								// For the currently analysed view, get the score and
-								// max_score of each item if it is a sco or a TOOL_QUIZ
-								$sql_max_score = "SELECT lp_iv.id as lp_item_view_id, lp_iv.score as score,lp_i.max_score, lp_iv.max_score as max_score_item_view, lp_i.path, lp_i.item_type, lp_i.id as iid
-                                                  FROM $lp_item_view_table as lp_iv INNER JOIN $lp_item_table as lp_i ON lp_i.id = lp_iv.lp_item_id AND (lp_i.item_type='sco' OR lp_i.item_type='".TOOL_QUIZ."') 
-                                                  WHERE lp_view_id = $lp_view_id ";
-								if ($debug) echo $sql_max_score.'<br />';
-
-								$res_max_score = Database::query($sql_max_score);
-								 
-								while ($row_max_score = Database::fetch_array($res_max_score,'ASSOC')) {
-									$list[]= $row_max_score;
-								}
-							}
-							$count_total_loop = 0;
-
-							// Go through each scorable element of this view
-							 
-							$score_of_scorm_calculate = 0;
-
-							foreach ($list as $row_max_score) {
-								$max_score              = $row_max_score['max_score'];  //Came from the original lp_item
-								$max_score_item_view    = $row_max_score['max_score_item_view']; //Came from the lp_item_view
-								$score                  = $row_max_score['score'];
-
-								if ($debug) echo '<h3>Item Type: ' .$row_max_score['item_type'].'</h3>';
-
-								if ($row_max_score['item_type'] == 'sco') {
-									//var_dump($row_max_score);
-									// Check if it is sco (easier to get max_score)
-									//when there's no max score, we assume 100 as the max score, as the SCORM 1.2 says that the value should always be between 0 and 100.
-									if ($max_score == 0 || is_null($max_score) || $max_score == '') {
-										//Chamilo style
-										if ($use_max_score[$lp_id]) {
-											$max_score = 100;
-										} else {
-											//Overwrites max score = 100 to use the one that came in the lp_item_view see BT#1613
-											$max_score = $max_score_item_view;
-										}
-									}
-									//Avoid division by zero errors
-									if (!empty($max_score)) {
-										$lp_partial_total += $score/$max_score;
-									}
-									if ($debug) echo '<b>$lp_partial_total, $score, $max_score '.$lp_partial_total.' '.$score.' '.$max_score.'</b><br />';
-								} else {
-									// Case of a TOOL_QUIZ element
-									$item_id    = $row_max_score['iid'];
-									$item_path  = $row_max_score['path'];
-									$lp_item_view_id  = $row_max_score['lp_item_view_id'];
-
-									// Get last attempt to this exercise  through
-									// the current lp for the current user
-									$sql_last_attempt = "SELECT exe_id FROM $tbl_stats_exercices WHERE
-                                            exe_exo_id           = '$item_path' AND 
-                                            exe_user_id          = $user_id AND 
-                                            orig_lp_item_id      = $item_id AND 
-                                            exe_cours_id         = '$course_code'  AND
-                                            session_id           = $session_id 
-                                            ORDER BY exe_date DESC LIMIT 1";
-									if ($debug) echo $sql_last_attempt .'<br />';
-									$result_last_attempt = Database::query($sql_last_attempt);
-									$num = Database :: num_rows($result_last_attempt);
-									if ($num > 0 ) {
-										$id_last_attempt = Database :: result($result_last_attempt, 0, 0);
-										if ($debug) echo $id_last_attempt.'<br />';
-										// Within the last attempt number tracking, get the sum of
-										// the max_scores of all questions that it was
-										// made of (we need to make this call dynamic
-										// because of random questions selection)
-										$sql = "SELECT SUM(t.ponderation) as maxscore FROM
-                                                ( SELECT distinct question_id, marks, ponderation FROM $tbl_stats_attempts AS at INNER JOIN  $tbl_quiz_questions AS q ON (q.id = at.question_id) 
-                                                  WHERE exe_id ='$id_last_attempt' ) AS t";
-										$res_max_score_bis = Database::query($sql);
-										$row_max_score_bis = Database :: fetch_array($res_max_score_bis);
-										if (!empty($row_max_score_bis['maxscore'])) {
-											$max_score = $row_max_score_bis['maxscore'];
-										}
-										if (!empty($max_score)) {
-											$lp_partial_total            += $score/$max_score;
-										}
-										if ($debug) echo '$lp_partial_total, $score, $max_score <b>'.$lp_partial_total.' '.$score.' '.$max_score.'</b><br />';
-									}
-								}
-
-								if (in_array($row_max_score['item_type'], array('quiz','sco'))) {
-									// Normal way
-									if ($use_max_score[$lp_id]) {
-										$count_items++;
-									} else {
-										if ($max_score != '') {
-											$count_items++;
-										}
-									}
-									if ($debug) echo '$count_items: '.$count_items;
-								}
-							} //end for
-
-							$score_of_scorm_calculate += $count_items?(($lp_partial_total/$count_items)*100):0;
-
-							if ($debug) echo '<h3>$count_items '.$count_items.'</h3>';
-							if ($debug) echo '<h3>$score_of_scorm_calculate '.$score_of_scorm_calculate.'</h3>';
-							 
-							// var_dump($score_of_scorm_calculate);
-							$global_result += $score_of_scorm_calculate;
-							if ($debug) echo '<h3>$global_result '.$global_result.'</h3>';
-						} // end while
-					}
-
-					$lp_with_quiz = 0;
-					if ($debug) var_dump($lp_list);
-					foreach($lp_list as $lp_id) {
-						//Check if LP have a score we asume that all SCO have an score
-						$sql = "SELECT count(id) as count FROM $lp_item_table WHERE (item_type = 'quiz' OR item_type = 'sco') AND lp_id = ".$lp_id;
-						if ($debug) echo $sql;
-						$result_have_quiz = Database::query($sql);
-
-						if (Database::num_rows($result_have_quiz) > 0 ) {
-							$row = Database::fetch_array($result_have_quiz,'ASSOC');
-							if (is_numeric($row['count']) && $row['count'] != 0) {
-								$lp_with_quiz ++;
-							}
-						}
-					}
-
-					if ($debug) echo '<h3>$lp_with_quiz '.$lp_with_quiz.' </h3>';
-					if ($debug) echo '<h3>Final return</h3>';
-
-					if ($lp_with_quiz != 0 ) {
-						if (!$return_array) {
-							$score_of_scorm_calculate = round(($global_result/$lp_with_quiz),2);
-							if ($debug) var_dump($score_of_scorm_calculate);
-							if (empty($lp_ids)) {
-								//$score_of_scorm_calculate = round($score_of_scorm_calculate/count($lp_list),2);
-								if ($debug) echo '<h2>All lps fix: '.$score_of_scorm_calculate.'</h2>';
-							}
-							return $score_of_scorm_calculate;
-						} else {
-							if ($debug) var_dump($global_result, $lp_with_quiz);
-							return array($global_result, $lp_with_quiz);
-						}
-					} else {
-						return '';
-					}
-				}
+			
+			if($nb_lp_with_score > 0){
+				$nb_students_with_score++;
+				$student_total_ratio += $lp_total_ratio / $nb_lp_with_score;
 			}
+								
+		}
+
+		if($nb_students_with_score == 0)
 			return null;
+		else
+			return round($student_total_ratio * 100, 2);
 				
 	}
 
@@ -1450,7 +1264,7 @@ function get_tool_name_table($tool) {
 				 'id_tool' => $id_tool);
 }
 /**
- * This function gets all the information of a certrain ($field_id) additional profile field for a specific list of users is more efficent than  get_additional_profile_information_of_field() function
+ * This function gets all the information of a certrain ($field_id) additional profile field for a specific list of users is more efficent than  get_addtional_profile_information_of_field() function
  * It gets the information of all the users so that it can be displayed in the sortable table or in the csv or xls export
  *
  * @author	Julio Montoya <gugli100@gmail.com>
@@ -1460,7 +1274,7 @@ function get_tool_name_table($tool) {
  * @since	Nov 2009
  * @version	1.8.6.2
  */
-function get_additional_profile_information_of_field_by_user($field_id, $users) {
+function get_addtional_profile_information_of_field_by_user($field_id, $users) {
 	// Database table definition
 	$table_user 				= Database::get_main_table(TABLE_MAIN_USER);
 	$table_user_field_values 	= Database::get_main_table(TABLE_MAIN_USER_FIELD_VALUES);
@@ -1512,7 +1326,7 @@ function get_additional_profile_information_of_field_by_user($field_id, $users) 
  * Get data for users list in sortable with pagination
  * @return array
  */
-function get_user_data($from = null, $number_of_items = null, $column = null, $direction = null, $get_extra_field = true, $add_limit = true) {
+function get_user_data($from, $number_of_items, $column, $direction, $get_extra_field = true) {
 
 	global $user_ids, $course_code, $additional_user_profile_info, $export_csv, $is_western_name_order, $csv_content;
 
@@ -1535,14 +1349,8 @@ function get_user_data($from = null, $number_of_items = null, $column = null, $d
 	$sql = "SELECT user.user_id as col0,
 			user.official_code as col1,
 			user.lastname as col2,
-			user.firstname as col3 ";
- 
-	// getting additional user fields (of the user table). These can be defined in in the function display_additional_profile_fields and 
-	// need to be added to the array of valid fields (a security measure) 
-	if (isset($_GET['additional_profile_field']) AND in_array($_GET['additional_profile_field'], array('active','email'))) {
-		$sql .= ", user.".$_GET['additional_profile_field']." as col10 ";	
-	}
-	$sql .= "FROM $tbl_user as user
+			user.firstname as col3
+			FROM $tbl_user as user
 			$condition_user ";
 
 	if (!in_array($direction, array('ASC','DESC'))) {
@@ -1552,15 +1360,13 @@ function get_user_data($from = null, $number_of_items = null, $column = null, $d
     $from = intval($from);
     $number_of_items = intval($number_of_items);
 	$sql .= " ORDER BY col$column $direction ";
-	if ($add_limit === true) {
-	  $sql .= " LIMIT $from,$number_of_items";
-	}
+	$sql .= " LIMIT $from,$number_of_items";
 	$res = Database::query($sql, __FILE__, __LINE__);
 	$users = array ();
     $t = time();
    	$row = array();
-
 	while ($user = Database::fetch_row($res)) {
+
 		$row[0] = $user[1];
 		if ($is_western_name_order) {
 			$row[1] = $user[3];
@@ -1589,36 +1395,19 @@ function get_user_data($from = null, $number_of_items = null, $column = null, $d
 				$row[10]='&nbsp;';
 			}
 		}
-		
-		// getting additional user fields (of the user table). These can be defined in in the function display_additional_profile_fields and 
-		// need to be added to the array of valid fields (a security measure) 
-		if (isset($_GET['additional_profile_field']) AND in_array($_GET['additional_profile_field'], array('active','email'))) {
-			if ($_GET['additional_profile_field'] == 'active'){
-				if ($user[4] == '1'){
-					$row[10] = Display::return_icon('right.png');
-				} else {
-					$row[10] = Display::return_icon('wrong.png');
-				}
-			}
-			if ($_GET['additional_profile_field'] == 'email'){
-					$row[10] = '<a href="mailto:'.$user[4].'">'.$user[4].'</a>';	
-			}
-		}
-		
-		
 
   if ($get_extra_field === true) {
     $row[11] = '<center><a href="../mySpace/myStudents.php?student='.$user[0].'&details=true&course='.$course_code.'&origin=tracking_course"><img src="'.api_get_path(WEB_IMG_PATH).'arrow-right-double.png" border="0" /></a></center>';
   } else {
-    $row[10] = '<center><a href="../mySpace/myStudents.php?student='.$user[0].'&details=true&course='.$course_code.'&origin=tracking_course">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails','border'=>'0')).'</a></center>';
+    $row[10] = '<center><a href="../mySpace/myStudents.php?student='.$user[0].'&details=true&course='.$course_code.'&origin=tracking_course"><img src="'.api_get_path(WEB_IMG_PATH).'arrow-right-double.png" border="0" /></a></center>';
   }
 
 		if ($export_csv) {
 			$row[8] = strip_tags($row[8]);
 			$row[9] = strip_tags($row[9]);
+			unset($row[10]);
 			unset($row[11]);
 			$csv_content[] = $row;
-			unset($row[10]);
 		}
     if ($get_extra_field === true) {
         // store columns in array $users
@@ -1640,7 +1429,7 @@ function get_user_data($from = null, $number_of_items = null, $column = null, $d
  * @since October 2009
  * @version 1.8.7
  */
-function get_additional_profile_information_of_field($field_id){
+function get_addtional_profile_information_of_field($field_id){
 	// Database table definition
 	$table_user 			= Database::get_main_table(TABLE_MAIN_USER);
 	$table_user_field_values 	= Database::get_main_table(TABLE_MAIN_USER_FIELD_VALUES);
@@ -1664,7 +1453,7 @@ function get_additional_profile_information_of_field($field_id){
  * @since October 2009
  * @version 1.8.7
  */
-function display_additional_profile_fields($btn_submit = true, $multiple = false, $only_extra_fields = false) {
+function display_additional_profile_fields() {
 	// getting all the extra profile fields that are defined by the platform administrator
 	$extra_fields = UserManager :: get_extra_fields(0,50,5,'ASC');
 
@@ -1673,22 +1462,13 @@ function display_additional_profile_fields($btn_submit = true, $multiple = false
 
 	// the select field with the additional user profile fields (= this is where we select the field of which we want to see
 	// the information the users have entered or selected.
-	$return .= '<select name="'.($multiple?'additional_profile_field[]':'additional_profile_field').'" id="additional_profile_field" '.($multiple?' multiple="multiple"':'').'>';	
-        if (!$multiple) {
-            $return .= '<option value="-">'.get_lang('SelectFieldToAdd').'</option>';
-        }
-        
-        if (!$only_extra_fields) {
-            if ($_GET['additional_profile_field'] == 'active'){ $activeselected = 'selected="selected"'; } 
-            $return .= '<option value="active" '.$activeselected.'>'.get_lang('Active').'</option>';
-            if ($_GET['additional_profile_field'] == 'email') { $emailselected = 'selected="selected"'; } 
-            $return .= '<option value="email" '.$emailselected.'>'.get_lang('Email').'</option>';
-        }
-        
+	$return .= '<select name="additional_profile_field">';
+	$return .= '<option value="-">'.get_lang('SelectFieldToAdd').'</option>';
+
 	foreach ($extra_fields as $key=>$field) {
 		// show only extra fields that are visible, added by J.Montoya
 		if ($field[6]==1) {
-			if ($field[0] == $_GET['additional_profile_field'] || ($multiple && in_array($field[0], $_GET['additional_profile_field']))) {
+			if ($field[0] == $_GET['additional_profile_field'] ) {
 				$selected = 'selected="selected"';
 			} else {
 				$selected = '';
@@ -1705,9 +1485,7 @@ function display_additional_profile_fields($btn_submit = true, $multiple = false
 		}
 	}
 	// the submit button
-        if ($btn_submit) {
-            $return .= '<button class="save" type="submit" style="float:none;margin-left:10px;" name="add_field">'.get_lang('Validate').'</button>';
-        }
+	$return .= '<button class="save" type="submit">'.get_lang('AddAdditionalProfileField').'</button>';
 	$return .= '</form>';
 	return $return;
 }
@@ -2135,7 +1913,7 @@ function display_user_overview_export_options() {
  * Get data for courses list in sortable with pagination 
  * @return array
  */
-function get_course_data($from = null, $number_of_items = null, $column = null, $direction = null, $add_limit = true) {
+function get_course_data($from, $number_of_items, $column, $direction) {
 	
 	global $courses, $csv_content, $charset ;
 	global $tbl_course, $tbl_course_user, $tbl_track_cours_access, $tbl_session_course_user;
@@ -2157,9 +1935,7 @@ function get_course_data($from = null, $number_of_items = null, $column = null, 
     $from = intval($from);
     $number_of_items = intval($number_of_items);
 	$sql .= " ORDER BY col$column $direction ";
-	if ($add_limit == true) {
-	  $sql .= " LIMIT $from,$number_of_items";
-	}
+	$sql .= " LIMIT $from,$number_of_items";
 
 	$res = Database::query($sql, __FILE__, __LINE__);				
 	while ($row_course = Database::fetch_row($res)) {
@@ -2212,7 +1988,7 @@ function get_course_data($from = null, $number_of_items = null, $column = null, 
 		$table_row[] = $avg_messages_in_course;
 		$table_row[] = $avg_assignments_in_course;
 		//set the "from" value to know if I access the Reporting by the Dokeos tab or the course link
-		$table_row[] = '<center><a href="../tracking/courseLog.php?cidReq='.$course_code.'&studentlist=true&from=myspace">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionstatisticsdetails','border'=>'0"')).'</a></center>';
+		$table_row[] = '<center><a href="../tracking/courseLog.php?cidReq='.$course_code.'&studentlist=true&from=myspace"><img src="'.api_get_path(WEB_IMG_PATH).'arrow-right-double.png" border="0" /></a></center>';
 		$csv_content[] = array(
 			api_html_entity_decode($row_course[1], ENT_QUOTES, $charset),
 			$nb_students_in_course,

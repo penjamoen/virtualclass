@@ -156,21 +156,16 @@ $config['LoadPlugin'][] = 'fckEmbedMovies';
 // flvPlayer : Adds a dilog for inserting video files (.flv, .mp4), so they to be viewed through a flash-based player.
 $config['LoadPlugin'][] = 'flvPlayer';
 
-// Add a dialog for inserting video files
-$config['LoadPlugin'][] = 'videoPlayer';
-
-$config['LoadPlugin'][] = 'jwDokPlayer';
-
-$config['FlashEmbeddingMethod'] = 'adobe';
-
 // youtube : Adds a dilog for inserting YouTube video-streams.
-if ((api_get_setting('youtube_for_students') == 'true')) {	
-    $config['LoadPlugin'][] = 'youtube';	
+if ((api_get_setting('youtube_for_students') == 'true')) {
+	
+	$config['LoadPlugin'][] = 'youtube';
+	
 }
-else {
-    if (api_is_allowed_to_edit() || api_is_platform_admin()) { // (not for students)
-        $config['LoadPlugin'][] = 'youtube';
-    }
+else{
+	if (api_is_allowed_to_edit() || api_is_platform_admin()) { // (not for students)
+		$config['LoadPlugin'][] = 'youtube';
+	}
 }
 
 // googlemaps : Adds a dilog for inserting Google maps.
@@ -240,7 +235,7 @@ $config['LoadPlugin'][] = 'imgmap';
 $config['LinkBrowser']  = true;   // for any type of files;
 $config['ImageBrowser'] = true;   // for images;
 $config['FlashBrowser'] = true ;  // for flash objects;
-$config['MP3Browser']   = true ;    // for audio files;
+$config['MP3Browser'] = true ;    // for audio files;
 $config['VideoBrowser'] = true ;  // for video files;
 $config['MediaBrowser'] = true ;  // for video (flv) files.
 

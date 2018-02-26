@@ -3,8 +3,8 @@
 body {
 font-family:arial,verdana;
 font-size:1em;
-color:#424242;
-background-color: #FFF;
+color:#85878e;
+background-color: #d6d6d5;
 }
 
 * {
@@ -1049,18 +1049,4 @@ margin:0 25px;
 
 table.base p {
 margin-left:25px;
-}
-
-/*HOME PAGE ICONS*/
-.homepage_button {
-	height: 55px;
-	width : 55px;
-}
-.homepage_create_course {
-    background: url('images/pencil.png');
-    background-repeat: no-repeat;
-}
-.homepage_catalogue {
-    background: url('images/catalogue.png');
-    background-repeat: no-repeat;
 }

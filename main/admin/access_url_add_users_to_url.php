@@ -54,10 +54,12 @@ $interbreadcrumb[] = array ('url' => 'access_urls.php', 'name' => get_lang('Mult
 
 Display :: display_header($tool_name);
 
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/access_url_edit_users_to_url.php">'.Display::return_icon('edit_32.png',get_lang('EditUsersToURL'),'').get_lang('EditUsersToURL').'</a>';
+echo '<div class="actions" style="height:22px;">';
+echo '<div style="float:right;">
+		<a href="'.api_get_path(WEB_CODE_PATH).'admin/access_url_edit_users_to_url.php">'.Display::return_icon('edit.png',get_lang('EditUsersToURL'),'').get_lang('EditUsersToURL').'</a>
+	  </div><br />';
 echo '</div>';
-echo '<div id="content">';
+
 api_display_tool_title($tool_name);
 
 
@@ -170,7 +172,6 @@ unset($result);
   </tr>
  </table>
 </form>
-</div>
 <?php
 /*
 ==============================================================================

@@ -32,8 +32,8 @@ if (api_get_setting('show_courses_descriptions_in_catalog') == 'true') {
 }
 
 // Add additional javascript, css
-//$htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
-//$htmlHeadXtra[] = '<script src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/jquery.ui.all.js" type="text/javascript" language="javascript"></script>';
+$htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
+$htmlHeadXtra[] = '<script src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/jquery.ui.all.js" type="text/javascript" language="javascript"></script>';
 
 
 // Move the training list inside category, move the categories too
@@ -347,7 +347,7 @@ if (isset($_POST['submit_edit_course_category']) && isset($_POST['title_course_c
 }
 
 // We are subcribing to a course (=Subscribe to course).
-if (isset($_POST['subscribe']) AND (api_get_setting('allow_students_to_browse_courses') == 'true' || ($_user['status']==SESSIONADMIN || api_is_platform_admin()))) {
+if (isset($_POST['subscribe']) AND api_get_setting('allow_students_to_browse_courses') == 'true') {
   if ($ctok == $_POST['sec_token']) {
     $message = subscribe_user($_POST['subscribe']);
   }
@@ -382,24 +382,22 @@ if (isset($message)) {
 
 // The menu with the different options in the course management
 echo '<div id="actions" class="actions">';
-echo '<a href="../../user_portal.php">' . Display::return_icon('pixel.gif',get_lang('MyCourses'),array('class' => 'toolactionplaceholdericon toolactionback')) . ' ' . get_lang('MyCourses') . '</a>';
+echo '<a href="../../user_portal.php">' . Display::return_icon('go_previous_32.png', get_lang('MyCourses')) . ' ' . get_lang('MyCourses') . '</a>';
 if ($safe['action'] !== 'sortmycourses' && isset($safe['action'])) {
-	echo '<a href="' . api_get_self() . '?action=sortmycourses">' . Display::return_icon('pixel.gif',get_lang('SortMyCourses'),array('class' => 'toolactionplaceholdericon toolactiondraganddrop')). ' ' . get_lang('SortMyCourses') . '</a>';
+	echo '<a href="' . api_get_self() . '?action=sortmycourses">' . Display::return_icon('drag-and-drop.png', get_lang('SortMyCourses')) . ' ' . get_lang('SortMyCourses') . '</a>';
 } else {
-	echo '<span class="link">' . Display::return_icon('pixel.gif',get_lang('SortMyCourses'),array('class' => 'toolactionplaceholdericon toolactiondraganddrop')) . ' ' . get_lang('SortMyCourses') . '</span>';
+	echo '<span class="link">' . Display::return_icon('drag-and-drop.png', get_lang('SortMyCourses')) . ' ' . get_lang('SortMyCourses') . '</span>';
 }
 if ($safe['action'] !== 'createcoursecategory') {
-	echo '<a href="' . api_get_self() . '?action=createcoursecategory">' . Display::return_icon('pixel.gif',get_lang('Category'),array('class' => 'toolactionplaceholdericon toolactioncreatefolder')).' ' . get_lang('Category') . '</a>';
+	echo '<a href="' . api_get_self() . '?action=createcoursecategory">' . Display::return_icon('folderplus.png', get_lang('Category')) . ' ' . get_lang('Category') . '</a>';
 } else {
-	echo '<span class="link">' . Display::return_icon('pixel.gif',get_lang('Category'),array('class' => 'toolactionplaceholdericon toolactioncreatefolder')) . ' ' . get_lang('Category') . '</span>';
+	echo '<span class="link">' . Display::return_icon('folderplus.png', get_lang('Category')) . ' ' . get_lang('Category') . '</span>';
 }
-
-if (api_get_setting('allow_students_to_browse_courses') == 'true' || ($_user['status']==SESSIONADMIN || api_is_platform_admin())) {
+if (api_get_setting('allow_students_to_browse_courses') == 'true') {
 	if ($safe['action'] != 'subscribe') {
-		echo '<a href="' . api_get_self() . '?action=subscribe">' . Display::return_icon('pixel.gif',get_lang('SubscribeToCourse'),array('class' => 'toolactionplaceholdericon toolactionadd32')) . ' ' . get_lang('SubscribeToCourse') . '</a>';
+		echo '<a href="' . api_get_self() . '?action=subscribe">' . Display::return_icon('add_32.png', get_lang('SubscribeToCourse')) . ' ' . get_lang('SubscribeToCourse') . '</a>';
 	} else {
-            //get_lang('SubscribeToCourse')
-            echo '<span class="link">' . Display::return_icon('pixel.gif',get_lang('SubscribeToCourse'),array('class' => 'toolactionplaceholdericon toolactionadd32')). ' ' . get_lang('SubscribeToCourse') . '</span>';
+		echo '<span class="link">' . Display::return_icon('add_32.png', get_lang('SubscribeToCourse')) . ' ' . get_lang('SubscribeToCourse') . '</span>';
 	}
 }
 echo "</div>";
@@ -411,7 +409,7 @@ echo "<div>";
 switch ($safe['action']) {
   case 'subscribe':
     //api_display_tool_title(get_lang('SubscribeToCourse'));
-    if (api_get_setting('allow_students_to_browse_courses') == 'true' || ($_user['status']==SESSIONADMIN || api_is_platform_admin())) {
+    if (api_get_setting('allow_students_to_browse_courses') == 'true') {
       courses_subscribing();
     }
     break;
@@ -590,7 +588,7 @@ function browse_course_categories() {
   }
   echo "</ul>";
   if ($_GET['category']) {
-    echo "<a href=\"" . api_get_self() . "?action=subscribe&amp;category=" . Security::remove_XSS($_GET['up']) . "&amp;sec_token=" . $stok . "\">" . Display::return_icon('pixel.gif', get_lang('UpOneCategory'), array('align' => 'absmiddle','class'=>'actionplaceholdericon actionprev_navigation','style'=>'margin:5px;')) . get_lang('UpOneCategory') . "</a>";
+    echo "<a href=\"" . api_get_self() . "?action=subscribe&amp;category=" . Security::remove_XSS($_GET['up']) . "&amp;sec_token=" . $stok . "\">" . Display::return_icon('back.png', get_lang('UpOneCategory'), array('align' => 'absmiddle')) . get_lang('UpOneCategory') . "</a>";
   }
 }
 
@@ -680,8 +678,7 @@ function display_subscribe_to_courses($courses) {
       // block course description
       echo "\t\t<td>";
       $icon_title = get_lang('CourseDetails') . ' - ' . $course['title'];
-      
-      echo "<a href='course_description.php?code=" . $course['code'] . "' title='$icon_title' rel='gb_page_center[778]'>".Display::return_icon('pixel.gif',$icon_title,array('class' => 'actionplaceholdericon actionsview'))."</a>";
+      echo "<a href='course_description.php?code=" . $course['code'] . "' title='$icon_title' rel='gb_page_center[778]'>" . Display::return_icon('synthese_view.gif', $icon_title) . "</a>";
       echo "\t\t</td>";
     }
 
@@ -966,13 +963,13 @@ function display_courses($user_id, $show_course_icons, $user_courses) {
   } else {
    $style = "";
   }
-  echo '<ul id="categories" class="dragdrop nobullets ui-sortable">'; // Categories != 0
+  echo '<ul id="categories" class="dragdrop nobullets ui-sortable" style="-moz-user-select: none;">'; // Categories != 0
   // Step 1: We get all the categories of the user.
   $tucc = Database::get_user_personal_table(TABLE_USER_COURSE_CATEGORY);
   $sql = "SELECT * FROM $tucc WHERE user_id='" . $_user['user_id'] . "' ORDER BY sort ASC";
   $result = Database::query($sql, __FILE__, __LINE__);
   while ($row = Database::fetch_array($result)) {
-    echo '<li id="root_category_' . $row['id'] . '" class="category draggablex"><div class="parent_draggable rounded move" style="'.$style.'" ><table width="100%" style="margin-left: -10px; margin-top: -2px;">';
+    echo '<li id="root_category_' . $row['id'] . '" class="category draggable"><div class="parent_draggable rounded move" style="'.$style.'" ><table width="100%" style="margin-left: -10px; margin-top: -2px;">';
     if ($show_course_icons) {
       // The edit link is clicked.
       if (isset($_GET['categoryid']) && $_GET['categoryid'] == $row['id']) {
@@ -1015,51 +1012,38 @@ function display_courses_in_category($user_category_id, $showicons) {
   $TABLECOURSUSER = Database::get_main_table(TABLE_MAIN_COURSE_USER);
   $TABLE_USER_COURSE_CATEGORY = Database::get_user_personal_table(TABLE_USER_COURSE_CATEGORY);
 
-	//we filter the courses from the URL
-	$join_access_url = $where_access_url = '';
-	global $_configuration;
-	if ($_configuration['multiple_access_urls'] == true) {
-		$access_url_id = api_get_current_access_url_id();
-		if ($access_url_id != -1) {
-			$tbl_url_course = Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_COURSE);
-			$join_access_url = ", $tbl_url_course url_rel_course ";
-			$where_access_url = " AND url_rel_course.course_code = course.code AND access_url_id = $access_url_id ";
-		}
-	}
-
   $sql_select_courses = "SELECT course.code, course.visual_code, course.subscribe subscr, course.unsubscribe unsubscr,
 								course.title title, course.tutor_name tutor, course.db_name, course.directory, course_rel_user.status status,
 								course_rel_user.sort sort, course_rel_user.user_course_cat user_course_cat
 		                        FROM    $TABLECOURS       course,
-										$TABLECOURSUSER  course_rel_user $join_access_url
+										$TABLECOURSUSER  course_rel_user
 		                        WHERE course.code = course_rel_user.course_code
 		                        AND   course_rel_user.user_id = '" . $_user['user_id'] . "'
-		                        AND course_rel_user.user_course_cat='" . $user_category_id . "' $where_access_url 
+		                        AND course_rel_user.user_course_cat='" . $user_category_id . "'
 		                        ORDER BY course_rel_user.user_course_cat, course_rel_user.sort ASC";
-
   $result = Database::query($sql_select_courses, __FILE__, __LINE__);
   $number_of_courses = Database::num_rows($result);
   $key = 0;
   $count = 0;
-  echo '<ul class="nobullets ui-sortable category_'.$user_category_id.'" style="min-height: 15px;margin:0px;">';
+  echo '<ul class="dragdrop nobullets ui-sortable category_'.$user_category_id.'" style="min-height: 10px; -moz-user-select: none;">';
   while ($course = Database::fetch_array($result)) {
     $class = ($count % 2 == 0) ? 'row_even' : 'row_odd';
-    echo '<li id="course_id_' . $course['code'] . '_category_' . $user_category_id . '" class="draggablex movex" ><table class="data_table" cellpadding="8">';
-    echo "\t<tr  class='" . $class . "' id='course_code_" . $course['code'] . "'>\n";
+    echo '<li id="course_id_' . $course['code'] . '_category_' . $user_category_id . '" class="draggable move1"><table class="data_table">';
+    echo "\t<tr class='" . $class . "' id='course_code_" . $course['code'] . "'>\n";
     // block drag and drop
-    echo "\t\t<td align='left' valign='center' class='dragHandle move1 draggable' style='width:35px;'>";
-    echo Display::return_icon('pixel.gif', get_lang('Move'),array("class"=>"actionplaceholdericon actionsdraganddrop"));
+    echo "\t\t<td align='center' class='dragHandle' style='width:35px;'>";
+    echo Display::return_icon('drag-and-drop.png', get_lang('Move'));
     echo "\t\t</td>";
 
     if (api_get_setting('show_courses_descriptions_in_catalog') == 'true') {
       // block course description
-      echo "\t\t<td style='width:40px;' align='left' valign='center'>";
-      $icon_title = get_lang('CourseDetails') . ' - ' . $course['title'];   
-      echo "<a href='course_description.php?code=" . $course['code'] . "' title='$icon_title' rel='gb_page_center[778]'>" . Display::return_icon('pixel.gif',$icon_title,array('class' => 'actionplaceholdericon actionsview')) . "</a>";
+      echo "\t\t<td style='width:40px;' align='center'>";
+      $icon_title = get_lang('CourseDetails') . ' - ' . $course['title'];
+      echo "<a href='course_description.php?code=" . $course['code'] . "' title='$icon_title' rel='gb_page_center[778]'>" . Display::return_icon('synthese_view.gif', $icon_title) . "</a>";
       echo "\t\t</td>";
     }
 
-    echo "\t\t<td align='left' valign='center'>\n";
+    echo "\t\t<td align='left'>\n";
     echo '<a name="course' . $course['code'] . '"></a>'; // display an internal anchor.
     echo "<strong>" . $course['title'] . "</strong><br />";
     if (api_get_setting('display_coursecode_in_courselist') == 'true') {
@@ -1073,8 +1057,21 @@ function display_courses_in_category($user_category_id, $showicons) {
     }
     echo "\t\t</td>\n";
     // displaying the up/down/edit icons when we are sorting courses
-    echo "\t\t<td align=\"left\" valign=\"center\" style='width: 320px;'>\n";
+    echo "\t\t<td valign=\"top\" style='width: 320px;'>\n";
+    //if ($parameter == 'sorting')
+    //{
     display_course_icons($key, $number_of_courses, $course);
+    //}
+    // displaying the delete icon when we are unsubscribing from courses
+    //if($parameter == 'deleting')
+    //{
+    //	display_unsubscribe_icons($course);
+    //}
+    // display the subscribing icon when we are to courses.
+    //if ($parameter == 'subscribing')
+    //{
+    //	display_subscribe_icon($course);
+    //}
     echo "\t\t</td>\n";
     echo "\t</tr>\n";
     echo '</table></li>';
@@ -1114,14 +1111,14 @@ function display_subscribe_icon($current_course, $user_coursecodes) {
 	global $stok;
 	// the user is already subscribed to this course
 	if (in_array($current_course['code'], $user_coursecodes)) {
-		Display::display_icon('pixel.gif', get_lang('AlreadySubscribed'),array("class"=>"actionplaceholdericon actionenroll_na","style"=>"width:32px;height:32px"));
+		Display::display_icon('enroll_na.png', get_lang('AlreadySubscribed'));
 	} else { // the user is not yet subscribed to this course
 		// subscribing to the course is allowed
 		if ($current_course['subscribe'] == SUBSCRIBE_ALLOWED) {
 			if (!empty($current_course['registration_code'])) {
 
 				$return .= "<form action=\"" . $_SERVER["REQUEST_URI"] . "\" method=\"post\">";
-				$return .= '<input type="hidden" name="sec_token" value="' . $stok . '" />';
+				$return .= '<input type="hidden" name="sec_token" value="' . Security::get_token() . '" />';
 				$return .= "<input type=\"hidden\" name=\"subscribe\" value=\"" . $current_course['code'] . "\" />";
 				if (isset($_POST['course_registration_code']) && $_POST['course_registration_code'] !== $current_course['registration_code']) {
 					$return .= '<span class="form_error">'.get_lang('CourseRegistrationCodeIncorrect').'</span><br />';
@@ -1161,13 +1158,34 @@ function display_subscribe_icon($current_course, $user_coursecodes) {
  */
 function display_course_icons($key, $number_of_courses, $course) {
   global $safe, $stok;
+  echo "<table><tr><td>&nbsp;";
+  // the up icon
+  /* if ($key > 0) {
+    echo "<a href=\"courses.php?action=".$safe['action']."&amp;move=up&amp;course=".$course['code']."&amp;category=".$course['user_course_cat']."&amp;sec_token=".$stok."\">";
+    Display::display_icon('up.gif', get_lang('Up'));
+    echo '</a>';
+    } */
+  echo "</td>";
+  // the edit icon OR the edit dropdown list
+  if (isset($_GET['edit']) && $course['code'] == $_GET['edit']) {
+    echo "<td rowspan=\"2\"  valign=\"top\">";
+    //echo display_change_course_category_form($_GET['edit']);
+    echo  "</td>";
+  } else {
+    echo "<td rowspan=\"2\" valign=\"middle\">";
+      /*echo "<a href=\"courses.php?action=" . $safe['action'] . "&amp;edit=" . $course['code'] . "&amp;sec_token=" . $stok . "\">";
+      Display::display_icon('edit_link.png', get_lang('Edit'));
+      echo '</a>';*/
+    echo "</td>";
+  }
+  echo "<td rowspan=\"2\" valign=\"top\" class=\"invisible\">";
   if ($course['status'] != 1) {
     if ($course['unsubscr'] == 1) {
       // changed link to submit to avoid action by the search tool indexer
       echo "<form action=\"" . api_get_self() . "\" method=\"post\" onsubmit=\"javascript: if (!confirm('" . addslashes(api_htmlentities(get_lang("ConfirmUnsubscribeFromCourse"), ENT_QUOTES, api_get_system_encoding())) . "')) return false;\">";
       echo '<input type="hidden" name="sec_token" value="' . $stok . '">';
       echo "<input type=\"hidden\" name=\"unsubscribe\" value=\"" . $course['code'] . "\" />";
-      echo '<input type="image" name="unsub" style="border-color:#fff" src="' . api_get_path(WEB_IMG_PATH) . 'delete_icon.png" title="' . get_lang('_unsubscribe') . '"  alt="' . get_lang('_unsubscribe') . '" /></form>';
+      echo '<input type="image" name="unsub" style="border-color:#fff" src="' . api_get_path(WEB_IMG_PATH) . 'delete.png" title="' . get_lang('_unsubscribe') . '"  alt="' . get_lang('_unsubscribe') . '" /></form>';
     } else {
       display_info_text(get_lang('UnsubscribeNotAllowed'));
     }
@@ -1176,6 +1194,14 @@ function display_course_icons($key, $number_of_courses, $course) {
       display_info_text(get_lang('CourseAdminUnsubscribeNotAllowed'));
     }
   }
+  echo "</td>";
+  echo "</tr><tr><td>&nbsp;";
+  /* if ($key < $number_of_courses - 1) {
+    echo "<a href=\"courses.php?action=".$safe['action']."&amp;move=down&amp;course=".$course['code']."&amp;category=".$course['user_course_cat']."&amp;sec_token=".$stok."\">";
+    Display::display_icon('down.gif', get_lang('Down'));
+    echo '</a>';
+    } */
+  echo "</td></tr></table>";
 }
 
 /**
@@ -1201,12 +1227,12 @@ function display_category_icons($current_category, $all_user_categories) {
     echo "</td>";
     echo " <td rowspan=\"2\" style='text-align: center; width: 10%; padding-right: 0px; vertical-align: top;'>";
     echo " <a href=\"courses.php?action=sortmycourses&amp;categoryid=" . $current_category . "&amp;sec_token=" . $stok . "#category" . $current_category . "\">";
-    Display::display_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit'));
+    Display::display_icon('edit.png', get_lang('Edit'));
     echo "</a>";
     echo "</td>";
     echo "<td rowspan=\"2\" style='text-align: center; width: 10%; padding-right: 0px; vertical-align: top;'>";
     echo " <a href=\"courses.php?action=deletecoursecategory&amp;id=" . $current_category . "&amp;sec_token=" . $stok . "\">";
-    Display::display_icon('pixel.gif', get_lang('Delete'), array('class'=>'actionplaceholdericon actiondelete','onclick' => "javascript: if (!confirm('" . addslashes(api_htmlentities(get_lang("CourseCategoryAbout2bedeleted"), ENT_QUOTES, api_get_system_encoding())) . "')) return false;"));
+    Display::display_icon('delete.png', get_lang('Delete'), array('onclick' => "javascript: if (!confirm('" . addslashes(api_htmlentities(get_lang("CourseCategoryAbout2bedeleted"), ENT_QUOTES, api_get_system_encoding())) . "')) return false;"));
     echo "</a>";
     echo "</td>";
     echo "</tr>";
@@ -1271,7 +1297,7 @@ function display_unsubscribe_icons($course) {
       echo "<form action=\"" . api_get_self() . "\" method=\"post\" onsubmit=\"javascript: if (!confirm('" . addslashes(api_htmlentities(get_lang('ConfirmUnsubscribeFromCourse'), ENT_QUOTES, api_get_system_encoding())) . "')) return false;\">";
       echo '<input type="hidden" name="sec_token" value="' . $stok . '">';
       echo "<input type=\"hidden\" name=\"unsubscribe\" value=\"" . $course['code'] . "\" />";
-      echo "<input type=\"image\" name=\"unsub\" src=\"" . api_get_path(WEB_IMG_PATH) . "delete_icon.png\" alt=\"" . get_lang('_unsubscribe') . "\" /></form>";
+      echo "<input type=\"image\" name=\"unsub\" src=\"" . api_get_path(WEB_IMG_PATH) . "delete.png\" alt=\"" . get_lang('_unsubscribe') . "\" /></form>";
     } else {
       display_info_text(get_lang('UnsubscribeNotAllowed'));
     }

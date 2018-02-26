@@ -1,7 +1,27 @@
 <?php
+/*
+==============================================================================
+	Dokeos - elearning and course management software
 
-/* For licensing terms, see /dokeos_license.txt */
+	Copyright (c) 2008 Dokeos Latinoamerica SAC
+	Copyright (c) 2006 Dokeos SPRL
+	Copyright (c) 2006 Ghent University (UGent)
+	Copyright (c) various contributors
 
+	For a full list of contributors, see "credits.txt".
+	The full license can be read in "license.txt".
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	See the GNU General Public License for more details.
+
+	Contact address: Dokeos, rue du Corbeau, 108, B-1030 Brussels, Belgium
+	Mail: info@dokeos.com
+==============================================================================
+*/
 class DisplayGradebook
 {
 	/**
@@ -15,34 +35,34 @@ class DisplayGradebook
 		$status=CourseManager::get_user_in_course_status(api_get_user_id(), api_get_course_id());
 		if ($shownavbar == '1' && $status==1) {
 			$header = '<div class="actions">';
-			$header .= '<a href="'.$_SESSION['gradebook_dest'].'?selectcat=' . $selectcat . '&'.  api_get_cidreq().'">'. Display::return_icon('pixel.gif', get_lang('FolderView'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('FolderView') . '</a>';
+			$header .= '<a href="'.$_SESSION['gradebook_dest'].'?selectcat=' . $selectcat . '&'.  api_get_cidreq().'">'. Display::return_icon(('go_previous_32.png'),get_lang('FolderView')) . get_lang('FolderView') . '</a>';
 			if ($evalobj->get_course_code() == null) {
 				$header .= '<a href="gradebook_add_user.php?selecteval=' . $evalobj->get_id() . '&'.  api_get_cidreq().'"><img src="../img/add_user_big.gif" alt="' . get_lang('AddStudent') . '" align="absmiddle" /> ' . get_lang('AddStudent') . '</a>';
 			}
 			elseif (!$evalobj->has_results()) {
 				$header .=	'<a href="gradebook_add_result.php?selectcat=' . $selectcat . '&selecteval=' . $evalobj->get_id() . '&'.  api_get_cidreq().'">'.
 //								'<img src="../tick.png" alt="' . get_lang('AddResult') . '" align="absmiddle"/> ' . get_lang('AddResult') .
-								Display::return_icon(('pixel.gif'),get_lang('AddResult'),array('class'=>'toolactionplaceholdericon toolactionmark_learners')) . get_lang('AddResult').
+								Display::return_icon(('tick.gif'),get_lang('AddResult')) . get_lang('AddResult').
 							 '</a>';
 			}
 			$header .= 	'<a href="' . api_get_self() . '?&selecteval=' . $evalobj->get_id() . '&import=&'.  api_get_cidreq().'">'.
 //						'<img src="../img/import_data.gif" border="0" alt="" />' . ' ' . get_lang('ImportResult').
-						Display::return_icon(('pixel.gif'),get_lang('ImportResult'),array('class'=>'toolactionplaceholdericon toolactionimport_32')). get_lang('ImportResult').
+						Display::return_icon(('import_32.png'),get_lang('ImportResult')). get_lang('ImportResult').
 						'</a>';
 			if ($evalobj->has_results()) {
-				$header .= '<a href="' . api_get_self() . '?&selecteval=' . $evalobj->get_id() . '&export=&'.  api_get_cidreq().'">'.Display::return_icon('pixel.gif',get_lang('ExportResult'),array('class'=>'toolactionplaceholdericon toolaction32x32file_pdf') ).'  ' . get_lang('ExportResult') . '</a>';
-				$header .= '<a href="gradebook_edit_result.php?selecteval=' . $evalobj->get_id() . '&'.  api_get_cidreq().'">'.Display::return_icon('pixel.gif',get_lang('EditResult'),array('class'=>'toolactionplaceholdericon toolactionmark_learners') ).'  ' . get_lang('EditResult') . '</a>';
-				$header .= '<a href="' . api_get_self() . '?&selecteval=' . $evalobj->get_id() . '&deleteall=&'.  api_get_cidreq().'" onclick="return confirmationall();">'.Display::return_icon('pixel.gif',get_lang('DeleteResult'),array('class'=>'toolactionplaceholdericon toolactiondelete') ).' ' . get_lang('DeleteResult') . '</a>';
+				$header .= '<a href="' . api_get_self() . '?&selecteval=' . $evalobj->get_id() . '&export=&'.  api_get_cidreq().'"><img src="../img/file_pdf.gif" border="0" alt="" />' . ' ' . get_lang('ExportResult') . '</a>';
+				$header .= '<a href="gradebook_edit_result.php?selecteval=' . $evalobj->get_id() . '&'.  api_get_cidreq().'"><img src="../img/edit.png" alt="' . get_lang('EditResult') . '" align="absmiddle" /> ' . get_lang('EditResult') . '</a>';
+				$header .= '<a href="' . api_get_self() . '?&selecteval=' . $evalobj->get_id() . '&deleteall=&'.  api_get_cidreq().'" onclick="return confirmationall();"><img src="../img/delete.png" border="0" alt="" />' . ' ' . get_lang('DeleteResult') . '</a>';
 			}
 			$header .= 	'<a href="' . api_get_self() . '?print=&selecteval=' . $evalobj->get_id() . '&'.  api_get_cidreq().'" target="_blank">'.
 //						'<img src="../img/print32.png" alt="' . get_lang('Print') . '" /> ' . get_lang('Print') .
-						Display::return_icon(('pixel.gif'),get_lang('Print'),array('class'=>'toolactionplaceholdericon toolactionprint32')) . get_lang('Print').
+						Display::return_icon(('print32.png'),get_lang('Print')) . get_lang('Print').
 						'</a>';
 
 			$header .= '</div>';
 		} elseif($status==5 || is_null($header)) { // Is student
 			$header = '<div class="actions">';
-			$header .= '<a href="'.$_SESSION['gradebook_dest'].'?selectcat=' . $selectcat . '&'.  api_get_cidreq().'">'. Display::return_icon('pixel.gif', get_lang('FolderView'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('FolderView') . '</a>';
+			$header .= '<a href="'.$_SESSION['gradebook_dest'].'?selectcat=' . $selectcat . '&'.  api_get_cidreq().'">'. Display::return_icon(('go_previous_32.png'),get_lang('FolderView')) . get_lang('FolderView') . '</a>';
 			$header .= '</div>';
         }
 
@@ -102,7 +122,7 @@ class DisplayGradebook
 			$evalinfo .= '<br /><i>' . get_lang('NoResultsInEvaluation') . '</i>';
 		elseif ($scoredisplay->is_custom() && api_get_self() != '/dokeos/main/gradebook/gradebook_statistics.php')
 			$evalinfo .= '<br /><br /><a href="gradebook_statistics.php?selecteval='.Security::remove_XSS($_GET['selecteval']).'"> '. get_lang('ViewStatistics') . '</a>';
-		$evalinfo .= '</td><td>'.Display::return_icon('pixel.gif','',array('class'=>'tutorial','style'=>'float:right; position:relative;')).'</td></table>';
+		$evalinfo .= '</td><td><img style="float:right; position:relative;" src="../img/tutorial.gif"></img></td></table>';
 		return $evalinfo;
 	}
 
@@ -137,7 +157,7 @@ class DisplayGradebook
 		$header .= '<td style="vertical-align: top;">'.$simple_search_form->toHtml().'</td>';
 		$header .= '<td style="vertical-align: top;"><a href="' . api_get_self() . '?exportpdf=&offset='.Security::remove_XSS($_GET['offset']).'&search=' . Security::remove_XSS($_GET['search']).'&selectcat=' . $catobj->get_id() . '"><img src=../img/file_pdf.gif alt=' . get_lang('ExportPDF') . '/> ' . get_lang('ExportPDF') . '</a>';
 		$header .= '<td style="vertical-align: top;"><a href="' . api_get_self() . '?print=&selectcat=' . $catobj->get_id() . '" target="_blank">'.
-		Display::return_icon(('pixel.gif'),get_lang('Print'),array('class'=>'toolactionplaceholdericon toolactionprint32')) . get_lang('Print') . '</a>';
+		Display::return_icon(('print32.png'),get_lang('Print')) . get_lang('Print') . '</a>';
 		$header .= '</td></tr></table>';
 		if (!$catobj->get_id() == '0') {
 			$header .= '<table border="0" cellpadding="5"><tr><td><form name="itemfilter" method="post" action="' . api_get_self() . '?selectcat=' . $catobj->get_id() . '"><input type="checkbox" name="showeval" onclick="document.itemfilter.submit()" ' . (($showeval == '1') ? 'checked' : '') . '>Show Evaluations &nbsp;';
@@ -157,8 +177,8 @@ class DisplayGradebook
 	*/
 	function display_header_reduce_flatview($catobj, $showeval, $showlink,$simple_search_form) {
 		$header = '<div class="actions">';
-		$header .= '<a href="'.$_SESSION['gradebook_dest'].'?'.api_get_cidreq().'&selectcat='.Security::remove_XSS($_GET['selectcat']).'">'. Display::return_icon('pixel.gif', get_lang('FolderView'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('FolderView') . '</a>';
-		$header .= '<span><a class="quiz_export_link" href="javascript: void(0);" onclick="javascript: document.form1b.submit();">'.Display::return_icon('pixel.gif', get_lang('ExportAsXLS'),array('class'=>'toolactionplaceholdericon toolactionexportcourse')).' '.get_lang('ExportAsXLS').'</a></span>';
+		$header .= '<a href="'.$_SESSION['gradebook_dest'].'?'.api_get_cidreq().'&selectcat='.Security::remove_XSS($_GET['selectcat']).'">'. Display::return_icon('go_previous_32.png',get_lang('FolderView')) . get_lang('FolderView') . '</a>';
+		$header .= '<span><a class="quiz_export_link" href="javascript: void(0);" onclick="javascript: document.form1b.submit();">'.Display::return_icon('excel_32.png', get_lang('ExportAsXLS')).' '.get_lang('ExportAsXLS').'</a></span>';
 //		$header .= '<td style="vertical-align: top;"><a href="' . api_get_self() . '?exportpdf=&offset='.Security::remove_XSS($_GET['offset']).'&search=' . Security::remove_XSS($_GET['search']).'&selectcat=' . $catobj->get_id() . '"><img src=../img/file_pdf.gif alt=' . get_lang('ExportPDF') . '/> ' . get_lang('ExportPDF') . '</a>';
 
 		// this MUST be a GET variable not a POST
@@ -181,8 +201,8 @@ class DisplayGradebook
 		echo '</form>';
 
 		//$header .= '<a class="quiz_export_link" href="javascript: void(0);" onclick="javascript: document.form1a.submit();">'.Display::return_icon('csv.gif', get_lang('ExportAsCSV')).' '.get_lang('ExportAsCSV').'</a>';
-		$header .= '<a href="' . api_get_self() . '?print=&selectcat=' . $catobj->get_id() . '" target="_blank">'.Display::return_icon('pixel.gif', get_lang('Print'),array('class'=>'toolactionplaceholdericon toolactionprint32')).' ' . get_lang('Print') . '</a>';
-		$header .= '<a href="' . api_get_self() . '?exportpdf=&selectcat=' . $catobj->get_id() . '" >'.Display::return_icon('pixel.gif', get_lang('ExportToPDF'),array('class'=>'toolactionplaceholdericon toolaction32x32file_pdf')).' ' . get_lang('ExportToPDF') . '</a>';
+		$header .= '<a href="' . api_get_self() . '?print=&selectcat=' . $catobj->get_id() . '" target="_blank">'.Display::return_icon('print32.png', get_lang('Print')).' ' . get_lang('Print') . '</a>';
+		$header .= '<a href="' . api_get_self() . '?exportpdf=&selectcat=' . $catobj->get_id() . '" >'.Display::return_icon('32x32file_pdf.png', get_lang('ExportToPDF')).' ' . get_lang('ExportToPDF') . '</a>';
 		//exportpdf
 		//<div class="clear">
 		$header .= '</div>';
@@ -263,7 +283,7 @@ class DisplayGradebook
 			$header .= '<tr>';
 			
 			if (!$selectcat == '0') {
-				//$header .= '<td width="13%"><a href="' . api_get_self() . '?selectcat=' . $catobj->get_parent_id() . '">'.Display::return_icon('pixel.gif', get_lang('Back'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('Back').'</a></td>';
+				//$header .= '<td width="13%"><a href="' . api_get_self() . '?selectcat=' . $catobj->get_parent_id() . '">'.Display::return_icon('go_previous_32.png',get_lang('Back')).get_lang('Back').'</a></td>';
 			}
 			
 			$header .= '<td width="9%" align="right">' . get_lang('Gradebook') . '</td>' .
@@ -356,12 +376,12 @@ class DisplayGradebook
                 		}
                 	}
 
-    				$header_actions .= '<a href="gradebook_add_eval.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() . '" >'.Display::return_icon('pixel.gif', get_lang('Exam'),array('class'=>'toolactionplaceholdericon toolactionexamen_32')).' ' . get_lang('Exam') . '</a>&nbsp;';
-					$header_actions .= '<a href="gradebook_add_presence.php?'.$my_api_cidreq.'&selectcat='.$catobj->get_id().'&course='.$course.'">'.Display::return_icon('pixel.gif', get_lang('Presence'),array('class'=>'toolactionplaceholdericon toolactionpresencie')).' ' . get_lang('Presence') . '</a>';
+    				$header_actions .= '<a href="gradebook_add_eval.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() . '" >'.Display::return_icon('exam_32.png', get_lang('Exam')).' ' . get_lang('Exam') . '</a>&nbsp;';
+					$header_actions .= '<a href="gradebook_add_presence.php?'.$my_api_cidreq.'&selectcat='.$catobj->get_id().'&course='.$course.'">'.Display::return_icon('presence_32.png', get_lang('Presence')).' ' . get_lang('Presence') . '</a>';
                     $cats= Category :: load($selectcat);
                     if ($cats[0]->get_course_code() != null && $message_resource===false) {
                         //$header .= '<td><a href="gradebook_add_link.php?'.api_get_cidreq().'&selectcat=' . $catobj->get_id() . '"><img src="../img/link.gif" alt="' . get_lang('MakeLink') . '" align="absmiddle" /> ' . get_lang('MakeLink') . '</a>';
-                        $header_actions .= '<a href="gradebook_add_link.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() . '">'.Display::return_icon('pixel.gif', get_lang('OnLine'),array('class'=>'toolactionplaceholdericon toolactiononline')).' ' . get_lang('OnLine') . '</a>&nbsp;';
+                        $header_actions .= '<a href="gradebook_add_link.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() . '">'.Display::return_icon('online_32.png', get_lang('OnLine')).' ' . get_lang('OnLine') . '</a>&nbsp;';
 
                     } else {
                         $header_actions .= '<a href="gradebook_add_link_select_course.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() . '">'.Display::return_icon('online_32.png', get_lang('OnLine')).' ' . get_lang('OnLine') . '</a>&nbsp;';
@@ -375,10 +395,10 @@ class DisplayGradebook
                 	$my_file= substr($_SESSION['gradebook_dest'],0,5);
                 	if (($my_file!='index' || $status_user==1) || api_is_platform_admin()) {
                         if (api_is_platform_admin()) {// Scoring is only configured for platform admin, this feature should be implemented for be configured by teachers in the future
-                          $header_actions .= '<a href="gradebook_scoring_system.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() .'">'.Display::return_icon('pixel.gif', get_lang('ScoreEdit'),array('class'=>'toolactionplaceholdericon toolactionskills_ranking')).' ' . get_lang('ScoreEdit') . '</a>';
+                          $header_actions .= '<a href="gradebook_scoring_system.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() .'">'.Display::return_icon('reference.png', get_lang('ScoreEdit')).' ' . get_lang('ScoreEdit') . '</a>';
                         }
-                        $header_actions .='<a href="gradebook_edit_all.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() . '">'.Display::return_icon('pixel.gif', get_lang('EditAllWeights'),array('class'=>'toolactionplaceholdericon toolactionweight_in_report')).' ' . get_lang('EditAllWeights') . '</a>';
-	                	$header_actions .= '<a href="gradebook_flatview.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() . '">'.Display::return_icon('pixel.gif', get_lang('Report'),array('class'=>'toolactionplaceholdericon toolactionquizscores')).' ' . get_lang('Report') . '</a>';
+                        $header_actions .='<a href="gradebook_edit_all.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() . '">'.Display::return_icon('balance_32.png', get_lang('EditAllWeights')).' ' . get_lang('EditAllWeights') . '</a>';
+	                	$header_actions .= '<a href="gradebook_flatview.php?'.$my_api_cidreq.'&selectcat=' . $catobj->get_id() . '">'.Display::return_icon('report_32.png', get_lang('Report')).' ' . get_lang('Report') . '</a>';
 	                	//$header_actions .= '<a href="../document/document.php?curdirpath=/certificates&'.$my_api_cidreq.'&origin=gradebook&selectcat=' . $catobj->get_id() . '">'.Display::return_icon('certificate_32.png', get_lang('AttachCertificate')).' ' . get_lang('AttachCertificate') . '</a>';
 						//	if(($is_course_admin && $message_resource===false && $status_user==1) || api_is_platform_admin())
 						/*if ( api_is_platform_admin()) {

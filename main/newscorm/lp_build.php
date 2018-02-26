@@ -176,7 +176,7 @@ function confirmation(name)
 
 //echo $_SESSION['oLP']->build_action_menu();
 echo '<div class="actions">';
-  echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', get_lang('Author'), array('class' => 'toolactionplaceholdericon toolactionauthor')).get_lang("Author") . '</a>';
+  echo '<a href="' . api_get_self() . '?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('author.png', get_lang('Author')).get_lang("Author") . '</a>';
   echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=add_item&type=step&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('content.png', get_lang('Content')).get_lang("Content") . '</a>';
   echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('organize.png', get_lang('Scenario')).get_lang("Scenario") . '</a>';
   echo '<a href="' . api_get_self() . '?' . api_get_cidreq() . '&gradebook=&action=edit&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display::return_icon('publication_setup.png', get_lang('Publication')).get_lang("Publication") . '</a>';

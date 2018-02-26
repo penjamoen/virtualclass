@@ -177,7 +177,7 @@ $NoPrerequisites = "Nessun prerequisito";
 $NewExercise = "Nuovo Test";
 $CreateANewLink = "Nuovo collegamento";
 $CreateANewForum = "Nuovo forum";
-$LinkAdd = "Nuovo collegamento";
+$LinkAdd = "Includi collegamento";
 $WoogieConversionPowerPoint = "Woogie: conversione da elaboratore testi";
 $WelcomeWoogieSubtitle = "Converte in modulo didattico un documento (ad es. Word)";
 $WelcomeWoogieConverter = "Benvenuti su Woogie<ul type=\\\"1\\\"><li>Scegli un file .doc, .sxw, .odt<li>Caricalo su Woogie per convertirlo in modulo SCORM<li>Una volta effettuata la conversione puoi aggiungere commenti audio, test o altre attività</ul>";

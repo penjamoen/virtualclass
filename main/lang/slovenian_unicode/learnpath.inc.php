@@ -249,5 +249,4 @@ $SaveHotpotatoes = "Shrani hotpotatoes";
 $Scenario = "Scenarij";
 $AddActivity = "Dodaj aktivnost";
 $CreateSelectTest = "Ustvari / Izberi test";
-$CourseEmpty = "Modul je prazen. Klinite tule za dodajanje vsebine.";
 ?>

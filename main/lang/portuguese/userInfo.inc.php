@@ -93,5 +93,4 @@ $MyCertificates = "Meus certificados";
 $ToChangeYourEmailMustTypeYourPassword = "Para modificar o seu e-mail deverá introduzir a sua senha/password";
 $Invitations = "Convites";
 $MyGroups = "Meus grupos";
-$EditProfile = "Editar Perfil";
 ?>

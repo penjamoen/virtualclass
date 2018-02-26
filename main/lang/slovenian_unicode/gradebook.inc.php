@@ -190,8 +190,4 @@ $CertificateMinimunScoreIsRequiredAndMustNotBeMoreThan = "Minimalen rezultat za 
 $LinkMod = "Shrani";
 $EditLink = "Spremeni povezavo k online aktivnosti";
 $CategoryDeleted = "Kategorija je bila odstranjena";
-$CSVLong = "CSV (Comma-Separated Values)";
-$PDFLong = "PDF (Portable Document Format)";
-$XMLLong = "XML (Extensible Markup Language)";
-$XLSLong = "XLS (MS Excel file extension)";
 ?>

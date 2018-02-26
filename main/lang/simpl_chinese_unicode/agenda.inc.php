@@ -1,7 +1,6 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$AgendaAdd = "新事件";
 $lang_september = "九月";
 $langClassName = "班级名称";
 $lang_agenda = "日程";

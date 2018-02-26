@@ -278,7 +278,7 @@ require_once '../../inc/global.inc.php';
             function clickOnPlot(ev, gridpos, datapos, neighbor, plot){
                 if(neighbor)
                 {
-                    document.location = '<?php echo api_get_path(WEB_CODE_PATH) ?>mySpace/lp_tracking.php?cidReq=<?php echo Security::remove_XSS($course_code_info) ?>&course=<?php echo Security::remove_XSS($course_code_info) ?>&origin=tracking_course&lp_id=<?php echo $learnpath_id ?>&student_id='+neighbor.data[2];
+                    document.location = '<?php echo api_get_path(WEB_CODE_PATH) ?>mySpace/lp_tracking.php?course=<?php echo Security::remove_XSS($course_code_info) ?>&origin=tracking_course&lp_id=<?php echo $learnpath_id ?>&student_id='+neighbor.data[2];
                 }
             }
 

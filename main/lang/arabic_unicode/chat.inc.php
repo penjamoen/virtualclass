@@ -30,7 +30,6 @@ $langLinkURL = "عنوان الرابط - رابط انترنت ";
 $langWelcomeToOnlineConf = "مرحبا بكم في <b>الإجتماع المباشر </b>";
 $langNoLinkAvailable = "لا يوجد روابط متوفرة ";
 $langChat_reset_by = "إعادة المحادثة";
-$langAdmin = "لوحة تحكم الإدارة";
 $OrFile = "أو ملف";
 $langCallSent = "لقد تم إرسال نداء من أجل المحادثة. في انتظار الموافقة من الطرف الآخر ";
 $langChatDenied = "لقد تم منع ندائك من قبل الطرف الآخر ";

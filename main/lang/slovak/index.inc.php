@@ -40,6 +40,7 @@ $langMe = "ja";
 $langSystemAnnouncements = "Oznámenia systému";
 $langHelpMaj = "Pomoc";
 $langNotRegistered = "Nezaregistrovaný";
+$langAdmin = "Administrátor platformy";
 $Login = "Prihlásenie";
 $langRegisterForCourse = "Prihlási&#357; sa na kurz";
 $langUnregisterForCourse = "Odhlási&#357; sa z kurzu";

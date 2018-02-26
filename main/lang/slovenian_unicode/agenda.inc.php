@@ -91,6 +91,4 @@ $AgendaStored = "Dogodek je bil shranjen";
 $AgendaItemPublishedBy = "Objavil";
 $EditedBy = "Spremenil";
 $AgendaAddPersonal = "Dodaj oseben dogodek";
-$SaveEvent = "Uveljavi";
-$Today = "Danes";
 ?>

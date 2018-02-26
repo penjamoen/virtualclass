@@ -55,8 +55,4 @@ $AnnounceSentToUserSelection = "Obvestila poslana izbranim uporabnikom";
 $SendAnnouncement = "Pošlji obvestilo";
 $ModifyAnnouncement = "Spremeni obvestilo";
 $ButtonPublishAnnouncement = "Pošlji obvestilo";
-$SaveAnnouncement = "Uveljavi";
-$DeleteAnnouncement = "Odstrani";
-$EditAnnouncement = "Uredi";
-$AnnouncementAdd = "Dodaj obvestilo";
 ?>

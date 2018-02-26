@@ -30,7 +30,6 @@ $langLinkURL = "URL ";
 $langWelcomeToOnlineConf = "Bonvenon &#265;e tiu &#265;i <b>rekta konferenco</b> ";
 $langNoLinkAvailable = "Ne disponeblas ligilo ";
 $langChat_reset_by = "re&#349;argi babiladon ";
-$langAdmin = "Platformmastrumanto ";
 $OrFile = "A&#365; dosiero ";
 $langCallSent = "Babilpeto sendita. Atendu la konsenton de via partnero. ";
 $langChatDenied = "Via peto estas ignorata de via partnero. ";

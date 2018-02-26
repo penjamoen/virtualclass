@@ -12,7 +12,7 @@
 define('DOKEOS_EXERCISE', true);
 
 // Language files that should be included
-$language_file = array('exercice','admin');
+$language_file[]='exercice';
 // setting the help
 $help_content = 'exerciselist';
 
@@ -128,13 +128,16 @@ $htmlHeadXtra[] = '<script>
 
 $htmlHeadXtra[] = '<script>
   $(document).ready(function (){
-    $(".save").attr("style","float:right;margin-right:350px");
+    $(".save").attr("style","float:right;margin-right:10px");
+ //   $("#enabletimercontroltotalminutes").after("&nbsp;<img src=../img/timer.jpg />");
+ //   $("#enabletimercontroltotalminutes1").after("&nbsp;<img src=../img/timer.jpg />");
+ //   $("#enabletimercontroltotalminutes2").after("&nbsp;<img src=../img/timer.jpg />");
   });
 </script>';
 
 $htmlHeadXtra[] = '<script>
   $(document).ready(function (){
-    $("div.label").attr("style","width: 100%;text-align:left;padding-bottom:2px;");
+    $("div.label").attr("style","width: 100%;text-align:left");
     $("div.row").attr("style","width: 100%;");
     $("div.formw").attr("style","width: 100%;");
   });
@@ -142,113 +145,62 @@ $htmlHeadXtra[] = '<script>
 
 $htmlHeadXtra[] = '<script>
   $(document).ready(function (){
-	   $("#addButton_1").click(function () {		   
-		   var counter = $("input[name=\'counter_1\']").attr("value");		   
-		   var quizcategory = $("input[name=\'quizcategory_1\']").attr("value");
-		   var quizcategory_id = $("input[name=\'quizcategory_id_1\']").attr("value");
-	       var quiz_level = $("input[name=\'quiz_level_1\']").attr("value");
-		   var quiz_level_id = $("input[name=\'quiz_level_id_1\']").attr("value");
-		   var quizCategoryArray = quizcategory.split(",");	
-	       var quizCategoryIdArray = quizcategory_id.split(",");
-	       var quizlevelArray = quiz_level.split(",");
-		   var quizlevelIdArray = quiz_level_id.split(",");
-	       counter = (counter*1) + 1;		   
-		   var newTextBoxDiv = $(document.createElement("div")).attr("id", "TextBoxDiv"+counter+"_1");		   
-		   var str = "<br/><table width=\"100%\" border=\"0\" cellspacing=\"2\"><tr><td width=\"45%\">";
-	       str = str + "<select name=\"quizcategory_"+counter+"_1\">";
-	       var str1 = "";		   
-		   if(quizCategoryArray.length == 1)
-		   {
-			   str1 = str1 + "<option value=\"0\">Select</option>";
-		   }
-		   for(var i=0;i<quizCategoryArray.length;i++)
-		   {
-			   str1 = str1 + "<option value="+quizCategoryIdArray[i]+">"+quizCategoryArray[i]+"</option>";
-		   }
-		   str = str + str1;
-		   str = str + "</select></td><td width=\"25%\">";
-		   str = str + "<select name=\"quizlevel_"+counter+"_1\">";
-		   var str2 = "";		   
-		   for(var i=0;i<quizlevelArray.length;i++)
-		   {
-			   str2 = str2 + "<option value="+quizlevelIdArray[i]+">"+quizlevelArray[i]+"</option>";
-		   }
-		   str = str + str2;
-		   str = str + "</select></td><td width=\"30%\">";
-		   str = str + "<select name=\"numberofquestion_"+counter+"_1\" size=\"1\">";
-		   var str3 = "";
-		   str3 = str3 + "<option value=\"0\">Select</option>";
-		   for(var i=1;i<=10;i++)
-		   {
-			   str3 = str3 + "<option value="+i+">"+i+"</option>";
-		   }
-		   str = str + str3;
-		   str = str + "</select></td></tr></table>";		   
-		   newTextBoxDiv.html(str);
-		   $("input[name=counter_1]").val(counter);	
-		   newTextBoxDiv.appendTo("#TextBoxesGroup_1");
+	   var counter = $("input[name=\'counter\']").attr("value");	   
+	   $("#addButton").click(function () {	   
+	   var quizcategory = $("input[name=\'quizcategory\']").attr("value");
+	   var quizcategory_id = $("input[name=\'quizcategory_id\']").attr("value");
+	   var quiz_level = $("input[name=\'quiz_level\']").attr("value");	 
+	   counter = $("input[name=\'counter\']").attr("value");	   
+	   var quizCategoryArray = quizcategory.split(",");	
+	   var quizCategoryIdArray = quizcategory_id.split(",");
+	   var quizlevelArray = quiz_level.split(",");
+	   counter = (counter*1) + 1;
+	   
+	   var newTextBoxDiv = $(document.createElement("div")).attr("id", "TextBoxDiv"+counter);
+	   
+	   var str = "<br/><table width=\"100%\" border=\"0\" cellspacing=\"2\"><tr><td width=\"30%\">";
+	   str = str + "<select name=\"quizcategory_"+counter+"\">";
+	   var str1 = "";
+	   if(quizCategoryArray.length == 1)
+	   {
+		   str1 = str1 + "<option value=\"0\">Select</option>";
+	   }
+	   for(var i=0;i<quizCategoryArray.length;i++)
+	   {
+		   str1 = str1 + "<option value="+quizCategoryIdArray[i]+">"+quizCategoryArray[i]+"</option>";
+	   }
+	   str = str + str1;
+	   str = str + "</select></td><td width=\"25%\">";
+	   str = str + "<select name=\"quizlevel_"+counter+"\">";
+	   var str2 = "";
+	   for(var i=0;i<quizlevelArray.length;i++)
+	   {
+		   str2 = str2 + "<option value="+quizlevelArray[i]+">"+quizlevelArray[i]+"</option>";
+	   }
+	   str = str + str2;
+	   str = str + "</select></td><td width=\"30%\">";
+	   str = str + "<select name=\"numberofquestion_"+counter+"\" size=\"1\">";
+	   var str3 = "";
+	   for(var i=1;i<=10;i++)
+	   {
+		   str3 = str3 + "<option value="+i+">"+i+"</option>";
+	   }
+	   str = str + str3;
+	   str = str + "</select></td><td width=\"15%\">&nbsp;</td></tr></table>";
+	  
+	newTextBoxDiv.html(str);
+	$("input[name=counter]").val(counter);	
+	newTextBoxDiv.appendTo("#TextBoxesGroup");
+	counter++;
 	   });
-
-	   $("#addButton_2").click(function () {			   
-		   var counter = $("input[name=\'counter_2\']").attr("value");		   
-		   var quizcategory = $("input[name=\'quizcategory_2\']").attr("value");
-		   var quizcategory_id = $("input[name=\'quizcategory_id_2\']").attr("value");
-	       var quiz_level = $("input[name=\'quiz_level_2\']").attr("value");
-		   var quiz_level_id = $("input[name=\'quiz_level_id_2\']").attr("value");
-		   var quizCategoryArray = quizcategory.split(",");	
-	       var quizCategoryIdArray = quizcategory_id.split(",");
-	       var quizlevelArray = quiz_level.split(",");
-		   var quizlevelIdArray = quiz_level_id.split(",");
-	       counter = (counter*1) + 1;		   
-		   var newTextBoxDiv = $(document.createElement("div")).attr("id", "TextBoxDiv"+counter+"_2");		   
-		   var str = "<br/><table width=\"100%\" border=\"0\" cellspacing=\"2\"><tr><td width=\"45%\">";
-	       str = str + "<select name=\"quizcategory_"+counter+"_2\">";
-	       var str1 = "";		   
-		   if(quizCategoryArray.length == 1)
-		   {
-			   str1 = str1 + "<option value=\"0\">Select</option>";
-		   }
-		   for(var i=0;i<quizCategoryArray.length;i++)
-		   {
-			   str1 = str1 + "<option value="+quizCategoryIdArray[i]+">"+quizCategoryArray[i]+"</option>";
-		   }
-		   str = str + str1;
-		   str = str + "</select></td><td width=\"25%\">";
-		   str = str + "<select name=\"quizlevel_"+counter+"_2\">";
-		   var str2 = "";
-		   for(var i=0;i<quizlevelArray.length;i++)
-		   {
-			   str2 = str2 + "<option value="+quizlevelIdArray[i]+">"+quizlevelArray[i]+"</option>";
-		   }
-		   str = str + str2;
-		   str = str + "</select></td><td width=\"30%\">";
-		   str = str + "<select name=\"numberofquestion_"+counter+"_2\" size=\"1\">";
-		   var str3 = "";
-		   str3 = str3 + "<option value=\"0\">Select</option>";
-		   for(var i=1;i<=10;i++)
-		   {
-			   str3 = str3 + "<option value="+i+">"+i+"</option>";
-		   }
-		   str = str + str3;
-		   str = str + "</select></td></tr></table>";		   
-		   newTextBoxDiv.html(str);
-		   $("input[name=counter_2]").val(counter);	
-		   newTextBoxDiv.appendTo("#TextBoxesGroup_2");
-	   });
-
-	   $("#removeButton_1").click(function () {			   
-		   var counter = $("input[name=\'counter_1\']").attr("value");		   
-		   $("#TextBoxDiv" + counter+"_1").remove();
-		   counter--;	
-		   $("input[name=counter_1]").val(counter);	
-	   });
-
-	    $("#removeButton_2").click(function () {			   
-		   var counter = $("input[name=\'counter_2\']").attr("value");		   
-		   $("#TextBoxDiv" + counter+"_2").remove();
-		   counter--;	
-		   $("input[name=counter_2]").val(counter);	
-	   });
+	 $("#removeButton").click(function () {		 
+		 if(counter > 2){
+			counter--;
+		 }	
+		 if(counter > 1){
+		 $("#TextBoxDiv" + counter).remove();
+		 }
+	 });
   });
 </script>';
 
@@ -306,6 +258,17 @@ if (isset($_SESSION['lpobject'])) {
  }
 }
 
+// Isaac have commented this code, if you have found an issue, let me know please
+// we set the encoding of the lp
+/*if (!empty($_SESSION['oLP']->encoding)) {
+	$charset = $_SESSION['oLP']->encoding;
+} else {
+	$charset = api_get_system_encoding();
+}
+if (empty($charset)) {
+	$charset = 'ISO-8859-1';
+}*/
+
 // Add the extra lp_id parameter to some links
 $add_params_for_lp = '';
 if (isset($_GET['lp_id'])) {
@@ -317,10 +280,10 @@ if (isset($_GET['lp_id'])) {
 
 // Scenario 1
 $objExercise = new Exercise(1);
-/*if (isset($_REQUEST['scenario'])) {
+if (isset($_REQUEST['scenario'])) {
 	// Scenario 2
 	$objExercise_s2 = new Exercise(2);
-}*/
+}
 
 /*********************
  * INIT FORM
@@ -331,12 +294,12 @@ if(isset($_GET['exerciseId'])) {
 	$objExercise -> read (intval($_GET['exerciseId']));
 	$form -> addElement ('hidden','edit','true');
 
- /*if (isset($_REQUEST['scenario'])) {
+ if (isset($_REQUEST['scenario'])) {
    // Scenario 2
 	  $form_s2 = new FormValidator('exercise_admin2', 'post', api_get_self().'?exerciseId='.Security::remove_XSS($_GET['exerciseId']).'&'.api_get_cidreq(), null, array('style' => 'width: 100%; border: 0px'));
 	  $objExercise_s2 -> read (intval($_GET['exerciseId']));
 	  $form_s2 -> addElement ('hidden','edit','true');
- }*/
+ }
 
 } else {
   $add_params_for_lp = '';
@@ -347,19 +310,19 @@ if(isset($_GET['exerciseId'])) {
   $form = new FormValidator('exercise_admin1', null,  api_get_self().'?'.  api_get_cidreq().$add_params_for_lp, null, array('style' => 'width: 100%; border: 0px'));
   $form -> addElement ('hidden','edit','false');
 
-/* if (isset($_REQUEST['scenario'])) {
+  if (isset($_REQUEST['scenario'])) {
     // Add Scenario 2
     $form_s2 = new FormValidator('exercise_admin2', null, api_get_self().'?'.  api_get_cidreq().$add_params_for_lp, null, array('style' => 'width: 100%; border: 0px'));
     $form_s2 -> addElement ('hidden','edit','false');
-  }*/
+  }
 }
 
 // Scenario 1
 $objExercise -> createForm($form);
 // Add Scenario 2
-/*if (isset($_REQUEST['scenario'])) {
+if (isset($_REQUEST['scenario'])) {
   $objExercise_s2 -> createForm($form_s2);
-}*/
+}
 
 
 /*********************
@@ -368,7 +331,7 @@ $objExercise -> createForm($form);
 // Validation for the scenario feature.
 $no_validate = false;
 if (isset($_REQUEST['scenario'])) {
-/* if ($form_s2 -> validate()) {
+  if ($form_s2 -> validate()) {
     if ($form_s2 -> validate()) {
       $objExercise_s2 -> processCreation($form_s2);
     }
@@ -389,7 +352,7 @@ if (isset($_REQUEST['scenario'])) {
     }
   } else {
     $no_validate = true;
-  }*/
+  }
 }
 
 if ($form -> validate()) {
@@ -442,7 +405,7 @@ if ($form -> validate()) {
 	}
 	
 	if(api_get_setting('search_enabled')=='true' && !extension_loaded('xapian')) {
-		echo '<div class="confirmation-message">'.get_lang('SearchXapianModuleNotInstaled').'</div>';
+		Display::display_error_message(get_lang('SearchXapianModuleNotInstaled'));
 	}
 	?>
 	
@@ -453,27 +416,27 @@ if ($form -> validate()) {
     //$lp_id = Security::remove_XSS($_GET['lp_id']);
     // The lp_id parameter will be added by javascript
      $return = "";
-     $return.= '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang("Author"), array('class' => 'toolactionplaceholdericon toolactionauthor')).get_lang("Author") . '</a>';
-     $return.= '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=add_item&type=step">' . Display::return_icon('pixel.gif', get_lang("Content"), array('class' => 'toolactionplaceholdericon toolactionauthorcontent')).get_lang("Content") . '</a>';
-	 $return.= '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&gradebook=&action=view&lp_id='.$_GET['lp_id'].'">' . Display::return_icon('pixel.gif', get_lang("ViewRight"), array('class' => 'toolactionplaceholdericon toolactionauthorpreview')).get_lang("ViewRight") . '</a>';
+     $return.= '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '">' . Display::return_icon('go_previous_32.png', get_lang('Author')).get_lang("Author") . '</a>';
+     $return.= '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&action=add_item&type=step">' . Display::return_icon('content.png', get_lang('Content')).get_lang("Content") . '</a>';
+	 $return.= '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&gradebook=&action=view&lp_id='.$_GET['lp_id'].'">' . Display::return_icon('search.png', get_lang('ViewRight')).get_lang("ViewRight") . '</a>';
      echo $return;
    }
    if (!isset($_GET['lp_id'])) {
   ?>
-		<a href="exercice.php?<?php echo api_get_cidreq()?>"><?php echo Display::return_icon('pixel.gif', get_lang('List'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('List')?></a>
+		<a href="exercice.php?<?php echo api_get_cidreq()?>"><?php echo Display :: return_icon('go_previous_32.png', get_lang('List')) . get_lang('List')?></a>
   <?php
    }
   ?>		
   <?php if (!isset($_GET['lp_id'])) {?>
-		<a href="exercise_admin.php?<?php echo api_get_cidreq()?>"><?php echo Display::return_icon('pixel.gif', get_lang('NewEx'), array('class' => 'toolactionplaceholdericon toolactionnewquiz')) . get_lang('NewEx')?></a>	
-<!--	<a href="upload_exercise.php?<?php echo api_get_cidreq()?>"><?php echo Display::return_icon('pixel.gif', get_lang('UploadQuiz'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')) . get_lang('UploadQuiz')?></a>-->
+		<a href="exercise_admin.php?<?php echo api_get_cidreq()?>"><?php echo Display :: return_icon('new_quiz.png', get_lang('NewEx')) . get_lang('NewEx')?></a>	
+		<a href="upload_exercise.php?<?php echo api_get_cidreq()?>"><?php echo Display :: return_icon('excel_32.png', get_lang('UploadQuiz')) . get_lang('UploadQuiz')?></a>
   <?php } ?>
   <?php
    if (isset($_GET['exerciseId']) && $_GET['exerciseId'] > 0) {
   ?>
-  <a href="admin.php?<?php echo  api_get_cidreq() . '&exerciseId='.Security::remove_XSS($_GET['exerciseId']); ?>"><?php echo Display::return_icon('pixel.gif', get_lang('Questions'), array('class' => 'toolactionplaceholdericon toolactionquestion')) . get_lang('Questions'); ?></a>
-  <a href="exercise_admin.php?<?php echo 'scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.Security::remove_XSS($_GET['exerciseId']); ?>"><?php echo Display::return_icon('pixel.gif', get_lang('Scenario'), array('class' => 'toolactionplaceholdericon toolactionscenario')). get_lang('Scenario'); ?></a>
-  <a href="exercice_submit.php?<?php echo api_get_cidreq() . '&exerciseId='.Security::remove_XSS($_GET['exerciseId']); ?>"><?php echo Display::return_icon('pixel.gif', get_lang('ViewRight'), array('class' => 'toolactionplaceholdericon toolactionsearch')) . get_lang('ViewRight'); ?></a> 
+  <a href="admin.php?<?php echo  api_get_cidreq() . '&exerciseId='.Security::remove_XSS($_GET['exerciseId']); ?>"><?php echo Display :: return_icon('dokeos_question.png', get_lang('Questions')) . get_lang('Questions'); ?></a>
+  <a href="exercise_admin.php?<?php echo 'scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.Security::remove_XSS($_GET['exerciseId']); ?>"><?php echo  Display :: return_icon('dokeos_scenario.png', get_lang('Scenario')) . get_lang('Scenario'); ?></a>
+  <a href="../newscorm/lp_controller.php?<?php echo api_get_cidreq() . '&gradebook=&action=view&lp_id='.$_GET['lp_id']; ?>"><?php echo  Display :: return_icon('search.png', get_lang('ViewRight')) . get_lang('ViewRight'); ?></a> 
 		<?php }
   ?>
 	</div>
@@ -501,21 +464,19 @@ if ($form -> validate()) {
 ?>
 <!--<div id ="exercise_admin_container" class="<?php echo $container_class; ?>" style="height: <?php echo $height; ?>">-->
 <div id ="exercise_admin_container" class="<?php echo $container_class; ?>">
-<table cellpadding="5" width="100%"><tr><td width="100%" valign="top">
+<table cellpadding="5" width="100%"><tr><td width="50%" valign="top">
 <div id="exercise_admin_left_container" class="<?php echo $sub_container_class; ?>" >
 		<?php $form -> display (); ?>
-	</div></td>
-<!--<td width="50%">
+	</div></td><td width="50%">
 	<div id="exercise_admin_right_container" class="<?php echo $sub_container_class; ?>">
 		<?php
-   /*if (!isset($_GET['scenario'])) {
+   if (!isset($_GET['scenario'])) {
      Display::display_icon('instructor-faq.png', get_lang('Teacher'));
    } elseif (isset($_GET['scenario']) && isset($_GET['modifyExercise'])) {
      $form_s2 -> display ();
-   }*/
+   }
   ?>
-	</div></td>-->
-	</tr></table></div>
+	</div></td></tr></table></div>
 
 	<?php
 	// close the content div
@@ -540,9 +501,6 @@ if ($form -> validate()) {
 	<?php
   }
   ?>
-  <?php if (!isset($_GET['lp_id'])) {?>		
-		<a href="upload_exercise.php?<?php echo api_get_cidreq()?>"><?php echo Display::return_icon('pixel.gif', get_lang('UploadQuiz'), array('class' => 'actionplaceholdericon actionuploadquiz')) . get_lang('UploadQuiz')?></a>
-  <?php } ?>
 	</div>
 	<div style="clear:both"></div>
  <?php

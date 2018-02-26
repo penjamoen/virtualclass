@@ -42,9 +42,11 @@
 */
 //require_once('../../inc/global.inc.php'); - this script should be loaded by the /index.php script anyway, so global is already loaded
 require_once('authldap.php');
+
 //error_log('Trying to register new user '.$login.' with pass '.$password,0);
 
 $ldap_login_success = ldap_login($login, $password);
+
 if ($ldap_login_success)
 {
 	//error_log('Found user '.$login.' on LDAP server',0);
@@ -54,21 +56,13 @@ if ($ldap_login_success)
 		- the users login and password are correct
 	*/
 	$info_array = ldap_find_user_info($login);
-	$uid = ldap_put_user_info_locally($login, $info_array);
-
-  //Prepare variable for local.inc.php to register user session
-  $_user['user_id'] = $uid;
-	$uidReset = true;
-  $loginFailed=false;
-  // Jand: copied from event_login in events.lib.php to enable login statistics:
-  event_login();
+	ldap_put_user_info_locally($login, $info_array);
 }
 else
 {
-  //error_log('Could not find '.$login.' on LDAP server',0);
-  $loginFailed = true;
-  unset($_SESSION['_user']['user_id']);
-  unset($_user);
-  $uidReset = false;
+	//error_log('Could not find '.$login.' on LDAP server',0);
+	$loginFailed = true;
+	unset($_user['user_id']);
+	$uidReset = false;
 }
 ?>

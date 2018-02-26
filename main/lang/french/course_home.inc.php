@@ -48,6 +48,4 @@ $WeekTwo = "Semaine 2";
 $WeekThree = "Semaine 3";
 $WeekFour = "Semaine 4";
 $WeekFive = "Semaine 5";
-$ViewHomeAsLearner = "Voir comme apprenant";
-$ViewHomeAsTrainer = "Voir comme formateur";
 ?>

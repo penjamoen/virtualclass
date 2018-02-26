@@ -114,15 +114,4 @@ $GroupsPerUser = "Raggruppa per utente";
 $NoCategory = "Nessuna categoria";
 $JoinGroup = "Unisciti al gruppo";
 $GroupMembership = "Partecipazione al gruppo";
-$Tutoring = "Tutoraggio";
-$Collaboration = "Collaborazione";
-$Competition = "Competizione";
-$ScenarioText1 = "I corsisti interagiscono solo con il Tutor, non tra di loro.";
-$ScenarioText2 = "I corsisti interagiscono sia con il Tutor che tra loro. Ognuno può vedere (ma non modificare) i documenti altrui.";
-$ScenarioText3 = "I corsisti interagiscono sia con il Tutor che tra loro. I documenti altrui non sono visibili.";
-$ScenarioTools1 = "Strumenti: Elaborati ed e-mail personale";
-$ScenarioTools2 = "Strumenti: Elaborati + e-mail personale + Chat + Forum";
-$ScenarioTools3 = "Strumenti: Elaborati + e-mail personale + Chat + Forum";
-$NewGroupCreated = "Creato un nuovo gruppo per far posto ad un nuovo corsista";
-$GroupChat = "Chat";
 ?>

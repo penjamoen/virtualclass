@@ -39,7 +39,6 @@ class Answer
 
 	var $nbrAnswers;
 	var $new_nbrAnswers;
-        var $new_nbrCorrects;
 	var $new_destination; // id of the next question if feedback option is set to Directfeedback
 
 /**
@@ -54,7 +53,6 @@ class Answer
 		$this->questionId=(int)$questionId;
 		$this->answer=array();
 		$this->correct=array();
-                $this->new_nbrCorrects = 0;
 		$this->comment=array();
 		$this->weighting=array();
 		$this->position=array();
@@ -84,7 +82,6 @@ class Answer
 		$this->new_hotspot_type=array();
 		$this->new_nbrAnswers=0;
 		$this->new_destination=array();
-                $this->new_nbrCorrects=0;
 	}
 
 	/**
@@ -106,15 +103,13 @@ class Answer
 		$result=api_sql_query($sql,__FILE__,__LINE__);
 
 		$i=1;
+
 		// while a record is found
 		while($object=mysql_fetch_object($result))
 		{
 			$this->id[$i]=$object->id;
 			$this->answer[$i]=$object->answer;
 			$this->correct[$i]=$object->correct;
-                        if ($object->correct==1) {
-                            $this->new_nbrCorrects++;
-                        }
 			$this->comment[$i]=$object->comment;
 			$this->weighting[$i]=$object->ponderation;
 			$this->position[$i]=$object->position;
@@ -183,9 +178,7 @@ class Answer
 	{
 		return $this->nbrAnswers;
 	}
-        function selectNbrCorrects() {
-            return $this->new_nbrCorrects;
-        }
+
 	/**
 	 * returns the question ID which the answers belong to
 	 *

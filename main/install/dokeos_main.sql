@@ -49,8 +49,6 @@ CREATE TABLE user (
   hr_dept_id smallint unsigned NOT NULL default 0,
   login_counter INT(11), 
   login_failed_counter INT(11),
-  country_code varchar(10) NOT NULL default '',
-  civility     varchar(100) NOT NULL default '',
   PRIMARY KEY  (user_id),
   UNIQUE KEY username (username)
 );
@@ -426,46 +424,6 @@ UNLOCK TABLES;
 /*!40000 ALTER TABLE language ENABLE KEYS */;
 
 --
--- Table structure for table slides
---
-
-DROP TABLE IF EXISTS slides;
-CREATE TABLE slides (
-   id int(10) unsigned NOT NULL AUTO_INCREMENT,
-   title varchar(255) NOT NULL DEFAULT '',
-   alternate_text varchar(255) NOT NULL DEFAULT '',
-   link varchar(255) NOT NULL DEFAULT '',
-   caption text,
-   image varchar(255) NOT NULL DEFAULT '',
-   language varchar(255) NOT NULL DEFAULT 'English',
-   display_order int(11) NOT NULL,
-  PRIMARY KEY (id)
-);
-
---
--- Table structure for table slides_management
---
-
-DROP TABLE IF EXISTS slides_management;
-CREATE TABLE slides_management (
-   id int(11) NOT NULL AUTO_INCREMENT,
-   show_slide int(11) NOT NULL DEFAULT '1',
-   slide_speed int(11) NOT NULL DEFAULT '6',
-  PRIMARY KEY (id)
-);
-
---
--- Dumping data for table slides_management
---
-
-LOCK TABLES slides_management WRITE;
-INSERT INTO slides_management(id, show_slide, slide_speed) VALUES
-(1, 1, 6);
-
-UNLOCK TABLES;
-/*!40000 ALTER TABLE slides_management ENABLE KEYS */;
-
---
 -- Table structure for table php_session
 --
 
@@ -480,54 +438,23 @@ CREATE TABLE php_session (
 );
 
 --
--- Table structure for table sessions category
---
-
-CREATE TABLE session_category (
-  id int(11) NOT NULL auto_increment,
-  name varchar(100) DEFAULT NULL,
-  description text,
-  topic int(11) NOT NULL DEFAULT '0',
-  location varchar(250) DEFAULT NULL,
-  modality varchar(255) DEFAULT NULL,
-  keywords text,
-  date_start date DEFAULT NULL,
-  date_end date DEFAULT NULL,
-  student_access varchar(50) DEFAULT NULL,
-  language varchar(50) NOT NULL DEFAULT 'English',
-  visible char(1) NOT NULL DEFAULT '0',
-  cost float NOT NULL DEFAULT '0',
-  currency varchar(250) DEFAULT NULL,
-  tax int(11) NOT NULL DEFAULT '0',
-  method_payment varchar(100) NOT NULL,
-  code varchar(100) DEFAULT NULL,
-  inscription_date_start date DEFAULT NULL,
-  inscription_date_end date DEFAULT NULL,
-  PRIMARY KEY  (id)
-);
-
---
 -- Table structure for table session
 --
 DROP TABLE IF EXISTS session;
 CREATE TABLE session (
   id smallint unsigned NOT NULL auto_increment,
-  id_coach int unsigned NOT NULL DEFAULT '0',
-  name char(50) NOT NULL DEFAULT '',
-  description text,
-  nbr_courses smallint unsigned NOT NULL DEFAULT '0',
-  nbr_users mediumint unsigned NOT NULL DEFAULT '0',
-  nbr_classes mediumint unsigned NOT NULL DEFAULT '0',
-  date_start date NOT NULL DEFAULT '0000-00-00',
-  date_end date NOT NULL DEFAULT '0000-00-00',
-  nb_days_access_before_beginning TINYINT UNSIGNED NULL DEFAULT '0',
-  nb_days_access_after_end TINYINT UNSIGNED NULL DEFAULT '0',
+  id_coach int unsigned NOT NULL default '0',
+  name char(50) NOT NULL default '',
+  nbr_courses smallint unsigned NOT NULL default '0',
+  nbr_users mediumint unsigned NOT NULL default '0',
+  nbr_classes mediumint unsigned NOT NULL default '0',
+  date_start date NOT NULL default '0000-00-00',
+  date_end date NOT NULL default '0000-00-00',
+  nb_days_access_before_beginning TINYINT UNSIGNED NULL default '0',
+  nb_days_access_after_end TINYINT UNSIGNED NULL default '0',
   session_admin_id INT UNSIGNED NOT NULL,
-  visibility int NOT NULL DEFAULT '1',
+  visibility int NOT NULL default 1,
   session_category_id int NOT NULL,
-  seats int(11) NOT NULL DEFAULT '-1',
-  max_seats int(11) NOT NULL DEFAULT '-1',
-  optional_subject int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY  (id),
   INDEX (session_admin_id),
   UNIQUE KEY name (name)
@@ -540,18 +467,9 @@ CREATE TABLE session (
 --
 DROP TABLE IF EXISTS session_rel_course;
 CREATE TABLE session_rel_course (
-  id_session smallint unsigned NOT NULL DEFAULT '0',  
-  course_code char(40) NOT NULL DEFAULT '',
-  hours int(11) NOT NULL DEFAULT '0',
-  schedule date NOT NULL DEFAULT '0000-00-00',
-  time_from varchar(50) NOT NULL DEFAULT '00:00',
-  time_to varchar(50) NOT NULL DEFAULT '00:00',
-  repeats varchar(50) NOT NULL DEFAULT '',
-  repeats_on varchar(50) NOT NULL DEFAULT '',
-  ends_on int(11) NOT NULL DEFAULT '0',
-  occurence varchar(50) NOT NULL DEFAULT '0',
-  position int(11) NOT NULL DEFAULT '0',
-  nbr_users smallint unsigned NOT NULL DEFAULT '0',
+  id_session smallint unsigned NOT NULL default '0',
+  course_code char(40) NOT NULL default '',
+  nbr_users smallint unsigned NOT NULL default '0',
   PRIMARY KEY  (id_session,course_code),
   KEY course_code (course_code)
 );
@@ -563,11 +481,11 @@ CREATE TABLE session_rel_course (
 --
 DROP TABLE IF EXISTS session_rel_course_rel_user;
 CREATE TABLE session_rel_course_rel_user (
-  id_session smallint unsigned NOT NULL DEFAULT '0',
-  course_code char(40) NOT NULL DEFAULT '',
-  id_user int unsigned NOT NULL DEFAULT '0',
-  visibility int NOT NULL DEFAULT '1',
-  status int NOT NULL DEFAULT 0,
+  id_session smallint unsigned NOT NULL default '0',
+  course_code char(40) NOT NULL default '',
+  id_user int unsigned NOT NULL default '0',
+  visibility int NOT NULL default 1,
+  status int NOT NULL default 0,
   PRIMARY KEY  (id_session,course_code,id_user),
   KEY id_user (id_user),
   KEY course_code (course_code)
@@ -580,83 +498,9 @@ CREATE TABLE session_rel_course_rel_user (
 --
 DROP TABLE IF EXISTS session_rel_user;
 CREATE TABLE session_rel_user (
-  id_session mediumint unsigned NOT NULL DEFAULT '0',
-  id_user mediumint unsigned NOT NULL DEFAULT '0',
+  id_session mediumint unsigned NOT NULL default '0',
+  id_user mediumint unsigned NOT NULL default '0',
   PRIMARY KEY  (id_session,id_user)
-);
-
---
--- Table structure for table catalogue
---
-
-DROP TABLE IF EXISTS catalogue;
-CREATE TABLE catalogue (
-  id smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  title varchar(255) DEFAULT NULL,
-  economic_model char(1) NOT NULL DEFAULT '0',
-  visible char(1) NOT NULL DEFAULT '0',
-  catalogue_display text,
-  payment char(50) DEFAULT NULL,
-  atos_account_number mediumint(8) unsigned NOT NULL DEFAULT '0',
-  paypal_account_ref mediumint(8) unsigned NOT NULL DEFAULT '0',
-  second_installment mediumint(8) unsigned NOT NULL DEFAULT '0',
-  second_installment_delay mediumint(8) unsigned NOT NULL DEFAULT '0',
-  third_installment mediumint(8) unsigned NOT NULL DEFAULT '0',
-  third_installment_delay mediumint(8) unsigned NOT NULL DEFAULT '0',
-  options_selection text,
-  payment_message text,
-  cc_payment_message text,
-  installment_payment_message text,
-  cheque_payment_message text,
-  email char(1) NOT NULL DEFAULT '0',
-  company_logo varchar(255) DEFAULT NULL,
-  company_address text,
-  bank_details text,
-  cheque_message text,
-  terms_conditions text,
-  tva_description text,
-  PRIMARY KEY (id)
-);
-
---
--- Table structure for table session_category_rel_user
---
-
-DROP TABLE IF EXISTS session_category_rel_user;
-CREATE TABLE session_category_rel_user (
-  category_id int(11) NOT NULL DEFAULT '0',
-  user_id int(11) NOT NULL DEFAULT '0',
-  session_id int(11) NOT NULL DEFAULT '0',
-  course_code varchar(200) DEFAULT NULL
-);
-
---
--- Table structure for table session_rel_category
---
-
-DROP TABLE IF EXISTS session_rel_category;
-CREATE TABLE session_rel_category (
-  id smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  category_id int(11) DEFAULT '0',
-  session_set char(1) NOT NULL DEFAULT '1',
-  session_set_name varchar(255) DEFAULT NULL,
-  session_id int(11) NOT NULL DEFAULT '0',
-  session_range varchar(20) DEFAULT NULL,
-  PRIMARY KEY (id)
-);
-
---
--- Table structure for table topic
---
-
-DROP TABLE IF EXISTS topic;
-CREATE TABLE topic (
-  id smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  topic varchar(255) DEFAULT NULL,
-  language char(50) NOT NULL DEFAULT 'English',
-  visible char(1) NOT NULL DEFAULT '0',
-  catalogue_id int(11) DEFAULT NULL,
-  PRIMARY KEY (id)
 );
 
 
@@ -719,247 +563,243 @@ LOCK TABLES settings_current WRITE;
 INSERT INTO settings_current
 (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable)
 VALUES
-('Institution', NULL, 'textfield', 'Platform', 'Organisation', 'InstitutionTitle', 'InstitutionComment', NULL, NULL, 1),
-('InstitutionUrl', NULL, 'textfield', 'Platform', 'http://www.dokeos.com', 'InstitutionUrlTitle', 'InstitutionUrlComment', NULL, NULL, 1),
-('siteName', NULL, 'textfield', 'Platform', 'Academy', 'SiteNameTitle', 'SiteNameComment', NULL, NULL, 1),
-('emailAdministrator', NULL, 'textfield', 'Platform', 'newportal@dokeos.com', 'emailAdministratorTitle', 'emailAdministratorComment', NULL, NULL, 1),
-('administratorSurname', NULL, 'textfield', 'Platform', 'Doe', 'administratorSurnameTitle', 'administratorSurnameComment', NULL, NULL, 1),
-('administratorName', NULL, 'textfield', 'Platform', 'John', 'administratorNameTitle', 'administratorNameComment', NULL, NULL, 1),
-('show_administrator_data', NULL, 'radio', 'Platform', 'true', 'ShowAdministratorDataTitle', 'ShowAdministratorDataComment', NULL, NULL, 1),
-('show_tutor_data', NULL, 'radio', 'Platform', 'true', 'ShowTutorDataTitle', 'ShowTutorDataComment', NULL, NULL, 1),
-('show_teacher_data', NULL, 'radio', 'Platform', 'true', 'ShowTeacherDataTitle', 'ShowTeacherDataComment', NULL, NULL, 1),
-('homepage_view', NULL, 'radio', 'Advanced', 'activity', 'HomepageViewTitle', 'HomepageViewComment', '0', NULL, 1),
-('show_toolshortcuts', NULL, 'radio', 'Advanced', 'false', 'ShowToolShortcutsTitle', 'ShowToolShortcutsComment', NULL, NULL, 1),
-('allow_group_categories', NULL, 'radio', 'Advanced', 'false', 'AllowGroupCategories', 'AllowGroupCategoriesComment', NULL, NULL, 1),
-('server_type', NULL, 'radio', 'Advanced', 'production', 'ServerStatusTitle', 'ServerStatusComment', NULL, NULL, 1),
-('platformLanguage', NULL, 'link', 'Languages', 'english', 'PlatformLanguageTitle', 'PlatformLanguageComment', NULL, NULL, 1),
-('showonline', 'world', 'checkbox', 'Advanced', 'true', 'ShowOnlineTitle', 'ShowOnlineComment', NULL, 'ShowOnlineWorld', 1),
-('showonline', 'users', 'checkbox', 'Advanced', 'true', 'ShowOnlineTitle', 'ShowOnlineComment', NULL, 'ShowOnlineUsers', 1),
-('showonline', 'course', 'checkbox', 'Advanced', 'true', 'ShowOnlineTitle', 'ShowOnlineComment', NULL, 'ShowOnlineCourse', 1),
-('profile', 'name', 'checkbox', 'User', 'false', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'name', 1),
-('profile', 'officialcode', 'checkbox', 'User', 'false', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'officialcode', 1),
-('profile', 'email', 'checkbox', 'User', 'false', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'Email', 1),
-('profile', 'picture', 'checkbox', 'User', 'true', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'UserPicture', 1),
-('profile', 'login', 'checkbox', 'User', 'false', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'Login', 1),
-('profile', 'password', 'checkbox', 'User', 'false', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'UserPassword', 1),
-('profile', 'language', 'checkbox', 'User', 'true', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'Language', 1),
-('default_document_quotum', NULL, 'textfield', 'Course', '500000000', 'DefaultDocumentQuotumTitle', 'DefaultDocumentQuotumComment', NULL, NULL, 1),
-('registration', 'officialcode', 'checkbox', 'User', 'false', 'RegistrationRequiredFormsTitle', 'RegistrationRequiredFormsComment', NULL, 'OfficialCode', 1),
-('registration', 'email', 'checkbox', 'User', 'true', 'RegistrationRequiredFormsTitle', 'RegistrationRequiredFormsComment', NULL, 'Email', 1),
-('registration', 'language', 'checkbox', 'User', 'true', 'RegistrationRequiredFormsTitle', 'RegistrationRequiredFormsComment', NULL, 'Language', 1),
-('default_group_quotum', NULL, 'textfield', 'Course', '5000000', 'DefaultGroupQuotumTitle', 'DefaultGroupQuotumComment', NULL, NULL, 1),
-('allow_registration', NULL, 'radio', 'Platform', 'true', 'AllowRegistrationTitle', 'AllowRegistrationComment', NULL, NULL, 1),
-('allow_registration_as_teacher', NULL, 'radio', 'Platform', 'true', 'AllowRegistrationAsTeacherTitle', 'AllowRegistrationAsTeacherComment', NULL, NULL, 1),
-('allow_lostpassword', NULL, 'radio', 'Platform', 'true', 'AllowLostPasswordTitle', 'AllowLostPasswordComment', NULL, NULL, 1),
-('allow_user_headings', NULL, 'radio', 'Advanced', 'false', 'AllowUserHeadings', 'AllowUserHeadingsComment', NULL, NULL, 1),
-('course_create_active_tools', 'course_description', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'CourseDescription', 1),
-('course_create_active_tools', 'agenda', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Agenda', 1),
-('course_create_active_tools', 'documents', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Documents', 1),
-('course_create_active_tools', 'learning_path', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'LearningPath', 1),
-('course_create_active_tools', 'links', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Links', 1),
-('course_create_active_tools', 'announcements', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Announcements', 1),
-('course_create_active_tools', 'forums', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Forums', 1),
-('course_create_active_tools', 'dropbox', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Dropbox', 1),
-('course_create_active_tools', 'quiz', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Quiz', 1),
-('course_create_active_tools', 'users', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Users', 1),
-('course_create_active_tools', 'groups', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Groups', 1),
-('course_create_active_tools', 'chat', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Chat', 1),
-('course_create_active_tools', 'online_conference', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'OnlineConference', 1),
-('course_create_active_tools', 'student_publications', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'StudentPublications', 1),
-('allow_personal_agenda', NULL, 'radio', 'User', 'true', 'AllowPersonalAgendaTitle', 'AllowPersonalAgendaComment', NULL, NULL, 1),
-('display_coursecode_in_courselist', NULL, 'radio', 'Advanced', 'true', 'DisplayCourseCodeInCourselistTitle', 'DisplayCourseCodeInCourselistComment', NULL, NULL, 1),
-('display_teacher_in_courselist', NULL, 'radio', 'Advanced', 'true', 'DisplayTeacherInCourselistTitle', 'DisplayTeacherInCourselistComment', NULL, NULL, 1),
-('use_document_title', NULL, 'radio', 'Tools', 'true', 'UseDocumentTitleTitle', 'UseDocumentTitleComment', NULL, NULL, 1),
-('permanently_remove_deleted_files', NULL, 'radio', 'Tools', 'false', 'PermanentlyRemoveFilesTitle', 'PermanentlyRemoveFilesComment', NULL, NULL, 1),
-('dropbox_allow_overwrite', NULL, 'radio', 'Advanced', 'true', 'DropboxAllowOverwriteTitle', 'DropboxAllowOverwriteComment', NULL, NULL, 1),
-('dropbox_max_filesize', NULL, 'textfield', 'Advanced', '100000000', 'DropboxMaxFilesizeTitle', 'DropboxMaxFilesizeComment', NULL, NULL, 1),
-('dropbox_allow_just_upload', NULL, 'radio', 'Advanced', 'true', 'DropboxAllowJustUploadTitle', 'DropboxAllowJustUploadComment', NULL, NULL, 1),
-('dropbox_allow_student_to_student', NULL, 'radio', 'Advanced', 'true', 'DropboxAllowStudentToStudentTitle', 'DropboxAllowStudentToStudentComment', NULL, NULL, 1),
-('dropbox_allow_group', NULL, 'radio', 'Advanced', 'true', 'DropboxAllowGroupTitle', 'DropboxAllowGroupComment', NULL, NULL, 1),
-('dropbox_allow_mailing', NULL, 'radio', 'Advanced', 'false', 'DropboxAllowMailingTitle', 'DropboxAllowMailingComment', NULL, NULL, 1),
-('administratorTelephone', NULL, 'textfield', 'Advanced', '(000) 001 02 03', 'administratorTelephoneTitle', 'administratorTelephoneComment', NULL, NULL, 1),
-('extended_profile', NULL, 'radio', 'Advanced', 'true', 'ExtendedProfileTitle', 'ExtendedProfileComment', NULL, NULL, 1),
-('student_view_enabled', NULL, 'radio', 'Advanced', 'true', 'StudentViewEnabledTitle', 'StudentViewEnabledComment', NULL, NULL, 1),
-('show_navigation_menu', NULL, 'radio', 'Advanced', 'false', 'ShowNavigationMenuTitle', 'ShowNavigationMenuComment', NULL, NULL, 1),
-('enable_tool_introduction', NULL, 'radio', 'course', 'false', 'EnableToolIntroductionTitle', 'EnableToolIntroductionComment', NULL, NULL, 1),
-('page_after_login', NULL, 'radio', 'Advanced', 'user_portal.php', 'PageAfterLoginTitle', 'PageAfterLoginComment', NULL, NULL, 1),
-('time_limit_whosonline', NULL, 'textfield', 'Advanced', '30', 'TimeLimitWhosonlineTitle', 'TimeLimitWhosonlineComment', NULL, NULL, 1),
-('breadcrumbs_course_homepage', NULL, 'radio', 'Advanced', 'session_name_and_course_title', 'BreadCrumbsCourseHomepageTitle', 'BreadCrumbsCourseHomepageComment', NULL, NULL, 1),
-('example_material_course_creation', NULL, 'radio', 'Advanced', 'true', 'ExampleMaterialCourseCreationTitle', 'ExampleMaterialCourseCreationComment', NULL, NULL, 1),
-('account_valid_duration', NULL, 'textfield', 'Advanced', '3660', 'AccountValidDurationTitle', 'AccountValidDurationComment', NULL, NULL, 1),
-('use_session_mode', NULL, 'radio', 'Platform', 'true', 'UseSessionModeTitle', 'UseSessionModeComment', NULL, NULL, 1),
-('allow_email_editor', NULL, 'radio', 'Tools', 'false', 'AllowEmailEditorTitle', 'AllowEmailEditorComment', NULL, NULL, 1),
-('registered', NULL, 'textfield', NULL, 'false', NULL, NULL, NULL, NULL, 1),
-('donotlistcampus', NULL, 'textfield', NULL, 'false', NULL, NULL, NULL, NULL, 1),
-('show_email_addresses', NULL, 'radio', 'Advanced', 'false', 'ShowEmailAddresses', 'ShowEmailAddressesComment', NULL, NULL, 1),
-('profile', 'phone', 'checkbox', 'User', 'false', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'phone', 1),
-('service_visio', 'active', 'radio', NULL, 'false', 'VisioEnable', NULL, NULL, NULL, 1),
-('service_visio', 'visio_host', 'textfield', NULL, NULL, 'VisioHost', NULL, NULL, NULL, 1),
-('service_visio', 'visio_port', 'textfield', NULL, '1935', 'VisioPort', NULL, NULL, NULL, 1),
-('service_visio', 'visio_pass', 'textfield', NULL, NULL, 'VisioPassword', NULL, NULL, NULL, 1),
-('service_ppt2lp', 'active', 'radio', NULL, 'false', 'ppt2lp_actived', NULL, NULL, NULL, 1),
-('service_ppt2lp', 'host', 'textfield', NULL, NULL, 'Host', NULL, NULL, NULL, 1),
-('service_ppt2lp', 'port', 'textfield', NULL, '2002', 'Port', NULL, NULL, NULL, 1),
-('service_ppt2lp', 'user', 'textfield', NULL, NULL, 'UserOnHost', NULL, NULL, NULL, 1),
-('service_ppt2lp', 'ftp_password', 'textfield', NULL, NULL, 'FtpPassword', NULL, NULL, NULL, 1),
-('service_ppt2lp', 'path_to_lzx', 'textfield', NULL, NULL, NULL, NULL, NULL, NULL, 1),
-('service_ppt2lp', 'size', 'radio', NULL, '720x540', NULL, NULL, NULL, NULL, 1),
-('wcag_anysurfer_public_pages', NULL, 'radio', 'Editor', 'false', 'PublicPagesComplyToWAITitle', 'PublicPagesComplyToWAIComment', NULL, NULL, 1),
-('stylesheets', NULL, 'textfield', 'stylesheets', 'dokeos2_tablet', NULL, NULL, NULL, NULL, 1),
-('upload_extensions_list_type', NULL, 'radio', 'Security', 'blacklist', 'UploadExtensionsListType', 'UploadExtensionsListTypeComment', NULL, NULL, 1),
-('upload_extensions_blacklist', NULL, 'textfield', 'Security', NULL, 'UploadExtensionsBlacklist', 'UploadExtensionsBlacklistComment', NULL, NULL, 1),
-('upload_extensions_whitelist', NULL, 'textfield', 'Security', 'htm;html;jpg;jpeg;gif;png;swf;avi;mpg;mpeg;mov;flv;doc;docx;xls;xlsx;ppt;pptx;odt;odp;ods;pdf', 'UploadExtensionsWhitelist', 'UploadExtensionsWhitelistComment', NULL, NULL, 1),
-('upload_extensions_skip', NULL, 'radio', 'Security', 'true', 'UploadExtensionsSkip', 'UploadExtensionsSkipComment', NULL, NULL, 1),
-('upload_extensions_replace_by', NULL, 'textfield', 'Security', 'dangerous', 'UploadExtensionsReplaceBy', 'UploadExtensionsReplaceByComment', NULL, NULL, 1),
-('show_number_of_courses', NULL, 'radio', 'Advanced', 'false', 'ShowNumberOfCourses', 'ShowNumberOfCoursesComment', NULL, NULL, 1),
-('show_empty_course_categories', NULL, 'radio', 'Advanced', 'true', 'ShowEmptyCourseCategories', 'ShowEmptyCourseCategoriesComment', NULL, NULL, 1),
-('show_back_link_on_top_of_tree', NULL, 'radio', 'Advanced', 'false', 'ShowBackLinkOnTopOfCourseTree', 'ShowBackLinkOnTopOfCourseTreeComment', NULL, NULL, 1),
-('show_different_course_language', NULL, 'radio', 'Advanced', 'true', 'ShowDifferentCourseLanguage', 'ShowDifferentCourseLanguageComment', NULL, NULL, 1),
-('split_users_upload_directory', NULL, 'radio', 'Advanced', 'false', 'SplitUsersUploadDirectory', 'SplitUsersUploadDirectoryComment', NULL, NULL, 1),
-('hide_dltt_markup', NULL, 'radio', 'Advanced', 'true', 'HideDLTTMarkup', 'HideDLTTMarkupComment', NULL, NULL, 1),
-('display_categories_on_homepage', NULL, 'radio', 'Advanced', 'false', 'DisplayCategoriesOnHomepageTitle', 'DisplayCategoriesOnHomepageComment', NULL, NULL, 1),
-('permissions_for_new_directories', NULL, 'textfield', 'Security', '777', 'PermissionsForNewDirs', 'PermissionsForNewDirsComment', NULL, NULL, 1),
-('permissions_for_new_files', NULL, 'textfield', 'Security', '666', 'PermissionsForNewFiles', 'PermissionsForNewFilesComment', NULL, NULL, 1),
-('show_tabs', 'campus_homepage', 'checkbox', 'Platform', 'true', 'ShowTabsTitle', 'ShowTabsComment', NULL, 'TabsCampusHomepage', 1),
-('show_tabs', 'my_courses', 'checkbox', 'Platform', 'true', 'ShowTabsTitle', 'ShowTabsComment', NULL, 'TabsMyCourses', 1),
-('show_tabs', 'reporting', 'checkbox', 'Platform', 'true', 'ShowTabsTitle', 'ShowTabsComment', NULL, 'TabsReporting', 1),
-('show_tabs', 'platform_administration', 'checkbox', 'Platform', 'true', 'ShowTabsTitle', 'ShowTabsComment', NULL, 'TabsPlatformAdministration', 1),
-('show_tabs', 'my_agenda', 'checkbox', 'Platform', 'true', 'ShowTabsTitle', 'ShowTabsComment', NULL, 'TabsMyAgenda', 1),
-('show_tabs', 'my_profile', 'checkbox', 'Platform', 'false', 'ShowTabsTitle', 'ShowTabsComment', NULL, 'TabsMyProfile', 1),
-('default_forum_view', NULL, 'radio', 'Course', 'flat', 'DefaultForumViewTitle', 'DefaultForumViewComment', NULL, NULL, 1),
-('platform_charset', NULL, 'textfield', 'Advanced', 'iso-8859-15', 'PlatformCharsetTitle', 'PlatformCharsetComment', 'platform', NULL, 1),
-('noreply_email_address', NULL, 'textfield', 'Advanced', NULL, 'NoReplyEmailAddress', 'NoReplyEmailAddressComment', NULL, NULL, 1),
-('survey_email_sender_noreply', NULL, 'radio', 'Course', 'coach', 'SurveyEmailSenderNoReply', 'SurveyEmailSenderNoReplyComment', NULL, NULL, 1),
-('openid_authentication', NULL, 'radio', 'Security', 'false', 'OpenIdAuthentication', 'OpenIdAuthenticationComment', NULL, NULL, 1),
-('profile', 'openid', 'checkbox', 'User', 'false', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'OpenIDURL', 1),
-('gradebook_enable', NULL, 'radio', 'Advanced', 'true', 'GradebookActivation', 'GradebookActivationComment', NULL, NULL, 1),
-('show_tabs', 'my_gradebook', 'checkbox', 'Platform', 'true', 'ShowTabsTitle', 'ShowTabsComment', NULL, 'TabsMyGradebook', 1),
-('gradebook_score_display_coloring', 'my_display_coloring', 'checkbox', 'Advanced', 'false', 'GradebookScoreDisplayColoring', 'GradebookScoreDisplayColoringComment', NULL, 'TabsGradebookEnableColoring', 1),
-('gradebook_score_display_custom', 'my_display_custom', 'checkbox', 'Advanced', 'false', 'GradebookScoreDisplayCustom', 'GradebookScoreDisplayCustomComment', NULL, 'TabsGradebookEnableCustom', 1),
-('gradebook_score_display_colorsplit', NULL, 'textfield', 'Advanced', '50', 'GradebookScoreDisplayColorSplit', 'GradebookScoreDisplayColorSplitComment', NULL, NULL, 1),
-('gradebook_score_display_upperlimit', 'my_display_upperlimit', 'checkbox', 'Advanced', 'false', 'GradebookScoreDisplayUpperLimit', 'GradebookScoreDisplayUpperLimitComment', NULL, 'TabsGradebookEnableUpperLimit', 1),
-('user_selected_theme', NULL, 'radio', 'Advanced', 'false', 'UserThemeSelection', 'UserThemeSelectionComment', NULL, NULL, 1),
-('profile', 'theme', 'checkbox', 'User', 'false', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'UserTheme', 1),
-('allow_course_theme', NULL, 'radio', 'Advanced', 'true', 'AllowCourseThemeTitle', 'AllowCourseThemeComment', NULL, NULL, 1),
-('display_mini_month_calendar', NULL, 'radio', 'Advanced', 'true', 'DisplayMiniMonthCalendarTitle', 'DisplayMiniMonthCalendarComment', NULL, NULL, 1),
-('display_upcoming_events', NULL, 'radio', 'Advanced', 'true', 'DisplayUpcomingEventsTitle', 'DisplayUpcomingEventsComment', NULL, NULL, 1),
-('number_of_upcoming_events', NULL, 'textfield', 'Advanced', '1', 'NumberOfUpcomingEventsTitle', 'NumberOfUpcomingEventsComment', NULL, NULL, 1),
-('show_closed_courses', NULL, 'radio', 'Advanced', 'false', 'ShowClosedCoursesTitle', 'ShowClosedCoursesComment', NULL, NULL, 1),
-('ldap_main_server_address', NULL, 'textfield', 'LDAP', 'localhost', 'LDAPMainServerAddressTitle', 'LDAPMainServerAddressComment', NULL, NULL, 1),
-('ldap_main_server_port', NULL, 'textfield', 'LDAP', '389', 'LDAPMainServerPortTitle', 'LDAPMainServerPortComment', NULL, NULL, 1),
-('ldap_domain', NULL, 'textfield', 'LDAP', 'dc=nodomain', 'LDAPDomainTitle', 'LDAPDomainComment', NULL, NULL, 1),
-('ldap_replicate_server_address', NULL, 'textfield', 'LDAP', 'localhost', 'LDAPReplicateServerAddressTitle', 'LDAPReplicateServerAddressComment', NULL, NULL, 1),
-('ldap_replicate_server_port', NULL, 'textfield', 'LDAP', '389', 'LDAPReplicateServerPortTitle', 'LDAPReplicateServerPortComment', NULL, NULL, 1),
-('ldap_search_term', NULL, 'textfield', 'LDAP', NULL, 'LDAPSearchTermTitle', 'LDAPSearchTermComment', NULL, NULL, 1),
-('ldap_version', NULL, 'radio', 'LDAP', '3', 'LDAPVersionTitle', 'LDAPVersionComment', NULL, NULL, 1),
-('ldap_filled_tutor_field', NULL, 'textfield', 'LDAP', 'employeenumber', 'LDAPFilledTutorFieldTitle', 'LDAPFilledTutorFieldComment', NULL, NULL, 1),
-('ldap_authentication_login', NULL, 'textfield', 'LDAP', NULL, 'LDAPAuthenticationLoginTitle', 'LDAPAuthenticationLoginComment', NULL, NULL, 1),
-('ldap_authentication_password', NULL, 'textfield', 'LDAP', NULL, 'LDAPAuthenticationPasswordTitle', 'LDAPAuthenticationPasswordComment', NULL, NULL, 1),
-('service_visio', 'visio_use_rtmpt', 'radio', NULL, 'false', 'VisioUseRtmptTitle', 'VisioUseRtmptComment', NULL, NULL, 1),
-('extendedprofile_registration', 'mycomptetences', 'checkbox', 'Advanced', 'false', 'ExtendedProfileRegistrationTitle', 'ExtendedProfileRegistrationComment', NULL, 'MyCompetences', 1),
-('extendedprofile_registration', 'mydiplomas', 'checkbox', 'Advanced', 'false', 'ExtendedProfileRegistrationTitle', 'ExtendedProfileRegistrationComment', NULL, 'MyDiplomas', 1),
-('extendedprofile_registration', 'myteach', 'checkbox', 'Advanced', 'false', 'ExtendedProfileRegistrationTitle', 'ExtendedProfileRegistrationComment', NULL, 'MyTeach', 1),
-('extendedprofile_registration', 'mypersonalopenarea', 'checkbox', 'Advanced', 'false', 'ExtendedProfileRegistrationTitle', 'ExtendedProfileRegistrationComment', NULL, 'MyPersonalOpenArea', 1),
-('extendedprofile_registrationrequired', 'mycomptetences', 'checkbox', 'Advanced', 'false', 'ExtendedProfileRegistrationRequiredTitle', 'ExtendedProfileRegistrationRequiredComment', NULL, 'MyCompetences', 1),
-('extendedprofile_registrationrequired', 'mydiplomas', 'checkbox', 'Advanced', 'false', 'ExtendedProfileRegistrationRequiredTitle', 'ExtendedProfileRegistrationRequiredComment', NULL, 'MyDiplomas', 1),
-('extendedprofile_registrationrequired', 'myteach', 'checkbox', 'Advanced', 'false', 'ExtendedProfileRegistrationRequiredTitle', 'ExtendedProfileRegistrationRequiredComment', NULL, 'MyTeach', 1),
-('extendedprofile_registrationrequired', 'mypersonalopenarea', 'checkbox', 'Advanced', 'false', 'ExtendedProfileRegistrationRequiredTitle', 'ExtendedProfileRegistrationRequiredComment', NULL, 'MyPersonalOpenArea', 1),
-('ldap_filled_tutor_field_value', NULL, 'textfield', 'LDAP', NULL, 'LDAPFilledTutorFieldValueTitle', 'LDAPFilledTutorFieldValueComment', NULL, NULL, 1),
-('registration', 'phone', 'textfield', 'User', 'false', 'RegistrationRequiredFormsTitle', 'RegistrationRequiredFormsComment', NULL, 'Phone', 1),
-('add_users_by_coach', NULL, 'radio', 'Security', 'false', 'AddUsersByCoachTitle', 'AddUsersByCoachComment', NULL, NULL, 1),
-('extend_rights_for_coach', NULL, 'radio', 'Security', 'false', 'ExtendRightsForCoachTitle', 'ExtendRightsForCoachComment', NULL, NULL, 1),
-('extend_rights_for_coach_on_survey', NULL, 'radio', 'Security', 'true', 'ExtendRightsForCoachOnSurveyTitle', 'ExtendRightsForCoachOnSurveyComment', NULL, NULL, 1),
-('course_create_active_tools', 'wiki', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Wiki', 1),
-('show_session_coach', NULL, 'radio', 'Platform', 'false', 'ShowSessionCoachTitle', 'ShowSessionCoachComment', NULL, NULL, 1),
-('course_create_active_tools', 'Advanced', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Gradebook', 1),
-('allow_users_to_create_courses', NULL, 'radio', 'Platform', 'true', 'AllowUsersToCreateCoursesTitle', 'AllowUsersToCreateCoursesComment', NULL, NULL, 1),
-('course_create_active_tools', 'survey', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Survey', 1),
-('course_create_active_tools', 'glossary', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Glossary', 1),
-('course_create_active_tools', 'notebook', 'checkbox', 'Tools', 'true', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Notebook', 1),
-('advanced_filemanager', NULL, 'radio', 'Advanced', 'false', 'AdvancedFileManagerTitle', 'AdvancedFileManagerComment', NULL, NULL, 1),
-('allow_reservation', NULL, 'radio', 'Advanced', 'false', 'AllowReservationTitle', 'AllowReservationComment', NULL, NULL, 1),
-('profile', 'apikeys', 'checkbox', 'User', 'false', 'ProfileChangesTitle', 'ProfileChangesComment', NULL, 'ApiKeys', 1),
-('allow_message_tool', NULL, 'radio', 'Advanced', 'true', 'AllowMessageToolTitle', 'AllowMessageToolComment', NULL, NULL, 1),
-('allow_social_tool', NULL, 'radio', 'Tools', 'true', 'AllowSocialToolTitle', 'AllowSocialToolComment', NULL, NULL, 1),
-('allow_students_to_browse_courses', NULL, 'radio', 'Platform', 'true', 'AllowStudentsToBrowseCoursesTitle', 'AllowStudentsToBrowseCoursesComment', NULL, NULL, 1),
-('show_session_data', NULL, 'radio', 'Advanced', 'false', 'ShowSessionDataTitle', 'ShowSessionDataComment', NULL, NULL, 1),
-('allow_use_sub_language', NULL, 'radio', 'Advanced', 'false', 'AllowUseSubLanguageTitle', 'AllowUseSubLanguageComment', NULL, NULL, 1),
-('show_glossary_in_documents', NULL, 'radio', 'Advanced', 'isautomatic', 'ShowGlossaryInDocumentsTitle', 'ShowGlossaryInDocumentsComment', NULL, NULL, 1),
-('allow_terms_conditions', NULL, 'radio', 'Platform', 'false', 'AllowTermsAndConditionsTitle', 'AllowTermsAndConditionsComment', NULL, NULL, 1),
-('course_create_active_tools', 'enable_search', 'checkbox', 'Tools', 'false', 'CourseCreateActiveToolsTitle', 'CourseCreateActiveToolsComment', NULL, 'Search', 1),
-('search_enabled', NULL, 'radio', 'Tools', 'false', 'EnableSearchTitle', 'EnableSearchComment', NULL, NULL, 1),
-('search_prefilter_prefix', NULL, NULL, 'Search', NULL, 'SearchPrefilterPrefix', 'SearchPrefilterPrefixComment', NULL, NULL, 1),
-('search_show_unlinked_results', NULL, 'radio', 'Search', 'true', 'SearchShowUnlinkedResultsTitle', 'SearchShowUnlinkedResultsComment', NULL, NULL, 1),
+('Institution',NULL,'textfield','Platform','{ORGANISATIONNAME}','InstitutionTitle','InstitutionComment',NULL,NULL, 1),
+('InstitutionUrl',NULL,'textfield','Platform','{ORGANISATIONURL}','InstitutionUrlTitle','InstitutionUrlComment',NULL,NULL, 1),
+('siteName',NULL,'textfield','Platform','{CAMPUSNAME}','SiteNameTitle','SiteNameComment',NULL,NULL, 1),
+('emailAdministrator',NULL,'textfield','Platform','{ADMINEMAIL}','emailAdministratorTitle','emailAdministratorComment',NULL,NULL, 1),
+('administratorSurname',NULL,'textfield','Platform','{ADMINLASTNAME}','administratorSurnameTitle','administratorSurnameComment',NULL,NULL, 1),
+('administratorName',NULL,'textfield','Platform','{ADMINFIRSTNAME}','administratorNameTitle','administratorNameComment',NULL,NULL, 1),
+('show_administrator_data',NULL,'radio','Platform','true','ShowAdministratorDataTitle','ShowAdministratorDataComment',NULL,NULL, 1),
+('show_tutor_data',NULL,'radio','Platform','true','ShowTutorDataTitle','ShowTutorDataComment',NULL,NULL, 1),
+('show_teacher_data',NULL,'radio','Platform','true','ShowTeacherDataTitle','ShowTeacherDataComment',NULL,NULL, 1),
+('homepage_view',NULL,'radio','Course','activity','HomepageViewTitle','HomepageViewComment',0,NULL, 0),
+('show_toolshortcuts',NULL,'radio','Course','false','ShowToolShortcutsTitle','ShowToolShortcutsComment',NULL,NULL, 0),
+('allow_group_categories',NULL,'radio','Course','false','AllowGroupCategories','AllowGroupCategoriesComment',NULL,NULL, 0),
+('server_type',NULL,'radio','Platform','production','ServerStatusTitle','ServerStatusComment',NULL,NULL, 0),
+('platformLanguage',NULL,'link','Languages','{PLATFORMLANGUAGE}','PlatformLanguageTitle','PlatformLanguageComment',NULL,NULL, 0),
+('showonline','world','checkbox','Platform','true','ShowOnlineTitle','ShowOnlineComment',NULL,'ShowOnlineWorld', 0),
+('showonline','users','checkbox','Platform','true','ShowOnlineTitle','ShowOnlineComment',NULL,'ShowOnlineUsers', 0),
+('showonline','course','checkbox','Platform','true','ShowOnlineTitle','ShowOnlineComment',NULL,'ShowOnlineCourse', 0),
+('profile','name','checkbox','User','false','ProfileChangesTitle','ProfileChangesComment',NULL,'name', 0),
+('profile','officialcode','checkbox','User','false','ProfileChangesTitle','ProfileChangesComment',NULL,'officialcode', 0),
+('profile','email','checkbox','User','false','ProfileChangesTitle','ProfileChangesComment',NULL,'Email', 0),
+('profile','picture','checkbox','User','true','ProfileChangesTitle','ProfileChangesComment',NULL,'UserPicture', 0),
+('profile','login','checkbox','User','false','ProfileChangesTitle','ProfileChangesComment',NULL,'Login', 0),
+('profile','password','checkbox','User','false','ProfileChangesTitle','ProfileChangesComment',NULL,'UserPassword', 0),
+('profile','language','checkbox','User','true','ProfileChangesTitle','ProfileChangesComment',NULL,'Language', 0),
+('default_document_quotum',NULL,'textfield','Course','500000000','DefaultDocumentQuotumTitle','DefaultDocumentQuotumComment',NULL,NULL, 0),
+('registration','officialcode','checkbox','User','false','RegistrationRequiredFormsTitle','RegistrationRequiredFormsComment',NULL,'OfficialCode', 0),
+('registration','email','checkbox','User','true','RegistrationRequiredFormsTitle','RegistrationRequiredFormsComment',NULL,'Email', 0),
+('registration','language','checkbox','User','true','RegistrationRequiredFormsTitle','RegistrationRequiredFormsComment',NULL,'Language', 0),
+('default_group_quotum',NULL,'textfield','Course','5000000','DefaultGroupQuotumTitle','DefaultGroupQuotumComment',NULL,NULL, 0),
+('allow_registration',NULL,'radio','Platform','{ALLOWSELFREGISTRATION}','AllowRegistrationTitle','AllowRegistrationComment',NULL,NULL, 0),
+('allow_registration_as_teacher',NULL,'radio','Platform','{ALLOWTEACHERSELFREGISTRATION}','AllowRegistrationAsTeacherTitle','AllowRegistrationAsTeacherComment',NULL,NULL, 0),
+('allow_lostpassword',NULL,'radio','Platform','true','AllowLostPasswordTitle','AllowLostPasswordComment',NULL,NULL, 0),
+('allow_user_headings',NULL,'radio','Course','false','AllowUserHeadings','AllowUserHeadingsComment',NULL,NULL, 0),
+('course_create_active_tools','course_description','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'CourseDescription', 0),
+('course_create_active_tools','agenda','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Agenda', 0),
+('course_create_active_tools','documents','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Documents', 0),
+('course_create_active_tools','learning_path','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'LearningPath', 0),
+('course_create_active_tools','links','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Links', 0),
+('course_create_active_tools','announcements','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Announcements', 0),
+('course_create_active_tools','forums','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Forums', 0),
+('course_create_active_tools','dropbox','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Dropbox', 0),
+('course_create_active_tools','quiz','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Quiz', 0),
+('course_create_active_tools','users','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Users', 0),
+('course_create_active_tools','groups','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Groups', 0),
+('course_create_active_tools','chat','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Chat', 0),
+('course_create_active_tools','online_conference','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'OnlineConference', 0),
+('course_create_active_tools','student_publications','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'StudentPublications', 0),
+('allow_personal_agenda',NULL,'radio','User','true','AllowPersonalAgendaTitle','AllowPersonalAgendaComment',NULL,NULL, 0),
+('display_coursecode_in_courselist',NULL,'radio','Platform','true','DisplayCourseCodeInCourselistTitle','DisplayCourseCodeInCourselistComment',NULL,NULL, 0),
+('display_teacher_in_courselist',NULL,'radio','Platform','true','DisplayTeacherInCourselistTitle','DisplayTeacherInCourselistComment',NULL,NULL, 0),
+('use_document_title',NULL,'radio','Tools','true','UseDocumentTitleTitle','UseDocumentTitleComment',NULL,NULL, 0),
+('permanently_remove_deleted_files',NULL,'radio','Tools','false','PermanentlyRemoveFilesTitle','PermanentlyRemoveFilesComment',NULL,NULL, 0),
+('dropbox_allow_overwrite',NULL,'radio','Tools','true','DropboxAllowOverwriteTitle','DropboxAllowOverwriteComment',NULL,NULL, 0),
+('dropbox_max_filesize',NULL,'textfield','Tools','100000000','DropboxMaxFilesizeTitle','DropboxMaxFilesizeComment',NULL,NULL, 0),
+('dropbox_allow_just_upload',NULL,'radio','Tools','true','DropboxAllowJustUploadTitle','DropboxAllowJustUploadComment',NULL,NULL, 0),
+('dropbox_allow_student_to_student',NULL,'radio','Tools','true','DropboxAllowStudentToStudentTitle','DropboxAllowStudentToStudentComment',NULL,NULL, 0),
+('dropbox_allow_group',NULL,'radio','Tools','true','DropboxAllowGroupTitle','DropboxAllowGroupComment',NULL,NULL, 0),
+('dropbox_allow_mailing',NULL,'radio','Tools','false','DropboxAllowMailingTitle','DropboxAllowMailingComment',NULL,NULL, 0),
+('administratorTelephone',NULL,'textfield','Platform','(000) 001 02 03','administratorTelephoneTitle','administratorTelephoneComment',NULL,NULL, 1),
+('extended_profile',NULL,'radio','User','true','ExtendedProfileTitle','ExtendedProfileComment',NULL,NULL, 0),
+('student_view_enabled',NULL,'radio','Platform','true','StudentViewEnabledTitle','StudentViewEnabledComment',NULL,NULL, 0),
+('show_navigation_menu',NULL,'radio','Course','false','ShowNavigationMenuTitle','ShowNavigationMenuComment',NULL,NULL, 0),
+('enable_tool_introduction',NULL,'radio','course','false','EnableToolIntroductionTitle','EnableToolIntroductionComment',NULL,NULL, 0),
+('page_after_login', NULL, 'radio','Platform','user_portal.php', 'PageAfterLoginTitle','PageAfterLoginComment', NULL, NULL, 0),
+('time_limit_whosonline', NULL, 'textfield','Platform','30', 'TimeLimitWhosonlineTitle','TimeLimitWhosonlineComment', NULL, NULL, 0),
+('breadcrumbs_course_homepage', NULL, 'radio','Course','session_name_and_course_title', 'BreadCrumbsCourseHomepageTitle','BreadCrumbsCourseHomepageComment', NULL, NULL, 0),
+('example_material_course_creation', NULL, 'radio','Platform','true', 'ExampleMaterialCourseCreationTitle','ExampleMaterialCourseCreationComment', NULL, NULL, 0),
+('account_valid_duration',NULL, 'textfield','Platform','3660', 'AccountValidDurationTitle','AccountValidDurationComment', NULL, NULL, 0),
+('use_session_mode', NULL, 'radio','Platform','true', 'UseSessionModeTitle','UseSessionModeComment', NULL, NULL, 0),
+('allow_email_editor', NULL, 'radio', 'Tools', 'false', 'AllowEmailEditorTitle', 'AllowEmailEditorComment', NULL, NULL, 0),
+('registered', NULL, 'textfield', NULL, 'false', NULL, NULL, NULL, NULL, 0),
+('donotlistcampus', NULL, 'textfield', NULL, 'false', NULL, NULL, NULL, NULL,0 ),
+('show_email_addresses', NULL,'radio','Platform','false','ShowEmailAddresses','ShowEmailAddressesComment',NULL,NULL, 1),
+('profile','phone','checkbox','User','false','ProfileChangesTitle','ProfileChangesComment',NULL,'phone', 0),
+('service_visio', 'active', 'radio',NULL,'false', 'VisioEnable','', NULL, NULL, 0),
+('service_visio', 'visio_host', 'textfield',NULL,'', 'VisioHost','', NULL, NULL, 0),
+('service_visio', 'visio_port', 'textfield',NULL,'1935', 'VisioPort','', NULL, NULL, 0),
+('service_visio', 'visio_pass', 'textfield',NULL,'', 'VisioPassword','', NULL, NULL, 0),
+('service_ppt2lp', 'active', 'radio',NULL,'false', 'ppt2lp_actived','', NULL, NULL, 0),
+('service_ppt2lp', 'host', 'textfield', NULL, NULL, 'Host', NULL, NULL, NULL, 0),
+('service_ppt2lp', 'port', 'textfield', NULL, 2002, 'Port', NULL, NULL, NULL, 0),
+('service_ppt2lp', 'user', 'textfield', NULL, NULL, 'UserOnHost', NULL, NULL, NULL, 0),
+('service_ppt2lp', 'ftp_password', 'textfield', NULL, NULL, 'FtpPassword', NULL, NULL, NULL, 0),
+('service_ppt2lp', 'path_to_lzx', 'textfield', NULL, NULL, '', NULL, NULL, NULL, 0),
+('service_ppt2lp', 'size', 'radio', NULL, '720x540', '', NULL, NULL, NULL, 0),
+('wcag_anysurfer_public_pages', NULL, 'radio','Editor','false','PublicPagesComplyToWAITitle','PublicPagesComplyToWAIComment', NULL, NULL, 0),
+('stylesheets', NULL, 'textfield','stylesheets','dokeos2_orange','',NULL, NULL, NULL, 1),
+('upload_extensions_list_type', NULL, 'radio', 'Security', 'blacklist', 'UploadExtensionsListType', 'UploadExtensionsListTypeComment', NULL, NULL, 0),
+('upload_extensions_blacklist', NULL, 'textfield', 'Security', '', 'UploadExtensionsBlacklist', 'UploadExtensionsBlacklistComment', NULL, NULL, 0),
+('upload_extensions_whitelist', NULL, 'textfield', 'Security', 'htm;html;jpg;jpeg;gif;png;swf;avi;mpg;mpeg;mov;flv;doc;docx;xls;xlsx;ppt;pptx;odt;odp;ods;pdf', 'UploadExtensionsWhitelist', 'UploadExtensionsWhitelistComment', NULL, NULL, 0),
+('upload_extensions_skip', NULL, 'radio', 'Security', 'true', 'UploadExtensionsSkip', 'UploadExtensionsSkipComment', NULL, NULL, 0),
+('upload_extensions_replace_by', NULL, 'textfield', 'Security', 'dangerous', 'UploadExtensionsReplaceBy', 'UploadExtensionsReplaceByComment', NULL, NULL, 0),
+('show_number_of_courses', NULL, 'radio','Platform','false', 'ShowNumberOfCourses','ShowNumberOfCoursesComment', NULL, NULL, 0),
+('show_empty_course_categories', NULL, 'radio','Platform','true', 'ShowEmptyCourseCategories','ShowEmptyCourseCategoriesComment', NULL, NULL, 0),
+('show_back_link_on_top_of_tree', NULL, 'radio','Platform','false', 'ShowBackLinkOnTopOfCourseTree','ShowBackLinkOnTopOfCourseTreeComment', NULL, NULL, 0),
+('show_different_course_language', NULL, 'radio','Platform','true', 'ShowDifferentCourseLanguage','ShowDifferentCourseLanguageComment', NULL, NULL, 1),
+('split_users_upload_directory', NULL, 'radio','Tuning','false', 'SplitUsersUploadDirectory','SplitUsersUploadDirectoryComment', NULL, NULL, 0),
+('hide_dltt_markup', NULL, 'radio','Platform','true', 'HideDLTTMarkup','HideDLTTMarkupComment', NULL, NULL, 0),
+('display_categories_on_homepage',NULL,'radio','Platform','false','DisplayCategoriesOnHomepageTitle','DisplayCategoriesOnHomepageComment',NULL,NULL, 1),
+('permissions_for_new_directories', NULL, 'textfield', 'Security', '0777', 'PermissionsForNewDirs', 'PermissionsForNewDirsComment', NULL, NULL, 0),
+('permissions_for_new_files', NULL, 'textfield', 'Security', '0666', 'PermissionsForNewFiles', 'PermissionsForNewFilesComment', NULL, NULL, 0),
+('show_tabs', 'campus_homepage', 'checkbox', 'Platform', 'true', 'ShowTabsTitle','ShowTabsComment',NULL,'TabsCampusHomepage', 1),
+('show_tabs', 'my_courses', 'checkbox', 'Platform', 'true', 'ShowTabsTitle','ShowTabsComment',NULL,'TabsMyCourses', 1),
+('show_tabs', 'reporting', 'checkbox', 'Platform', 'true', 'ShowTabsTitle','ShowTabsComment',NULL,'TabsReporting', 1),
+('show_tabs', 'platform_administration', 'checkbox', 'Platform', 'true', 'ShowTabsTitle','ShowTabsComment',NULL,'TabsPlatformAdministration', 1),
+('show_tabs', 'my_agenda', 'checkbox', 'Platform', 'true', 'ShowTabsTitle','ShowTabsComment',NULL,'TabsMyAgenda', 1),
+('show_tabs', 'my_profile', 'checkbox', 'Platform', 'false', 'ShowTabsTitle','ShowTabsComment',NULL,'TabsMyProfile', 0),
+('default_forum_view', NULL, 'radio', 'Course', 'flat', 'DefaultForumViewTitle','DefaultForumViewComment',NULL,NULL, 0),
+('platform_charset',NULL,'textfield','Platform','iso-8859-15','PlatformCharsetTitle','PlatformCharsetComment','platform',NULL, 0),
+('noreply_email_address', '', 'textfield', 'Platform', '', 'NoReplyEmailAddress', 'NoReplyEmailAddressComment', NULL, NULL, 0),
+('survey_email_sender_noreply', '', 'radio', 'Course', 'coach', 'SurveyEmailSenderNoReply', 'SurveyEmailSenderNoReplyComment', NULL, NULL, 0),
+('openid_authentication',NULL,'radio','Security','false','OpenIdAuthentication','OpenIdAuthenticationComment',NULL,NULL, 0),
+('profile','openid','checkbox','User','false','ProfileChangesTitle','ProfileChangesComment',NULL,'OpenIDURL', 0),
+('gradebook_enable',NULL,'radio','Gradebook','true','GradebookActivation','GradebookActivationComment',NULL,NULL, 0),
+('show_tabs','my_gradebook','checkbox','Platform','true','ShowTabsTitle','ShowTabsComment',NULL,'TabsMyGradebook', 1),
+('gradebook_score_display_coloring','my_display_coloring','checkbox','Gradebook','false','GradebookScoreDisplayColoring','GradebookScoreDisplayColoringComment',NULL,'TabsGradebookEnableColoring', 0),
+('gradebook_score_display_custom','my_display_custom','checkbox','Gradebook','false','GradebookScoreDisplayCustom','GradebookScoreDisplayCustomComment',NULL,'TabsGradebookEnableCustom', 0),
+('gradebook_score_display_colorsplit',NULL,'textfield','Gradebook','50','GradebookScoreDisplayColorSplit','GradebookScoreDisplayColorSplitComment',NULL,NULL, 0),
+('gradebook_score_display_upperlimit','my_display_upperlimit','checkbox','Gradebook','false','GradebookScoreDisplayUpperLimit','GradebookScoreDisplayUpperLimitComment',NULL,'TabsGradebookEnableUpperLimit', 0),
+('user_selected_theme',NULL,'radio','Platform','false','UserThemeSelection','UserThemeSelectionComment',NULL,NULL, 0),
+('profile','theme','checkbox','User','false','ProfileChangesTitle','ProfileChangesComment',NULL,'UserTheme', 0),
+('allow_course_theme',NULL,'radio','Course','true','AllowCourseThemeTitle','AllowCourseThemeComment',NULL,NULL, 0),
+('display_mini_month_calendar',NULL,'radio','Tools', 'true', 'DisplayMiniMonthCalendarTitle', 'DisplayMiniMonthCalendarComment', NULL, NULL, 0),
+('display_upcoming_events',NULL,'radio','Tools','true','DisplayUpcomingEventsTitle','DisplayUpcomingEventsComment',NULL,NULL, 0),
+('number_of_upcoming_events',NULL,'textfield','Tools','1','NumberOfUpcomingEventsTitle','NumberOfUpcomingEventsComment',NULL,NULL, 0),
+('show_closed_courses',NULL,'radio','Platform','false','ShowClosedCoursesTitle','ShowClosedCoursesComment',NULL,NULL, 0),
+('ldap_main_server_address', NULL, 'textfield', 'LDAP', 'localhost', 'LDAPMainServerAddressTitle', 'LDAPMainServerAddressComment', NULL, NULL, 0),
+('ldap_main_server_port', NULL, 'textfield', 'LDAP', '389', 'LDAPMainServerPortTitle', 'LDAPMainServerPortComment', NULL, NULL, 0),
+('ldap_domain', NULL, 'textfield', 'LDAP', 'dc=nodomain', 'LDAPDomainTitle', 'LDAPDomainComment', NULL, NULL, 0),
+('ldap_replicate_server_address', NULL, 'textfield', 'LDAP', 'localhost', 'LDAPReplicateServerAddressTitle', 'LDAPReplicateServerAddressComment', NULL, NULL, 0),
+('ldap_replicate_server_port', NULL, 'textfield', 'LDAP', '389', 'LDAPReplicateServerPortTitle', 'LDAPReplicateServerPortComment', NULL, NULL, 0),
+('ldap_search_term', NULL, 'textfield', 'LDAP', '', 'LDAPSearchTermTitle', 'LDAPSearchTermComment', NULL, NULL, 0),
+('ldap_version', NULL, 'radio', 'LDAP', '3', 'LDAPVersionTitle', 'LDAPVersionComment', NULL, '', 0),
+('ldap_filled_tutor_field', NULL, 'textfield', 'LDAP', 'employeenumber', 'LDAPFilledTutorFieldTitle', 'LDAPFilledTutorFieldComment', NULL, '', 0),
+('ldap_authentication_login', NULL, 'textfield', 'LDAP', '', 'LDAPAuthenticationLoginTitle', 'LDAPAuthenticationLoginComment', NULL, '', 0),
+('ldap_authentication_password', NULL, 'textfield', 'LDAP', '', 'LDAPAuthenticationPasswordTitle', 'LDAPAuthenticationPasswordComment', NULL, '', 0),
+('service_visio', 'visio_use_rtmpt', 'radio',null,'false', 'VisioUseRtmptTitle','VisioUseRtmptComment', NULL, NULL, 0),
+('extendedprofile_registration', 'mycomptetences', 'checkbox','User','false', 'ExtendedProfileRegistrationTitle','ExtendedProfileRegistrationComment', NULL, 'MyCompetences', 0),
+('extendedprofile_registration', 'mydiplomas', 'checkbox','User','false', 'ExtendedProfileRegistrationTitle','ExtendedProfileRegistrationComment', NULL, 'MyDiplomas', 0),
+('extendedprofile_registration', 'myteach', 'checkbox','User','false', 'ExtendedProfileRegistrationTitle','ExtendedProfileRegistrationComment', NULL, 'MyTeach', 0),
+('extendedprofile_registration', 'mypersonalopenarea', 'checkbox','User','false', 'ExtendedProfileRegistrationTitle','ExtendedProfileRegistrationComment', NULL, 'MyPersonalOpenArea', 0),
+('extendedprofile_registrationrequired', 'mycomptetences', 'checkbox','User','false', 'ExtendedProfileRegistrationRequiredTitle','ExtendedProfileRegistrationRequiredComment', NULL, 'MyCompetences', 0),
+('extendedprofile_registrationrequired', 'mydiplomas', 'checkbox','User','false', 'ExtendedProfileRegistrationRequiredTitle','ExtendedProfileRegistrationRequiredComment', NULL, 'MyDiplomas', 0),
+('extendedprofile_registrationrequired', 'myteach', 'checkbox','User','false', 'ExtendedProfileRegistrationRequiredTitle','ExtendedProfileRegistrationRequiredComment', NULL, 'MyTeach', 0),
+('extendedprofile_registrationrequired', 'mypersonalopenarea', 'checkbox','User','false', 'ExtendedProfileRegistrationRequiredTitle','ExtendedProfileRegistrationRequiredComment', NULL, 'MyPersonalOpenArea', 0),
+('ldap_filled_tutor_field_value', NULL, 'textfield', 'LDAP', '', 'LDAPFilledTutorFieldValueTitle', 'LDAPFilledTutorFieldValueComment', NULL, '', 0),
+('registration','phone','textfield','User','false','RegistrationRequiredFormsTitle','RegistrationRequiredFormsComment',NULL,'Phone', 0),
+('add_users_by_coach',NULL,'radio','Security','false','AddUsersByCoachTitle','AddUsersByCoachComment',NULL,NULL, 0),
+('extend_rights_for_coach',NULL,'radio','Security','false','ExtendRightsForCoachTitle','ExtendRightsForCoachComment',NULL,NULL, 0),
+('extend_rights_for_coach_on_survey',NULL,'radio','Security','true','ExtendRightsForCoachOnSurveyTitle','ExtendRightsForCoachOnSurveyComment',NULL,NULL, 0),
+('course_create_active_tools','wiki','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Wiki', 0),
+('show_session_coach', NULL, 'radio','Platform','false', 'ShowSessionCoachTitle','ShowSessionCoachComment', NULL, NULL, 0),
+('course_create_active_tools','gradebook','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Gradebook', 0),
+('allow_users_to_create_courses',NULL,'radio','Platform','true','AllowUsersToCreateCoursesTitle','AllowUsersToCreateCoursesComment',NULL,NULL, 0),
+('course_create_active_tools','survey','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Survey', 0),
+('course_create_active_tools','glossary','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Glossary', 0),
+('course_create_active_tools','notebook','checkbox','Tools','true','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Notebook', 0),
+('advanced_filemanager',NULL,'radio','Editor','false','AdvancedFileManagerTitle','AdvancedFileManagerComment',NULL,NULL, 0),
+('allow_reservation', NULL, 'radio', 'Tools', 'false', 'AllowReservationTitle', 'AllowReservationComment', NULL, NULL, 0),
+('profile','apikeys','checkbox','User','false','ProfileChangesTitle','ProfileChangesComment',NULL,'ApiKeys', 0),
+('allow_message_tool', NULL, 'radio', 'Tools', 'true', 'AllowMessageToolTitle', 'AllowMessageToolComment', NULL, NULL,0),
+('allow_social_tool', NULL, 'radio', 'Tools', 'true', 'AllowSocialToolTitle', 'AllowSocialToolComment', NULL, NULL, 0),
+('allow_students_to_browse_courses',NULL,'radio','Platform','true','AllowStudentsToBrowseCoursesTitle','AllowStudentsToBrowseCoursesComment',NULL,NULL, 1),
+('show_session_data', NULL, 'radio', 'Course', 'false', 'ShowSessionDataTitle', 'ShowSessionDataComment', NULL, NULL, 1),
+('allow_use_sub_language', NULL, 'radio', 'Platform', 'false', 'AllowUseSubLanguageTitle', 'AllowUseSubLanguageComment', NULL, NULL,0),
+('show_glossary_in_documents', NULL, 'radio', 'Course', 'isautomatic', 'ShowGlossaryInDocumentsTitle', 'ShowGlossaryInDocumentsComment', NULL, NULL,1),
+('allow_terms_conditions', NULL, 'radio', 'Platform', 'false', 'AllowTermsAndConditionsTitle', 'AllowTermsAndConditionsComment', NULL, NULL,0),
+('course_create_active_tools','enable_search','checkbox','Tools','false','CourseCreateActiveToolsTitle','CourseCreateActiveToolsComment',NULL,'Search',0),
+('search_enabled',NULL,'radio','Tools','false','EnableSearchTitle','EnableSearchComment',NULL,NULL,1),
+('search_prefilter_prefix',NULL, NULL,'Search','','SearchPrefilterPrefix','SearchPrefilterPrefixComment',NULL,NULL,0),
+('search_show_unlinked_results',NULL,'radio','Search','true','SearchShowUnlinkedResultsTitle','SearchShowUnlinkedResultsComment',NULL,NULL,1),
 ('show_courses_descriptions_in_catalog', NULL, 'radio', 'Course', 'true', 'ShowCoursesDescriptionsInCatalogTitle', 'ShowCoursesDescriptionsInCatalogComment', NULL, NULL, 1),
-('allow_coach_to_edit_course_session', NULL, 'radio', 'Course', 'false', 'AllowCoachsToEditInsideTrainingSessions', 'AllowCoachsToEditInsideTrainingSessionsComment', NULL, NULL, 1),
-('show_glossary_in_extra_tools', NULL, 'radio', 'Advanced', 'false', 'ShowGlossaryInExtraToolsTitle', 'ShowGlossaryInExtraToolsComment', NULL, NULL, 1),
-('dokeos_database_version', NULL, 'textfield', NULL, '2.1.12641', 'DokeosDatabaseVersion', NULL, NULL, NULL, 1),
-('send_email_to_admin_when_create_course', NULL, 'radio', 'Platform', 'false', 'SendEmailToAdminTitle', 'SendEmailToAdminComment', NULL, NULL, 1),
-('go_to_course_after_login', NULL, 'radio', 'Course', 'false', 'GoToCourseAfterLoginTitle', 'GoToCourseAfterLoginComment', NULL, NULL, 1),
-('math_mimetex', NULL, 'radio', 'Advanced', 'false', 'MathMimetexTitle', 'MathMimetexComment', NULL, NULL, 1),
-('math_asciimathML', NULL, 'radio', 'Editor', 'false', 'MathASCIImathMLTitle', 'MathASCIImathMLComment', NULL, NULL, 1),
-('youtube_for_students', NULL, 'radio', 'Advanced', 'true', 'YoutubeForStudentsTitle', 'YoutubeForStudentsComment', NULL, NULL, 1),
-('block_copy_paste_for_students', NULL, 'radio', 'Editor', 'false', 'BlockCopyPasteForStudentsTitle', 'BlockCopyPasteForStudentsComment', NULL, NULL, 1),
-('more_buttons_maximized_mode', NULL, 'radio', 'Editor', 'false', 'MoreButtonsForMaximizedModeTitle', 'MoreButtonsForMaximizedModeComment', NULL, NULL, 1),
-('students_download_folders', NULL, 'radio', 'Advanced', 'true', 'AllowStudentsDownloadFoldersTitle', 'AllowStudentsDownloadFoldersComment', NULL, NULL, 1),
-('installation_date', NULL, 'text', 'Advanced', '1319211472', 'InstallationDateTitle', 'InstallationDateComment', NULL, NULL, 1),
-('cas_activate', NULL, 'radio', 'CAS', 'false', 'CasMainActivateTitle', 'CasMainActivateComment', NULL, NULL, 1),
-('cas_server', NULL, 'textfield', 'CAS', NULL, 'CasMainServerTitle', 'CasMainServerComment', NULL, NULL, 1),
-('cas_server_uri', NULL, 'textfield', 'CAS', NULL, 'CasMainServerURITitle', 'CasMainServerURIComment', NULL, NULL, 1),
-('cas_port', NULL, 'textfield', 'CAS', NULL, 'CasMainPortTitle', 'CasMainPortComment', NULL, NULL, 1),
-('cas_protocol', NULL, 'radio', 'CAS', NULL, 'CasMainProtocolTitle', 'CasMainProtocolComment', NULL, NULL, 1),
-('cas_add_user_activate', NULL, 'radio', 'CAS', NULL, 'CasUserAddActivateTitle', 'CasUserAddActivateComment', NULL, NULL, 1),
-('cas_add_user_login_attr', NULL, 'textfield', 'CAS', NULL, 'CasUserAddLoginAttributeTitle', 'CasUserAddLoginAttributeComment', NULL, NULL, 1),
-('cas_add_user_email_attr', NULL, 'textfield', 'CAS', NULL, 'CasUserAddEmailAttributeTitle', 'CasUserAddEmailAttributeComment', NULL, NULL, 1),
-('cas_add_user_firstname_attr', NULL, 'textfield', 'CAS', NULL, 'CasUserAddFirstnameAttributeTitle', 'CasUserAddFirstnameAttributeComment', NULL, NULL, 1),
-('cas_add_user_lastname_attr', NULL, 'textfield', 'CAS', NULL, 'CasUserAddLastnameAttributeTitle', 'CasUserAddLastnameAttributeComment', NULL, NULL, 1),
-('calendar_types', 'platformevents', 'checkbox', 'Advanced', 'true', 'CalendarTypesTitle', 'CalendarTypesComment', '1', 'PlatformEvents', 1),
-('calendar_types', 'quizevents', 'checkbox', 'Advanced', 'true', 'CalendarTypesTitle', 'CalendarTypesComment', '1', 'QuizEvents', 1),
-('calendar_types', 'sessionevents', 'checkbox', 'Advanced', 'true', 'CalendarTypesTitle', 'CalendarTypesComment', '1', 'SessionEvents', 1),
-('mindmap_converter_activated', NULL, 'radio', 'Advanced', 'false', 'MindmapConverterTitle', 'MindmapConverterComment', NULL, NULL, 1),
-('agenda_default_view', NULL, 'radio', 'Tools', 'agendaWeek', 'AgendaDefaultViewTitle', 'AgendaDefaultViewComment', '1', NULL, 1),
-('agenda_action_icons', NULL, 'radio', 'Tools', 'false', 'AgendaActionIconsTitle', 'AgendaActionIconsComment', '1', NULL, 1),
-('calendar_detail_view', NULL, 'radio', 'Advanced', 'edit', 'CalendarDetailViewTitle', 'CalendarDetailViewComment', '1', NULL, 1),
-('calendar_navigation', NULL, 'radio', 'Advanced', 'actions', 'CalendarNavigationTitle', 'CalendarNavigationComment', '1', NULL, 1),
-('display_feedback_messages', NULL, 'radio', 'Advanced', 'false', 'DisplayFeedbackMessagesTitle', 'DisplayFeedbackMessagesComment', '1', NULL, 1),
-('allow_user_edit_agenda', NULL, 'radio', 'Advanced', 'false', 'AllowUserEditAgendaTitle', 'AllowUserEditAgendaTitle', '1', NULL, 1),
-('user_manage_group_agenda', NULL, 'radio', 'Advanced', 'true', 'CanUsersMangeGroupAgendaTitle', 'CanUsersMangeGroupAgendaComment', '1', NULL, 1),
-('captcha', NULL, 'radio', 'Advanced', 'false', 'CaptchaTitle', 'CaptchaComment', NULL, NULL, 1),
-('number_of_announcements', NULL, 'textfield', 'Advanced', '8', 'NumberOfAnnouncementsInListTitle', 'NumberOfAnnouncementsInListComment', '0', NULL, 1),
-('calendar_export_all', NULL, 'radio', 'Advanced', 'false', 'CalendarExportAllTitle', 'CalendarExportAllComment', '0', NULL, 1),
-('display_context_help', NULL, 'radio', 'Advanced', 'false', 'DisplayContextHelpTitle', 'DisplayContextHelpComment', '0', NULL, 1),
-('display_breadcrumbs', NULL, 'radio', 'Advanced', 'false', 'DisplayBreadcrumbsTitle', 'DisplayBreadcrumbsComment', '0', NULL, 1),
-('display_platform_header_in_course', NULL, 'radio', 'Advanced', 'hide', 'DisplayPlatformHeaderInCourseTitle', 'DisplayPlatformHeaderInCourseComment', '0', NULL, 1),
-('groupscenariofield', 'description', 'checkbox', 'Advanced', 'false', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldDescription', 1),
-('groupscenariofield', 'limit', 'checkbox', 'Advanced', 'true', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldLimit', 1),
-('groupscenariofield', 'registration', 'checkbox', 'Advanced', 'true', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldRegistration', 1),
-('groupscenariofield', 'unregistration', 'checkbox', 'Advanced', 'false', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldUnRegistration', 1),
-('groupscenariofield', 'publicprivategroup', 'checkbox', 'Advanced', 'true', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldPublicPrivateGroup', 1),
-('groupscenariofield', 'document', 'checkbox', 'Advanced', 'false', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldDocument', 1),
-('groupscenariofield', 'work', 'checkbox', 'Advanced', 'false', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldWork', 1),
-('groupscenariofield', 'calendar', 'checkbox', 'Advanced', 'false', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldCalendar', 1),
-('groupscenariofield', 'announcements', 'checkbox', 'Advanced', 'false', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldAnnouncements', 1),
-('groupscenariofield', 'forum', 'checkbox', 'Advanced', 'false', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldForum', 1),
-('groupscenariofield', 'wiki', 'checkbox', 'Advanced', 'false', 'GroupScenarioFieldTitle', 'GroupScenarioFieldComment', '0', 'GroupScenarioFieldWiki', 1),
-('message_max_upload_filesize', NULL, 'textfield', 'Advanced', '20971520', 'MessageMaxUploadFilesizeTitle', 'MessageMaxUploadFilesizeComment', NULL, NULL, 1),
-('show_tabs', 'social', 'checkbox', 'Platform', 'true', 'ShowTabsTitle', 'ShowTabsComment', NULL, 'TabsSocial', 1),
-('show_quizcategory', NULL, 'radio', 'Advanced', 'false', 'ShowQuizCategoryTitle', 'ShowQuizCategoryComment', '0', NULL, 1),
-('show_emailtemplates', NULL, 'radio', 'Advanced', 'true', 'ShowEmailTemplatesTitle', 'ShowEmailTemplatesComment', '0', NULL, 1),
-('show_catalogue', NULL, 'radio', 'Platform', 'true', 'ShowCatalogueTitle', 'ShowCatalogueComment', '0', NULL, 1),
-('automatic_group_filling', NULL, 'radio', 'Advanced', 'true', 'ShowAutomaticGroupTitle', 'ShowAutomaticGroupComment', '0', NULL, 1),
-('create_new_group', NULL, 'radio', 'Advanced', 'true', 'ShowNewGroupTitle', 'ShowNewGroupComment', '0', NULL, 1),
-('new_group_seats', NULL, 'textfield', 'Advanced', '20', 'ShowNewGroupSeatTitle', 'ShowNewGroupSeatComment', '0', NULL, 1),
-('show_force_password_change', NULL, 'radio', 'Security', '0', 'ShowForcePasswordChangeTitle', 'ShowForcePasswordChangeTitleComment', NULL, NULL, 1),
-('force_password_change', NULL, 'textfield', 'Security', '0', 'ForcePasswordChangeTitle', 'ForcePasswordChangeComment', NULL, NULL, 1),
-('force_password_change_account_creation', NULL, 'radio', 'Security', '0', 'ForcePasswordChangeAccountCreationTitle', 'ForcePasswordChangeAccountCreationComment', NULL, NULL, 1),
-('password_rule', 'numbers', 'checkbox', 'Security', 'true', 'PasswordRuleTitle', 'PasswordRuleComment', NULL, 'PasswordRuleNumbers', 1),
-('password_rule', 'camelcase', 'checkbox', 'Security', 'true', 'PasswordRuleTitle', 'PasswordRuleComment', NULL, 'PasswordRuleCamelCase', 1),
-('password_rule', 'symbols', 'checkbox', 'Security', 'false', 'PasswordRuleTitle', 'PasswordRuleComment', NULL, 'PasswordRuleSymbol', 1),
-('password_length', NULL, 'textfield', 'Security', '6', 'PasswordLengthTitle', 'PasswordLengthComment', NULL, NULL, 1),
-('login_fail_lock', NULL, 'textfield', 'Security', '0', 'LoginFailLockTitle', 'LoginFailLockComment', NULL, NULL, 1);
+('allow_coach_to_edit_course_session',NULL,'radio','Course','false','AllowCoachsToEditInsideTrainingSessions','AllowCoachsToEditInsideTrainingSessionsComment',NULL,NULL, 0),
+('show_glossary_in_extra_tools', NULL, 'radio', 'Course', 'false', 'ShowGlossaryInExtraToolsTitle', 'ShowGlossaryInExtraToolsComment', NULL, NULL,1),
+('dokeos_database_version', NULL, 'textfield', NULL,'2.0.11465','DokeosDatabaseVersion','',NULL,NULL,0),
+('send_email_to_admin_when_create_course',NULL,'radio','Platform','false','SendEmailToAdminTitle','SendEmailToAdminComment',NULL,NULL, 1),
+('go_to_course_after_login',NULL,'radio','Course','false','GoToCourseAfterLoginTitle','GoToCourseAfterLoginComment',NULL,NULL, 0),
+('math_mimetex',NULL,'radio','Editor','false','MathMimetexTitle','MathMimetexComment',NULL,NULL, 0),
+('math_asciimathML',NULL,'radio','Editor','false','MathASCIImathMLTitle','MathASCIImathMLComment',NULL,NULL, 0),
+('youtube_for_students',NULL,'radio','Editor','true','YoutubeForStudentsTitle','YoutubeForStudentsComment',NULL,NULL, 0),
+('block_copy_paste_for_students',NULL,'radio','Editor','false','BlockCopyPasteForStudentsTitle','BlockCopyPasteForStudentsComment',NULL,NULL, 0),
+('more_buttons_maximized_mode',NULL,'radio','Editor','false','MoreButtonsForMaximizedModeTitle','MoreButtonsForMaximizedModeComment',NULL,NULL, 0),
+('students_download_folders',NULL,'radio','Tools','true','AllowStudentsDownloadFoldersTitle','AllowStudentsDownloadFoldersComment',NULL,NULL, 0),
+('installation_date',NULL,'text','System','{INSTALLATIONDATE}','InstallationDateTitle','InstallationDateComment',NULL,NULL, 0),
+('portal_view',NULL,'radio','Platform','classic','PortalViewTitle','PortalViewComment',NULL,NULL, 0),
+('widget_hidden_title_behaviour',NULL,'radio','Course','showonhover','WidgetHiddenTitleBehaviourTitle','WidgetHiddenTitleBehaviourComment',0,NULL, 0),
+('widget_homepage',NULL,'radio','Course','widgethomepage2','WidgetHomepageTitle','WidgetHomepageComment',0,NULL, 0),
+('cas_activate', NULL, 'radio', 'CAS', 'false', 'CasMainActivateTitle', 'CasMainActivateComment', NULL, NULL, 0),
+('cas_server', NULL, 'textfield', 'CAS', '', 'CasMainServerTitle', 'CasMainServerComment', NULL, NULL, 0),
+('cas_server_uri', NULL, 'textfield', 'CAS', '', 'CasMainServerURITitle', 'CasMainServerURIComment', NULL, NULL, 0),
+('cas_port', NULL, 'textfield', 'CAS', '', 'CasMainPortTitle', 'CasMainPortComment', NULL, NULL, 0),
+('cas_protocol', NULL, 'radio', 'CAS', '', 'CasMainProtocolTitle', 'CasMainProtocolComment', NULL, NULL, 0),
+('cas_add_user_activate', NULL, 'radio', 'CAS', '', 'CasUserAddActivateTitle', 'CasUserAddActivateComment', NULL, NULL, 0),
+('cas_add_user_login_attr', NULL, 'textfield', 'CAS', '', 'CasUserAddLoginAttributeTitle', 'CasUserAddLoginAttributeComment', NULL, NULL, 0),
+('cas_add_user_email_attr', NULL, 'textfield', 'CAS', '', 'CasUserAddEmailAttributeTitle', 'CasUserAddEmailAttributeComment', NULL, NULL, 0),
+('cas_add_user_firstname_attr', NULL, 'textfield', 'CAS', '', 'CasUserAddFirstnameAttributeTitle', 'CasUserAddFirstnameAttributeComment', NULL, NULL, 0),
+('cas_add_user_lastname_attr', NULL, 'textfield', 'CAS', '', 'CasUserAddLastnameAttributeTitle', 'CasUserAddLastnameAttributeComment', NULL, NULL, 0),
+('calendar_types','platformevents','checkbox','Tools','true','CalendarTypesTitle','CalendarTypesComment',1,'PlatformEvents', 1),
+('calendar_types','quizevents','checkbox','Tools','true','CalendarTypesTitle','CalendarTypesComment',1,'QuizEvents', 1),
+('calendar_types','sessionevents','checkbox','Tools','true','CalendarTypesTitle','CalendarTypesComment',1,'SessionEvents', 1),
+('mindmap_converter_activated','','radio','Platform','false','MindmapConverterTitle','MindmapConverterComment',NULL, NULL, 0),
+('agenda_default_view','','radio','Tools','agendaWeek','AgendaDefaultViewTitle','AgendaDefaultViewComment',1, NULL, 1),
+('agenda_action_icons','','radio','Tools','false','AgendaActionIconsTitle','AgendaActionIconsComment',1, NULL, 1),
+('calendar_detail_view','','radio','Tools','edit','CalendarDetailViewTitle','CalendarDetailViewComment',1, NULL, 1),
+('calendar_navigation','','radio','Tools','actions','CalendarNavigationTitle','CalendarNavigationComment',1, NULL, 1),
+('display_feedback_messages','','radio','Platform','false','DisplayFeedbackMessagesTitle','DisplayFeedbackMessagesComment',1, NULL, 1),
+('allow_user_edit_agenda','','radio','Tools','false','AllowUserEditAgendaTitle','AllowUserEditAgendaTitle',1, NULL, 1),
+('user_manage_group_agenda','','radio','Tools','true','CanUsersMangeGroupAgendaTitle','CanUsersMangeGroupAgendaComment',1, NULL, 1),
+('captcha','','radio','Platform','false','CaptchaTitle','CaptchaComment',NULL, NULL, 1),
+('number_of_announcements','','textfield','Tools','8','NumberOfAnnouncementsInListTitle','NumberOfAnnouncementsInListComment','0', NULL, 1),
+('calendar_export_all','','radio','Tools','false','CalendarExportAllTitle','CalendarExportAllComment','0', NULL, 1),
+('display_context_help','','radio','Platform','false','DisplayContextHelpTitle','DisplayContextHelpComment','0', NULL, 1),
+('display_breadcrumbs','','radio','Platform','false','DisplayBreadcrumbsTitle','DisplayBreadcrumbsComment','0', NULL, 1),
+('display_platform_header_in_course','','radio','Platform','hide','DisplayPlatformHeaderInCourseTitle','DisplayPlatformHeaderInCourseComment','0', NULL, 0),
+('groupscenariofield','description','checkbox','Tools','false','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldDescription', 0),
+('groupscenariofield','limit','checkbox','Tools','true','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldLimit', 0),
+('groupscenariofield','registration','checkbox','Tools','true','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldRegistration', 0),
+('groupscenariofield','unregistration','checkbox','Tools','false','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldUnRegistration', 0),
+('groupscenariofield','publicprivategroup','checkbox','Tools','true','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldPublicPrivateGroup', 0),
+('groupscenariofield','document','checkbox','Tools','false','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldDocument', 0),
+('groupscenariofield','work','checkbox','Tools','false','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldWork', 0),
+('groupscenariofield','calendar','checkbox','Tools','false','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldCalendar', 0),
+('groupscenariofield','announcements','checkbox','Tools','false','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldAnnouncements', 0),
+('groupscenariofield','forum','checkbox','Tools','false','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldForum', 0),
+('groupscenariofield','wiki','checkbox','Tools','false','GroupScenarioFieldTitle','GroupScenarioFieldComment','0', 'GroupScenarioFieldWiki', 0),
+('message_max_upload_filesize',NULL,'textfield','Tools','20971520','MessageMaxUploadFilesizeTitle','MessageMaxUploadFilesizeComment',NULL,NULL, 0),
+('show_tabs', 'social', 'checkbox', 'Platform', 'true', 'ShowTabsTitle','ShowTabsComment',NULL,'TabsSocial', 0),
+('show_quizcategory', '', 'radio', 'Platform', 'false', 'ShowQuizCategoryTitle','ShowQuizCategoryComment','0',NULL, 1),
+('show_emailtemplates', '', 'radio', 'Platform', 'true', 'ShowEmailTemplatesTitle','ShowEmailTemplatesComment','0',NULL, 1),
+('force_password_change', '', 'textfield', 'Security', '0', 'ForcePasswordChangeTitle','ForcePasswordChangeComment',NULL,NULL, 1),
+('force_password_change_account_creation', '', 'radio', 'Security', '0', 'ForcePasswordChangeAccountCreationTitle','ForcePasswordChangeAccountCreationComment',NULL,NULL, 1),
+('password_rule', 'numbers', 'checkbox', 'Security', 'true', 'PasswordRuleTitle','PasswordRuleComment',NULL,'PasswordRuleNumbers', 1),
+('password_rule', 'camelcase', 'checkbox', 'Security', 'true', 'PasswordRuleTitle','PasswordRuleComment',NULL,'PasswordRuleCamelCase', 1),
+('password_rule', 'symbols', 'checkbox', 'Security', 'false', 'PasswordRuleTitle','PasswordRuleComment',NULL,'PasswordRuleSymbol', 1),
+('password_length', '', 'textfield', 'Security', '6', 'PasswordLengthTitle','PasswordLengthComment',NULL,NULL, 1),
+('login_fail_lock', '', 'textfield', 'Security', '0', 'LoginFailLockTitle','LoginFailLockComment',NULL,NULL, 1);
 
-
-UPDATE settings_current SET access_url_changeable=1 WHERE access_url =  1;
 
 UNLOCK TABLES;
 /*!40000 ALTER TABLE settings_current ENABLE KEYS */;
@@ -999,6 +839,7 @@ VALUES
 ('homepage_view','activity','HomepageViewActivity'),
 ('homepage_view','2column','HomepageView2column'),
 ('homepage_view','3column','HomepageView3column'),
+('homepage_view','widget','Widget'),
 ('show_toolshortcuts','true','Yes'),
 ('show_toolshortcuts','false','No'),
 ('allow_group_categories','true','Yes'),
@@ -1162,6 +1003,16 @@ VALUES
 ('more_buttons_maximized_mode','false','No'),
 ('students_download_folders','true','Yes'),
 ('students_download_folders','false','No'),
+('widget_homepage','widgethomepage1','widgethomepage1'),
+('widget_homepage','widgethomepage2','widgethomepage2'),
+('widget_homepage','widgethomepage3','widgethomepage3'),
+('widget_homepage','widgethomepage4','widgethomepage4'),
+('widget_homepage','widgethomepage5','widgethomepage5'),
+('widget_homepage','widgethomepage6','widgethomepage6'),
+('widget_hidden_title_behaviour','showonhover','ShowOnHover'),
+('widget_hidden_title_behaviour','showtoggle','ShowToggle'),
+('portal_view','widget','PortalViewWidget'),
+('portal_view','classic','PortalViewClassic'),
 ('cas_activate', 'true', 'Yes'),
 ('cas_activate', 'false', 'No'),
 ('cas_protocol', 'CAS1', 'CAS1Text'),
@@ -1201,16 +1052,8 @@ VALUES
 ('show_quizcategory','false','No'),
 ('show_emailtemplates','true','Yes'),
 ('show_emailtemplates','false','No'),
-('show_catalogue','true','Yes'),
-('show_catalogue','false','No'),
-('automatic_group_filling','true','Yes'),
-('automatic_group_filling','false','No'),
-('create_new_group','true','Yes'),
-('create_new_group','false','No'),
 ('force_password_change_account_creation','true','Yes'),
-('force_password_change_account_creation','false','No'),
-('show_force_password_change','true','Yes'),
-('show_force_password_change','false','No');
+('force_password_change_account_creation','false','No');
 
 
 UNLOCK TABLES;
@@ -1452,10 +1295,8 @@ CREATE TABLE user_field (
 	field_changeable tinyint default 0,
 	field_filter tinyint default 0,
 	tms	TIMESTAMP,
-        field_registration int DEFAULT 0,
 	PRIMARY KEY(id)
 );
-
 DROP TABLE IF EXISTS user_field_options;
 CREATE TABLE user_field_options (
 	id	int NOT NULL auto_increment,
@@ -1466,14 +1307,13 @@ CREATE TABLE user_field_options (
 	tms	TIMESTAMP,
 	PRIMARY KEY (id)
 );
-
 DROP TABLE IF EXISTS user_field_values;
 CREATE TABLE user_field_values(
 	id	int	NOT NULL auto_increment,
 	user_id	int	unsigned NOT NULL,
 	field_id int NOT NULL,
 	field_value	text,
-	tms TIMESTAMP,        
+	tms TIMESTAMP,
 	PRIMARY KEY(id)
 );
 
@@ -1549,12 +1389,7 @@ CREATE TABLE access_url_rel_session (
   session_id int unsigned NOT NULL,
   PRIMARY KEY (access_url_id, session_id)
 );
-DROP TABLE IF EXISTS access_url_rel_admin;
-CREATE TABLE access_url_rel_admin (
-  access_url_id int unsigned NOT NULL,
-  user_id int unsigned NOT NULL,
-  PRIMARY KEY (access_url_id, user_id)
-);
+
 --
 -- Table structure for table sys_calendar
 --
@@ -1695,25 +1530,6 @@ INSERT INTO `email_template` VALUES(3, 'Utilisateurs inscrire', 'Userregistratio
 INSERT INTO `email_template` VALUES(4, 'Quiz suivi', 'Quizreport', 'emailtemplate.png', 'french' ,'');
 INSERT INTO `email_template` VALUES(5, 'Nutzer registrieren', 'Userregistration', 'emailtemplate.png', 'german' ,'');
 INSERT INTO `email_template` VALUES(6, 'Test statistik', 'Quizreport', 'emailtemplate.png', 'german' ,'');
-INSERT INTO `email_template` VALUES(7, 'Quiz Success Report', 'Quizsuccess', 'emailtemplate.png', 'english' ,'');
-INSERT INTO `email_template` VALUES(8, 'Quiz Failure Report', 'Quizfailure', 'emailtemplate.png', 'english' ,'');
-INSERT INTO `email_template` VALUES(9, 'Rapport de reussite Quiz', 'Quizsuccess', 'emailtemplate.png', 'french' ,'');
-INSERT INTO `email_template` VALUES(10, 'Rapport non Quiz', 'Quizfailure', 'emailtemplate.png', 'french' ,'');
-INSERT INTO `email_template` VALUES(11, 'Quiz Erfolgsbericht', 'Quizsuccess', 'emailtemplate.png', 'german' ,'');
-INSERT INTO `email_template` VALUES(12, 'Quiz Fehler Bericht', 'Quizfailure', 'emailtemplate.png', 'german' ,'');
-INSERT INTO `email_template` VALUES(13, 'New Assignment', 'Newassignment', 'emailtemplate.png', 'english', 'Dear {Name} ,<br/><br/>\r\n\r\nCreated New Assignment :  {courseName} <br/>\r\n\r\n{assignmentName} <br/>\r\n\r\n{assignmentDescription} <br/><br/>\r\n\r\nDeadline : {assignmentDeadline} <br/>\r\n\r\nUpload your paper on : {siteName} <br/>\r\n\r\nYours, <br/><br/>\r\n\r\n{authorName} <br/>\r\n');
-INSERT INTO `email_template` VALUES(14, 'Submit Work', 'Submitwork', 'emailtemplate.png', 'english', 'Dear {authorName} ,<br/><br/>\r\n\r\n{studentName} has published a paper named <br/>\r\n\r\n{paperName} <br/>\r\n\r\nfor the {assignmentName} - {assignmentDescription}in the course {courseName} <br/> <br/>\r\n\r\nDeadline was : {assignmentDeadline}\r\n<br/>\r\nThe paper was submitted on : {assignmentSentDate} <br/>\r\n\r\nYou can mark, comment and correct this paper on  : {siteName} <br/>\r\n\r\nYours, <br/><br/>\r\n\r\n{administratorSurname} <br/>\r\n');
-INSERT INTO `email_template` VALUES(15, 'Correct Work', 'Correctwork', 'emailtemplate.png', 'english', 'Dear {studentName} ,<br/><br/>\r\n\r\nI have corrected your Paper <br/>\r\n\r\n{paperName}  <br/>\r\n\r\nfor the {assignmentName} - {assignmentDescription}in the course{courseName} <br/><br/>\r\n\r\nDeadline was : {assignmentDeadline} <br/>\r\n\r\nThe paper was submitted on : {assignmentSentDate} <br/>\r\n\r\nCheck your mark and /or corrections on : {siteName} <br/>\r\n\r\nYours, <br/><br/>\r\n\r\n{authorName} <br/>\r\n');
-INSERT INTO `email_template` VALUES(16, 'Inscription par chèque', 'EmailsInCaseOfChequePayment', 'emailtemplate.png', 'french', 'Cher (ére) {firstName} {lastName} ,<br/><br/>\r\n\r\nVous êtes inscrit(e) au programme "{Programme}" sur {siteName} {Institution}<br/>\r\n\r\nNOM D''UTILISATEUR : {username}\r\nMOT DE PASSE : {password}<br/><br/>\r\n\r\nComme vous avez payé par chèque, votre compte sera activé dès que votre paiement sera enregistré par nos services. <br/>\r\n\r\n{siteName} vous offre une expérience e-learning authentique avec la possibilité de progresser pas à pas sous la supervision d''un tuteur. Pour en savoir plus : {url}\r\n\r\nMerci de faire confiance à : {Institution}.\r\n\r\nCordialement,\r\n\r\n{siteName}\r\n{administratorSurname}');
-INSERT INTO `email_template` VALUES(17, 'User registration with cheque payment', 'EmailsInCaseOfChequePayment', 'emailtemplate.png', 'english', 'Dear {firstName} {lastName} ,<br/><br/>\n\nYou are registered to the {Programme} Programme on {siteName} {Institution}<br/>\n\nLOGIN : {username}\nPASSWORD : {password}<br/><br/>\n\nAs you paid by cheque, your account will be activated once we validate your payment. <br/>\n\n{siteName} offers you a true e-learning experience with the posibilty to progress step by step in your learning process under the supervision of a tutor that is dedicated to your support. For more details : {url}\n\nThank you for trusting {Institution}.\n\nYours,\n\n{siteName}\n{administratorSurname}');
-INSERT INTO `email_template` VALUES(18, 'Inscription à une session', 'UserRegistrationToSession', 'emailtemplate.png', 'french', 'Cher(ère) {administratorname} ,<br/><br/>\r\n\r\nL''étudiant {firstName} {lastName} ,<br/><br/>\r\n\r\na été inscrit au programme "{Programme}" sur{siteName} {Institution}<br/>\r\n\r\nNOM D''UTILISATEUR : {username}\r\n\r\nVous pouvez maintenant vérifier si cet étudiant a un tuteur dans chacun de ses cours en allant à {sessionList}\r\n\r\n\r\nCordialement,\r\n\r\n{siteName}\r\n{administratorSurname}');
-INSERT INTO `email_template` VALUES(19, 'New Group', 'NewGroup', 'emailtemplate.png', 'english', 'Dear {adminName} ,<br/><br/>\r\n\r\nNew Group created automatically to give space to new user <br/><br/>\r\n\r\nGroup : {groupName} <br/><br/>\r\n\r\nSeats :  {maxStudent} <br/><br/>\r\n\r\nIn course : {courseName} <br/><br/>\r\n\r\nYours, <br/><br/>\r\n\r\n{authorName} <br/><br/>\r\n');
-INSERT INTO `email_template` VALUES(20, 'Nouveau devoir', 'Newassignment', 'emailtemplate.png', 'french', 'Cher(ère) {Name} ,<br/><br/>\r\n\r\nUn nouveau devoir a été créé dans le cours :  {courseName} <br/>\r\n\r\n{assignmentName} <br/>\r\n\r\n{assignmentDescription} <br/><br/>\r\n\r\nEchéance : {assignmentDeadline} <br/>\r\n\r\nRemettez votre travail sur : {siteName} <br/>\r\n\r\nCordialement,, <br/><br/>\r\n\r\n{authorName} <br/>\r\n');
-INSERT INTO `email_template` VALUES(21, 'Travail publié', 'Submitwork', 'emailtemplate.png', 'french', 'Cher(ère) {authorName} ,<br/><br/>\r\n\r\n{studentName} a publié un travail intitulé <br/>\r\n\r\n{paperName} <br/>\r\n\r\npour le devoir {assignmentName} - {assignmentDescription} dans le cours  {courseName} <br/> <br/>\r\n\r\nL''échéance était : {assignmentDeadline}\r\n<br/>\r\nLe travail a été remis le : {assignmentSentDate} <br/>\r\n\r\nVous pouvez noter, commenter et corriger ce travail sur : {siteName} <br/>\r\n\r\nCordialement, <br/><br/>\r\n\r\n{administratorSurname} <br/>\r\n');
-INSERT INTO `email_template` VALUES(22, 'Travail corrigé', 'Correctwork', 'emailtemplate.png', 'french', 'Cher(ère) {studentName} ,<br/><br/>\r\n\r\nJ''ai corrigé votre travail :<br/>\r\n\r\n{paperName}  <br/>\r\n\r\npour le devoir {assignmentName} - {assignmentDescription} dans le cours {courseName} <br/><br/>\r\n\r\nL''échéance était : {assignmentDeadline} <br/>\r\n\r\nLe travail a été remis le : {assignmentSentDate} <br/>\r\n\r\nConsultez vos points et/ou remarques et/ou correction sur : {siteName} <br/>\r\n\r\nCordialement,, <br/><br/>\r\n\r\n{authorName} <br/>\r\n');
-INSERT INTO `email_template` VALUES(23, 'Nouveau groupe', 'NewGroup', 'emailtemplate.png', 'french', 'Cher(ère) {adminName} ,<br/><br/>\r\n\r\nUn nouvau groupe a été créé automatiuement pour accueillir de nouveaux étudiants.<br/><br/>\r\n\r\nGroupe : {groupName} <br/><br/>\r\n\r\nPlaces :  {maxStudent} <br/><br/>\r\n\r\nDans le cours : {courseName} <br/><br/>\r\n\r\nCordialement, <br/><br/>\r\n\r\n{authorName} <br/><br/>\r\n');
-INSERT INTO `email_template` VALUES(24, 'Inscription carte ou 3 fois', 'EmailsRegistrationInCaseCreditCardOrInstallment', 'emailtemplate.png', 'french', 'Cher(ère) {firstName} {lastName},\r\n\r\nVous êtes inscrit(e) au programme "{Programme}" sur le portail {siteName} \r\n\r\nNOM D''UTILISATEUR : {username} \r\nMOT DE PASSE : {password} \r\n\r\nEn cas de problème, veuillez nous contacter.\r\n\r\nCordialement,\r\n\r\nL''équipe DILA\r\n29, quai Voltaire 75007 Paris\r\nTéléphone : 01.40.15.70.00\r\n');
-INSERT INTO `email_template` VALUES(25, 'User Registration with credit card or 3 installment payment', 'EmailsRegistrationInCaseCreditCardOrInstallment', 'emailtemplate.png', 'english', 'Dear {firstName} {lastName},\r\n\r\nYou are registered to the {Programme} Programme on {siteName} {Institution} portal {InstitutionUrl}.\r\nLOGIN : {username}\r\nPASSWORD : {password}\r\n\r\n{siteName} offers you a true e-learning experience with the posibilty to progress step by step in your learning process under the supervision of a tutor that is dedicated to your support. For more details : {detailsUrl}.\r\n\r\nThank you for trusting {Institution}.\r\n\r\nYours,\r\n\r\n{siteName}\r\n\r\n{administratorSurname}');
 
 
 --
@@ -1962,6 +1778,18 @@ CREATE TABLE search_engine_ref (
 	search_did INT NOT NULL
 );
 
+--
+-- Table structure for table sessions categories
+--
+
+CREATE TABLE session_category (
+  id int(11) NOT NULL auto_increment,
+  name varchar(100) default NULL,
+  date_start date default NULL,
+  date_end date default NULL,
+  PRIMARY KEY  (id)
+);
+
 
 --
 -- Table structure for table user tag
@@ -2056,335 +1884,4 @@ CREATE TABLE user_chat (
    sent DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
    recd INTEGER UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-);
-
-CREATE TABLE search_engine_keywords (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  idobj int(11) DEFAULT NULL,
-  course_code varchar(45) DEFAULT NULL,
-  tool_id varchar(100) DEFAULT NULL,
-  value text,
-  PRIMARY KEY (id)
-);
-
-INSERT INTO user_field (field_type, field_variable, field_display_text, field_default_value, field_visible, field_registration, field_changeable, field_filter) VALUES
-(1, 'organization', 'Organization', '', 0, 1, 1, 1),
-(1, 'tva_id', 'TVA', '', 0, 1, 1, 1),
-(1, 'phone', 'Phone', '', 1, 1, 1, 1),
-(1, 'street', 'Street', '', 1, 1, 1, 1),
-(1, 'addressline2', 'Address line', '', 1, 1, 1, 1),
-(1, 'zipcode', 'Zip code', '', 1, 1, 1, 1),
-(1, 'city', 'City', '', 1, 1, 1, 1);
-
-DROP TABLE IF EXISTS country;
-CREATE TABLE country(
-    id INT  NOT NULL AUTO_INCREMENT, 
-    iso VARCHAR(4), 
-    original_name VARCHAR(200), 
-    langvar VARCHAR(200), 
-    iso3 VARCHAR(4)  NOT NULL, 
-    numcode VARCHAR(5), PRIMARY KEY (id)
-);
-
-INSERT INTO country(iso, original_name, langvar, iso3, numcode) VALUES
-('AF','AFGHANISTAN','Afghanistan','AFG','004'),
-('AL','ALBANIA','Albania','ALB','008'),
-('DZ','ALGERIA','Algeria','DZA','012'),
-('AS','AMERICAN SAMOA','AmericanSamoa','ASM','016'),
-('AD','ANDORRA','Andorra','AND','020'),
-('AO','ANGOLA','Angola','AGO','024'),
-('AI','ANGUILLA','Anguilla','AIA','660'),
-('AG','ANTIGUA AND BARBUDA','AntiguaAndBarbuda','ATG','028'),
-('AR','ARGENTINA','Argentina','ARG','032'),
-('AM','ARMENIA','Armenia','ARM','051'),
-('AW','ARUBA','Aruba','ABW','533'),
-('AU','AUSTRALIA','Australia','AUS','036'),
-('AT','AUSTRIA','Austria','AUT','040'),
-('AZ','AZERBAIJAN','Azerbaijan','AZE','031'),
-('BS','BAHAMAS','Bahamas','BHS','044'),
-('BH','BAHRAIN','Bahrain','BHR','048'),
-('BD','BANGLADESH','Bangladesh','BGD','050'),
-('BB','BARBADOS','Barbados','BRB','052'),
-('BY','BELARUS','Belarus','BLR','112'),
-('BE','BELGIUM','Belgium','BEL','056'),
-('BZ','BELIZE','Belize','BLZ','084'),
-('BJ','BENIN','Benin','BEN','204'),
-('BM','BERMUDA','Bermuda','BMU','060'),
-('BT','BHUTAN','Bhutan','BTN','064'),
-('BO','BOLIVIA','Bolivia','BOL','068'),
-('BA','BOSNIA AND HERZEGOVINA','BosniaAndHerzegovina','BIH','070'),
-('BW','BOTSWANA','Botswana','BWA','072'),
-('BR','BRAZIL','Brazil','BRA','076'),
-('BN','BRUNEI DARUSSALAM','BruneiDarussalam','BRN','096'),
-('BG','BULGARIA','Bulgaria','BGR','100'),
-('BF','BURKINA FASO','BurkinaFaso','BFA','854'),
-('BI','BURUNDI','Burundi','BDI','108'),
-('KH','CAMBODIA','Cambodia','KHM','116'),
-('CM','CAMEROON','Cameroon','CMR','120'),
-('CA','CANADA','Canada','CAN','124'),
-('CV','CAPE VERDE','CapeVerde','CPV','132'),
-('KY','CAYMAN ISLANDS','CaymanIslands','CYM','136'),
-('CF','CENTRAL AFRICAN REPUBLIC','CentralAfricanRepublic','CAF','140'),
-('TD','CHAD','Chad','TCD','148'),
-('CL','CHILE','Chile','CHL','152'),
-('CN','CHINA','China','CHN','156'),
-('CO','COLOMBIA','Colombia','COL','170'),
-('KM','COMOROS','Comoros','COM','174'),
-('CG','CONGO','Congo','COG','178'),
-('CD','CONGO, THE DEMOCRATIC REPUBLIC OF THE','CongoDemo','COD','180'),
-('CK','COOK ISLANDS','CookIslands','COK','184'),
-('CR','COSTA RICA','CostaRica','CRI','188'),
-('CI','COTE D\'IVOIRE','CoteIvoire','CIV','384'),
-('HR','CROATIA','Croatia','HRV','191'),
-('CU','CUBA','Cuba','CUB','192'),
-('CY','CYPRUS','Cyprus','CYP','196'),
-('CZ','CZECH REPUBLIC','CzechRepublic','CZE','203'),
-('DK','DENMARK','Denmark','DNK','208'),
-('DJ','DJIBOUTI','Djibouti','DJI','262'),
-('DM','DOMINICA','Dominica','DMA','212'),
-('DO','DOMINICAN REPUBLIC','DominicanRepublic','DOM','214'),
-('EC','ECUADOR','Ecuador','ECU','218'),
-('EG','EGYPT','Egypt','EGY','818'),
-('SV','EL SALVADOR','ElSalvador','SLV','222'),
-('GQ','EQUATORIAL GUINEA','EquatorialGuinea','GNQ','226'),
-('ER','ERITREA','Eritrea','ERI','232'),
-('EE','ESTONIA','Estonia','EST','233'),
-('ET','ETHIOPIA','Ethiopia','ETH','231'),
-('FK','FALKLAND ISLANDS (MALVINAS)','FalklandIslands','FLK','238'),
-('FO','FAROE ISLANDS','FaroeIslands','FRO','234'),
-('FJ','FIJI','Fiji','FJI','242'),
-('FI','FINLAND','Finland','FIN','246'),
-('FR','FRANCE','France','FRA','250'),
-('GF','FRENCH GUIANA','FrenchGuiana','GUF','254'),
-('PF','FRENCH POLYNESIA','FrenchPolynesia','PYF','258'),
-('GA','GABON','Gabon','GAB','266'),
-('GM','GAMBIA','Gambia','GMB','270'),
-('GE','GEORGIA','Georgia','GEO','268'),
-('DE','GERMANY','Germany','DEU','276'),
-('GH','GHANA','Ghana','GHA','288'),
-('GI','GIBRALTAR','Gibraltar','GIB','292'),
-('GR','GREECE','Greece','GRC','300'),
-('GL','GREENLAND','Greenland','GRL','304'),
-('GD','GRENADA','Grenada','GRD','308'),
-('GP','GUADELOUPE','Guadeloupe','GLP','312'),
-('GU','GUAM','Guam','GUM','316'),
-('GT','GUATEMALA','Guatemala','GTM','320'),
-('GN','GUINEA','Guinea','GIN','324'),
-('GW','GUINEA-BISSAU','GuineaBissau','GNB','624'),
-('GY','GUYANA','Guyana','GUY','328'),
-('HT','HAITI','Haiti','HTI','332'),
-('VA','HOLY SEE (VATICAN CITY STATE)','HolySee','VAT','336'),
-('HN','HONDURAS','Honduras','HND','340'),
-('HK','HONG KONG','HongKong','HKG','344'),
-('HU','HUNGARY','Hungary','HUN','348'),
-('IS','ICELAND','Iceland','ISL','352'),
-('IN','INDIA','India','IND','356'),
-('ID','INDONESIA','Indonesia','IDN','360'),
-('IR','IRAN, ISLAMIC REPUBLIC OF','Iran','IRN','364'),
-('IQ','IRAQ','Iraq','IRQ','368'),
-('IE','IRELAND','Ireland','IRL','372'),
-('IL','ISRAEL','Israel','ISR','376'),
-('IT','ITALY','Italy','ITA','380'),
-('JM','JAMAICA','Jamaica','JAM','388'),
-('JP','JAPAN','Japan','JPN','392'),
-('JO','JORDAN','Jordan','JOR','400'),
-('KZ','KAZAKHSTAN','Kazakhstan','KAZ','398'),
-('KE','KENYA','Kenya','KEN','404'),
-('KI','KIRIBATI','Kiribati','KIR','296'),
-('KP','KOREA, DEMOCRATIC PEOPLE\'S REPUBLIC OF','KoreaDemo','PRK','408'),
-('KR','KOREA, REPUBLIC OF','Korea','KOR','410'),
-('KW','KUWAIT','Kuwait','KWT','414'),
-('KG','KYRGYZSTAN','Kyrgyzstan','KGZ','417'),
-('LA','LAO PEOPLE\'S DEMOCRATIC REPUBLIC','Lao','LAO','418'),
-('LV','LATVIA','Latvia','LVA','428'),
-('LB','LEBANON','Lebanon','LBN','422'),
-('LS','LESOTHO','Lesotho','LSO','426'),
-('LR','LIBERIA','Liberia','LBR','430'),
-('LY','LIBYAN ARAB JAMAHIRIYA','LibyanArabJamahiriya','LBY','434'),
-('LI','LIECHTENSTEIN','Liechtenstein','LIE','438'),
-('LT','LITHUANIA','Lithuania','LTU','440'),
-('LU','LUXEMBOURG','Luxembourg','LUX','442'),
-('MO','MACAO','Macao','MAC','446'),
-('MK','MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF','Macedonia','MKD','807'),
-('MG','MADAGASCAR','Madagascar','MDG','450'),
-('MW','MALAWI','Malawi','MWI','454'),
-('MY','MALAYSIA','Malaysia','MYS','458'),
-('MV','MALDIVES','Maldives','MDV','462'),
-('ML','MALI','Mali','MLI','466'),
-('MT','MALTA','Malta','MLT','470'),
-('MH','MARSHALL ISLANDS','MarshallIslands','MHL','584'),
-('MQ','MARTINIQUE','Martinique','MTQ','474'),
-('MR','MAURITANIA','Mauritania','MRT','478'),
-('MU','MAURITIUS','Mauritius','MUS','480'),
-('MX','MEXICO','Mexico','MEX','484'),
-('FM','MICRONESIA, FEDERATED STATES OF','Micronesia','FSM','583'),
-('MD','MOLDOVA, REPUBLIC OF','Moldova','MDA','498'),
-('MC','MONACO','Monaco','MCO','492'),
-('MN','MONGOLIA','Mongolia','MNG','496'),
-('MS','MONTSERRAT','Montserrat','MSR','500'),
-('MA','MOROCCO','Morocco','MAR','504'),
-('MZ','MOZAMBIQUE','Mozambique','MOZ','508'),
-('MM','MYANMAR','Myanmar','MMR','104'),
-('NA','NAMIBIA','Namibia','NAM','516'),
-('NR','NAURU','Nauru','NRU','520'),
-('NP','NEPAL','Nepal','NPL','524'),
-('NL','NETHERLANDS','Netherlands','NLD','528'),
-('AN','NETHERLANDS ANTILLES','NetherlandsAntilles','ANT','530'),
-('NC','NEW CALEDONIA','NewCaledonia','NCL','540'),
-('NZ','NEW ZEALAND','NewZealand','NZL','554'),
-('NI','NICARAGUA','Nicaragua','NIC','558'),
-('NE','NIGER','Niger','NER','562'),
-('NG','NIGERIA','Nigeria','NGA','566'),
-('NU','NIUE','Niue','NIU','570'),
-('NF','NORFOLK ISLAND','NorfolkIsland','NFK','574'),
-('MP','NORTHERN MARIANA ISLANDS','NorthernMarianaIslands','MNP','580'),
-('NO','NORWAY','Norway','NOR','578'),
-('OM','OMAN','Oman','OMN','512'),
-('PK','PAKISTAN','Pakistan','PAK','586'),
-('PW','PALAU','Palau','PLW','585'),
-('PA','PANAMA','Panama','PAN','591'),
-('PG','PAPUA NEW GUINEA','PapuaNewGuinea','PNG','598'),
-('PY','PARAGUAY','Paraguay','PRY','600'),
-('PE','PERU','Peru','PER','604'),
-('PH','PHILIPPINES','Philippines','PHL','608'),
-('PN','PITCAIRN','Pitcairn','PCN','612'),
-('PL','POLAND','Poland','POL','616'),
-('PT','PORTUGAL','Portugal','PRT','620'),
-('PR','PUERTO RICO','PuertoRico','PRI','630'),
-('QA','QATAR','Qatar','QAT','634'),
-('RE','REUNION','Reunion','REU','638'),
-('RO','ROMANIA','Romania','ROM','642'),
-('RU','RUSSIAN FEDERATION','RussianFederation','RUS','643'),
-('RW','RWANDA','Rwanda','RWA','646'),
-('SH','SAINT HELENA','SaintHelena','SHN','654'),
-('KN','SAINT KITTS AND NEVIS','SaintKittsAndNevis','KNA','659'),
-('LC','SAINT LUCIA','SaintLucia','LCA','662'),
-('PM','SAINT PIERRE AND MIQUELON','SaintPierreAndMiquelon','SPM','666'),
-('VC','SAINT VINCENT AND THE GRENADINES','SaintVincentAndTheGrenadines','VCT','670'),
-('WS','SAMOA','Samoa','WSM','882'),
-('SM','SAN MARINO','SanMarino','SMR','674'),
-('ST','SAO TOME AND PRINCIPE','SaoTomeAndPrincipe','STP','678'),
-('SA','SAUDI ARABIA','SaudiArabia','SAU','682'),
-('SN','SENEGAL','Senegal','SEN','686'),
-('SC','SEYCHELLES','Seychelles','SYC','690'),
-('SL','SIERRA LEONE','SierraLeone','SLE','694'),
-('SG','SINGAPORE','Singapore','SGP','702'),
-('SK','SLOVAKIA','Slovakia','SVK','703'),
-('SI','SLOVENIA','Slovenia','SVN','705'),
-('SB','SOLOMON ISLANDS','SolomonIslands','SLB','090'),
-('SO','SOMALIA','Somalia','SOM','706'),
-('ZA','SOUTH AFRICA','SouthAfrica','ZAF','710'),
-('ES','SPAIN','Spain','ESP','724'),
-('LK','SRI LANKA','SriLanka','LKA','144'),
-('SD','SUDAN','Sudan','SDN','736'),
-('SR','SURINAME','Suriname','SUR','740'),
-('SJ','SVALBARD AND JAN MAYEN','SvalbardAndJanMayen','SJM','744'),
-('SZ','SWAZILAND','Swaziland','SWZ','748'),
-('SE','SWEDEN','Sweden','SWE','752'),
-('CH','SWITZERLAND','Switzerland','CHE','756'),
-('SY','SYRIAN ARAB REPUBLIC','SyrianArabRepublic','SYR','760'),
-('TW','TAIWAN, PROVINCE OF CHINA','Taiwan','TWN','158'),
-('TJ','TAJIKISTAN','Tajikistan','TJK','762'),
-('TZ','TANZANIA, UNITED REPUBLIC OF','Tanzania','TZA','834'),
-('TH','THAILAND','Thailand','THA','764'),
-('TG','TOGO','Togo','TGO','768'),
-('TK','TOKELAU','Tokelau','TKL','772'),
-('TO','TONGA','Tonga','TON','776'),
-('TT','TRINIDAD AND TOBAGO','TrinidadAndTobago','TTO','780'),
-('TN','TUNISIA','Tunisia','TUN','788'),
-('TR','TURKEY','Turkey','TUR','792'),
-('TM','TURKMENISTAN','Turkmenistan','TKM','795'),
-('TC','TURKS AND CAICOS ISLANDS','TurksAndCaicosIslands','TCA','796'),
-('TV','TUVALU','Tuvalu','TUV','798'),
-('UG','UGANDA','Uganda','UGA','800'),
-('UA','UKRAINE','Ukraine','UKR','804'),
-('AE','UNITED ARAB EMIRATES','UnitedArabEmirates','ARE','784'),
-('GB','UNITED KINGDOM','UnitedKingdom','GBR','826'),
-('US','UNITED STATES','UnitedStates','USA','840'),
-('UY','URUGUAY','Uruguay','URY','858'),
-('UZ','UZBEKISTAN','Uzbekistan','UZB','860'),
-('VU','VANUATU','Vanuatu','VUT','548'),
-('VE','VENEZUELA','Venezuela','VEN','862'),
-('VN','VIET NAM','VietNam','VNM','704'),
-('VG','VIRGIN ISLANDS, BRITISH','VirginIslandsBritish','VGB','092'),
-('VI','VIRGIN ISLANDS, U.S.','VirginIslandsUs','VIR','850'),
-('WF','WALLIS AND FUTUNA','WallisAndFutuna','WLF','876'),
-('EH','WESTERN SAHARA','WesternSahara','ESH','732'),
-('YE','YEMEN','Yemen','YEM','887'),
-('ZM','ZAMBIA','Zambia','ZMB','894'),
-('ZW','ZIMBABWE','Zimbabwe','ZWE','716');
-
-DROP TABLE IF EXISTS payer_user;
-CREATE TABLE payer_user (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  firstname varchar(200) NOT NULL,
-  lastname varchar(200) DEFAULT NULL,
-  email varchar(200) DEFAULT NULL,
-  street_number text,
-  street text,
-  zipcode varchar(20) DEFAULT NULL,
-  city varchar(200) DEFAULT NULL,
-  country varchar(200) DEFAULT NULL,
-  student_id int(11) NOT NULL DEFAULT '0',
-  company varchar(200) DEFAULT NULL,
-  vat_number varchar(20) DEFAULT NULL,
-  phone varchar(50) DEFAULT NULL,
-  civility varchar(20) DEFAULT NULL,
-  PRIMARY KEY (id)
-);
-
-DROP TABLE IF EXISTS payment_atos;
-CREATE TABLE payment_atos (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  user_id int(11) NOT NULL DEFAULT '0',
-  sess_id int(11) NOT NULL DEFAULT '0',
-  pay_type int(11) NOT NULL DEFAULT '0',
-  pay_data text,
-  pay_time int(11) NOT NULL DEFAULT '0',
-  status int(11) NOT NULL DEFAULT '0',
-  curr_quota int(11) NOT NULL DEFAULT '0',
-  transaction_id int(11) DEFAULT NULL,
-  PRIMARY KEY (id)
-);
-
-DROP TABLE IF EXISTS payment_log;
-CREATE TABLE payment_log (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  user_id int(11) NOT NULL DEFAULT '0',
-  sess_id int(11) NOT NULL DEFAULT '0',
-  pay_type int(11) NOT NULL DEFAULT '0',
-  pay_data text,
-  pay_time int(11) NOT NULL DEFAULT '0',
-  status int(11) NOT NULL DEFAULT '0',
-  curr_quota int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (id)
-);
-
-DROP TABLE IF EXISTS certificate;
-CREATE TABLE certificate (
-  id INT  NOT NULL AUTO_INCREMENT,
-  portal_name VARCHAR(200),
-  portal_logo VARCHAR(200),
-  company VARCHAR(200),
-  company_logo VARCHAR(200),
-  certificate_date DATE  NOT NULL DEFAULT '0000-00-00',
-  message TEXT,
-  company_seal VARCHAR(200),
-  scope TEXT,
-  display_as VARCHAR(20) NOT NULL DEFAULT 'html',
-  template INT  NOT NULL DEFAULT 1,
-  required_score FLOAT NOT NULL DEFAULT 0,
-  PRIMARY KEY (id)
-);
-
-DROP TABLE IF EXISTS certificate_template;
-CREATE TABLE certificate_template (
-  id INT  NOT NULL AUTO_INCREMENT,
-  title VARCHAR(200),
-  description TEXT,
-  thumbnail VARCHAR(200),
-  content LONGTEXT,
-  position INT NOT NULL DEFAULT 0,
-  creation_date DATETIME  NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (id)
 );

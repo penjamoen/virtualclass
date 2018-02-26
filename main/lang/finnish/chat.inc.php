@@ -30,7 +30,6 @@ $langLinkURL = "Linkin URL";
 $langWelcomeToOnlineConf = "Tervetuloa online <b>konfrenssiin</b>";
 $langNoLinkAvailable = "Ei linkkiä saatavilla";
 $langChat_reset_by = "tyhjennä chatti";
-$langAdmin = "Ympäristön ylläpitäjä";
 $OrFile = "Tai tiedosto";
 $langCallSent = "Chatti kutsu on lähetetty. Odottaa kumppanisi hyväksyntää.";
 $langChatDenied = "Kumppanisi on hylännyt kutsusi.";

@@ -30,7 +30,6 @@ $langLinkURL = "URL do link";
 $langWelcomeToOnlineConf = "Bem vindo à <b>Conferência On-line</b>";
 $langNoLinkAvailable = "Nenhum Link disponível";
 $langChat_reset_by = "limpar chat";
-$langAdmin = "Plataforma Administrador";
 $OrFile = "Ou arquivo";
 $langCallSent = "O convite para o Chat foi enviado. Aguarde aprovação do usuário solicitado.";
 $langChatDenied = "Seu convite para o chat não foi aceito pelo usuário.";

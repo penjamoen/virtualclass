@@ -24,7 +24,4 @@ $Authoring = " التحرير";
 $Administration = " الإدارة";
 $IntroductionTextUpdated = " تم تحديث النص التوضيحي";
 $IntroductionTextDeleted = "تم حذف نص المقدمة";
-$ActivityOne = "النشاط 1";
-$ActivityTwo = "النشاط 2";
-$ActivityThree = "النشاط 3";
 ?>

@@ -62,7 +62,7 @@ function get_class_data($from, $number_of_items, $column, $direction) {
 function modify_filter($class_id) {
 	$class_id = Security::remove_XSS($class_id);
 	$result = '<a href="class_information.php?id='.$class_id.'">'.Display::return_icon('synthese_view.gif', get_lang('Info')).'</a>';
-	$result .= '<a href="class_edit.php?idclass='.$class_id.'">'.Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).'</a>';
+	$result .= '<a href="class_edit.php?idclass='.$class_id.'">'.Display::return_icon('edit.png', get_lang('Edit')).'</a>';
 	$result .= '<a href="class_list.php?action=delete_class&amp;class_id='.$class_id.'" onclick="javascript: if(!confirm('."'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"), ENT_QUOTES))."'".')) return false;">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>';
 	$result .= '<a href="subscribe_user2class.php?idclass='.$class_id.'">'.Display::return_icon('add_multiple_users.gif', get_lang('AddUsersToAClass')).'</a>';
 	return $result;
@@ -77,8 +77,6 @@ $interbreadcrumb[] = array ('url' => 'index.php', 'name' => get_lang('PlatformAd
 
 Display :: display_header($tool_name);
 //api_display_tool_title($tool_name);
-
-echo '<div id="content">';
 
 if (isset($_POST['action'])) {
 	switch ($_POST['action']) {
@@ -115,8 +113,6 @@ $form->addElement('text', 'keyword', get_lang('keyword'));
 $form->addElement('submit', 'submit', get_lang('Search'));
 $form->display();
 
-echo '<br/>';
-
 // Create the sortable table with class information
 $table = new SortableTable('classes', 'get_number_of_classes', 'get_class_data', 1);
 $table->set_additional_parameters(array('keyword' => $_GET['keyword']));
@@ -127,8 +123,6 @@ $table->set_header(3, '', false);
 $table->set_column_filter(3, 'modify_filter');
 $table->set_form_actions(array ('delete_classes' => get_lang('DeleteSelectedClasses')), 'class');
 $table->display();
-
-echo '</div>';
 
 // Displaying the footer.
 Display :: display_footer();

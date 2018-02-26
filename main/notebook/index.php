@@ -306,7 +306,7 @@ function display_notes() {
 	</style>
 	';
  echo $styles;
- echo '<div class="actions"><a href="'.api_get_self().'?'.api_get_cidReq().'&action=addnote">'.Display::return_icon('pixel.gif', get_lang('NewNote'), array('class' => 'toolactionplaceholdericon tooladdnewnote')).get_lang('NewNote').'</a></div>';
+ echo '<div class="actions"><a href="'.api_get_self().'?'.api_get_cidReq().'&action=addnote"><img src="../img/newnote.png">'.get_lang('NewNote').'</a></div>';
 	echo '<div id="content">';
 	echo '	<table width="100%" class="data_table"><tr><td width="20%" valign="top">';
 	echo '		<div style="height:400px;width:200px;overflow:auto;">';
@@ -391,11 +391,11 @@ function display_notes() {
 	$form->addElement('hidden', 'notebook_id');
 	//$renderer->setElementTemplate('<div>{element}</div>', 'note_comment');
 	$form->add_html_editor('note_comment','', false, false, api_is_allowed_to_edit()
-		? array('ToolbarSet' => 'Notebook', 'Width' => '100%', 'Height' => '330')
-		: array('ToolbarSet' => 'NotebookStudent', 'Width' => '100%', 'Height' => '330', 'UserStatus' => 'student'));
+		? array('ToolbarSet' => 'Notebook', 'Width' => '100%', 'Height' => '400')
+		: array('ToolbarSet' => 'NotebookStudent', 'Width' => '100%', 'Height' => '400', 'UserStatus' => 'student'));
 	$form->addElement('hidden', 'note_title');
 	
-	$form->addElement('html','<div align="left" style="padding-left:10px;"><a href="'.api_get_self().'?action=deletenote&amp;notebook_id='.Security::remove_XSS($_GET['notebook_id']).'&start='.$from.'">'.Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')).'&nbsp;&nbsp;'.get_lang('Delete').'</a></div>');
+	$form->addElement('html','<div align="left" style="padding-left:10px;"><a href="'.api_get_self().'?action=deletenote&amp;notebook_id='.Security::remove_XSS($_GET['notebook_id']).'&start='.$from.'"><img src="../img/delete.png">&nbsp;&nbsp;'.get_lang('Delete').'</a></div>');
 	$form->addElement('style_submit_button', 'SubmitNote', get_lang('Validate'), 'class="save"');
 	// setting the defaults
 	$defaults = get_note_information(Security::remove_XSS($_GET['notebook_id']));
@@ -411,11 +411,11 @@ function display_notes() {
 	//$renderer = & $form->defaultRenderer();
 	//$renderer->setElementTemplate('<div>{element}</div>', 'note_comment');
 	$form->add_html_editor('note_comment','', false, false, api_is_allowed_to_edit()
-		? array('ToolbarSet' => 'Notebook', 'Width' => '100%', 'Height' => '330')
-		: array('ToolbarSet' => 'NotebookStudent', 'Width' => '100%', 'Height' => '330', 'UserStatus' => 'student'));
+		? array('ToolbarSet' => 'Notebook', 'Width' => '100%', 'Height' => '400')
+		: array('ToolbarSet' => 'NotebookStudent', 'Width' => '100%', 'Height' => '400', 'UserStatus' => 'student'));
 	$form->addElement('style_submit_button', 'SubmitNote', get_lang('Validate'), 'class="save"');
 //	$today = date('M d, h:i');
-	$default_note = '<div><table width="99%" height="250px" cellspacing="5" cellpadding="0">
+	$default_note = '<div><table width="99%" height="323px" cellspacing="5" cellpadding="0">
             <tbody>
                 <tr valign="top" align="left">                                       
                     <td valign="top" style="padding-left:10px;">

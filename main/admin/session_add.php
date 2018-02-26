@@ -57,27 +57,30 @@ function fill_coach_field (username) {
 
 $formSent=0;
 $errorMsg='';
+
+
+
 $xajax -> processRequests();
+
+
+
 
 if ($_POST['formSent']) {
 	$formSent=1;
 	$name= $_POST['name'];
-    $max_seats  =   $_POST['max_seats'];
-	$description=   $_POST['description'];
 	$year_start= $_POST['year_start'];
 	$month_start=$_POST['month_start'];
 	$day_start=$_POST['day_start'];
 	$year_end=$_POST['year_end'];
 	$month_end=$_POST['month_end'];
 	$day_end=$_POST['day_end'];
-//	$nb_days_acess_before = $_POST['nb_days_acess_before'];
-//	$nb_days_acess_after = $_POST['nb_days_acess_after'];
+	$nb_days_acess_before = $_POST['nb_days_acess_before'];
+	$nb_days_acess_after = $_POST['nb_days_acess_after'];
 	$nolimit=$_POST['nolimit'];
 	$coach_username=$_POST['coach_username'];
 	$id_session_category = $_POST['session_category'];
-//	$id_visibility = $_POST['session_visibility'];
-//	$return = SessionManager::create_session($name,$year_start,$month_start,$day_start,$year_end,$month_end,$day_end,$nb_days_acess_before,$nb_days_acess_after,$nolimit,$coach_username, $id_session_category,$id_visibility);
-	$return = SessionManager::create_session($name,$description,$year_start,$month_start,$day_start,$year_end,$month_end,$day_end,$nolimit,$coach_username, $id_session_category, $max_seats);
+	$id_visibility = $_POST['session_visibility'];
+	$return = SessionManager::create_session($name,$year_start,$month_start,$day_start,$year_end,$month_end,$day_end,$nb_days_acess_before,$nb_days_acess_after,$nolimit,$coach_username, $id_session_category,$id_visibility);
 	if ($return == strval(intval($return))) {
 		// integer => no error on session creation
   global $_configuration;
@@ -105,18 +108,6 @@ $thisDay=date('d');
 //display the header
 Display::display_header(get_lang('AddSession'));
 
-echo '<div class="actions">';
-if(api_get_setting('show_catalogue')=='true'){
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/catalogue_management.php">' . Display::return_icon('pixel.gif',get_lang('Catalogue'), array('class' => 'toolactionplaceholdericon toolactioncatalogue')) . get_lang('Catalogue') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/topic_list.php">' . Display :: return_icon('pixel.gif', get_lang('Topics'),array('class' => 'toolactionplaceholdericon toolactiontopic')) . get_lang('Topics') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/programme_list.php">' . Display :: return_icon('pixel.gif', get_lang('Programmes'),array('class' => 'toolactionplaceholdericon toolactionprogramme')) . get_lang('Programmes') . '</a>';
-}
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_list.php">' . Display :: return_icon('pixel.gif', get_lang('SessionList'),array('class' => 'toolactionplaceholdericon toolactionsession')) . get_lang('SessionList') . '</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_export.php">'.Display::return_icon('pixel.gif',get_lang('ExportSessionListXMLCSV'),array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('ExportSessionListXMLCSV').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_import.php">'.Display::return_icon('pixel.gif',get_lang('ImportSessionListXMLCSV'),array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('ImportSessionListXMLCSV').'</a>';	        
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'coursecopy/copy_course_session.php">'.Display::return_icon('pixel.gif',get_lang('CopyFromCourseInSessionToAnotherSession'),array('class' => 'toolactionplaceholdericon toolsettings')).get_lang('CopyFromCourseInSessionToAnotherSession').'</a>';
-echo '</div>';
-
 // start the content div
 echo '<div id="content">';
 
@@ -135,20 +126,6 @@ if (!empty($return)) {
 <tr>
   <td width="40%"><?php echo get_lang('SessionName') ?>&nbsp;&nbsp;</td>
   <td width="60%"><input type="text" name="name" size="50" class="focus" maxlength="50" value="<?php if($formSent) echo api_htmlentities($name,ENT_QUOTES,$charset); ?>"></td>
-</tr>
-<tr>
-  <td width="40%" valign="top"><?php echo get_lang('Description') ?>&nbsp;&nbsp;</td>
-  <td width="60%">
-  <?php
-  if($formSent) $description =  api_htmlentities($description,ENT_QUOTES,$charset); 
-  echo api_return_html_area('description', $description, '', '', null, array('ToolbarSet' => 'Survey', 'Width' => '550', 'Height' => '120'))
-  ?>
-  <!--<textarea name="description" class="focus" rows="5" cols="37"><?php if($formSent) echo api_htmlentities($description,ENT_QUOTES,$charset); ?></textarea>-->      
-  </td>
-</tr>
-<tr>
-  <td width="40%"><?php echo get_lang('MaxSeats') ?></td>
-  <td width="60%"><input type="text" name="max_seats" size="5" maxlength="6" value="<?php if($formSent) echo api_htmlentities($seats,ENT_QUOTES,$charset); ?>"></td>
 </tr>
 <tr>
   <td width="40%"><?php echo get_lang('CoachName') ?>&nbsp;&nbsp;</td>
@@ -200,7 +177,7 @@ if (intval($count_users)<50) {
 	$result = Database::query($sql,__FILE__,__LINE__);
 	$Categories = Database::store_result($result);
 ?>
-<!--<tr>
+<tr>
   <td width="40%"><?php echo get_lang('SessionCategory') ?></td>
   <td width="60%">
   	<select name="session_category" value="true" style="width:250px;">
@@ -210,7 +187,7 @@ if (intval($count_users)<50) {
 		<?php endforeach; ?>
 	</select>
   </td>
-</tr>-->
+</tr>
 <tr>
   <td width="40%"><?php echo get_lang('NoTimeLimits') ?></td>
   <td width="60%">
@@ -345,7 +322,7 @@ for ($i=$thisYear-5;$i <= ($thisYear+5);$i++) {
   </select>
   </td>
 </tr>
-<!--<tr>
+<tr>
 	<td>
 		&nbsp;
 	</td>
@@ -372,7 +349,7 @@ for ($i=$thisYear-5;$i <= ($thisYear+5);$i++) {
 		<?php endforeach; ?>
 	</select>
   </td>
-</tr>-->
+</tr>
 
 
 <tr>
@@ -395,8 +372,8 @@ function setDisable(select){
 	document.form.month_end.disabled = (select.checked) ? true : false;
 	document.form.year_end.disabled = (select.checked) ? true : false;
 
-//	document.form.session_visibility.disabled = (select.checked) ? true : false;
-//	document.form.session_visibility.selectedIndex = 0;
+	document.form.session_visibility.disabled = (select.checked) ? true : false;
+	document.form.session_visibility.selectedIndex = 0;
 }
 </script>
 <?php

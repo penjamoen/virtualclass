@@ -1,5 +1,4 @@
-<?php
-
+<?php // $Id: $
 /* For licensing terms, see /dokeos_license.txt */
 
 // name of the language file that needs to be included
@@ -16,8 +15,6 @@ require_once ('lib/fe/evalform.class.php');
 // Access control
 api_block_anonymous_users();
 block_students();
-
-// additional javascript
 $htmlHeadXtra[] = '<script>
   $(document).ready(function (){
     $("div.label").attr("style","width: 100%;text-align:left");
@@ -25,7 +22,6 @@ $htmlHeadXtra[] = '<script>
     $("div.formw").attr("style","width: 100%;");
   });
 </script>';
-
 // the section (tabs)
 if (!empty($_GET['course'])) {	
 	$this_section = SECTION_COURSES;
@@ -123,7 +119,7 @@ $interbreadcrumb[]= array (	'url' => '../gradebook/'.$_SESSION['gradebook_dest']
 Display::display_tool_header(get_lang('EditPresence'));
 // Actions bar
 echo '<div class="actions">';
-echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.$evaledit[0]->get_category_id().'&amp;'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.get_lang('Gradebook'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackTo').' '.get_lang('Gradebook').'</a>';
+echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.$evaledit[0]->get_category_id().'&amp;'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png',get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook')).get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook').'</a>';
 echo '</div>';
 
 echo '<div id="content">';

@@ -115,6 +115,12 @@ event_access_tool(TOOL_DROPBOX);
 //this var is used to give a unique value to every page request. This is to prevent resubmiting data
 $dropbox_unid = md5( uniqid( rand( ), true));
 
+/*
+==============================================================================
+		DISPLAY SECTION
+==============================================================================
+*/
+
 // Tool introduction
 Display::display_introduction_section(TOOL_DROPBOX);
 
@@ -154,7 +160,7 @@ if ($dispaction == "updateRecordsListings"){
 		$result = api_sql_query($query, __FILE__, __LINE__);		
 		$listingCounter = $listingCounter + 1;
 	}
-	echo '<script type="text/javascript">window.location.href="index.php?'.api_get_cidReq().'&view='.Security::remove_XSS($_REQUEST['view']).'"</script>';
+	echo '<script type="text/javascript">window.location.href="index.php?'.api_get_cidReq().'&view='.$_REQUEST['view'].'"</script>';
 }
 }
 
@@ -181,8 +187,8 @@ if ( $_GET['view']=='received' OR $dropbox_cnf['sent_received_tabs']==false) {
 		 //   echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=addreceivedcategory&view='.Security::remove_XSS($_GET['view']).'">'.Display::return_icon('folder_new1.png',get_lang('AddNewCategory')).' '.get_lang('AddNewCategory').'</a>';
 		}
 		echo build_folder().'</td>';*/
-		display_mindmap_tabs();
-		echo '<a href="http://www.dokeos.com/mind/" target="_blank" style="float:right;">'.Display::return_icon('pixel.gif',get_lang('DownloadDokeosMind'),array('class'=>'mindmapplaceholdericon toolactiondownloadmind')).' '.get_lang('DownloadDokeosMind')."</a>&nbsp;\n";
+		display_tabs();
+		echo '<a href="http://www.dokeos.com/mind/" target="_blank" style="float:right;">'.Display::return_icon('downloadmind.png',get_lang('DownloadDokeosMind')).' '.get_lang('DownloadDokeosMind')."</a>&nbsp;\n";
 		echo '</div>';
 	} else {		
 		 if (api_is_allowed_to_session_edit(false,true)) {
@@ -195,7 +201,7 @@ if ( $_GET['view']=='received' OR $dropbox_cnf['sent_received_tabs']==false) {
 			//    echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=addreceivedcategory&view='.Security::remove_XSS($_GET['view']).'">'.Display::return_icon('folder_new1.png',get_lang('AddNewCategory')).' '.get_lang('AddNewCategory').'</a>';
 			}	
 			echo build_folder().'</td>';*/
-			echo '<a href="http://www.dokeos.com/mind/" target="_blank" style="float:right;">'.Display::return_icon('pixel.gif',get_lang('DownloadDokeosMind'),array('class'=>'mindmapplaceholdericon toolactiondownloadmind')).' '.get_lang('DownloadDokeosMind')."</a>&nbsp;\n";
+			echo '<a href="http://www.dokeos.com/mind/" target="_blank" style="float:right;">'.Display::return_icon('downloadmind.png',get_lang('DownloadDokeosMind')).' '.get_lang('DownloadDokeosMind')."</a>&nbsp;\n";
 			echo '</div>';
 		 }
 	}
@@ -213,23 +219,30 @@ if (!$_GET['view'] OR $_GET['view']=='sent' OR $dropbox_cnf['sent_received_tabs'
 	if (api_get_session_id()==0) {
 		echo '<div class="actions">';
 		if($_GET['action'] == 'add' || $_GET['action'] == 'viewfeedback') {
-			echo "<a href=\"index.php?".api_get_cidreq()."\">".Display::return_icon('pixel.gif', get_lang('Mindmap'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('Mindmap').'</a>' . PHP_EOL;
+			echo "<a href=\"index.php?".api_get_cidreq()."\">".Display::return_icon('go_previous_32.png',get_lang('Mindmap'),array('style'=>'vertical-align:middle;')).' '.get_lang('Mindmap')."</a>&nbsp;\n";
 		}
 		if (empty($_GET['view_sent_category'])) {
-			echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=add&amp;curdirpath='.$_GET['curdirpath'].'">'.Display::return_icon('pixel.gif',get_lang('UploadMap'),array("class" => "mindmapplaceholdericon toolactionmindmap")).' '.get_lang('UploadMap')."</a>&nbsp;\n";
+			echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=add&amp;curdirpath='.$_GET['curdirpath'].'">'.Display::return_icon('mindmap.png',get_lang('UploadMap'),array('style'=>'vertical-align:middle;')).' '.get_lang('UploadMap')."</a>&nbsp;\n";
 		}
-		display_mindmap_tabs();
-		echo '<a href="http://www.dokeos.com/mind/" target="_blank" style="float:right;">'.Display::return_icon('pixel.gif',get_lang('DownloadDokeosMind'),array("class" => "mindmapplaceholdericon toolactiondownloadmind")).' '.get_lang('DownloadDokeosMind').'</a>' . PHP_EOL;
+	/*	echo '<td width="20%" align="left">'.build_folder($_GET['curdirpath']).'</td>';
+		if ($view_dropbox_category_sent<>0) {
+			echo get_lang('CurrentlySeeing').': <strong>'.$dropbox_categories[$view_dropbox_category_sent]['cat_name'].'</strong> ';
+			echo '<td width="10%" align="left"><a href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category=0&amp;view='.Security::remove_XSS($_GET['view']).'">'.Display::return_icon('folder_up.gif',get_lang('Up'),array('style'=>'vertical-align:middle;')).' '.get_lang('Root')."</a>\n</td>";
+		} else {
+			echo "<td width='20%' align='left'><a href=\"".api_get_self()."?".api_get_cidreq()."&view=".Security::remove_XSS($_GET['view'])."&amp;action=addsentcategory\">".Display::return_icon('folder_new1.png',get_lang('NewFolder'),array('style'=>'vertical-align:middle;'))." ".get_lang('NewFolder')."</a>\n</td>";
+		}*/	
+		display_tabs();
+		echo '<a href="http://www.dokeos.com/mind/" target="_blank" style="float:right;">'.Display::return_icon('downloadmind.png',get_lang('DownloadDokeosMind')).' '.get_lang('DownloadDokeosMind')."</a>&nbsp;\n";
 		echo '</div>';
 	} else {
 		 if (api_is_allowed_to_session_edit(false,true)) {
 		 	echo '<div class="actions">';
 			if($_GET['action'] == 'add' || $_GET['action'] == 'viewfeedback')
 			{
-			echo "<a href=\"index.php?".api_get_cidreq()."\">".Display::return_icon('pixel.gif', get_lang('Mindmap'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('Mindmap')."</a>&nbsp;\n";
+			echo "<a href=\"index.php?".api_get_cidreq()."\">".Display::return_icon('go_previous_32.png',get_lang('Mindmap'),array('style'=>'vertical-align:middle;')).' '.get_lang('Mindmap')."</a>&nbsp;\n";
 			}
 			if (empty($_GET['view_sent_category'])) {
-				echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&view=".Security::remove_XSS($_GET['view'])."&amp;action=add\">".Display::return_icon('pixel.gif',get_lang('UploadMap'),array('class'=>'mindmapplaceholdericon toolactionmindmap')).' '.get_lang('UploadMap')."</a>&nbsp;\n";
+				echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&view=".Security::remove_XSS($_GET['view'])."&amp;action=add\">".Display::return_icon('mindmap.png',get_lang('UploadMap')).' '.get_lang('UploadMap')."</a>&nbsp;\n";
 			}
 		/*	echo build_folder();
 			if ($view_dropbox_category_sent<>0) {
@@ -238,7 +251,7 @@ if (!$_GET['view'] OR $_GET['view']=='sent' OR $dropbox_cnf['sent_received_tabs'
 			} else {
 				echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&view=".Security::remove_XSS($_GET['view'])."&amp;action=addsentcategory\">".Display::return_icon('folder_new1.png',get_lang('NewFolder'))." ".get_lang('NewFolder')."</a>\n";
 			}*/
-			echo '<a href="http://www.dokeos.com/mind/" target="_blank" style="float:right;">'.Display::return_icon('pixel.gif',get_lang('DownloadDokeosMind'),array('class'=>'mindmapplaceholdericon toolactiondownloadmind')).' '.get_lang('DownloadDokeosMind')."</a>&nbsp;\n";
+			echo '<a href="http://www.dokeos.com/mind/" target="_blank" style="float:right;">'.Display::return_icon('downloadmind.png',get_lang('DownloadDokeosMind')).' '.get_lang('DownloadDokeosMind')."</a>&nbsp;\n";
 			echo '</div>'; 	
 		 }
 	}
@@ -266,7 +279,7 @@ if (isset($_POST['submitWork'])) {
 
 if(isset($_GET['curdirpath']) && !empty($_GET['curdirpath']))
 {
-	$curdirpath = '/mindmaps/'.Security::remove_XSS($_GET['curdirpath']).'/';
+	$curdirpath = '/mindmaps/'.$_GET['curdirpath'].'/';
 }
 else
 {
@@ -484,7 +497,7 @@ if ($_GET['view']=='received' OR $dropbox_cnf['sent_received_tabs']==false) {
 			if($tmptitle == 'png' || $tmptitle == 'gif' || $tmptitle == 'jpg' || $tmptitle == 'jpeg')
 			{
 				$return .= '<div class="imageBox" id="imageBox'.$id.'">
-				<div class="imageBox_theImage"><a  href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=viewfeedback&amp;id='.$id.'"><table height="100%"><tr><td><img src="thumb.php?file='.$src_path.$title.'&size=240"></td></tr></table></a></div><div><a href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=viewfeedback&amp;id='.$id.'">'.Display::return_icon('pixel.gif','',array('class'=>'mindmapplaceholdericon toolactioncomments','style'=>'margin-left:185px;width:25px;height:25px;')).'</a><a href="dropbox_download.php?'.api_get_cidreq().'&id='.$id.'&amp;action=download">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon forcedownload','style'=>'padding-left:10px;')).'<a href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=deletereceivedfile&amp;id='.$id.'" onclick="return confirmation(\''.$title.'\');">'.Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actiondelete','style'=>'padding-left:10px;')).'</a></div></div>';
+				<div class="imageBox_theImage"><a  href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=viewfeedback&amp;id='.$id.'"><table height="100%"><tr><td><img src="thumb.php?file='.$src_path.$title.'&size=240"></td></tr></table></a></div><div><a href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=viewfeedback&amp;id='.$id.'"><img style="padding-left:185px;" src="../img/comments.png"></a><a href="dropbox_download.php?'.api_get_cidreq().'&id='.$id.'&amp;action=download"><img style="padding-left:10px;" src="../img/edit.png"><a href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=deletereceivedfile&amp;id='.$id.'" onclick="return confirmation(\''.$title.'\');"><img style="padding-left:10px;" src="../img/delete.png"></a></div></div>';
 			}
 		}		
 		$return .= '</div>
@@ -536,26 +549,20 @@ if (!$_GET['view'] OR $_GET['view']=='sent' OR $dropbox_cnf['sent_received_tabs'
                 $file_id = Security::remove_XSS($id);
                 $allowed_to_download = check_if_user_is_allowed_to_download_file($file_id, api_get_user_id());
 				$return .= '<div class="imageBox" id="imageBox'.$id.'">';
-                
 				$return .= '<div class="imageBox_theImage" style="text-align:center;">
-                    <a  href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=viewfeedback&amp;id='.$id.'">
-                    <table height="100%">
-                    <tr><td>
-                    <img src="thumb.php?file='.$src_path.$title.'&size=240" />
-                    </td></tr>
-                    </table>
-                    </a>
-                    </
-                    div>';
-                
-				$return .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=viewfeedback&amp;id='.$id.'">
-                      '.Display::return_icon('pixel.gif',get_lang('Comments'),array("class" => "mindmapplaceholdericon toolactioncomments","style"=>"margin-left:185px;width:25px;height:25px;")).'</a>';
-                      if ($allowed_to_download === true || api_is_allowed_to_edit()) {
+                  <a  href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=viewfeedback&amp;id='.$id.'">
+                    <table height="100%"><tr><td><img src="thumb.php?file='.$src_path.$title.'&size=240"></td></tr>
+                    </table></a>
+                    </div>
+                    <div>
+                    <a href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=viewfeedback&amp;id='.$id.'">
+                      <img style="padding-left:185px;" src="../img/comments.png"></a>';
+                      if ($allowed_to_download === true) {
                         $return .= '<a href="dropbox_download.php?'.api_get_cidreq().'&id='.$id.'&amp;action=download">
-                        '.Display::return_icon('pixel.gif',get_lang('Edit'),array("class" => "actionplaceholdericon forcedownload","style"=>"margin-left:10px;")).'</a>';
+                        <img style="padding-left:10px;" src="../img/edit.png"></a>';
                         
                         $return .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&view_received_category='.Security::remove_XSS($_GET['view_received_category']).'&amp;view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&amp;view='.Security::remove_XSS($_GET['view']).'&amp;action=deletereceivedfile&amp;id='.$id.'" onclick="return confirmation(\''.$title.'\');">
-                         '.Display::return_icon('pixel.gif',get_lang('Delete'),array("class" => "actionplaceholdericon actiondelete","style"=>"margin-left:10px")).'</a>';
+                          <img style="padding-left:10px;" src="../img/delete.png"></a>';
                       }
                       $return .= '</div>
                    </div>';
@@ -592,22 +599,21 @@ echo '</div>';
 // Actions bar
 echo '<div class="actions">';
 echo '</div>';
-
 // Display the footer
 Display::display_footer();
 
 /**
  * This functions display the inbox and outbox links
  */ 
-function display_mindmap_tabs(){
+function display_tabs(){
 	global $dropbox_cnf; 
 
 	if ($dropbox_cnf['sent_received_tabs']) {
 	?>
 	<div id="tabbed_menu">
 		<ul id="tabbed_menu_tabs">
-			<li><a href="index.php?<?php echo api_get_cidreq();?>&view=sent" <?php if (!$_GET['view'] OR $_GET['view']=='sent'){echo 'class="active"';}?>><?php echo Display::return_icon(('pixel.gif'),get_lang('MapsOut'),array("class" => "mindmapplaceholdericon toolactionup")) .get_lang('MapsOut'); ?></a></li>
-			<li><a href="index.php?<?php echo api_get_cidreq();?>&view=received" <?php if ($_GET['view']=='received'){echo 'class="active"';}?> ><?php echo Display::return_icon(('pixel.gif'),get_lang('MapsIn'),array("class" => "mindmapplaceholdericon toolactiondown32")) .get_lang('MapsIn'); ?></a></li>
+			<li><a href="index.php?<?php echo api_get_cidreq();?>&view=sent" <?php if (!$_GET['view'] OR $_GET['view']=='sent'){echo 'class="active"';}?>><?php echo Display::return_icon(('up.png'),get_lang('MapsOut')) .get_lang('MapsOut'); ?></a></li>
+			<li><a href="index.php?<?php echo api_get_cidreq();?>&view=received" <?php if ($_GET['view']=='received'){echo 'class="active"';}?> ><?php echo Display::return_icon(('down32.png'),get_lang('MapsIn')) .get_lang('MapsIn'); ?></a></li>
 		</ul>
 	</div>
 	<?php

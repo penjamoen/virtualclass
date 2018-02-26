@@ -40,6 +40,7 @@ $langMe = "noqa";
 $langSystemAnnouncements = "Willaykuna";
 $langHelpMaj = "Yanapay";
 $langNotRegistered = "Mana suti qelqasqa";
+$langAdmin = "Plataforma nisqamanta kamachiynin";
 $Login = "Haykuna";
 $langRegisterForCourse = "Qelqachikuy yachachinapi";
 $langUnregisterForCourse = "Huj yachachinapi qelqachikusqayta pichay";

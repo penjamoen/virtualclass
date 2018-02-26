@@ -6,11 +6,12 @@
 // Documents (student)
 
 // For more information: http://docs.fckeditor.net/FCKeditor_2.x/Developers_Guide/Configuration/Configuration_Options
+
 // This is the visible toolbar set when the editor has "normal" size.
 $config['ToolbarSets']['Normal'] = array(
 	array('Save','FitWindow','PasteWord','-','Undo','Redo'),
 	array('Link','Unlink','Anchor'),
-	array('Image','videoPlayer', 'MP3','mimetex','asciimath'),
+	array('Image','flvPlayer','Flash','EmbedMovies','YouTube','MP3','mimetex','asciimath'),
 	array('Table','SpecialChar'),
 	array('Outdent','Indent','-','TextColor','BGColor','-','OrderedList','UnorderedList'),
 	'/',

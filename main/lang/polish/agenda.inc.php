@@ -68,5 +68,4 @@ $EndDateCannotBeBeforeTheStartDate = "Data zako&#324;czenia nie mo&#380;e by&#26
 $AgendaSortChronologicallyUp = "Sortuj Agend&#281; chronologicznie (góra)";
 $AgendaSortChronologicallyDown = "Sortuj Agend&#281; chronologicznie (dó&#322;)";
 $ItemForUserSelection = "Lista wyboru u&#380;ytkowników";
-$RepeatEvent = "Powtórz wydarzenie";
 ?>

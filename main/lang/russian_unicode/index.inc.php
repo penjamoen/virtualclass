@@ -40,6 +40,7 @@ $langMe = "я, меня";
 $langSystemAnnouncements = "Портал объявлений";
 $langHelpMaj = "Помощь";
 $langNotRegistered = "Не зарегистрирован";
+$langAdmin = "Администратор платформы";
 $Login = "Имя пользователя (логин)";
 $langRegisterForCourse = "Регистрироваться на курс";
 $langUnregisterForCourse = "Отказаться от регистрации на курс";

@@ -49,8 +49,7 @@ class GroupPortalManager
                 visibility 	= '".Database::escape_string($visibility)."',
                 created_on = FROM_UNIXTIME(".$tms."),
                 updated_on = FROM_UNIXTIME(".$tms.")";
-
-		$result = Database::query($sql,__FILE__,__LINE__);
+		$result = Database::query($sql);
 		$return = Database::insert_id();
 		return $return;
 	}

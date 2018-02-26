@@ -73,16 +73,16 @@ foreach ($rows as $row) {
 	// The course admin him/herself can do this off course always
 	if (($current_forum['allow_edit']==1 AND $row['user_id']==$_user['user_id'] AND !api_is_anonymous()) or (api_is_allowed_to_edit(false,true)  && !(api_is_course_coach() && $current_forum['session_id']!=$_SESSION['id_session']))) {
 		if (api_is_allowed_to_session_edit(false,true))
-			echo "<a href=\"editpost.php?".api_get_cidreq()."&forum=".Security::remove_XSS($_GET['forum'])."&amp;thread=".Security::remove_XSS($_GET['thread'])."&amp;post=".$row['post_id']."&origin=".$origin."&edit=edition&id_attach=".$id_attach."\">".Display::return_icon('pixel.gif',get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit'))."</a>&nbsp;&nbsp;&nbsp;\n";
+			echo "<a href=\"editpost.php?".api_get_cidreq()."&forum=".Security::remove_XSS($_GET['forum'])."&amp;thread=".Security::remove_XSS($_GET['thread'])."&amp;post=".$row['post_id']."&origin=".$origin."&edit=edition&id_attach=".$id_attach."\">".icon('../img/edit_link.png',get_lang('Edit'))."</a>&nbsp;&nbsp;&nbsp;\n";
 	}
 
 	if ($origin != 'learnpath') {
 		if (api_is_allowed_to_edit(false,true)  && !(api_is_course_coach() && $current_forum['session_id']!=$_SESSION['id_session'])) {
-			echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&forum=".Security::remove_XSS($_GET['forum'])."&amp;thread=".Security::remove_XSS($_GET['thread'])."&amp;action=delete&amp;content=post&amp;id=".$row['post_id']."&origin=".$origin."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang("DeletePost"),ENT_QUOTES,$charset))."')) return false;\">".Display::return_icon('pixel.gif',get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete'))."</a>&nbsp;&nbsp;&nbsp;\n";
+			echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&forum=".Security::remove_XSS($_GET['forum'])."&amp;thread=".Security::remove_XSS($_GET['thread'])."&amp;action=delete&amp;content=post&amp;id=".$row['post_id']."&origin=".$origin."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang("DeletePost"),ENT_QUOTES,$charset))."')) return false;\">".icon('../img/delete_link.png',get_lang('Delete'))."</a>&nbsp;&nbsp;&nbsp;\n";
 			display_visible_invisible_icon('post', $row['post_id'], $row['visible'],array('forum'=>Security::remove_XSS($_GET['forum']),'thread'=>Security::remove_XSS($_GET['thread']), 'origin'=>$origin ));
 			echo "&nbsp;&nbsp;&nbsp;\n";
 			if ($increment>0) {
-				echo "<a href=\"viewthread.php?".api_get_cidreq()."&forum=".Security::remove_XSS($_GET['forum'])."&amp;thread=".Security::remove_XSS($_GET['thread'])."&amp;action=move&amp;post=".$row['post_id']."&origin=".$origin."\">".Display::return_icon('pixel.gif',get_lang('MovePost'), array('class' => 'actionplaceholdericon actionworkmove'))."</a>&nbsp;&nbsp;&nbsp;\n";
+				echo "<a href=\"viewthread.php?".api_get_cidreq()."&forum=".Security::remove_XSS($_GET['forum'])."&amp;thread=".Security::remove_XSS($_GET['thread'])."&amp;action=move&amp;post=".$row['post_id']."&origin=".$origin."\">".icon('../img/go-next.png',get_lang('MovePost'))."</a>&nbsp;&nbsp;&nbsp;\n";
 			}
 		}
 	}
@@ -106,7 +106,7 @@ foreach ($rows as $row) {
 	if ($current_forum_category['locked']==0 AND $current_forum['locked']==0 AND $current_thread['locked']==0 OR api_is_allowed_to_edit(false,true)) {
 		if ($_user['user_id'] OR ($current_forum['allow_anonymous']==1 AND !$_user['user_id']) OR api_is_allowed_to_session_edit(false,true)) {
 			if (!api_is_anonymous() && api_is_allowed_to_session_edit(false,true)) {
-				echo '<a href="reply.php?'.api_get_cidreq().'&forum='.Security::remove_XSS($_GET['forum']).'&amp;thread='.Security::remove_XSS($_GET['thread']).'&amp;post='.$row['post_id'].'&amp;action=replymessage&origin='.$origin.'">'.Display::return_icon('pixel.gif',get_lang('ReplyToMessage'), array('class' => 'actionplaceholdericon actionsmessagereply'))."</a>&nbsp;&nbsp;&nbsp;\n";
+				echo '<a href="reply.php?'.api_get_cidreq().'&forum='.Security::remove_XSS($_GET['forum']).'&amp;thread='.Security::remove_XSS($_GET['thread']).'&amp;post='.$row['post_id'].'&amp;action=replymessage&origin='.$origin.'">'.Display :: return_icon('message_reply_forum.png', get_lang('ReplyToMessage'))."</a>&nbsp;&nbsp;&nbsp;\n";
 				echo '<a href="reply.php?'.api_get_cidreq().'&forum='.Security::remove_XSS($_GET['forum']).'&amp;thread='.Security::remove_XSS($_GET['thread']).'&amp;post='.$row['post_id'].'&amp;action=quote&origin='.$origin.'">'.Display :: return_icon('quote.gif', get_lang('QuoteMessage'))."</a>&nbsp;&nbsp;&nbsp;\n";
 			}
 		}
@@ -148,9 +148,7 @@ foreach ($rows as $row) {
 			//reply link
 		if (!api_is_anonymous()) {
 	echo "\t<tr>\n";
-	echo "\t\t<td class=\"$messageclass\"><form method='post' action='reply.php?".api_get_cidreq().'&forum='.Security::remove_XSS($_GET['forum']).'&amp;thread='.Security::remove_XSS($_GET['thread']).'&amp;action=replythread&origin='.$origin."'>";	
-	//	echo "<button type='submit' class='save_link' >".get_lang('ReplyToThread')."</button></form></td>\n";
-	echo "<button type='submit' >".get_lang('ReplyToThread')."</button></form></td>\n";
+	echo "\t\t<td class=\"$messageclass\"><form method='post' action='reply.php?".api_get_cidreq().'&forum='.Security::remove_XSS($_GET['forum']).'&amp;thread='.Security::remove_XSS($_GET['thread']).'&amp;action=replythread&origin='.$origin."'><button type='submit' class='save_link' >".get_lang('ReplyToThread')."</button></form></td>\n";
 	echo "\t</tr>\n";
 		}
 	}

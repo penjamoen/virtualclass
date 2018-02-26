@@ -33,6 +33,7 @@ class GlossaryManager {
 		global $_course;
 		$glossary_table  = Database::get_course_table(TABLE_GLOSSARY);
 		$sql='SELECT description FROM '.$glossary_table.' WHERE glossary_id="'.Database::escape_string($glossary_id).'"';
+		error_log($sql);
         $rs=Database::query($sql,__FILE__,__LINE__);
 		$row=Database::fetch_array($rs);
 		return $row['description'];

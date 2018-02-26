@@ -75,11 +75,11 @@ $form->applyFilter('title','html_filter');
 $form->applyFilter('title','trim');
 
 // code
-$form->add_textfield( 'visual_code', get_lang('CourseCode'),false,array('size'=>'20','maxlength'=>20));
+/*$form->add_textfield( 'visual_code', get_lang('CourseCode'),false,array('size'=>'20','maxlength'=>20));
 $form->applyFilter('visual_code','api_strtoupper');
 $form->applyFilter('visual_code','html_filter');
-$form->addRule('visual_code',get_lang('Max'),'maxlength',$maxlength);
-//$form->addElement('hidden','visual_code','');
+$form->addRule('visual_code',get_lang('Max'),'maxlength',$maxlength);*/
+$form->addElement('hidden','visual_code','');
 
 $form->addElement('select', 'tutor_id', get_lang('CourseTitular'), $teachers);
 $form->applyFilter('tutor_id','html_filter');
@@ -178,18 +178,8 @@ if( $form->validate()) {
 // Display the header
 Display::display_header(get_lang('AddCourse'));
 
-//Actions
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_list.php">'.Display::return_icon('pixel.gif',get_lang('CourseList'), array('class' => 'toolactionplaceholdericon toolactionadmincourse')).get_lang('CourseList').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_enrolment.php">'.Display::return_icon('pixel.gif',get_lang('EnrolmentToCoursesAtRegistrationToPortal'),array('class' => 'toolactionplaceholdericon toolactionautomaticenrollment')).get_lang('EnrolmentToCoursesAtRegistrationToPortal').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_export.php">'.Display::return_icon('pixel.gif',get_lang('ExportCourses'),array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('ExportCourses').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_import.php">'.Display::return_icon('pixel.gif',get_lang('ImportCourses'),array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('ImportCourses').'</a>';	
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/subscribe_user2course.php">'.Display::return_icon('pixel.gif',get_lang('AddUsersToACourse'),array('class' => 'toolactionplaceholdericon toolactionaddusertocourse')).get_lang('AddUsersToACourse').'</a>';
-echo '</div>';
-
 // start the content div
 echo '<div id="content">';
-
 
 // Display the form
 $form->display();

@@ -13,7 +13,7 @@ require_once (api_get_path(LIBRARY_PATH).'course.lib.php');
 $this_section=SECTION_COURSES;
 
 // Header
-Display::display_tool_header($nameTools, 'Tracking');
+Display::display_header();
 
 echo '<style>a.nolink{color: #000000; text-decoration: none}</style>';
 

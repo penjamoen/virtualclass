@@ -60,7 +60,7 @@ $table_message = Database::get_main_table(TABLE_MESSAGE);
 $form = new FormValidator('add_group');
 
 // name
-$form->addElement('text', 'name', get_lang('Name'), array('class'=>'focus','size'=>60, 'maxlength'=>120));
+$form->addElement('text', 'name', get_lang('Name'), array('size'=>60, 'maxlength'=>120));
 $form->applyFilter('name', 'html_filter');
 $form->applyFilter('name', 'trim');
 $form->addRule('name', get_lang('ThisFieldIsRequired'), 'required');
@@ -71,9 +71,9 @@ $form->applyFilter('description', 'html_filter');
 $form->applyFilter('description', 'trim');
 
 // url
-//$form->addElement('text', 'url', get_lang('URL'), array('size'=>35));
-//$form->applyFilter('url', 'html_filter');
-//$form->applyFilter('url', 'trim');
+$form->addElement('text', 'url', get_lang('URL'), array('size'=>35));
+$form->applyFilter('url', 'html_filter');
+$form->applyFilter('url', 'trim');
 
 // Picture
 $form->addElement('file', 'picture', get_lang('AddPicture'));
@@ -97,8 +97,7 @@ if ($form->validate()) {
 	$picture_uri 	= '';
 	$name 			= $values['name'];
 	$description	= $values['description'];
-	//$url 			= $values['url'];
-        $url = '';
+	$url 			= $values['url'];	
 	$status 		= intval($values['visibility']);
 	$picture 		= $_FILES['picture'];
 
@@ -122,12 +121,12 @@ $interbreadcrumb[]= array ('url' =>'#','name' => $nameTools);
 Display :: display_header($tool_name, 'Groups');
 // Display actions
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('pixel.gif',get_lang('Home'),array('class' => 'toolactionplaceholdericon toolactionshome')).get_lang('Home').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('atom.png',get_lang('Home')).get_lang('Home').'</a>';
 // Only admins and teachers can create groups
 if (api_is_allowed_to_edit(null,true)) {
-    echo '<a href="'.api_get_path(WEB_PATH).'main/social/group_add.php">'.Display::return_icon('pixel.gif',get_lang('CreateAgroup'),array('class' => 'toolactionplaceholdericon toolactionsgroup')).get_lang('CreateAgroup').'</a>';
+    echo '<a href="'.api_get_path(WEB_PATH).'main/social/group_add.php">'.Display::return_icon('groupadd_32.png',get_lang('CreateAgroup')).get_lang('CreateAgroup').'</a>';
 }
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php?view=mygroups">'.Display::return_icon('pixel.gif',get_lang('MyGroups'), array('class' => 'toolactionplaceholdericon toolactiongroupimage')).get_lang('MyGroups').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php?view=mygroups">'.Display::return_icon('group.png',get_lang('MyGroups')).get_lang('MyGroups').'</a>';
 echo '</div>';
 // Start content
 echo '<div id="content">';

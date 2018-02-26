@@ -1,4 +1,4 @@
-<?php
+<?php // $Id: index.php 22368 2009-07-24 23:25:57Z iflorespaz $
 
 /*
 ==============================================================================
@@ -38,11 +38,12 @@
 define('DOKEOS_HOMEPAGE', true);
 
 // the language file
-$language_file = array ('courses', 'index', 'admin');
+$language_file = array ('courses', 'index');
 
 /* Flag forcing the 'current course' reset, as we're not inside a course anymore */
 // maybe we should change this into an api function? an example: Coursemanager::unset();
 $cidReset = true;
+
 
 /*
 -----------------------------------------------------------
@@ -59,11 +60,6 @@ include_once api_get_path(LIBRARY_PATH).'system_announcements.lib.php';
 include_once api_get_path(LIBRARY_PATH).'groupmanager.lib.php';
 include_once api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php';
 require_once 'main/chat/chat_functions.lib.php';
-require_once (api_get_path(LIBRARY_PATH).'language.lib.php');
-
-$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.5.1.min.js" language="javascript"></script>';
-//Code changed like this for testing.
-$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/slides.min.jquery.js" language="javascript"></script>';
 
 $loginFailed = isset($_GET['loginFailed']) ? true : isset($loginFailed);
 $setting_show_also_closed_courses = api_get_setting('show_closed_courses') == 'true';
@@ -71,11 +67,6 @@ $setting_show_also_closed_courses = api_get_setting('show_closed_courses') == 't
 // the section (for the tabs)
 $this_section = SECTION_CAMPUS;
 
-
-// Check if we have a CSS with tablet support
-$css_info = array();
-$css_info = api_get_css_info();
-$css_type = !is_null($css_info['type']) ? $css_info['type'] : '';
 
 /*
 -----------------------------------------------------------
@@ -182,6 +173,7 @@ else {
 
 // the header
 Display :: display_header('', 'dokeos');
+
 echo '<div id="content" class="maxcontent">';
 
 // Plugins for loginpage_main AND campushomepage_main
@@ -213,278 +205,51 @@ echo '<div id="content_with_menu">';
 if(api_is_platform_admin())
 {
 	echo '<div id="edit_homepage_bloc">
-			<a href="'.api_get_path(WEB_CODE_PATH).'admin/configure_homepage.php">'.Display::return_icon('pixel.gif',get_lang('EditPublicPages'),array('class'=>'actionplaceholdericon actionedit','align'=>'absmiddle','&nbsp;')).get_lang('EditPublicPages').'</a>
+			<a href="'.api_get_path(WEB_CODE_PATH).'admin/configure_homepage.php"><img src="'.api_get_path(WEB_IMG_PATH).'edit.png" align="absmiddle" />&nbsp;'.get_lang('EditPublicPages').'</a>
 		  </div>';
 }
-
-$slides_management_table = Database :: get_main_table(TABLE_MAIN_SLIDES_MANAGEMENT);
-
-$sql = "SELECT * FROM $slides_management_table LIMIT 1";
-$rs = Database::query($sql,__FILE__,__LINE__);
-while($row = Database::fetch_array($rs)){
-	$slide_speed = $row['slide_speed'];
-	$show_slide  = $row['show_slide'];
-}
-$slide_speed_millisec = $slide_speed * 1000;
-
-if($slide_speed_millisec == 0){
-	$slide_speed_millisec = 6000;
-}
-
-echo "<script type='text/javascript'>
-		$(function(){
-			$('#slides').mouseover(function () {
-				$('#nextbutton').show();
-		});
-		$('#slides').mouseout(function () {
-				$('#nextbutton').hide();
-		});
-			$('#slides').slides({
-				preload: true,
-				preloadImage: 'img/loading.gif',
-				play: ".$slide_speed_millisec.",
-				pause: 2000,
-				hoverPause: true,
-				animationStart: function(current){
-					$('.slide_caption').animate({
-						bottom:-35
-					},100);
-					if (window.console && console.log) {
-						// example return of current slide number
-						console.log('animationStart on slide: ', current);
-					};
-				},
-				animationComplete: function(current){
-					$('.slide_caption').animate({
-						bottom:0
-					},200);
-					if (window.console && console.log) {
-						// example return of current slide number
-						console.log('animationComplete on slide: ', current);
-					};
-				},
-				slidesLoaded: function() {
-					$('.slide_caption').animate({
-						bottom:0
-					},200);
-				}
-			});
-		});
-	</script>";
-
-$slides_table = Database :: get_main_table(TABLE_MAIN_SLIDES);
-
-if(isset($_REQUEST['language'])){
-	$language = $_REQUEST['language'];
-}
-else {
-	$language = api_get_interface_language();
-}
-
-$sql = "SELECT * FROM $slides_table WHERE language = '".$language."' ORDER BY display_order";
-$res = Database::query($sql,__FILE__,__LINE__);	
-$num_of_slides = Database::num_rows($res);
-$slides = array();
-$img_dir = api_get_path(WEB_PATH). 'home/default_platform_document/';
-
-if($num_of_slides <> 0){
-	while($row = Database::fetch_array($res)){	
-		$image = $img_dir.$row['image'];
-		if(empty($row['title'])){
-			$title = get_lang('Title');
-		}
-		else {
-			$title = $row['title'];
-		}
-		if(empty($row['link'])){
-			$link = '#';
-		}
-		else {
-			$link = $row['link'];
-		}
-		if(empty($row['alternate_text'])){
-			$alternate_text = get_lang('AltText');
-		}
-		else {
-			$alternate_text = $row['alternate_text'];
-		}
-		$slides[] = array('image'=>$image,'title'=>$title,'link'=>$link,'caption'=>$row['caption'],'alttext'=>$alternate_text);
-	}
-}
-else {
-	$slides[] = array('image'=>'main/img/slide01.jpg','title'=>get_lang('YourTitle1'),'link'=>'#','caption'=>get_lang('YourCaption1'),'alttext'=>get_lang('AltText1'));
-	$slides[] = array('image'=>'main/img/slide02.jpg','title'=>get_lang('YourTitle2'),'link'=>'#','caption'=>get_lang('YourCaption2'),'alttext'=>get_lang('AltText2'));
-	$slides[] = array('image'=>'main/img/slide03.jpg','title'=>get_lang('YourTitle3'),'link'=>'#','caption'=>get_lang('YourCaption3'),'alttext'=>get_lang('AltText3'));
-}
-if (empty($_GET['include']) && $show_slide == 1) {
-echo '<div id="container">
-		<div id="example">
-			
-			<div id="slides">
-				<div class="slides_container">';
-
-					foreach($slides as $slide){
-						echo '<div class="slide">';	
-						if(!empty($slide['link']) && $slide['link'] != '#'){
-						echo '<a href="'.$slide['link'].'" title="'.$slide['title'].'" target="_blank"><img src="'.$slide['image'].'" width="720" height="240" alt="'.$slide['alttext'].'"></a>';
-						}
-						else {
-						echo '<img src="'.$slide['image'].'" width="720" height="240" title="'.$slide['title'].'" alt="'.$slide['alttext'].'">';
-						}
-						echo '<div class="slide_caption" style="bottom:0">';
-						if(!empty($slide['caption'])){
-							echo '<p>'.$slide['caption'].'</p>';
-						}
-						echo '</div>';
-						
-						echo '</div>';
-					}
-
-			echo '</div>
-				<div id="nextbutton" style="display:none;">
-				<a href="#" class="prev"><img src="main/img/arrow-prev.png" width="24" height="43" alt="Arrow Prev"></a>
-				<a href="#" class="next"><img src="main/img/arrow-next.png" width="24" height="43" alt="Arrow Next"></a>
-				</div>
-			</div>
-		</div>		
-	</div>';
-//slider ends here
-}
-
-// Display courses and category list
-if (api_get_setting('show_catalogue') == 'true') {
-    
-    $topic_table 			= Database :: get_main_table(TABLE_MAIN_TOPIC);
-    $tbl_session_category 	= Database::get_main_table(TABLE_MAIN_SESSION_CATEGORY);
-    $catalogue_table 		= Database :: get_main_table(TABLE_MAIN_CATALOGUE);
-
-    $res_topic = Database::query("SELECT * FROM $topic_table WHERE visible = 1");
-    $num_topic = Database::num_rows($res_topic);
-
-    $res_catalogue = Database::query("SELECT title FROM $catalogue_table");
-    $row_catalogue = Database::fetch_array($res_catalogue);    
-    if ($num_topic)  {    
-        echo '<div style="width:95%;padding-left:20px;"><div class="section" style="padding-left:10px;line-height:2.5em;">';
-        echo '<div class="row"><div class="form_header">'.$row_catalogue['title'].'</div></div>';
-        echo '<div><table width="100%">';
-        $i = 0;
-        while ($row_topic = Database::fetch_array($res_topic)) {
-            $topic_id = $row_topic['id'];
-            $topic = $row_topic['topic'];
-            $sql_programme = "SELECT id,name FROM $tbl_session_category WHERE visible = 1 AND topic = ".$topic_id;			
-            $rs_programme = Database::query($sql_programme,__FILE__,__LINE__);
-            $num_programme = Database::num_rows($rs_programme);
-            echo '<script>
-            $(document).ready(function(){			
-            $("a#show'.$i.'").click(function () {								
-                    for(var k=0;k<='.$num_topic.';k++){							
-                            if(k == '.$i.'){								
-                                    $("#show_programme"+k).show();								
-                            }
-                            else {
-                                    $("#show_programme"+k).hide();	
-                            }
-                    }
-                });			
-            });       
-            </script>';
-            if($i%2 == 0){
-            echo '<tr>';
-            }
-            echo '<td width="50%" valign="top"><div><a href="javascript:void(0);" id="show'.$i.'"><img align="middle" src="main/img/topic.png">&nbsp;&nbsp;<font size="2">'.$topic.'&nbsp;&nbsp;('.$num_programme.')</font></a></div>';
-            echo '<div id= "show_programme'.$i.'" style="display:none;padding-left:12px;">';
-            $j = 1;
-            echo '<ul>';
-                    while ($row_programme = Database::fetch_row($rs_programme)) {
-                        echo '<li><a href="main/catalogue/programme_details.php?id='.$row_programme[0].'">'.$row_programme[1].'</a></li>';
-                        $j++;
-                    }
-            echo '</ul>';
-            echo '</div></td>';
-            if($i%2 <> 0){
-                    echo '</tr>';
-            }
-            $i++;
-        }
-        echo '</table></div>';
-        echo '</div></div>';    
-    }
-}
-
-
-/* Home custom html */
 if (!empty($_GET['include']) && preg_match('/^[a-zA-Z0-9_-]*\.html$/', $_GET['include'])) {
 	$contents = file_get_contents('./'.$home.$_GET['include']);
-        $contents=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$contents);
+    $contents=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$contents);
 	$contents = str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css', $contents);
-        $contents = str_replace('{WEB_PATH}',api_get_path(WEB_PATH), $contents);
-        // replace to curren template css path
-        if (preg_match('!/css/(.+)/templates.css!', $contents, $matches)) {                
-            $contents = str_replace('/'.$matches[1].'/templates.css', '/'.api_get_setting('stylesheets').'/templates.css', $contents);
-        }
-        // replace to curren default css path
-        if (preg_match('!/css/(.+)/default.css!', $contents, $matches)) {                
-            $contents = str_replace('/'.$matches[1].'/default.css', '/'.api_get_setting('stylesheets').'/default.css', $contents);
-        }	
+	$contents = str_replace('{WEB_PATH}',api_get_path(WEB_PATH), $contents);
 	echo $contents;
 	$page_included = true;
 } else {
-        $count_lang_availables = LanguageManager::count_available_languages();
-        if(!empty($_SESSION['user_language_choice']) && $count_lang_availables > 1) {
-                $user_selected_language=$_SESSION['user_language_choice'];
-        }else {
-                $user_selected_language=api_get_setting('platformLanguage');
-        }
-        $file_sys_path = api_get_path(SYS_PATH);
-        $file_full_path = $file_sys_path.$home.'home_news_'.$user_selected_language.'.html';
-        if (!file_exists($file_full_path)) {
-            $home_top_file = $file_sys_path.$home.'home_top.html';
-            if ($_configuration['multiple_access_urls'] == true) {
-                $home_top_file = $file_sys_path.$home.'home_top_'.$user_selected_language.'.html';
-            }
-            if (file_exists($home_top_file)) {
-                    $home_top_temp = file($home_top_file);
-            } else {
-                    $home_top_temp = file($home_old.'home_top.html');
-            }
-            $home_top_temp = implode('', $home_top_temp);
-            $open = str_replace('{rel_path}', api_get_path(REL_PATH), $home_top_temp);
-            $open = str_replace('{WEB_PATH}',api_get_path(WEB_PATH), $open);
-            $open=str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css',$open);
-            $open=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$open);
-            // replace to curren template css path
-            if (preg_match('!/css/(.+)/templates.css!', $open, $matches)) {                
-                $open = str_replace('/'.$matches[1].'/templates.css', '/'.api_get_setting('stylesheets').'/templates.css', $open);
-            }
-            // replace to curren default css path
-            if (preg_match('!/css/(.+)/default.css!', $open, $matches)) {                
-                $open = str_replace('/'.$matches[1].'/default.css', '/'.api_get_setting('stylesheets').'/default.css', $open);
-            }
-            echo $open;
+
+	if (!empty($_SESSION['user_language_choice'])) {
+		$user_selected_language = $_SESSION['user_language_choice'];
+	} elseif (!empty($_SESSION['_user']['language'])) {
+		$user_selected_language = $_SESSION['_user']['language'];
 	} else {
-            if (file_exists($home.'home_top_'.$user_selected_language.'.html')) {
-                    $home_top_temp = file_get_contents($home.'home_top_'.$user_selected_language.'.html');
-            } else {
-                    $home_top_temp = file_get_contents($home.'home_top.html');
-            }
-            $open = str_replace('{rel_path}', api_get_path(REL_PATH), $home_top_temp);
-            $open = str_replace('{WEB_PATH}',api_get_path(WEB_PATH), $open);
-            $open=str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css',$open);
-            $open=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$open);
-            
-            // replace to curren template css path
-            if (preg_match('!/css/(.+)/templates.css!', $open, $matches)) {                
-                $open = str_replace('/'.$matches[1].'/templates.css', '/'.api_get_setting('stylesheets').'/templates.css', $open);
-            }
-            // replace to curren default css path
-            if (preg_match('!/css/(.+)/default.css!', $open, $matches)) {                
-                $open = str_replace('/'.$matches[1].'/default.css', '/'.api_get_setting('stylesheets').'/default.css', $open);
-            }
-            echo $open;
+		$user_selected_language = api_get_setting('platformLanguage');
+	}
+
+	if (!file_exists($home.'home_news_'.$user_selected_language.'.html')) {
+		if (file_exists($home.'home_top.html')) {
+			$home_top_temp = file($home.'home_top.html');
+		} else {
+			$home_top_temp = file($home_old.'home_top.html');
+		}
+		$home_top_temp = implode('', $home_top_temp);
+		$open = str_replace('{rel_path}', api_get_path(REL_PATH), $home_top_temp);
+		$open = str_replace('{WEB_PATH}',api_get_path(WEB_PATH), $open);
+        $open=str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css',$open);
+        $open=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$open);
+		echo $open;
+	} else {
+		if (file_exists($home.'home_top_'.$user_selected_language.'.html')) {
+			$home_top_temp = file_get_contents($home.'home_top_'.$user_selected_language.'.html');
+		} else {
+			$home_top_temp = file_get_contents($home.'home_top.html');
+		}
+		$open = str_replace('{rel_path}', api_get_path(REL_PATH), $home_top_temp);
+		$open = str_replace('{WEB_PATH}',api_get_path(WEB_PATH), $open);
+        $open=str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css',$open);
+        $open=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$open);
+		echo $open;
 	}
 }
-
-
 
 // Display System announcements
 $announcement = isset($_GET['announcement']) ? $_GET['announcement'] : -1;
@@ -512,7 +277,7 @@ echo '</div>';
 if (!$page_included) {
 	if (api_get_setting('display_categories_on_homepage') == 'true') {
 		echo '<div class="home_cats">';
-	//	display_anonymous_course_list();
+		display_anonymous_course_list();
 		echo '</div>';
 	}
 }
@@ -522,25 +287,6 @@ if (!$page_included) {
 echo '<div class="menu" id="menu">';
 display_anonymous_menu();
 echo '</div>';
-
-$tbl_course = Database :: get_main_table(TABLE_MAIN_COURSE);
-$sql = "SELECT * FROM $tbl_course WHERE visibility = 3";
-$res = Database::query($sql,__FILE__,__LINE__);
-$num_rows = Database::num_rows($res);
-if($num_rows <> 0){
-	echo '<div class="menu" id="menu">';
-	echo "<div class=\"section\">";
-	echo '<div class="row"><div class="form_header">'.get_lang('OpenCourses').'</div></div><br />';
-	echo "	<div class=\"sectioncontent\">";
-	while($row = Database::fetch_array($res)){
-		$title = $row['title'];
-		$directory = $row['directory'];
-
-		echo '<a href="'.api_get_path(WEB_COURSE_PATH).$directory.'/?id_session=0"><img src="main/img/catalogue_22.png" style="vertical-align:text-bottom;">&nbsp;'.$title.'</a><br />';
-	}
-	echo '</div></div></div>';
-	echo '</div>';
-}
 
 echo '</div>';
 
@@ -645,7 +391,7 @@ function display_create_course_link() {
 }
 
 function display_edit_course_list_links() {
-	echo "<li><a href=\"main/auth/courses.php\">".get_lang("SortMyCourses")."</a></li>";
+	echo "<li><a href=\"main/auth/courses.php\">".get_lang("CourseManagement")."</a></li>";
 }
 
 /**
@@ -656,7 +402,7 @@ function display_edit_course_list_links() {
  * @todo does $_plugins need to be global?
  */
 function display_anonymous_menu() {
-	global $loginFailed, $_plugins, $_user, $menu_navigation, $css_type;
+	global $loginFailed, $_plugins, $_user, $menu_navigation;
 
 	$platformLanguage = api_get_setting('platformLanguage');
 
@@ -683,15 +429,10 @@ function display_anonymous_menu() {
 		$show_create_link = false;
 		$show_course_link = false;
 
-	/*	$display_add_course_link = api_is_allowed_to_create_course() && ($_SESSION["studentview"] != "studentenview");
+		$display_add_course_link = api_is_allowed_to_create_course() && ($_SESSION["studentview"] != "studentenview");
 
 		if ($display_add_course_link) {
 			//display_create_course_link();
-			$show_menu = true;
-			$show_create_link = true;
-		}*/
-
-		if((api_is_allowed_to_create_course() || api_is_session_admin()) && ($_SESSION["studentview"] != "studentenview")){
 			$show_menu = true;
 			$show_create_link = true;
 		}
@@ -706,19 +447,7 @@ function display_anonymous_menu() {
 			}
 		}
 
-                if ($css_type == 'tablet') {
-                    
-                    echo api_display_tool_title(get_lang('MenuUser'),'tablet_title');
-                    if ($show_create_link) {
-                            display_create_course_link_tablet();
-                    }
-                    display_edit_course_list_links_tablet();
-                    if ($show_digest_link) {
-                            display_digest($toolsList, $digest, $orderKey, $courses);
-                    }  
-                    
-                } else {
-                    if ($show_menu){                    
+		if ($show_menu){
 			echo "<div class=\"section\">";
 			echo "	<div class=\"sectiontitle\">".get_lang("MenuUser")."</div>";
 			echo "	<div class=\"sectioncontent\">";
@@ -732,28 +461,24 @@ function display_anonymous_menu() {
 			echo "		</ul>";
 			echo "	</div>";
 			echo "</div>";
-                    }
-                }
-                
-		
-                if (!empty($menu_navigation)) {
-                    echo "<div class=\"section\">";
-                    echo "<div class=\"sectiontitle\">".get_lang("MainNavigation")."</div>";
-                    echo '<div class="sectioncontent">';
-                    echo "<ul class=\"menulist nobullets\">";
-                    foreach ($menu_navigation as $section => $navigation_info) {
-                            $current = $section == $GLOBALS['this_section'] ? ' id="current"' : '';
-                            echo '<li'.$current.'>';
-                            echo '<a href="'.$navigation_info['url'].'" target="_self">'.$navigation_info['title'].'</a>';
-                            echo '</li>';
-                            echo "\n";
-                    }
-                    echo "</ul>";
-                    echo '</div>';
-                    echo '</div>';
-                }
+		}
 
-		
+		if (!empty($menu_navigation)) {
+			echo "<div class=\"section\">";
+			echo "<div class=\"sectiontitle\">".get_lang("MainNavigation")."</div>";
+			echo '<div class="sectioncontent">';
+			echo "<ul class=\"menulist nobullets\">";
+			foreach ($menu_navigation as $section => $navigation_info) {
+				$current = $section == $GLOBALS['this_section'] ? ' id="current"' : '';
+				echo '<li'.$current.'>';
+				echo '<a href="'.$navigation_info['url'].'" target="_self">'.$navigation_info['title'].'</a>';
+				echo '</li>';
+				echo "\n";
+			}
+			echo "</ul>";
+			echo '</div>';
+			echo '</div>';
+		}
 	}
 
 	// help section
@@ -776,22 +501,15 @@ function display_anonymous_menu() {
 	elseif(file_exists($home.'home_menu_'.$user_selected_language.'.html') && file_get_contents($home.'home_menu_'.$user_selected_language.'.html') != '') {
 		$menu_content = file_get_contents ($home.'home_menu_'.$user_selected_language.'.html');
 	}
-        
-        if(!empty($menu_content)) {
-            $menu_content = str_replace('{WEB_PATH}',api_get_path(WEB_PATH), $menu_content);
-            if ($css_type == 'tablet') {     
-                echo '<div class="menu-general nobullets">';
-                echo api_display_tool_title(get_lang('MenuGeneral'),'tablet_title');
-                echo $menu_content;            
-                echo '</div>';
-            } else {
-                echo "<div class=\"section menu-more\">", "<div class=\"sectiontitle\">".get_lang("MenuGeneral")."</div>";
-                echo '<div class="sectioncontent nobullets">';
-                echo $menu_content;
-                echo '</div>';
-                echo '</div>';
-            }
-        }        
+	if(!empty($menu_content))
+	{
+		$menu_content = str_replace('{WEB_PATH}',api_get_path(WEB_PATH), $menu_content);
+		echo "<div class=\"section\">", "<div class=\"sectiontitle\">".get_lang("MenuGeneral")."</div>";
+		echo '<div class="sectioncontent nobullets">';
+		echo $menu_content;
+		echo '</div>';
+		echo '</div>';
+	}
 	
 	if ($_user['user_id'] && api_number_of_plugins('campushomepage_menu') > 0) {
 		echo '<div class="note" style="background: none">';
@@ -802,7 +520,7 @@ function display_anonymous_menu() {
 	// includes for any files to be displayed below anonymous right menu
 
 	if (!file_exists($home.'home_notice_'.$user_selected_language.'.html') && file_exists($home.'home_notice.html') && file_get_contents($home.'home_notice.html') != '') {
-		echo '<div class="actions">';
+		echo '<div class="note">';
 		if (file_exists($home.'home_notice.html')) {
 			include ($home.'home_notice.html');
 		} else {
@@ -811,7 +529,7 @@ function display_anonymous_menu() {
 		echo '</div>';
 	}
 	elseif(file_exists($home.'home_notice_'.$user_selected_language.'.html') && file_get_contents($home.'home_notice_'.$user_selected_language.'.html') != '') {
-		echo '<div class="actions">';
+		echo '<div class="note">';
 		include($home.'home_notice_'.$user_selected_language.'.html');
 		echo '</div>';
 	}
@@ -850,8 +568,6 @@ function handle_login_failed() {
 			case 'access_url_inactive':
 				$message = get_lang('AccountURLInactive');
 				break;
-			case 'AdminNotifiedWrongLogin':
-				$message = get_lang('AdminNotifiedWrongLogin');
 		}
 	}
 	echo "<div id=\"login_fail\">".$message."</div>";
@@ -888,30 +604,8 @@ function display_login_form() {
 
 	if (api_get_setting('openid_authentication') == 'true') {
 		include_once 'main/auth/openid/login.php';
-                echo '<div class="section">
-                        <div class="sectiontitle">'.get_lang('OpenIdAuthentication').'</div>
-                        <div class="sectioncontent nobullets">';
-                        echo openid_form();
-                        echo '<br/><br/>
-                        </div>';
-
-                echo '</div>';
+		echo '<div>'.openid_form().'</div>';
 	}
-        //Enter with cas for Paris5
-        if (api_get_setting('cas_activate') == 'true') {
-                echo '<div class="section">
-                        <div class="sectiontitle">'.get_lang('HomeExternalAuthentication').'</div>
-                        <div class="sectioncontent nobullets">';
-                        echo '<form action="main/auth/cas/logincas.php" method="post" id="loginform" name="formLogin">
-                            <input type="hidden" name="isportalcas"  value="" />
-                            <button type="submit" name="submitAuth" class="login">'.get_lang('CasLogin').'</button>
-                        </form>
-                        <br/><br/>
-                        </div>';
-
-                echo '</div>';
-
-        }
 }
 
 /**
@@ -1204,20 +898,4 @@ function get_courses_of_user($user_id) {
 		$courses[$row['k']] = array('db' => $row['db'], 'code' => $row['k'], 'visual_code' => $row['vc'], 'title' => $row['i'], 'directory' => $row['dir'], 'status' => $row['status'], 'tutor' => $row['t'], 'subscribe' => $row['subscr'], 'unsubscribe' => $row['unsubscr'], 'sort' => $row['sort'], 'user_course_category' => $row['user_course_cat']);
 	}
 	return $courses;
-}
-
-/**
- * Enter description here...
- *
- */
-function display_create_course_link_tablet() {
-	echo "<a href=\"main/create_course/add_course.php\">".Display::return_icon('pixel.gif', get_lang('CourseCreate'), array('class' => 'homepage_button homepage_create_course','align'=>'absmiddle')).get_lang('CourseCreate')."</a><br/>";
-}
-
-/**
- * Enter description here...
- *
- */
-function display_edit_course_list_links_tablet() {
-	echo "<a href=\"main/auth/courses.php\">".Display::return_icon('pixel.gif', get_lang('SortMyCourses'), array('class' => 'homepage_button homepage_catalogue','align'=>'absmiddle')).get_lang('SortMyCourses')."</a>";
 }

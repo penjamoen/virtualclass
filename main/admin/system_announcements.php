@@ -48,7 +48,7 @@ Display :: display_header($tool_name);
 if($_GET['action'] != 'add' && $_GET['action'] != 'edit')
 {
 	echo '<div class="actions">';
-	echo '<a href="?action=add">'.Display::return_icon('pixel.gif', get_lang('langAddAnnouncement'),array('class'=>'toolactionplaceholdericon toolactionannounce_add')).get_lang('langAddAnnouncement').'</a>';
+	echo '<a href="?action=add">'.Display::return_icon('announce_add.png', get_lang('langAddAnnouncement')).get_lang('langAddAnnouncement').'</a>';
 	echo '</div>';
 }
 
@@ -147,7 +147,7 @@ if ($action_todo)
 
 	$form = new FormValidator('system_announcement');
 	$form->addElement('header', '', $form_title);
-	$form->add_textfield('title', get_lang('Title'),false,'class="focus" style="width:450px;"');
+	$form->add_textfield('title', get_lang('Title'),false,'class="focus"');
 	$language_list = api_get_languages();
 	$language_list_with_keys = array();
 	$language_list_with_keys['all'] = get_lang('All');
@@ -259,15 +259,15 @@ if ($show_announcement_list)
 	{
 		$row = array ();
 		$row[] = $announcement->id;
-		$row[] = Display::return_icon('pixel.gif','',array('class'=>$announcement->visible ? 'actionplaceholdericon actionaccept' : 'actionplaceholdericon actionvalidate_na'), ($announcement->visible ? get_lang('AnnouncementAvailable') : get_lang('AnnouncementNotAvailable')));
+		$row[] = Display::return_icon(($announcement->visible ? 'accept.png' : 'exclamation.png'), ($announcement->visible ? get_lang('AnnouncementAvailable') : get_lang('AnnouncementNotAvailable')));
 		$row[] = $announcement->date_start;
 		$row[] = $announcement->date_end;
-		$row[] = "<a href=\"?id=".$announcement->id."&amp;person=".VISIBLE_TEACHER."&amp;action=". ($announcement->visible_teacher ? 'make_invisible' : 'make_visible')."\">".Display::return_icon('pixel.gif','',array('class'=>$announcement->visible_teacher  ? 'actionplaceholdericon actionvisible' : 'actionplaceholdericon actioninvisible'), get_lang('show_hide'))."</a>";
-		$row[] = "<a href=\"?id=".$announcement->id."&amp;person=".VISIBLE_STUDENT."&amp;action=". ($announcement->visible_student  ? 'make_invisible' : 'make_visible')."\">".Display::return_icon('pixel.gif','',array('class'=>$announcement->visible_student  ? 'actionplaceholdericon actionvisible' : 'actionplaceholdericon actioninvisible'), get_lang('show_hide'))."</a>";
-		$row[] = "<a href=\"?id=".$announcement->id."&amp;person=".VISIBLE_GUEST."&amp;action=". ($announcement->visible_guest ? 'make_invisible' : 'make_visible')."\">".Display::return_icon('pixel.gif','',array('class'=>$announcement->visible_guest  ? 'actionplaceholdericon actionvisible' : 'actionplaceholdericon actioninvisible'), get_lang('show_hide'))."</a>";
+		$row[] = "<a href=\"?id=".$announcement->id."&amp;person=".VISIBLE_TEACHER."&amp;action=". ($announcement->visible_teacher ? 'make_invisible' : 'make_visible')."\">".Display::return_icon(($announcement->visible_teacher  ? 'visible_22.png' : 'invisible_22.png'), get_lang('show_hide'))."</a>";
+		$row[] = "<a href=\"?id=".$announcement->id."&amp;person=".VISIBLE_STUDENT."&amp;action=". ($announcement->visible_student  ? 'make_invisible' : 'make_visible')."\">".Display::return_icon(($announcement->visible_student  ? 'visible_22.png' : 'invisible_22.png'), get_lang('show_hide'))."</a>";
+		$row[] = "<a href=\"?id=".$announcement->id."&amp;person=".VISIBLE_GUEST."&amp;action=". ($announcement->visible_guest ? 'make_invisible' : 'make_visible')."\">".Display::return_icon(($announcement->visible_guest  ? 'visible_22.png' : 'invisible_22.png'), get_lang('show_hide'))."</a>";
 		$row[] = $announcement->title;
 		$row[] = $announcement->lang;
-		$row[] = "<a href=\"?action=edit&id=".$announcement->id."\">".Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit'))."</a> <a href=\"?action=delete&id=".$announcement->id."\"  onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset))."')) return false;\">".Display::return_icon('pixel.gif', get_lang('Delete'),array('class'=>'actionplaceholdericon actiondelete'))."</a>";
+		$row[] = "<a href=\"?action=edit&id=".$announcement->id."\">".Display::return_icon('edit.png', get_lang('Edit'))."</a> <a href=\"?action=delete&id=".$announcement->id."\"  onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset))."')) return false;\">".Display::return_icon('delete.png', get_lang('Delete'))."</a>";
 		$announcement_data[] = $row;
 	}
 	$table = new SortableTableFromArray($announcement_data);

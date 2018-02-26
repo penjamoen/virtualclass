@@ -33,7 +33,7 @@ echo '<div id="content">';
 ?>
 
 <div class="section_white">
-	<div class="sectiontitle"><?php Display::display_icon('pixel.gif', get_lang("backup"),array('class'=>'toolactionplaceholdericon toolactionbackup')); ?>&nbsp;&nbsp;<a href="../coursecopy/backup.php?<?php echo api_get_cidreq();?>"><?php echo get_lang("backup");?></a></div>
+	<div class="sectiontitle"><?php Display::display_icon('save_import.gif', get_lang("backup")); ?>&nbsp;&nbsp;<a href="../coursecopy/backup.php?<?php echo api_get_cidreq();?>"><?php echo get_lang("backup");?></a></div>
     <div class="sectioncontent">
         <table width="100%" cellspacing="2" cellpadding="10" border="0" align="center">
             <tbody>
@@ -55,7 +55,7 @@ echo '<div id="content">';
 </div>-->
 
 <div class="section_white">
-	<div class="sectiontitle"><?php Display::display_icon('pixel.gif', get_lang("recycle_course"),array('class'=>'toolactionplaceholdericon toolactionemptycourse')); ?>&nbsp;&nbsp;<a href="../coursecopy/recycle_course.php?<?php echo api_get_cidreq();?>"><?php echo get_lang("recycle_course");?></a></div>
+	<div class="sectiontitle"><?php Display::display_icon('edit_delete_32.png', get_lang("recycle_course")); ?>&nbsp;&nbsp;<a href="../coursecopy/recycle_course.php?<?php echo api_get_cidreq();?>"><?php echo get_lang("recycle_course");?></a></div>
     <div class="sectioncontent">
         <table width="100%" cellspacing="2" cellpadding="10" border="0" align="center">
             <tbody>
@@ -71,7 +71,7 @@ echo '<div id="content">';
 </div>
 
 <div class="section_white">
-	<div class="sectiontitle"><?php Display::display_icon('pixel.gif',get_lang("DelCourse"),array('class'=>'toolactionplaceholdericon toolactiondelete_the_course')); ?>&nbsp;&nbsp;<a href="../course_info/delete_course.php?<?php echo api_get_cidreq();?>"><?php echo get_lang("DelCourse");?></a></div>
+	<div class="sectiontitle"><?php Display::display_icon('delete_32.png',get_lang("DelCourse")); ?>&nbsp;&nbsp;<a href="../course_info/delete_course.php?<?php echo api_get_cidreq();?>"><?php echo get_lang("DelCourse");?></a></div>
     <div class="sectioncontent">
         <table width="100%" cellspacing="2" cellpadding="10" border="0" align="center">
             <tbody>

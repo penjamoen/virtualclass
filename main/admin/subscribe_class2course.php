@@ -32,7 +32,6 @@ $tool_name = get_lang('AddClassesToACourse');
 $interbreadcrumb[] = array ("url" => 'index.php', "name" => get_lang('PlatformAdmin'));
 
 Display :: display_header($tool_name);
-echo '<div id="content">';
 
 //api_display_tool_title($tool_name);
 
@@ -149,7 +148,6 @@ foreach ($db_courses as $course)
  </table>
 </form>
 <?php
-echo '</div>';
 /*
 ==============================================================================
 		FOOTER

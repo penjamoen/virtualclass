@@ -41,28 +41,6 @@ include_once 'question.class.php';
 include_once 'answer.class.php';
 include_once '../inc/global.inc.php';
 
-$htmlHeadXtra[] =  '<script>
-	  $(document).ready(function (){
-		  $("#submit_add").click(function () {				  
-			   var len = $("input[type=checkbox]").length;
-			   var qnlist = [];
-			   for(var i=1;i<=len;i++){
-				   if($("#notify_checkbox_"+i).attr("checked")){
-					   var chkval = $("#notify_checkbox_"+i).attr("value");
-					   qnlist.push(chkval);
-				   }
-			   }			   
-			   $.post("ajax.php", {action: "reuse", fromExercise: '.$_GET["fromExercise"].', qnlist: qnlist}, 
-					function(data){								
-						$("#reuse").html("");
-						$("#reuse").append(data);
-						window.location = "question_pool.php?fromExercise='.$_GET['fromExercise'].'"; 
-				});					
-		  });		   
-		  
-	  });	  
-	  </script>';
-
 $this_section = SECTION_COURSES;
 
 $is_allowedToEdit = api_is_allowed_to_edit();
@@ -89,20 +67,15 @@ if (empty($fromExercise)) {
 if(isset($_GET['exerciseId'])){
 	$exerciseId = intval($_GET['exerciseId']);
 }
-elseif(isset($_REQUEST['exerciseId']))
-{
-	$exerciseId = $_REQUEST['exerciseId'];
-}
 else
 {
 	$exerciseId = 0;
 }
-if (isset($_REQUEST['exerciseLevel'])){
-	$exerciseLevel = intval($_REQUEST['exerciseLevel']);
-        if ($exerciseLevel == 0) {
-            $exerciseLevel = -1;
-        }
-} else {
+if(isset($_GET['exerciseLevel'])){
+	$exerciseLevel = intval($_GET['exerciseLevel']);
+}
+else
+{
 	$exerciseLevel = -1;
 }
 if (!empty($_GET['page'])) {
@@ -196,23 +169,23 @@ if ($is_allowedToEdit) {
 	 $exercice_id = Security::remove_XSS($_REQUEST['fromExercise']);
 	 
 	// Main buttons
-	 echo '<div class="actions">';
-	 echo '<a href="exercice.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang('List'), array('class' => 'toolactionplaceholdericon toolactionlist'))  . get_lang('List') . '</a>';
-	 echo '<a href="exercise_admin.php?' . api_get_cidreq() . '">' . Display::return_icon('pixel.gif', get_lang('NewEx'), array('class' => 'toolactionplaceholdericon toolactionnewquiz')) . get_lang('NewEx') . '</a>';
-	 echo '<a href="admin.php?' . api_get_cidreq() . '&exerciseId=' . $exercice_id . '">' . Display::return_icon('pixel.gif', get_lang('Questions'), array('class' => 'toolactionplaceholdericon toolactionquestion')) . get_lang('Questions') . '</a>';
+	 echo '<div class="actions" style="margin-top:5px;">';
+	 echo '<a href="exercice.php?' . api_get_cidreq() . '">' . Display :: return_icon('list.png', get_lang('List')) . get_lang('List') . '</a>';
+	 echo '<a href="exercise_admin.php?' . api_get_cidreq() . '">' . Display :: return_icon('new_quiz.png', get_lang('NewEx')) . get_lang('NewEx') . '</a>';
+	 echo '<a href="admin.php?' . api_get_cidreq() . '&exerciseId=' . $exercice_id . '">' . Display :: return_icon('dokeos_question.png', get_lang('Questions')) . get_lang('Questions') . '</a>';
  	// ND_041010 Deplacement de code
 	if (!empty($fromExercise)) {
 		if (!isset($_SESSION['fromlp'])) {
 			if (isset($_REQUEST['fullWin'])) {
-				echo '<a href="admin.php?'. api_get_cidreq().'">' . Display::return_icon('pixel.gif', get_lang('Quiz'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('Quiz'). '</a>';
+				echo '<a href="admin.php?', api_get_cidreq(),'">' . Display::return_icon('go_previous_32.png', get_lang('Quiz')), get_lang('Quiz'), '</a>';
 			} else {
-				echo '<a href="admin.php?'. api_get_cidreq().'&exerciseId='.$fromExercise.'">' . Display::return_icon('pixel.gif', get_lang('Quiz'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('Quiz'). '</a>';
+				echo '<a href="admin.php?', api_get_cidreq(),'&exerciseId=',$fromExercise,'">' . Display::return_icon('go_previous_32.png', get_lang('Quiz')), get_lang('Quiz'), '</a>';
 			}
 		} else {
-			echo '<a href="admin.php?'. api_get_cidreq().'">' . Display::return_icon('pixel.gif', get_lang('Quiz'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('Quiz'). '</a>';
+			echo '<a href="admin.php?', api_get_cidreq(),'">' . Display::return_icon('go_previous_32.png', get_lang('Quiz')), get_lang('Quiz'), '</a>';
 		}
 	} else {
-		echo '<a href="admin.php?'. api_get_cidreq(). '&newQuestion=yes">' . Display::return_icon('pixel.gif', get_lang('NewQu'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('NewQu') . '</a>';
+		echo '<a href="admin.php?', api_get_cidreq(), '&newQuestion=yes">' . Display::return_icon('go_previous_32.png'), get_lang('NewQu'), '</a>';
 	}
 	if (isset($type)) {
 		$url = api_get_self() . '?type=1';
@@ -220,10 +193,32 @@ if ($is_allowedToEdit) {
 		$url = api_get_self();
 	}
 	// ND_041010
-?>
-<div class="sectiontitle float_r">
+
+
+	echo '</div>';
+	?>
+
+<div id="content">
+<div class="sectiontitle">
 <form name="qnpool" method="get" action="<?php echo $url; ?>" style="display:inline;">
  <?php
+     /*    $sql = "SELECT id,type,image FROM $TBL_QUESTIONS_TEMPLATE ORDER BY type";    
+		 $result = api_sql_query($sql, __FILE__, __LINE__);
+		 
+		 // init of fromTpl to force insert a new record
+		 $_SESSION['fromTpl'] = 1;	 
+
+          while ($row = Database::fetch_array($result)) {
+	           if ($test_type != $row['type']) {
+	             if ($test_type !='') echo '</div>';
+	             echo '<div class="column_' . $row['type'] . '">';
+	             $test_type = $row['type'];
+	           }
+	           echo '<a href="admin.php?' . api_get_cidreq() . '&exerciseId=' . $exerciseId . '&editQuestion=' . $row['id'] . '">'; 
+	           echo  Display::return_icon($row['image']) ;
+	           echo "</a>";
+          }*/
+	
 	if (isset($type)) { 
 		echo '<input type="hidden" name="type" value="1">';
 	} 
@@ -256,16 +251,12 @@ if ($is_allowedToEdit) {
 		<option value="2" <?php if($exerciseLevel == '2'){echo 'selected';}?>><?php echo get_lang('Beginner') ?></option>';
 		<option value="3" <?php if($exerciseLevel == '3'){echo 'selected';}?>><?php echo get_lang('Intermediate') ?></option>';
 		<option value="4" <?php if($exerciseLevel == '4'){echo 'selected';}?>><?php echo get_lang('Advanced') ?></option>';
+		<option value="5" <?php if($exerciseLevel == '5'){echo 'selected';}?>><?php echo get_lang('Expert') ?></option>';
 		<?php
 		echo '</select> ';
 	?>
+	<!--<button class="save" type="submit" name="name" value="<?php echo get_lang('Ok') ?>"><?php echo get_lang('Ok') ?></button>-->
     </form></div>
-<?php
-
-	echo '</div>';
-	?>
-
-<div id="content">
 	<div><table width="100%"><tr><td align="right">
 	<?php
 	$from=$page*$limitQuestPage;
@@ -276,7 +267,7 @@ if ($is_allowedToEdit) {
 		}
 		$sql="SELECT question.id,question.question,question.type,question.level 
 				FROM $TBL_EXERCICE_QUESTION rel_question,$TBL_QUESTIONS question,$TBL_EXERCICES quiz
-			  	WHERE $where rel_question.question_id=question.id AND rel_question.exercice_id=quiz.id AND question.type <> 6 AND quiz.active <> -1 GROUP BY question.question,question.type,question.level ORDER BY question_order LIMIT ".$from.", ".($limitQuestPage + 1);
+			  	WHERE $where rel_question.question_id=question.id AND rel_question.exercice_id=quiz.id AND question.type <> 6 AND quiz.active <> -1 ORDER BY question_order LIMIT ".$from.", ".($limitQuestPage + 1);
 	}
 	else
 	{
@@ -286,31 +277,31 @@ if ($is_allowedToEdit) {
 		$sql="SELECT question.id,question.question,question.type,question.level 
 				FROM $TBL_EXERCICE_QUESTION rel_question,$TBL_QUESTIONS question,$TBL_EXERCICES quiz
 			  	WHERE $where rel_question.question_id=question.id AND  rel_question.exercice_id=quiz.id AND rel_question.exercice_id='".Database::escape_string($exerciseId)."'			 	
-				AND question.type <> 6 AND quiz.active <> -1 GROUP BY question.question,question.type,question.level ORDER BY question_order LIMIT ".$from.", ".($limitQuestPage + 1);
+				AND question.type <> 6 AND quiz.active <> -1 ORDER BY question_order LIMIT ".$from.", ".($limitQuestPage + 1);
 	}				
-//	$exerciseId=0;
+	$exerciseId=0;
 	
 	$i = 1;
 	$result=api_sql_query($sql,__FILE__,__LINE__);
 	$nbrQuestions=Database::num_rows($result);
 
 	if(!empty($page)) {
-	   echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&exerciseId='.$exerciseId.'&exerciseLevel='.intval($_GET['exerciseLevel']).'&fromExercise='.$fromExercise.'&page='.($page-1).'">'.Display::return_icon('pixel.gif', '', array('class' => 'actionplaceholdericon actionprev')).get_lang('PreviousPage').'</a> | &nbsp;';
+	   echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&exerciseId='.$exerciseId.'&fromExercise='.$fromExercise.'&page='.($page-1).'"><img src="../img/go-previous.png" style="vertical-align:middle;"> '.get_lang('PreviousPage').'</a> | &nbsp;';
 	} elseif($nbrQuestions > $limitQuestPage) {
-	   echo Display::return_icon('pixel.gif', '', array('class' => 'actionplaceholdericon actionprev')).get_lang('PreviousPage').' | &nbsp;';
+	   echo '<img src="../img/go-previous.png" style="vertical-align:middle;"> '.get_lang('PreviousPage').' | &nbsp;';
 	}
 
 	if($nbrQuestions > $limitQuestPage) {
-    	echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&exerciseId='.intval($_GET['exerciseId']).'&exerciseLevel='.intval($_GET['exerciseLevel']).'&fromExercise='.$fromExercise.'&page='.($page+1).'">'.get_lang('NextPage').Display::return_icon('pixel.gif', '', array('class' => 'actionplaceholdericon actionnext')).'</a>';
+    	echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&exerciseId='.$exerciseId.'&fromExercise='.$fromExercise.'&page='.($page+1).'">'.get_lang('NextPage').' <img src="../img/go-next.png" style="vertical-align:middle;"></a>';
 	} elseif($page) {
-	   echo ' '.get_lang('NextPage').Display::return_icon('pixel.gif', '', array('class' => 'actionplaceholdericon actionnext'));
+	   echo ' '.get_lang('NextPage').' <img src="../img/go-next.png" style="vertical-align:middle;">';
 	}
     echo '</td>
 	</tr>
 	</table></div>';
 	?>
 	<table class="data_table">
-	<tr><th width="5%">&nbsp;</th><th width="65%" align="left"><?php echo get_lang('Question'); ?></th><th width="10%"><?php echo get_lang('Type'); ?></th><th width="10%"><?php echo get_lang('Level'); ?></th><th width="10%"><?php echo get_lang('ReuseQuestion'); ?></th></tr>
+	<tr><th width="70%">Question</th><th width="10%">Type</th><th width="10%">Level</th><th width="10%">Reuse</th></tr>
 	<?php
 	
 	while ($row = Database::fetch_array($result)) {	
@@ -359,26 +350,22 @@ if ($is_allowedToEdit) {
 		if($level == '1')
 		{
 			$img_level = "level1.png";
-			$class_level = "toolactionplaceholdericon toolactionlevel1";
 		}
 		elseif($level == '2')
 		{
 			$img_level = "level2.png";
-			$class_level = "toolactionplaceholdericon toolactionlevel2";
 		}
 		elseif($level == '3')
 		{
 			$img_level = "level3.png";
-			$class_level = "toolactionplaceholdericon toolactionlevel3";
 		}
 		elseif($level == '4')
 		{
 			$img_level = "level4.png";
-			$class_level = "toolactionplaceholdericon toolactionlevel4";
 		}
 		
 		
-	echo '<tr class="'.$class.'" ><td width="5%" align="center"><input type="checkbox" name="notify_checkbox" id="notify_checkbox_'.$i.'" value="'.$row['id'].'" /></td><td width="65%">'.$row['question'].'</td><td align="center" width="10%"><img src="../img/'.$img_type.'"></td><td align="center" width="10%">'.Display::return_icon('pixel.gif', '', array('class' => $class_level)).'</td><td align="center" width="10%"><a href="'.api_get_self().'?'.api_get_cidreq().'&recup='.$row['id'].'&fromExercise='.$fromExercise.'">'.Display::return_icon('pixel.gif', '', array('class' => 'toolactionplaceholdericon tooladdquestion')).'</td></tr>';
+	echo '<tr class="'.$class.'" ><td width="70%">'.$row['question'].'</td><td align="center" width="10%"><img src="../img/'.$img_type.'"></td><td align="center" width="10%"><img src="../img/'.$img_level.'"></td><td align="center" width="10%"><a href="'.api_get_self().'?'.api_get_cidreq().'&recup='.$row['id'].'&fromExercise='.$fromExercise.'"><img src="../img/add_22.png"></td></tr>';
 	$i++;
 	}
 	?>
@@ -388,22 +375,16 @@ if ($is_allowedToEdit) {
           // if not admin of course
           api_not_allowed(true);
          }
- if (api_is_allowed_to_edit ()) {
-	 echo '<br/><button class="cancel" type="button" name="submit_add" id="submit_add"  style="float:left;">'.get_lang('Reuse').'</button>';
- }
  ?>
+
  </div>
+
  <?php
-  if (isset($_GET['exerciseId']) && $_GET['exerciseId'] > 0) {
-      $quiz_id = Security::remove_XSS($_GET['exerciseId']);
-  } elseif (isset($_GET['fromExercise']) && $_GET['fromExercise'] > 0) {
-      $quiz_id = Security::remove_XSS($_GET['fromExercise']);
-  }
   if (api_is_allowed_to_edit ()) {
  ?>
           <div class="actions">
-           <a href="<?php echo 'exercice.php?show=result&' . api_get_cidreq(); ?>"><?php echo Display::return_icon('pixel.gif', get_lang('Tracking'), array('class' => 'actionplaceholdericon actiontracking')) . get_lang('Tracking') ?></a>
-           <a href="<?php echo 'question_pool.php?fromExercise=' . $quiz_id . '&' . api_get_cidreq(); ?>"><?php echo Display::return_icon('pixel.gif', get_lang('QuizQuestionsPool'), array('class' => 'actionplaceholdericon actionquestionpool')) . get_lang('QuizQuestionsPool') ?></a>
+           <a href="<?php echo 'exercice.php?show=result&' . api_get_cidreq(); ?>"><?php echo Display :: return_icon('reporting22.png', get_lang('Tracking')) . get_lang('Tracking') ?></a>
+           <a href="<?php echo 'question_pool.php?fromExercise=' . Security::remove_XSS($_GET['exerciseId']) . '&' . api_get_cidreq(); ?>"><?php echo Display :: return_icon('pool.png', get_lang('QuizQuestionsPool')) . get_lang('QuizQuestionsPool') ?></a>
           </div>
 <?php
   }

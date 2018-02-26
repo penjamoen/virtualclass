@@ -40,6 +40,7 @@ $langMe = "man";
 $langSystemAnnouncements = "Sistemos pranešimai";
 $langHelpMaj = "Pagalba";
 $langNotRegistered = "Neregistruotas";
+$langAdmin = "Sistemos administratorius";
 $Login = "Prisijungti";
 $langRegisterForCourse = "Registruotis į kursą";
 $langUnregisterForCourse = "Išsiregistruoti iš kurso";

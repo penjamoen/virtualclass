@@ -190,8 +190,4 @@ $CertificateMinimunScoreIsRequiredAndMustNotBeMoreThan = "Per il certificato è n
 $LinkMod = "Salva";
 $EditLink = "Modifica il collegamento";
 $CategoryDeleted = "Categoria eliminata";
-$CSVLong = "CSV (Comma-Separated Values)";
-$PDFLong = "PDF (Portable Document Format)";
-$XMLLong = "XML (Extensible Markup Language)";
-$XLSLong = "XLS (estensione file MS Excel)";
 ?>

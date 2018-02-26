@@ -183,5 +183,4 @@ $WithTheFollowingSettings = "z naslednjimi nastavitvami:";
 $IncorrectCaptcha = "Napačna potrditvena koda";
 $CaptchaCheck = "Potrditvena koda";
 $CaptchaCheckExplanation = "Vnesti morate potrditveno kodo, kot je prikazana na zgornji sliki";
-$CouldNotResetPassword = "Ne morem ponastaviti gesla";
 ?>

@@ -409,13 +409,6 @@ Display::display_header($tool_name);
 // start the content div
 echo '<div id="content" class="admin_user_edit">';
 
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_list.php">'.Display::return_icon('pixel.gif',get_lang('UserList'),array('class'=>'toolactionplaceholdericon toolactionadminusers')).get_lang('UserList').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_export.php">'.Display::return_icon('pixel.gif',get_lang('Export'),array('class'=>'toolactionplaceholdericon toolactionexportcourse')).get_lang('Export').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_import.php">'.Display::return_icon('pixel.gif',get_lang('Import'),array('class'=>'toolactionplaceholdericon toolactionimportcourse')).get_lang('Import').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_fields.php">'.Display::return_icon('pixel.gif',get_lang('ManageUserFields'),array('class'=>'toolactionplaceholdericon toolactionsprofile')).get_lang('ManageUserFields').'</a>';
-echo '</div>';
-
 // USER PICTURE
 $image_path = UserManager::get_user_picture_path_by_id($user_id,'web');
 $image_dir = $image_path['dir'];

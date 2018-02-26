@@ -20,7 +20,6 @@ if (!class_exists('Question')):
  define('HOT_SPOT', 6);
  define('HOT_SPOT_ORDER', 7);
  define('REASONING', 8);
- define('HOT_SPOT_DELINEATION', 9);
 
 //define('DOKEOS_QUIZGALLERY', true);
 
@@ -45,8 +44,6 @@ if (!class_exists('Question')):
   var $category;
   var $picture;
   var $exerciseList;  // array with the list of exercises which this question is in
-  var $mediaPosition;
-
   static $typePicture = 'new_question.png';
   static $explanationLangVar = '';
   static $questionTypes = array(
@@ -56,8 +53,7 @@ if (!class_exists('Question')):
       MATCHING => array('matching.class.php', 'Matching'),
       FREE_ANSWER => array('freeanswer.class.php', 'FreeAnswer'),
       REASONING => array('reasoning.class.php', 'Reasoning'),
-      HOT_SPOT => array('hotspot.class.php', 'HotSpot'),
-      HOT_SPOT_DELINEATION => array('hotspot_delineation.class.php', 'HotspotDelineation')
+      HOT_SPOT => array('hotspot.class.php', 'HotSpot')
   );
 
   /**
@@ -74,7 +70,6 @@ if (!class_exists('Question')):
    $this->picture = '';
    $this->level = 1;
    $this->category = 0;
-   $this->mediaPosition = 'right';
    $this->exerciseList = array();
   }
 
@@ -99,15 +94,11 @@ if (!class_exists('Question')):
 
    // if the question has been found
    if ($count > 0) {
-    $sql = "SELECT question,description,ponderation,position,type,picture,level,category,media_position FROM $TBL_QUESTIONS WHERE id='" . Database::escape_string($id) . "' order by position";
+    $sql = "SELECT question,description,ponderation,position,type,picture,level,category FROM $TBL_QUESTIONS WHERE id='" . Database::escape_string($id) . "' order by position";
     $result = Database::query($sql, __FILE__, __LINE__);
 
     $object = Database::fetch_object($result);
-    $type = $object->type;
- /* if($type == 9) {//Hotspot delineation is still in development
-        $type = 6;
-    }*/
-    $objQuestion = Question::getInstance($type);
+    $objQuestion = Question::getInstance($object->type);
     $objQuestion->id = $id;
     $objQuestion->question = $object->question;
     $objQuestion->description = $object->description;
@@ -117,7 +108,6 @@ if (!class_exists('Question')):
     $objQuestion->picture = $object->picture;
     $objQuestion->level = (int) $object->level;
 	$objQuestion->category = $object->category;
-	$objQuestion->mediaPosition = $object->media_position;
 
     $sql = "SELECT exercice_id FROM $TBL_EXERCICE_QUESTION WHERE question_id='" . intval($id) . "'";
     $quiz_result = api_sql_query($sql, __FILE__, __LINE__);
@@ -130,13 +120,6 @@ if (!class_exists('Question')):
    }
    // question not found
    return false;
-  }
-
-  /**
-   * Set media position field 
-   */
-  function selectMediaPosition() {      
-   return $this->mediaPosition;
   }
 
   /**
@@ -301,7 +284,7 @@ if (!class_exists('Question')):
   function updateLevel($level) {
    $this->level = $level;
   }
-
+  
   /**
    * changes the question category
    *
@@ -333,10 +316,6 @@ if (!class_exists('Question')):
 
     $this->type = $type;
    }
-  }
-
-  function updateMediaPosition($mediaPosition) {
-   $this->mediaPosition = $mediaPosition;
   }
 
   /**
@@ -560,7 +539,6 @@ if (!class_exists('Question')):
    $type = $this->type;
    $picture = $this->picture;
    $level = $this->level;
-   $mediaPosition = $this->mediaPosition;
 
    if (($_SESSION['fromTpl'] == '1') && ($_SESSION['editQn'] == '')) {
      $id = '';
@@ -570,22 +548,21 @@ if (!class_exists('Question')):
    // question already exists
    if (!empty($id)) {
     $sql = "UPDATE $TBL_QUESTIONS SET
-					question 		='" . Database::escape_string($question) . "',
-					description		='" . Database::escape_string(Security::remove_XSS(api_html_entity_decode($description), COURSEMANAGERLOWSECURITY)) . "',
-					ponderation		='" . Database::escape_string($weighting) . "',
-					position		='" . Database::escape_string($position) . "',
-					type			='" . Database::escape_string($type) . "',
-					picture			='" . Database::escape_string($picture) . "',
-					level			='" . Database::escape_string($level) . "',
-					media_position  ='" . Database::escape_string($mediaPosition) . "' 
-					WHERE id='" . Database::escape_string($id) . "'";
+					question 	='" . Database::escape_string($question) . "',
+					description	='" . Database::escape_string(Security::remove_XSS(api_html_entity_decode($description), COURSEMANAGERLOWSECURITY)) . "',
+					ponderation	='" . Database::escape_string($weighting) . "',
+					position	='" . Database::escape_string($position) . "',
+					type		='" . Database::escape_string($type) . "',
+					picture		='" . Database::escape_string($picture) . "',
+					level		='" . Database::escape_string($level) . "'
+				WHERE id='" . Database::escape_string($id) . "'";
     api_sql_query($sql, __FILE__, __LINE__);
     if (!empty($exerciseId)) {
      api_item_property_update($_course, TOOL_QUIZ, $id, 'QuizQuestionUpdated', $_user['user_id']);
     }
     if (api_get_setting('search_enabled') == 'true') {
      if ($exerciseId != 0) {
-      //$this->search_engine_edit($exerciseId);
+      $this->search_engine_edit($exerciseId);
      } else {
       /**
        * actually there is *not* an user interface for
@@ -601,15 +578,14 @@ if (!class_exists('Question')):
     $this->updatePosition($current_position + 1);
     $position = $this->position;
 
-    $sql = "INSERT INTO $TBL_QUESTIONS(question,description,ponderation,position,type,picture,level,media_position) VALUES(
+    $sql = "INSERT INTO $TBL_QUESTIONS(question,description,ponderation,position,type,picture,level) VALUES(
 					'" . Database::escape_string(Security::remove_XSS($question,COURSEMANAGERLOWSECURITY)) . "',
 					'" . Database::escape_string(Security::remove_XSS(api_html_entity_decode($description), COURSEMANAGERLOWSECURITY)) . "',
 					'" . Database::escape_string($weighting) . "',
 					'" . Database::escape_string($position) . "',
 					'" . Database::escape_string($type) . "',
 					'" . Database::escape_string($picture) . "',
-					'" . Database::escape_string($level) . "',
-					'" . Database::escape_string($mediaPosition) . "'
+					'" . Database::escape_string($level) . "'
 					)";
 
     api_sql_query($sql, __FILE__, __LINE__);
@@ -628,7 +604,7 @@ if (!class_exists('Question')):
 
     if (api_get_setting('search_enabled') == 'true') {
      if ($exerciseId != 0) {
-      //$this->search_engine_edit($exerciseId, TRUE);
+      $this->search_engine_edit($exerciseId, TRUE);
      } else {
       /**
        * actually there is *not* an user interface for
@@ -750,8 +726,7 @@ if (!class_exists('Question')):
          SE_USER => (int) api_get_user_id(),
      );
      $ic_slide->xapian_data = serialize($xapian_data);
-     $question_description = !empty($this->description) ? $this->description : $this->question;
-     $ic_slide->addValue("content", $question_description);
+     $ic_slide->addValue("content", $this->description);
 
      //TODO: index answers, see also form validation on question_admin.inc.php
 
@@ -800,7 +775,6 @@ if (!class_exists('Question')):
    */
   function addToList($exerciseId, $fromSave=FALSE) {
    global $TBL_EXERCICE_QUESTION;
-   $TBL_EXERCICE_QUESTION = Database::get_course_table(TABLE_QUIZ_TEST_QUESTION);
    $id = $this->id;
    // checks if the exercise ID is not in the list
    if (!in_array($exerciseId, $this->exerciseList)) {
@@ -821,7 +795,7 @@ if (!class_exists('Question')):
     }
    }
 
-   /*if($_REQUEST['fromTpl'] == 1)
+   if($_REQUEST['fromTpl'] == 1)
 	{
 	$sql = "SELECT max(question_order) AS last_order FROM $TBL_EXERCICE_QUESTION WHERE exercice_id='".Database::escape_string($exerciseId)."' ";
     $res = Database::query($sql, __FILE__, __LINE__);
@@ -831,7 +805,7 @@ if (!class_exists('Question')):
     // Save new question to quiz
     $sql = "INSERT INTO $TBL_EXERCICE_QUESTION (question_id, exercice_id, question_order) VALUES('" . Database::escape_string($id) . "','" . Database::escape_string($exerciseId) . "','" . Database::escape_string($next_order) . "')";
     Database::query($sql, __FILE__, __LINE__);
-	}*/
+	}
   }
 
   /**
@@ -1009,7 +983,7 @@ if (!class_exists('Question')):
 				document.getElementById(\'small_icon\').innerHTML=\'<img src="../img/SmallFormFilled.png" alt="" onclick="bigform()" />\';
 				formlineslow();
 			}
-
+			
 		}
 		function smallform()
 			{
@@ -1024,17 +998,17 @@ if (!class_exists('Question')):
 				document.getElementById(\'big_icon\').innerHTML=\'<img src="../img/BigFormClosed.png" alt="" onclick="smallform()" />\';
 				formlineslow();
 			}
-
+			
 		}
 		function highlineform()
-	  {
-		 document.getElementById("questionName___Frame").style.height = "150px";
+	  {			 
+		 document.getElementById("questionName___Frame").style.height = "150px";		 
 		 var questiontype = document.question_admin_form.questiontype.value;
 
 		 if(questiontype != 6)
 	     {
 			 if(questiontype == 4 || questiontype == 5)
-			 {
+			 {		
 			 document.getElementById("questionDescription___Frame").style.height = "400px";
 			 }
 			 else
@@ -1042,33 +1016,33 @@ if (!class_exists('Question')):
 			 document.getElementById("questionDescription___Frame").style.height = "520px";
 			 }
          }
-
+		 
 		 if(questiontype != "4")
 			{
 				document.question_admin_form.formsize.value = "High";
 				if(questiontype == "6")
-				{
-					var nb_matches = document.question_admin_form.nb_matches.value;
+				{						
+					var nb_matches = document.question_admin_form.nb_matches.value;						
 					var nb_options = document.question_admin_form.nb_options.value;
-
+					
 					for(var i=1;i<=nb_matches;i++)
-					{
+					{		
 						document.getElementById("nos["+i+"]").style.height = "160px";
 						document.getElementById("answer["+i+"]___Frame").style.height = "150px";
 					}
 
 					for(var i=1;i<=nb_options;i++)
-					{
+					{	
 						document.getElementById("alpha["+i+"]").style.height = "160px";
 						document.getElementById("option["+i+"]___Frame").style.height = "150px";
 					}
 				}
 				else
-				{
-					var nb_answers = document.question_admin_form.nb_answers.value;
-
+				{					
+					var nb_answers = document.question_admin_form.nb_answers.value;	
+					
 					for(var i=1;i<=nb_answers;i++)
-					{
+					{		
 						document.getElementById("answer["+i+"]___Frame").style.height = "150px";
 					}
 				}
@@ -1080,44 +1054,44 @@ if (!class_exists('Question')):
 			}
 			if(questiontype == 4)
 			{
-				document.getElementById("answer___Frame").style.height = "400px";
+				document.getElementById("answer___Frame").style.height = "400px";					
 			}
 	  }
 
 	  function lowlineform()
-	  {
-		 document.getElementById("questionName___Frame").style.height = "40px";
+	  {			 
+		 document.getElementById("questionName___Frame").style.height = "40px";		 
 		 var questiontype = document.question_admin_form.questiontype.value;
 		 if(questiontype != 6)
 	     {
-		 document.getElementById("questionDescription___Frame").style.height = "300px";
+		 document.getElementById("questionDescription___Frame").style.height = "340px";
          }
-
+		 
 		 if(questiontype != "4")
 			{
 				document.question_admin_form.formsize.value = "Low";
 				if(questiontype == "6")
 				{
-					var nb_matches = document.question_admin_form.nb_matches.value;
-					var nb_options = document.question_admin_form.nb_options.value;
+					var nb_matches = document.question_admin_form.nb_matches.value;	
+					var nb_options = document.question_admin_form.nb_options.value;	
 					for(var i=1;i<=nb_matches;i++)
-					{
+					{	
 						document.getElementById("nos["+i+"]").style.height = "50px";
 						document.getElementById("answer["+i+"]___Frame").style.height = "40px";
 					}
 
 					for(var i=1;i<=nb_options;i++)
-					{
+					{		
 						document.getElementById("alpha["+i+"]").style.height = "52px";
 						document.getElementById("option["+i+"]___Frame").style.height = "40px";
 					}
 				}
 				else
-				{
-					var nb_answers = document.question_admin_form.nb_answers.value;
-
+				{					
+					var nb_answers = document.question_admin_form.nb_answers.value;	
+					
 					for(var i=1;i<=nb_answers;i++)
-					{
+					{		
 						document.getElementById("answer["+i+"]___Frame").style.height = "40px";
 					}
 				}
@@ -1129,7 +1103,7 @@ if (!class_exists('Question')):
 			}
 			if(questiontype == 4)
 			{
-				document.getElementById("answer___Frame").style.height = "250px";
+				document.getElementById("answer___Frame").style.height = "250px";					
 			}
 	  }
 
@@ -1141,7 +1115,7 @@ if (!class_exists('Question')):
         var oFCKeditor=FCKeditorAPI.GetInstance("questionName") ;
         oFCKeditor.Focus();
         var questiontype = document.question_admin_form.questiontype.value;
-
+		
 		if(questiontype == 4)
 	    {
 		   if (window.attachEvent) {
@@ -1150,118 +1124,112 @@ if (!class_exists('Question')):
 			  editorInstance.EditorDocument.addEventListener("keyup",updateBlanks,true);
 		   }
         }
-	}
+}
 
-	var _currentEditor;
+var _currentEditor;
 
-	function takeFocus(editor){
-	_currentEditor = editor
-	}
+function takeFocus(editor){        
+_currentEditor = editor
+}
 
-	function makeitbold(){
-	_currentEditor.Commands.GetCommand("Bold").Execute();
+function makeitbold(){
+_currentEditor.Commands.GetCommand("Bold").Execute();
 
-	}
+}
 
-	function word(){
-	_currentEditor.Commands.GetCommand("PasteWord").Execute();
+function word(){
+_currentEditor.Commands.GetCommand("PasteWord").Execute();
 
-	}
-	function link(){
-	_currentEditor.Commands.GetCommand("Link").Execute();
+}
+function link(){
+_currentEditor.Commands.GetCommand("Link").Execute();
 
-	}
-	function youtube(){
-	_currentEditor.Commands.GetCommand("YouTube").Execute();
+}
+function youtube(){
+_currentEditor.Commands.GetCommand("YouTube").Execute();
 
-	}
-	function image(){
-	_currentEditor.Commands.GetCommand("Image").Execute();
+}
+function image(){
+_currentEditor.Commands.GetCommand("Image").Execute();
 
-	}
-	function mindmap(){
-	_currentEditor.Commands.GetCommand("MindmapManager").Execute();
+}
+function mindmap(){
+_currentEditor.Commands.GetCommand("MindmapManager").Execute();
 
-	}
-	function mascot(){
-	_currentEditor.Commands.GetCommand("MascotManager").Execute();
+}
+function mascot(){
+_currentEditor.Commands.GetCommand("MascotManager").Execute();
 
-	}
-	function flash(){
-	_currentEditor.Commands.GetCommand("Flash").Execute();
+}
+function flash(){
+_currentEditor.Commands.GetCommand("Flash").Execute();
 
-	}
-	function embedmovies(){
-	_currentEditor.Commands.GetCommand("EmbedMovies").Execute();
+}
+function embedmovies(){
+_currentEditor.Commands.GetCommand("EmbedMovies").Execute();
 
-	}
-	function audio(){
-	_currentEditor.Commands.GetCommand("MP3").Execute();
+}
+function audio(){
+_currentEditor.Commands.GetCommand("MP3").Execute();
 
-	}
-	function table(){
-	_currentEditor.Commands.GetCommand("Table").Execute();
+}
+function table(){
+_currentEditor.Commands.GetCommand("Table").Execute();
 
-	}
-	function unordered(){
-	_currentEditor.Commands.GetCommand("InsertUnorderedList").Execute();
+}
+function unordered(){
+_currentEditor.Commands.GetCommand("InsertUnorderedList").Execute();
 
-	}
-	function source(){
-	_currentEditor.Commands.GetCommand("Source").Execute();
+}
+function source(){
+_currentEditor.Commands.GetCommand("Source").Execute();
 
-	}
-	function alignleft(){
-	_currentEditor.Commands.GetCommand("JustifyLeft").Execute();
+}
+function alignleft(){
+_currentEditor.Commands.GetCommand("JustifyLeft").Execute();
 
-	}
-	function aligncenter(){
-	_currentEditor.Commands.GetCommand("JustifyCenter").Execute();
+}
+function aligncenter(){
+_currentEditor.Commands.GetCommand("JustifyCenter").Execute();
 
-	}
-	function alignright(){
-	_currentEditor.Commands.GetCommand("JustifyRight").Execute();
+}
+function alignright(){
+_currentEditor.Commands.GetCommand("JustifyRight").Execute();
 
-	}
-        /*
-	function flvplayer(){
-	_currentEditor.Commands.GetCommand("flvPlayer").Execute();
-	}*/
-        
-        function videoplayer(){
-	_currentEditor.Commands.GetCommand("videoPlayer").Execute();
-	}
+}
+function flvplayer(){
+_currentEditor.Commands.GetCommand("flvPlayer").Execute();
 
+}
+function imagemap(){
+_currentEditor.Commands.GetCommand("imgmapPopup").Execute();
 
-	function imagemap(){
-	_currentEditor.Commands.GetCommand("imgmapPopup").Execute();
+}
+function fontcolor(event){
+event = $.event.fix(event);
+_currentEditor.Commands.GetCommand("TextColor").Execute(-120,20,event.target);
 
-	}
-	function fontcolor(event){
-	event = $.event.fix(event);
-	_currentEditor.Commands.GetCommand("TextColor").Execute(-120,20,event.target);
+}
 
-	}
+function glossary(){
+_currentEditor.Commands.GetCommand("Glossary").Execute();
 
-	function glossary(){
-	_currentEditor.Commands.GetCommand("Glossary").Execute();
+}
 
-	}
-
-	function fontsize() {
-	var font_option = document.question_admin_form.font.value;
-	//var selection = (_currentEditor.EditorWindow.getSelection ? _currentEditor.EditorWindow.getSelection() : _currentEditor.EditorDocument.selection);
-	var selection = "";
-	if(_currentEditor.EditorDocument.selection != null) {
-	  selection = _currentEditor.EditorDocument.selection.createRange().text;
-	}
-	else {
-	  selection = _currentEditor.EditorWindow.getSelection();
-	}
-	var new_selection = "<span style=\"font-size:"+font_option+";\">"+selection+"</span>";
-	_currentEditor.InsertHtml(new_selection);
-	}
-				</script>';
+function fontsize() {	
+var font_option = document.question_admin_form.font.value;
+//var selection = (_currentEditor.EditorWindow.getSelection ? _currentEditor.EditorWindow.getSelection() : _currentEditor.EditorDocument.selection);	
+var selection = "";
+if(_currentEditor.EditorDocument.selection != null) {
+  selection = _currentEditor.EditorDocument.selection.createRange().text;
+}
+else {
+  selection = _currentEditor.EditorWindow.getSelection();
+}
+var new_selection = "<span style=\"font-size:"+font_option+";\">"+selection+"</span>";	
+_currentEditor.InsertHtml(new_selection);
+  }
+			</script>';
 
 
    $renderer = $form->defaultRenderer();
@@ -1274,44 +1242,15 @@ if (!class_exists('Question')):
    }
    if (isset($_GET['answerType']) && $_GET['answerType'] != 6 || isset($_GET['type']) && $_GET['type'] != 6 || isset($_GET['fromTpl'])) {
    $form->addElement('html','<table cellspacing="3" width="100%" height="50px" class="toolbar_style"><tr><td width="80%"><table width="100%"><tr style="height:5px;"><td colspan="3"></td></tr>
-   <tr>
-   <td width="5px"><img src="../img/toolbar_start.gif"></td>
-   <td width="5px" class="toolbar_style">
-   <img src="../img/pasteword_icon.png" onclick="word();" alt="'.get_lang('PasteWord').'" title="'.get_lang('PasteWord').'"></td>
-   <td width="5px"><img src="../img/toolbar_start.gif"></td>
-   <td width="5px;" class="toolbar_style"><img src="../img/link_icon.png" onclick="link();" alt="'.get_lang('Link').'" title="'.get_lang('Link').'"></td>
-   <td width="5px"><img src="../img/toolbar_start.gif"></td><td width="5px;" class="toolbar_style">'.Display::return_icon('pixel.gif',get_lang('Images'),array('class'=>'fckactionplaceholdericon fckactionimages_icon','onclick'=>'image();')) .'</td>
-   <td width="5px;" class="toolbar_style">'.Display::return_icon('pixel.gif',get_lang('Imagemap'),array('class'=>'fckactionplaceholdericon fckactionimagemap','onclick'=>'imagemap();')).'</td>
-   <td width="5px;" class="toolbar_style">'.Display::return_icon('pixel.gif',get_lang('Mindmap'),array('class'=>'fckactionplaceholdericon fckactionmindmap_18','onclick'=>'mindmap();')).'</td>
-   <td width="5px;" class="toolbar_style">'.Display::return_icon('pixel.gif',get_lang('Mascot'),array('class'=>'fckactionplaceholdericon fckactionmascot_icon','onclick'=>'mascot();')).'</td>
-   <td width="5px;" class="toolbar_style">'.Display::return_icon('pixel.gif',get_lang('Videoplayer'),array('class'=>'fckactionplaceholdericon fckactionvideoPlayer','onclick'=>'videoplayer();')).'</td>
-   <td width="5px;" class="toolbar_style">'.Display::return_icon('pixel.gif',get_lang('Audio'),array('class'=>'fckactionplaceholdericon fckactionaudio','onclick'=>'audio();')).'</td>
-   '.$glossary_plugin.'
-   <td width="5px"><img src="../img/toolbar_start.gif"></td>
-   <td width="5px;" class="toolbar_style">'.Display::return_icon('pixel.gif',get_lang('Table'),array('class'=>'fckactionplaceholdericon fckactiontable','onclick'=>'table();')).'</td>
-   <td width="5px;" class="toolbar_style"><img src="../img/unordered_list.png" onclick="unordered();" alt="'.get_lang('Orderedlist').'" title="'.get_lang('Orderedlist').'"></td>
-   <td width="5px;" class="toolbar_style"><img src="../img/view_source.png" onclick="source();" alt="'.get_lang('Source').'" title="'.get_lang('Source').'"></td>
-   <td width="5px"><img src="../img/toolbar_start.gif"></td>
-   <td width="5px;" class="toolbar_style"><img src="../img/text_bold.png" onclick="makeitbold();" alt="'.get_lang('Bold').'" title="'.get_lang('Bold').'"></td>
-   <td width="5px"><img src="../img/toolbar_start.gif"></td><td width="5px;" class="toolbar_style"><img src="../img/text_left.png" onclick="alignleft();" alt="'.get_lang('Alignleft').'" title="'.get_lang('Alignleft').'"></td>
-   <td width="5px;" class="toolbar_style"><img src="../img/text_center.png" onclick="aligncenter();" alt="'.get_lang('Aligncenter').'" title="'.get_lang('Aligncenter').'"></td>
-   <td width="5px;" class="toolbar_style">'.Display::return_icon('pixel.gif',get_lang('Textcolor'), array('class' => 'fckactionplaceholdericon fckactionfontcolor', 'onclick' => 'fontcolor(event);')).'</td>
-   <td width="5px"><img src="../img/toolbar_start.gif"></td>
-   </tr>
-   <tr height="5px">
-   <td></td></tr>
-   </table></td>
-   <td>
-   <table width="100%">
-   <tr><td><span style="color:#333333;">Font:</span><select name="font" onchange="fontsize()"><option></option><option value="smaller" style="font-size: smaller;">smaller</option><option value="larger" style="font-size: larger;">larger</option><option value="xx-small" style="font-size: xx-small;">xx-small</option><option value="x-small" style="font-size: x-small;">x-small</option><option value="small" style="font-size: small;">small</option><option value="medium" style="font-size: medium;">medium</option><option value="large" style="font-size: large;">large</option><option value="x-large" style="font-size: x-large;">x-large</option><option value="xx-large" style="font-size: x-large;">xx-large</option></select></td></tr></table></td></tr></table></td></tr></table><br>');
+   <tr><td width="5px"><img src="../img/toolbar_start.gif"></td><td width="5px" class="toolbar_style"><img src="../img/pasteword_icon.png" onclick="word();" alt="'.get_lang('PasteWord').'" title="'.get_lang('PasteWord').'"></td><td width="5px"><img src="../img/toolbar_start.gif"></td><td width="5px;" class="toolbar_style"><img src="../img/link_icon.png" onclick="link();" alt="'.get_lang('Link').'" title="'.get_lang('Link').'"></td><td width="5px"><img src="../img/toolbar_start.gif"></td><td width="5px;" class="toolbar_style"><img src="../img/images_icon.png" onclick="image();" alt="'.get_lang('Images').'" title="'.get_lang('Images').'"></td><td width="5px;" class="toolbar_style"><img src="../img/imagemap.png" onclick="imagemap();" alt="'.get_lang('Imagemap').'" title="'.get_lang('Imagemap').'"><td width="5px;" class="toolbar_style"><img src="../img/mindmap_18.png" onclick="mindmap();" alt="'.get_lang('Mindmap').'" title="'.get_lang('Mindmap').'"></td><td width="5px;" class="toolbar_style"><img src="../img/mascot_icon.png" onclick="mascot();" alt="'.get_lang('Mascot').'" title="'.get_lang('Mascot').'"></td><td width="5px;" class="toolbar_style"><img src="../img/flash.png" onclick="flash();" alt="'.get_lang('Flash').'" title="'.get_lang('Flash').'"></td><td width="5px;" class="toolbar_style"><img src="../img/Youtube.png" onclick="youtube();" alt="'.get_lang('Youtube').'" title="'.get_lang('Youtube').'"></td><td width="5px;" class="toolbar_style"><img src="../img/embedmovies.png" onclick="embedmovies();" alt="'.get_lang('Video').'" title="'.get_lang('Video').'"></td><td width="5px;" class="toolbar_style"><img src="../img/flvPlayer.gif" onclick="flvplayer();" alt="'.get_lang('Flvplayer').'" title="'.get_lang('Flvplayer').'"></td><td width="5px;" class="toolbar_style"><img src="../img/audio.png" onclick="audio();" alt="'.get_lang('Audio').'" title="'.get_lang('Audio').'"></td>'.$glossary_plugin.'<td width="5px"><img src="../img/toolbar_start.gif"></td><td width="5px;" class="toolbar_style"><img src="../img/Table.gif" onclick="table();" alt="'.get_lang('Table').'" title="'.get_lang('Table').'"></td><td width="5px;" class="toolbar_style"><img src="../img/unordered_list.png" onclick="unordered();" alt="'.get_lang('Orderedlist').'" title="'.get_lang('Orderedlist').'"></td><td width="5px;" class="toolbar_style"><img src="../img/view_source.png" onclick="source();" alt="'.get_lang('Source').'" title="'.get_lang('Source').'"></td><td width="5px"><img src="../img/toolbar_start.gif"></td><td width="5px;" class="toolbar_style"><img src="../img/text_bold.png" onclick="makeitbold();" alt="'.get_lang('Bold').'" title="'.get_lang('Bold').'"></td><td width="5px"><img src="../img/toolbar_start.gif"></td><td width="5px;" class="toolbar_style"><img src="../img/text_left.png" onclick="alignleft();" alt="'.get_lang('Alignleft').'" title="'.get_lang('Alignleft').'"></td><td width="5px;" class="toolbar_style"><img src="../img/text_center.png" onclick="aligncenter();" alt="'.get_lang('Aligncenter').'" title="'.get_lang('Aligncenter').'"></td><td width="5px;" class="toolbar_style"><img src="../img/fontcolor.jpg" onclick="fontcolor(event);" alt="'.get_lang('Textcolor').'" title="'.get_lang('Textcolor').'"></td><td width="5px"><img src="../img/toolbar_start.gif"></td></tr><tr height="5px"><td></td></tr></table></td><td><table width="100%"><tr><td><span style="color:#333333;">Font:</span><select name="font" onchange="fontsize()"><option></option><option value="smaller" style="font-size: smaller;">smaller</option><option value="larger" style="font-size: larger;">larger</option><option value="xx-small" style="font-size: xx-small;">xx-small</option><option value="x-small" style="font-size: x-small;">x-small</option><option value="small" style="font-size: small;">small</option><option value="medium" style="font-size: medium;">medium</option><option value="large" style="font-size: large;">large</option><option value="x-large" style="font-size: x-large;">x-large</option><option value="xx-large" style="font-size: x-large;">xx-large</option></select></td></tr></table></td></tr></table></td></tr></table><br>');
    }
-
+   
   if(empty($this->level))
-  {
+	{
 		$questionLevel = '';
-  }
+	}
   else
-  {
+	{
 		if($this->level == "1")
 		{
 			$questionLevel = "Prerequestie";
@@ -1327,37 +1266,37 @@ if (!class_exists('Question')):
 		if($this->level == "4")
 		{
 			$questionLevel = "Advanced";
-		}
-  }
+		}		
+	}
 
-  if(isset($_POST['formsize']))
-  {
-	 $formsize = $_POST['formsize'];
-  }
-  else
-  {
-	  $formsize = '';
-  }
+	if(isset($_POST['formsize']))
+	  {
+		$formsize = $_POST['formsize'];
+	  }
+	  else
+	  {
+		  $formsize = '';
+	  }
 
-  if(empty($formsize) || $formsize == 'Low')
-  {
-	  $formsize_px = "40px";
-  }
-  else
-  {
-	  $formsize_px = "150px";
-  }
+	  if(empty($formsize) || $formsize == 'Low')
+	  {
+		  $formsize_px = "40px";
+	  }
+	  else
+	  {
+		  $formsize_px = "150px";
+	  }
 
-  if (isset($_GET['answerType']) && $_GET['answerType'] == 4 || isset($_GET['type']) && $_GET['type'] == 4) {
-	 $formsize_px = "90px";
-  }
+	 if (isset($_GET['answerType']) && $_GET['answerType'] == 4 || isset($_GET['type']) && $_GET['type'] == 4) {
+		 $formsize_px = "100px";
+	  }
 
    // Left container
    $form->addElement('html', '<div class="form-left" style="float:left">');
 
    // question name
    //$form->addElement('text','questionName','<span class="form_required"></span> '.get_lang('Question'),'size="40"');
-   $form->addElement('html', '<div class="form-left-left">'.get_lang('Question'));
+   $form->addElement('html', '<div style="float:left">'.get_lang('Question'));
 //   $form->addElement('textarea', 'questionName', '<span class="form_required"></span> ' . get_lang('Question'), 'id="questionName" cols="50" rows="1"');
    $form->add_html_editor('questionName','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '450px', 'Height' => ''.$formsize_px.''));
    $form->addElement('html', '</div>');
@@ -1370,18 +1309,18 @@ if (!class_exists('Question')):
      $show_score = false;
    }
    if ($show_score === false) {
-     $form->addElement('html', '<div class="form-left-right" style="display:none;">');
+     $form->addElement('html', '<div style="float:left;margin-left:10px;display:none;">');
    } else {
-     $form->addElement('html', '<div class="form-left-right">');
+     $form->addElement('html', '<div style="float:left;margin-left:10px">');
    }
 
    if (isset($_GET['answerType']) && $_GET['answerType'] != 6 || isset($_GET['type']) && $_GET['type'] != 6  || isset($_GET['fromTpl'])) {
    $form->addElement('select', 'scoreQuestions', get_lang('Score'), $score_options);
    }
    $form->addElement('html', '</div>');
-
+    
    $form->addElement('html', '<div>&nbsp;</div>');
-/* $select_level = array(1, 2, 3, 4, 5);
+/*   $select_level = array(1, 2, 3, 4, 5);
    foreach ($select_level as $val) {
     if ($val == '1') {
      $level = 'Prerequisite';
@@ -1405,14 +1344,14 @@ if (!class_exists('Question')):
    $form->addElement('hidden','questionLevel');
 
    $renderer->setElementTemplate('<div><div class="label">{label}</div><div class="formw" >{element}</div></div>', 'scoreQuestions');
-// $renderer->setElementTemplate('<div><div class="label">{label}</div><div class="formw" >{element}</div></div>', 'questionName');
-// $renderer->setElementTemplate('<div><div class="label">{label}</div><div class="formw">{element}</div></div>', 'questionLevel');
+   $renderer->setElementTemplate('<div><div class="label">{label}</div><div class="formw" >{element}</div></div>', 'questionName');
+//   $renderer->setElementTemplate('<div><div class="label">{label}</div><div class="formw">{element}</div></div>', 'questionLevel');
    $form->addRule('questionName', get_lang('GiveQuestion'), 'required');
 
-/* $form->addElement('html', '<div><table width="100%"><tr><td align="right"><span id="small_icon"> <img src="../img/SmallFormFilled.png" alt="" onclick="smallform()" /></span><span id="big_icon"> <img src="../img/BigFormClosed.png" alt="" onclick="bigform()" /></span></td></tr></table></div>');
-   $form -> addElement ('html','<div align="right" id="newform" style="display:none;"></div>');
+ /*  $form->addElement('html', '<div><table width="100%"><tr><td align="right"><span id="small_icon"> <img src="../img/SmallFormFilled.png" alt="" onclick="smallform()" /></span><span id="big_icon"> <img src="../img/BigFormClosed.png" alt="" onclick="bigform()" /></span></td></tr></table></div>');
+   $form -> addElement ('html','<div align="right" id="newform" style="display:none;"></div>');*/
 
-   $form->addElement('html','<br/><div id="level">Level (Each square represent level.Click on it ) - <input type="text" size="20" name="qnlevel" value="'.$questionLevel.'" disabled /></div><div class="level_style_advanced" onclick="level(\'advanced\');" title="Advanced"></div><div class="level_style_intermediate" onclick="level(\'intermediate\');" title="Intermediate"></div><div class="level_style_beginner" onclick="level(\'beginner\');" title="Beginner"></div><div class="level_style_prerequestie" onclick="level(\'prerequestie\');" title="Prerequestie"></div>');*/
+  // $form->addElement('html','<br/><div id="level">Level (Each square represent level.Click on it ) - <input type="text" size="20" name="qnlevel" value="'.$questionLevel.'" disabled /></div><div class="level_style_advanced" onclick="level(\'advanced\');" title="Advanced"></div><div class="level_style_intermediate" onclick="level(\'intermediate\');" title="Intermediate"></div><div class="level_style_beginner" onclick="level(\'beginner\');" title="Beginner"></div><div class="level_style_prerequestie" onclick="level(\'prerequestie\');" title="Prerequestie"></div>');
 
    // question type
    $answerType = intval($_REQUEST['answerType']);
@@ -1443,112 +1382,67 @@ if (!class_exists('Question')):
    // hidden values
    $form->addElement('hidden', 'myid', $_REQUEST['myid']);
    $form->addElement('html', '</div>');
-   $quizmedia_lang_var = api_convert_encoding(get_lang('QuizMedia'), $charset, api_get_system_encoding());   
 
    // Setting for "Matching" question type
    if ((isset($_REQUEST['answerType']) && $_REQUEST['answerType'] == 4) || (isset($_GET['type']) && $_GET['type'] == 4)) {
-	 $media_img = "deco_matching.png";
-    $default_image = '<div style="text-align: center;"><img  src="../img/'.$media_img.'"/></div>';
-     // Right container - Movie image
-     $form->addElement('html', '<div class="quiz_little_squarebox">');
-     $form->add_html_editor('questionDescription',$quizmedia_lang_var, false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '350px', 'Height' => '90px'));
-    
+   // Right container - Movie image
+    $form->addElement('html', '<div class="quiz_little_squarebox"><img  src="../img/deco_matching.png"/>');
    } elseif ((isset($_REQUEST['answerType']) && $_REQUEST['answerType'] == 6) || (isset($_REQUEST['type']) && $_REQUEST['type'] == 6)) {
    // Right container - Movie image
     $form->addElement('html', '<div class="quiz_little_squarebox" style="width:420px">');
    } else {
    // Right container - Movie image
-		if($this->mediaPosition == 'nomedia'){
-			$display_css = 'display:none';
-			$form->addElement('html', '<div id="rightcontainer"  class="quiz_questions_small_squarebox">');
-		}
-		else {
-			$display_css = 'display:';
-			$form->addElement('html', '<div id="rightcontainer"  class="quiz_questions_squarebox">');
-		}
+    $quizmedia_lang_var = api_convert_encoding(get_lang('QuizMedia'), $charset, api_get_system_encoding());
+    $form->addElement('html', '<div class="quiz_questions_squarebox"><div style="text-align:left">'.$quizmedia_lang_var.'</div>');
+    $form->add_html_editor('questionDescription','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '100%', 'Height' => '340px'));
 
-		$form->addElement('html','<div id="mediatext" style="'.$display_css.';text-align:left">'.$quizmedia_lang_var.'</div><div id="media" style="'.$display_css.';">');
-		$form->add_html_editor('questionDescription','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '100%', 'Height' => '300px'));
+	if($_REQUEST['answerType'] == '1')
+	{
+		$media_img = "instructor-faq.png";
+	}
+	elseif($_REQUEST['answerType'] == '2')
+	{
+		$media_img = "instructor-books.jpg";
+	}
+	elseif($_REQUEST['answerType'] == '8')
+	{
+		$media_img = "instructor-think.png";
+	}
+	elseif($_REQUEST['answerType'] == '3')
+	{
+		$media_img = "KnockOnWood.png";
+	}
+	elseif($_REQUEST['answerType'] == '5')
+	{
+		$media_img = "instructor-idea.jpg";
+	}	
 
-		if($_REQUEST['answerType'] == '1')
-		{
-			$media_img = "instructor-faq.png";
-		}
-		elseif($_REQUEST['answerType'] == '2')
-		{
-			$media_img = "instructor-books.jpg";
-		}
-		elseif($_REQUEST['answerType'] == '8')
-		{
-			$media_img = "instructor-think.png";
-		}
-		elseif($_REQUEST['answerType'] == '3')
-		{
-			$media_img = "KnockOnWood.png";
-		}
-		elseif($_REQUEST['answerType'] == '5')
-		{
-			$media_img = "instructor-idea.jpg";
-		}
-		   $default_image = '<div align="center"><br/><img height="240"  src="../img/'.$media_img.'"/></div>';
+	   $default_image = '<table width="98%" height="100%" cellspacing="2" cellpadding="0" style="font-family:Comic Sans MS;font-size:16px;">
+            <tbody>
+                <tr>
+                    <td align="center" height="323px">
+                      <img src="../img/'.$media_img.'"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>';
    }
 
+   // Close right container
    $form->addElement('html','</div>');
-  
-   echo '<script>
-   $(document).ready(function(){';
-   if($this->mediaPosition == 'nomedia'){
-		echo '$("#leftcontainer").removeClass().addClass("quiz_answer_squarebox");';
-   }
-   else{
-		echo '$("#leftcontainer").removeClass().addClass("quiz_answer_small_squarebox");';
-   }
-	    echo '$("#mediaposition").change(onSelectChange);
-	});
-	function onSelectChange(){	
-	var selected = $("#mediaposition option:selected");   
-	var mediaposition = selected.val();	
-	if(mediaposition == "nomedia"){		
-		$("#media").hide();
-		$("#mediatext").hide();
-		$("#rightcontainer").removeClass().addClass("quiz_questions_small_squarebox");
-		$("#leftcontainer").removeClass().addClass("quiz_answer_squarebox");
-	}
-	else {
-		$("#media").show();
-		$("#mediatext").show();
-		$("#rightcontainer").removeClass().addClass("quiz_questions_squarebox");
-		$("#leftcontainer").removeClass().addClass("quiz_answer_small_squarebox");
-	}
-  }
-   </script>';
 
-   if ((isset($_REQUEST['answerType']) && $_REQUEST['answerType'] <> 4) || (isset($_GET['type']) && $_GET['type'] <> 4) || isset($_GET['fromTpl'])) {
-	   // Select position media
-	   $form->addElement('html','<div style="clear:both;"></div><br/>');
-	   $form->addElement('html','<div class="form-left">');
-	   $form->addElement('html', '<div style="float:left">'.get_lang('PositionBlockMedia'));
-	   $form->addElement('select', 'mediaPosition', '', array('top'=>get_lang('TopSide'), 'right'=>get_lang('RightSide'), 'nomedia'=>get_lang('NoMedia')),'id="mediaposition" onChange="javascript:call(this.value)"');
-	   $form->addElement('html','</div></div>');
-	   
-	   $form->addElement('html', '<div>&nbsp;</div>');
-
-	   // Close right container
-	   $form->addElement('html','</div>');
-   }  
-   
    // Close main container
    $form->addElement('html', '</div>');
+
    if ($this->description != "") {
      $default_image = $this->description;
    }
-
+   
    // default values
    $defaults = array();
    $defaults['questionName'] = $this->question;
    $defaults['questionLevel'] = $this->level;
    $defaults['scoreQuestions'] = $this->weighting;
-   $defaults['mediaPosition']   = $this->mediaPosition;
    $defaults['questionDescription'] = $default_image;
    $form->setDefaults($defaults);
   }
@@ -1563,7 +1457,6 @@ if (!class_exists('Question')):
    $this->updateTitle($form->getSubmitValue('questionName'));
    $this->updateDescription($form->getSubmitValue('questionDescription'));
    $this->updateLevel($form->getSubmitValue('questionLevel'));
-   $this->updateMediaPosition($form->getSubmitValue('mediaPosition')); 
    $this->save($objExercise->id);
 
    // modify the exercise
@@ -1642,7 +1535,7 @@ if (!class_exists('Question')):
    } else {
     $url = 'admin.php?newQuestion=yes&' . api_get_cidreq() . '&fromExercise=' . $exerciseId . '&answerType=';
    }
-   echo '<div class="actions">';
+   echo '<div class="actions" style="margin-bottom:15px;">';
    echo '<div class="overflow_h" style="margin-left:10px;">';
 
    $question_list_items = array();
@@ -1677,13 +1570,6 @@ if (!class_exists('Question')):
       $question_list_id['HotSpot'] = $i;
       $question_list_items[6] = $my_question;
       break;
-     case 'HotspotDelineation':
-   //   if(api_get_setting('hotspost_delineation') == "true"){
-        $question_list_id['HotspotDelineation'] = $i;
-        $question_list_items[7] = $my_question;
-    //  }
-      break;
-      
     }
    }
 
@@ -1703,18 +1589,17 @@ if (!class_exists('Question')):
      {
 		echo '<a href="'.$url . $k.'">';
      }
-
+     
      switch ($question_list_items[$j][1]) {
-		  case 'UniqueAnswer':			echo Display::return_icon('pixel.gif', $explanation_lang_var, array('class' => 'quiztypeplaceholdericon quiztype_multiple_choice'));		break;
-		  case 'MultipleAnswer':		echo Display::return_icon('pixel.gif', $explanation_lang_var, array('class' => 'quiztypeplaceholdericon quiztype_multiple_answer'));		break;
-		  case 'FillBlanks':			echo Display::return_icon('pixel.gif', $explanation_lang_var, array('class' => 'quiztypeplaceholdericon quiztype_fill_blanks'));			break;
-		  case 'Matching':				echo Display::return_icon('pixel.gif', $explanation_lang_var, array('class' => 'quiztypeplaceholdericon quiztype_matching'));				break;
-		  case 'FreeAnswer':			echo Display::return_icon('pixel.gif', $explanation_lang_var, array('class' => 'quiztypeplaceholdericon quiztype_open_question'));		break;
-		  case 'Reasoning':				echo Display::return_icon('pixel.gif', $explanation_lang_var, array('class' => 'quiztypeplaceholdericon quiztype_reasoning'));			break;
-		  case 'HotSpot':				echo Display::return_icon('pixel.gif', $explanation_lang_var, array('class' => 'quiztypeplaceholdericon quiztype_hotspots'));			break;
-		  case 'HotspotDelineation':	echo Display::return_icon('pixel.gif', $explanation_lang_var, array('class' => 'quiztypeplaceholdericon quiztype_contour'));	break;
+		  case 'UniqueAnswer':		echo Display::return_icon('multiple_choice.png', $explanation_lang_var);		break;
+		  case 'MultipleAnswer':	echo Display::return_icon('multiple_answer.png', $explanation_lang_var);		break;
+		  case 'FillBlanks':		echo Display::return_icon('fill_in_the_blank.png', $explanation_lang_var);	break;
+		  case 'Matching':			echo Display::return_icon('drag_drop.png', $explanation_lang_var);			break;
+		  case 'FreeAnswer':		echo Display::return_icon('open-question.png', $explanation_lang_var);		break;
+		  case 'Reasoning':			echo Display::return_icon('reasoning.png', $explanation_lang_var);			break;
+		  case 'HotSpot':			echo Display::return_icon('dokeos_hotspots.png', $explanation_lang_var);		break;
      }
-
+     
      echo '<br /><font size="2">' . $explanation_lang_var . '</font></a>';
      echo '</div>';
     }
@@ -1723,7 +1608,7 @@ if (!class_exists('Question')):
 	// Add the templates feature
 	echo '<div class="questionType">';
 		echo '<a href="template_gallery.php?fromExercise=' . Security::remove_XSS($_REQUEST['exerciseId']) . '&' . api_get_cidreq() . '">';
-			echo Display::return_icon('pixel.gif', $template_lang_var, array('class' => 'quiztypeplaceholdericon quiztype_templates'));
+			echo Display::return_icon('templates.png', $template_lang_var);
 			echo '<br /><font size="2">' . $template_lang_var . '</font></a>';
 		echo '</a>';
 	echo'</div>';

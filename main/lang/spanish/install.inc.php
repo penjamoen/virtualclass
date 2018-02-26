@@ -115,7 +115,7 @@ $OptionalParameters = "Parámetros opcionales";
 $FailedConectionDatabase = "La conexión con la base de datos ha fallado. Puede que el nombre de usuario, la contraseña o el prefijo de la base de datos sean incorrectos. Por favor, revise estos datos y vuelva a intentarlo.";
 $EncryptMethodUserPass = "Método de encriptación";
 $UpgradeFromDokeos16x = "Actualizar desde Dokeos 1.6.x";
-$UpgradeFromDokeos18x = "Actualizar portal 1.8.x ";
+$UpgradeFromDokeos18x = "Actualizar desde Dokeos 1.8.x";
 $InstallationStep1Help = "Instalación de Dokeos Paso 1: Idioma de la instalación";
 $InstallationStep2Help = "Instalación de Dokeos Paso 2: Requisitos";
 $InstallationStep3Help = "Instalación de Dokeos Paso 3: Licencia";
@@ -127,5 +127,4 @@ $Up2DateManualDokeosCom = "Mire el manual de instalación actualizado en http://w
 $MysqlConnectionOk = "La conexión Mysql es correcta";
 $ApplySettingsToGroups = "Por Defecto";
 $IfStillTypingPleaseContinue = "Si todavía está escribiendo, por favor continue";
-$UpgradeFromDokeos20x = "Actualizar portal 2.0";
 ?>

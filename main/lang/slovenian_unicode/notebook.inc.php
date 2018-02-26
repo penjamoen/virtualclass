@@ -32,5 +32,4 @@ $NotesSortedByUpdateDateDESC = "Po datumu ažuriranja padajoče";
 $NotesSortedByCreationDateAsc = "Po datumu nastanka naraščajoče";
 $NotesSortedByCreationDateDESC = "Po datumu nastanka padajoče";
 $Typeyournoteshere = "Spišite svoje zapiske tule";
-$YouHaveNotPersonalNotesHere = "Tule nimate nobenih osebnih sporočil";
 ?>

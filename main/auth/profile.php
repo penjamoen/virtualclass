@@ -19,7 +19,7 @@ $cidReset = true;
 require_once '../inc/global.inc.php';
 require_once api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php';
 
-if (api_get_setting('allow_social_tool') == 'true' && api_get_setting('show_tabs', 'my_profile') == 'false') {
+if (api_get_setting('allow_social_tool') == 'true') {
 	$this_section = SECTION_SOCIAL;
 } else {
 	$this_section = SECTION_MYPROFILE;
@@ -35,7 +35,6 @@ if (!(isset($_user['user_id']) && $_user['user_id']) || api_is_anonymous($_user[
 if (api_get_setting('password_length') <> 0){
 	$password_length_rule = 'minLength: '.api_get_setting('password_length').',';
 }
-if (api_get_path('show_force_password_change') == 'true') {
 $htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path ( WEB_CODE_PATH ) . 'inc/lib/javascript/jquery.strengthy-0.0.1.js" language="javascript"></script>';
 $htmlHeadXtra[] = '<script type="text/javascript">
 							var messages = [
@@ -62,7 +61,7 @@ $htmlHeadXtra[] = '<script type="text/javascript">
 								});
 							});
 					</script>';
-    }
+
 $htmlHeadXtra[] = '<script src="../inc/lib/javascript/tag/jquery.fcbkcomplete.js" type="text/javascript" language="javascript"></script>';
 $htmlHeadXtra[] = '<link href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/tag/style.css" rel="stylesheet" type="text/css" />';
 
@@ -285,7 +284,8 @@ $form->applyFilter('phone', 'stripslashes');
 $form->applyFilter('phone', 'trim');
 /*if (api_get_setting('registration', 'phone') == 'true') {
 	$form->addRule('phone', get_lang('ThisFieldIsRequired'), 'required');
-}*/
+}
+$form->addRule('phone', get_lang('EmailWrong'), 'email');*/
 
 //	PICTURE
 if (is_profile_editable() && api_get_setting('profile', 'picture') == 'true') {
@@ -331,7 +331,6 @@ if (api_get_setting('extended_profile') == 'true') {
 //	PASSWORD
 if (is_profile_editable() && api_get_setting('profile', 'password') == 'true') {
 
-    if (api_get_path('show_force_password_change') == 'true') {
 	$form->addElement('password', 'password0', get_lang('Pass'), array('size' => 40));
 	$form->addElement('static', null, null, '<em>'.get_lang('Enter2passToChange').'</em>');
 	$form->addElement('password', 'password1', get_lang('NewPass'), array('size' => 40, 'class' => 'password'));
@@ -351,14 +350,6 @@ if (is_profile_editable() && api_get_setting('profile', 'password') == 'true') {
 	if (CHECK_PASS_EASY_TO_FIND) {
 		$form->addRule('password1', get_lang('PassTooEasy').': '.api_generate_password(), 'callback', 'api_check_password');
 	}
-    } else {
-	$form->addElement('password', 'password0', get_lang('Pass'), array('size' => 40));
-	$form->addElement('static', null, null, '<em>'.get_lang('Enter2passToChange').'</em>');
-	$form->addElement('password', 'password1', get_lang('NewPass'), array('size' => 40, 'class' => 'password'));
-	$form->addElement('password', 'password2', get_lang('Confirmation'), array('size' => 40, 'class' => 'password'));
-	//	user must enter identical password twice so we can prevent some user errors
-	$form->addRule(array('password1', 'password2'), get_lang('PassTwo'), 'compare');
-    }
 }
 
 // EXTRA FIELDS
@@ -608,15 +599,17 @@ function check_user_password($password){
 	return Database::num_rows($result) != 0;
 }
 /**
- * Check if the email provided is the email of the actual user
+ * Check current user's current password
  * @param	char	email
  * @return	bool true o false
  * @uses Gets user ID from global variable
  */
 function check_user_email($email){
 	global $_user;
+	$user_id = $_user['user_id'];
+	if ($user_id != strval(intval($user_id)) || empty($email)) { return false; }
 	$table_user = Database :: get_main_table(TABLE_MAIN_USER);
-	$sql_password = "SELECT * FROM $table_user WHERE user_id='".Database::escape_string($_user['user_id'])."' AND email='".Database::escape_string($email)."'";
+	$sql_password = "SELECT * FROM $table_user WHERE user_id='".$user_id."' AND email='".$email."'";
 	$result = Database::query($sql_password);
 	return Database::num_rows($result) != 0;
 }
@@ -632,7 +625,10 @@ $upload_production_success = false;
 $msg_fail_changue_email = false;
 $msg_is_not_password = false;
 
-if (!empty($_SESSION['is_not_password'])) {
+if (!empty($_SESSION['change_email'])) {
+	$msg_fail_changue_email= ($_SESSION['change_email'] == 'success');
+	unset($_SESSION['change_email']);
+} elseif (!empty($_SESSION['is_not_password'])) {
 	$msg_is_not_password = ($_SESSION['is_not_password'] == 'success');
 	unset($_SESSION['is_not_password']);
 } elseif (!empty($_SESSION['profile_update'])) {
@@ -676,20 +672,23 @@ if ($form->validate()) {
 		$_SESSION['is_not_password'] = 'success';
 	}
 
-
-	if (!check_user_email($user_data['email'])) {
+	if (!check_user_email($user_data['email']) && !empty($user_data['password0']) && !$wrong_current_password) {
 		$changeemail = $user_data['email'];
 	}
 
+	if (!check_user_email($user_data['email']) && empty($user_data['password0'])){
+		$_SESSION['change_email'] = 'success';
+	}
+
 	// upload picture if a new one is provided
-	if ($_FILES['picture']['size'] AND api_get_setting('profile', 'picture') == 'true') {
+	if ($_FILES['picture']['size']) {
 		if ($new_picture = UserManager::update_user_picture($_user['user_id'], $_FILES['picture']['name'], $_FILES['picture']['tmp_name'])) {
 			$user_data['picture_uri'] = $new_picture;
 			$_SESSION['image_uploaded'] = 'success';
 		}
 	}
 	// remove existing picture if asked
-	elseif (!empty($user_data['remove_picture']) AND api_get_setting('profile', 'picture') == 'true') {
+	elseif (!empty($user_data['remove_picture'])) {
 		UserManager::delete_user_picture($_user['user_id']);
 		$user_data['picture_uri'] = '';
 	}
@@ -706,7 +705,8 @@ if ($form->validate()) {
 	}
 
 	// remove values that shouldn't go in the database
-	unset($user_data['password0'],$user_data['password1'], $user_data['password2'], $user_data['MAX_FILE_SIZE'],$user_data['remove_picture'], $user_data['apply_change']);
+	unset($user_data['password0'],$user_data['password1'], $user_data['password2'], $user_data['MAX_FILE_SIZE'],
+	$user_data['remove_picture'], $user_data['apply_change'],$user_data['email'] );
 
 	// Following RFC2396 (http://www.faqs.org/rfcs/rfc2396.html), a URI uses ':' as a reserved character
 	// we can thus ensure the URL doesn't contain any scheme name by searching for ':' in the string
@@ -716,11 +716,6 @@ if ($form->validate()) {
 		$user_data['openid'] = 'http://'.$my_user_openid;
 	}
 	$extras = array();
-
-	// to prevent the unallowed modification of certain fields (depending op api_get_setting('profile',X)) we create an array that matches the name of the form with the appropriate setting
-	$form_setting_match = array('firstname'=>'name','lastname'=>'name', 'username'=>'login', 'official_code'=>'officialcode','email'=>'email','phone'=>'phone', 'language'=>'language', 'openid'=>'openid');
-
-
 	// build SQL query
 	$sql = "UPDATE $table_user SET";
 	unset($user_data['api_key_generate']);
@@ -742,31 +737,25 @@ if ($form->validate()) {
 				$extras[$new_key] = $value;
 			}
 		} else {
-			// these are default profile fields whose value should go into the dokeos_main.user table
-			if (array_key_exists($key,$form_setting_match) AND api_get_setting('profile', $form_setting_match[$key]) !== 'true'){
-				// cannot change this field because the setting does not allow it
-			} else {
-				$sql .= " $key = '".Database::escape_string($value)."',";
-			}
+			$sql .= " $key = '".Database::escape_string($value)."',";
 		}
 	}
 
-	// Change the email
-	if (isset($changeemail) AND api_get_setting('profile', 'email') == 'true'){
-		$sql .= " email = '".Database::escape_string($changeemail)."' ";	
-	}
-	
-	// change the password
-	if (isset($password) AND api_get_setting('profile', 'password') == 'true'){
+	//changue email
+	if (isset($changeemail) && !isset($password) ) {
+		$sql .= " email = '".Database::escape_string($changeemail)."' ";
+	} elseif (isset($password) && isset($changeemail)) {
+		$sql .= " email = '".Database::escape_string($changeemail)."', ";
 		$password = api_get_encrypted_password($password);
-		$sql .= " password = '".Database::escape_string($password)."'";		
+		$sql .= " password = '".Database::escape_string($password)."'";
+	} elseif (isset($password) && !isset($changeemail)) {
+		$password = api_get_encrypted_password($password);
+		$sql .= " password = '".Database::escape_string($password)."'";
+	} else {
+		// remove trailing , from the query we have so far
+		$sql = rtrim($sql, ',');
 	}
-	
-	// remove trailing , from the query we have so far
-	$sql = rtrim($sql, ',');	
-
-	$sql .= " WHERE user_id  = '".Database::escape_string($_user['user_id'])."'";
-
+	$sql .= " WHERE user_id  = '".$_user['user_id']."'";
 	Database::query($sql);
 
 	// User tag process
@@ -814,13 +803,13 @@ Display::display_header(get_lang('ModifyProfile'));
 // Display actions
 echo '<div class="actions">';
 if (api_get_setting('allow_social_tool') == 'true') {
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('pixel.gif',get_lang('Home'), array('class' => 'toolactionplaceholdericon toolactionshome')).get_lang('Home').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('pixel.gif',get_lang('Messages'), array('class' => 'toolactionplaceholdericon toolactionsmessage')).get_lang('Messages').$count_unread_message.'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.Display::return_icon('pixel.gif',get_lang('Invitations'), array('class' => 'toolactionplaceholdericon toolactionsinvite')).get_lang('Invitations').$total_invitations.'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.Display::return_icon('pixel.gif',get_lang('ViewMySharedProfile'), array('class' => 'toolactionplaceholdericon toolactionsprofile')).get_lang('ViewMySharedProfile').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.Display::return_icon('pixel.gif',get_lang('Friends'), array('class' => 'toolactionplaceholdericon toolactionsfriend')).get_lang('Friends').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('pixel.gif',get_lang('Groups'), array('class' => 'toolactionplaceholdericon toolactionsgroup')).get_lang('Groups').'</a>';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('pixel.gif',get_lang('Search'), array('class' => 'toolactionplaceholdericon toolactionsearch')).get_lang('Search').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('atom.png',get_lang('Home')).get_lang('Home').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('instant_message.png',get_lang('Messages')).get_lang('Messages').$count_unread_message.'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.Display::return_icon('invitation.png',get_lang('Invitations')).get_lang('Invitations').$total_invitations.'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.Display::return_icon('my_shared_profile.png',get_lang('ViewMySharedProfile')).get_lang('ViewMySharedProfile').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.Display::return_icon('friend.png',get_lang('Friends')).get_lang('Friends').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('group.png',get_lang('Groups')).get_lang('Groups').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('zoom.png',get_lang('Search')).get_lang('Search').'</a>';
 } else {
   if (api_get_setting('extended_profile') == 'true') {
       if (api_get_setting('allow_social_tool') == 'true' && api_get_setting('allow_message_tool') == 'true') {
@@ -831,11 +820,11 @@ echo '<a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::retu
       }
       $show = isset($_GET['show']) ? '&amp;show='.Security::remove_XSS($_GET['show']) : '';
 
-      /*if (isset($_GET['type']) && $_GET['type'] == 'extended') {
+      if (isset($_GET['type']) && $_GET['type'] == 'extended') {
           echo '<a href="profile.php?type=reduced'.$show.'">'.Display::return_icon('edit.gif', get_lang('EditNormalProfile')).'&nbsp;'.get_lang('EditNormalProfile').'</a>';
       } else {
           echo '<a href="profile.php?type=extended'.$show.'">'.Display::return_icon('edit.gif', get_lang('EditExtendProfile')).'&nbsp;'.get_lang('EditExtendProfile').'</a>';
-      }*/
+      }
   }
 
 }
@@ -907,14 +896,14 @@ if (api_get_setting('allow_social_tool') == 'true') {
 
 		echo '<div id="social-content-right">';
 			echo '<div id="social-content-online">';
-				/*if (api_get_setting('extended_profile') == 'true') {
+				if (api_get_setting('extended_profile') == 'true') {
 					$show = isset($_GET['show']) ? '&amp;show='.Security::remove_XSS($_GET['show']) : '';
 					if (isset($_GET['type']) && $_GET['type'] == 'reduced') {
 						echo '<a href="profile.php?type=extended '.$show.'"><span class="social-menu-text1">'.Display::return_icon('edit.gif', get_lang('EditExtendProfile')).'&nbsp;'.get_lang('EditExtendProfile').'</span></a>';
 					} else {
 						echo '<a href="profile.php?type=reduced'.$show.'"><span class="social-menu-text1">'.Display::return_icon('edit.gif', get_lang('EditNormalProfile')).'&nbsp;'.get_lang('EditNormalProfile').'</span></a>';
 					}
-				}*/
+				}
 			echo '</div>';
 			$form->display();
 		echo '</div>';

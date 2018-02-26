@@ -521,8 +521,7 @@ function update_Db_course($courseDbName)
 		) ENGINE=MyISAM";
 
 	Database::query($sql, __FILE__, __LINE__);
-        
-        
+
 	// Forum Threads
 	$sql = "
 		CREATE TABLE `".$TABLETOOLFORUMTHREAD . "` (
@@ -676,8 +675,7 @@ function update_Db_course($courseDbName)
 		type tinyint unsigned NOT NULL default 2,
 		picture varchar(50) default NULL,
 		level int unsigned NOT NULL default 0,
-		category varchar(255) NOT NULL default 0,	
-		media_position varchar(50) NOT NULL default 'right',
+		category varchar(255) NOT NULL default 0,		
 		PRIMARY KEY (id)
 		)";
 	Database::query($sql, __FILE__, __LINE__);
@@ -695,7 +693,7 @@ function update_Db_course($courseDbName)
 		ponderation float(6,2) NOT NULL default 0,
 		position mediumint unsigned NOT NULL default 1,
 	    hotspot_coordinates text,
-	    hotspot_type enum('square','circle','poly','delineation','oar') default NULL,
+	    hotspot_type enum('square','circle','poly','delineation') default NULL,
 	    destination text NOT NULL,
 		PRIMARY KEY (id, question_id)
 		)";
@@ -758,8 +756,6 @@ function update_Db_course($courseDbName)
 		category_id mediumint unsigned NOT NULL,
 		quiz_level varchar(50) DEFAULT NULL,
 		number_of_question smallint default '0',
-		scenario_type mediumint unsigned NOT NULL default '1',
-		current_active mediumint unsigned NOT NULL default '0',
 		session_id smallint default '0',
 		PRIMARY KEY (id,exercice_id)	
 		)";
@@ -901,9 +897,8 @@ function update_Db_course($courseDbName)
  		parent_id INT UNSIGNED NOT NULL DEFAULT 0,
 		qualificator_id INT UNSIGNED NOT NULL DEFAULT 0,
 		weight float(6,2) UNSIGNED NOT NULL default 0,
-		remark text,
 		session_id INT UNSIGNED NOT NULL default 0,
-        PRIMARY KEY (id)
+		PRIMARY KEY (id)
 		)";
 	Database::query($sql, __FILE__, __LINE__);
 
@@ -996,8 +991,6 @@ function update_Db_course($courseDbName)
 	Database::query($sql, __FILE__, __LINE__);
 	$sql = "ALTER TABLE `".$TABLETOOLWIKI . "` ADD INDEX ( session_id ) ";
 	Database::query($sql, __FILE__, __LINE__);
-        
-       
 
 	//
 	$sql = "CREATE TABLE `".$TABLEWIKICONF . "` (
@@ -1186,7 +1179,6 @@ function update_Db_course($courseDbName)
 		last_upload_date datetime NOT NULL default '0000-00-00 00:00:00',
 		cat_id int NOT NULL default 0,
 		session_id SMALLINT UNSIGNED NOT NULL,
-                type int DEFAULT 0,
 		PRIMARY KEY (id),
 		UNIQUE KEY UN_filename (filename)
 		)", __FILE__, __LINE__);
@@ -1264,8 +1256,8 @@ function update_Db_course($courseDbName)
 		"preview_image	varchar(255)    not null default '', " . //stores the theme of the LP
 		"author 		varchar(255)    not null default '', " . //stores the theme of the LP
 		"lp_interface 		int    not null default 0, " . //stores the default course interface of the LP
-		"session_id  	int	unsigned not null  default 0".  //the session_id 
-                ")";
+		"session_id  	int	unsigned not null  default 0 " . //the session_id
+		")";
 	if(!Database::query($sql, __FILE__, __LINE__))
 	{
 		error_log($sql,0);
@@ -1681,7 +1673,7 @@ function update_Db_course($courseDbName)
 			  show_form_profile int NOT NULL default 0,
 			  form_fields TEXT NOT NULL,
 			  session_id SMALLINT unsigned NOT NULL default 0,
-                          PRIMARY KEY  (survey_id)
+			  PRIMARY KEY  (survey_id)
 			)";
 
 	$result = Database::query($sql,__FILE__,__LINE__) or die(mysql_error($sql));
@@ -1784,7 +1776,7 @@ function update_Db_course($courseDbName)
 function browse_folders($path, $files, $media)
 {
 	if($media=='images')
-	{       
+	{
 		$code_path = api_get_path(SYS_CODE_PATH)."default_course_document/images/";
 	}
 	if($media=='audio')
@@ -1839,7 +1831,7 @@ function browse_folders($path, $files, $media)
 			}
 			elseif(is_file($path.$file) && strpos($file,'.')!==0)
 			{
-		             $files[]["file"] = str_replace($code_path,"",$path.$file);  
+		        $files[]["file"] = str_replace($code_path,"",$path.$file);
 			}
 		}
 	}
@@ -1895,21 +1887,18 @@ function fill_course_repository($courseRepository)
 
 		/*
 		 * Images
-		 */            
+		 */
 	   	$files=array();
+
 		$files=browse_folders($img_code_path,$files,'images');
+
 		$pictures_array = sort_pictures($files,"dir");
 		$pictures_array = array_merge($pictures_array,sort_pictures($files,"file"));
+
 		$perm = api_get_setting('permissions_for_new_directories');
 		$perm = octdec(!empty($perm)?$perm:'0770');
 		$perm_file = api_get_setting('permissions_for_new_files');
 		$perm_file = octdec(!empty($perm_file)?$perm_file:'0660');
-                //Hotspot templates should not included as images in the document table
-                $hotspot_images = array();
-                $hotspot_images[] = 'quiz-27.jpg';
-                $hotspot_images[] = 'quiz-28.jpg';
-                $hotspot_images[] = 'quiz-29.jpg';
-                $hotspot_images[] = 'quiz-30.jpg';
 		if(!is_dir($course_documents_folder_images))
 		{
 			mkdir($course_documents_folder_images,$perm);
@@ -1927,10 +1916,6 @@ function fill_course_repository($courseRepository)
 			{
 				copy($img_code_path.$value["file"],$course_documents_folder_images.$value["file"]);
 				chmod($course_documents_folder_images.$value["file"],$perm_file);
-                                if (in_array($value["file"],$hotspot_images)) {
-                                    unset($pictures_array[$key]);
-                                }
-                                
 			}
 		}
 
@@ -2349,7 +2334,7 @@ function fill_Db_course($courseDbName, $courseRepository, $language,$default_doc
 	Database::query("INSERT INTO `" . $tbl_course_homepage . "` VALUES (NULL, '" . TOOL_ANNOUNCEMENT . "','announcements/announcements.php','valves.png','".string2binary(api_get_setting('course_create_active_tools', 'announcements')) . "','0','squaregrey.gif','NO','_self','authoring','0')", __FILE__, __LINE__);
 	Database::query("INSERT INTO `" . $tbl_course_homepage . "` VALUES (NULL, '" . TOOL_SURVEY."','survey/survey_list.php','survey.png','".string2binary(api_get_setting('course_create_active_tools', 'survey')) . "','0','squaregrey.gif','NO','_self','interaction','0')", __FILE__, __LINE__);
 	Database::query("INSERT INTO `" . $tbl_course_homepage . "` VALUES (NULL, '" . TOOL_MINDMAP . "','mindmap/index.php','mindmap.png','1','0','squaregrey.gif','NO','_self','interaction','0')", __FILE__, __LINE__);
-        Database::query("INSERT INTO `" . $tbl_course_homepage . "` VALUES (NULL, '" .TOOL_DROPBOX."','dropbox/index.php','dropbox.gif','".string2binary(api_get_setting('course_create_active_tools', 'dropbox')) . "','0','squaregrey.gif','NO','_self','interaction','0')", __FILE__, __LINE__);
+
 	// Smartblogs (Kevin Van Den Haute :: kevin@develop-it.be)
 	$sql = "INSERT INTO `" . $tbl_course_homepage . "` VALUES (NULL,'" . TOOL_BLOGS . "','blog/blog_admin.php','blog_admin.png','" . string2binary(api_get_setting('course_create_active_tools', 'blogs')) . "','1','squaregrey.gif','NO','_self','admin','0')";
 	Database::query($sql, __FILE__, __LINE__);
@@ -2570,11 +2555,11 @@ function fill_Db_course($courseDbName, $courseRepository, $language,$default_doc
 			Agenda tool
 		-----------------------------------------------------------
 		*/
-		//Database::query("INSERT INTO `".$TABLETOOLAGENDA . "` VALUES ( NULL, '".lang2db(get_lang('AgendaCreationTitle')) . "', '".lang2db(get_lang('AgendaCreationContenu')) . "', now(), now(), NULL, 0)", __FILE__, __LINE__);
+		Database::query("INSERT INTO `".$TABLETOOLAGENDA . "` VALUES ( NULL, '".lang2db(get_lang('AgendaCreationTitle')) . "', '".lang2db(get_lang('AgendaCreationContenu')) . "', now(), now(), NULL, 0)", __FILE__, __LINE__);
 		//we need to add the item properties too!
-		/*$insert_id = Database :: insert_id();
+		$insert_id = Database :: insert_id();
 		$sql = "INSERT INTO `".$TABLEITEMPROPERTY . "` (tool,insert_user_id,insert_date,lastedit_date,ref,lastedit_type,lastedit_user_id,to_group_id,to_user_id,visibility) VALUES ('" . TOOL_CALENDAR_EVENT . "',1,NOW(),NOW(),$insert_id,'AgendaAdded',1,0,NULL,1)";
-		Database::query($sql, __FILE__, __LINE__);*/
+		Database::query($sql, __FILE__, __LINE__);
 
 		/*
 		-----------------------------------------------------------
@@ -2663,48 +2648,54 @@ function fill_Db_course($courseDbName, $courseRepository, $language,$default_doc
        <tbody><tr><td align=\"center\" height=\"323px\"><p><img height=\"310px\" alt=\"\" src=\"../img/instructor-faq.png\" /></p>
             <p><embed width=\"300\" height=\"20\" flashvars=\"file=".api_get_path('WEB_COURSE_PATH').$courseRepository."/document/audio/EconomicCensus.mp3&amp;autostart=false\" allowscriptaccess=\"always\" allowfullscreen=\"false\" src=\"/main/inc/lib/mediaplayer/player.swf\" bgcolor=\"#FFFFFF\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\"></embed></p></td></tr></tbody></table>";
 
-		$html_img8 = "<table width='98%' height='100%' cellspacing='2' cellpadding='0' style='font-family: Comic Sans MS; font-size: 16px;'>
-                                <tbody>
-                                    <tr>
-                                        <td height='323px' align='center'>
-                                        <div style='text-align: center;' id='player986311-parent'>
-                                        <div style='border-style: none; height: 240px; width: 375px; overflow: hidden; background-color: rgb(220, 220, 220);' id='test'>
-                                        <div style='display: none; visibility: hidden; width: 0px; height: 0px; overflow: hidden;' id='player986311-config'>url=/courses/".$courseRepository."/document/video/flv/OpenofficeSlideshow.flv width=375 height=240 loop=1 play=true downloadable=false fullscreen=true</div>
-                                        <div class='thePlayer' id='player986311'><script src='".api_get_path(WEB_CODE_PATH)."inc/lib/fckeditor/editor/plugins/videoPlayer/jwplayer.min.js' type='text/javascript'></script>
-                                        <div id='player986311-parent2'>Loading the player ...</div>
-                                        <script type='text/javascript'>jwplayer('player986311-parent2').setup({flashplayer: '".api_get_path(WEB_CODE_PATH)."inc/lib/fckeditor/editor/plugins/videoPlayer/player.swf',autostart: 'true',repeat: 'always',file: '/courses/".$courseRepository."/document/video/flv/OpenofficeSlideshow.flv',height: 240,width: 375,skin: '".api_get_path(WEB_CODE_PATH)."inc/lib/fckeditor/editor/plugins/videoPlayer/skins/facebook.zip'});</script></div>
-                                        </div>
-                                        </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>";
+		$html_img8 = "<table height=\"100%\" width=\"98%\" cellspacing=\"2\" cellpadding=\"0\" style=\"font-family: Comic Sans MS; font-size: 16px;\">
+		<tbody><tr><td height=\"323px\" align=\"center\">           
+				<div id=\"player504837-parent\" style=\"text-align: center;\">
+				<div style=\"border-style: none; height: 240px; width: 320px; overflow: hidden; background-color: rgb(220, 220, 220);\"><script src=\"/main/inc/lib/swfobject/swfobject.js\" type=\"text/javascript\"></script>
+				<div id=\"player504837\"><a href=\"http://www.macromedia.com/go/getflashplayer\" target=\"_blank\">Get the Flash Player</a> to see this video.
+				<div id=\"player504837-config\" style=\"display: none; visibility: hidden; width: 0px; height: 0px; overflow: hidden;\">url=".api_get_path('WEB_COURSE_PATH').$courseRepository."/document/video/flv/OpenofficeSlideshow.flv width=320 height=240 loop=false play=false downloadable=false fullscreen=true displayNavigation=true displayDigits=true align=left playlistThumbs=false</div>
+				</div>
+				<script type=\"text/javascript\">
+		var s1 = new SWFObject(\"/main/inc/lib/mediaplayer/player.swf\",\"single\",\"320\",\"240\",\"7\");
+		s1.addVariable(\"width\",\"320\");
+		s1.addVariable(\"height\",\"240\");
+		s1.addVariable(\"autostart\",\"false\");
+		s1.addVariable(\"file\",\"".api_get_path('WEB_COURSE_PATH').$courseRepository.'/document/video/flv/OpenofficeSlideshow.flv'."\");
+		s1.addVariable(\"repeat\",\"false\");
+		s1.addVariable(\image\",\"\");
+		s1.addVariable(\"showdownload\",\"false\");
+		s1.addVariable(\"link\",\"".api_get_path('WEB_COURSE_PATH').$courseRepository.'/document/video/flv/OpenofficeSlideshow.flv'."\");
+		s1.addParam(\"allowfullscreen\",\"true\");
+		s1.addVariable(\"showdigits\",\"true\");
+		s1.addVariable(\"shownavigation\",\"true\");
+		s1.addVariable(\"logo\",\"\");
+		s1.write(\"player504837\");
+		</script></div></div><p>&nbsp;</p></td></tr></tbody></table>";
 
-		$html_img9 = "<table width='98%' height='100%' cellspacing='2' cellpadding='0' style='font-family: Comic Sans MS; font-size: 16px;'>
-                                <tbody>
-                                    <tr>
-                                        <td height='323px' align='center'>
-                                            <div style='text-align: center;' id='player939756-parent'>
-                                                <div style='border-style: none; height: 300px; width: 350px; overflow: hidden; background-color: rgb(220, 220, 220);' id='test'>
-                                                        <div style='display: none; visibility: hidden; width: 0px; height: 0px; overflow: hidden;' id='player939756-config'>url=/courses/".$courseRepository."/document/animations/SpinEchoSequence.swf width=350 height=300 loop=1 play=true</div>
-                                                        <embed width='350' vspace='' hspace='' height='300' align='' play='true' loop='true' bgcolor='' scale='showall' quality='high' src='/courses/".$courseRepository."/document/animations/SpinEchoSequence.swf' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash' controller='true'></embed>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>";
+		$html_img9 = "<table height=\"100%\" width=\"98%\" cellspacing=\"2\" cellpadding=\"0\" style=\"font-family: Comic Sans MS; font-size: 16px;\">
+		<tbody><tr><td height=\"323px\" align=\"center\"><embed height=\"300\" width=\"350\" menu=\"true\" loop=\"true\" play=\"true\" src=\"".api_get_path('WEB_COURSE_PATH').$courseRepository.'/document/animations/SpinEchoSequence.swf'."\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\"></embed></td></tr></tbody></table>";
 
-		$html_img10 = "<div style='text-align: center;' id='player833553-parent'>
-                                    <div style='border-style: none; height: 250px; width: 375px; overflow: hidden; background-color: rgb(220, 220, 220);' id='test'>
-                                        <div style='display: none; visibility: hidden; width: 0px; height: 0px; overflow: hidden;' id='player833553-config'>url=/courses/".$courseRepository."/document/video/flv/Bloedstolling.flv width=375 height=250 loop=1 play=true downloadable=false fullscreen=true</div>
-                                        <div class='thePlayer' id='player833553'>
-                                                <script src='".api_get_path(WEB_CODE_PATH)."inc/lib/fckeditor/editor/plugins/videoPlayer/jwplayer.min.js' type='text/javascript'></script>
-                                                <div id='player833553-parent2'>Loading the player ...</div>
-                                                <script type='text/javascript'>jwplayer('player833553-parent2').setup({flashplayer: '".api_get_path(WEB_CODE_PATH)."inc/lib/fckeditor/editor/plugins/videoPlayer/player.swf',autostart: 'true',repeat: 'always',file: '/courses/".$courseRepository."/document/video/flv/Bloedstolling.flv',height: 250,width: 375,skin: '".api_get_path(WEB_CODE_PATH)."inc/lib/fckeditor/editor/plugins/videoPlayer/skins/facebook.zip'});</script>
-                                        </div>
-                                    </div>
-                              </div>";
+		$html_img10 = "<p style=\"text-align: center;\">&nbsp;</p>
+		<div id=\"player28445-parent\" style=\"text-align: center;\">
+		<div style=\"border-style: none; height: 240px; width: 320px; overflow: hidden; background-color: rgb(220, 220, 220); margin-left: auto; margin-right: auto;\"><script src=\"/main/inc/lib/swfobject/swfobject.js\" type=\"text/javascript\"></script>
+		<div id=\"player28445\"><a target=\"_blank\" href=\"http://www.macromedia.com/go/getflashplayer\">Get the Flash Player</a> to see this video.
+		<div id=\"player28445-config\" style=\"display: none; visibility: hidden; width: 0px; height: 0px; overflow: hidden;\">url=".api_get_path('WEB_COURSE_PATH').$courseRepository."/document/video/flv/Bloedstolling.flv width=320 height=240 loop=false play=false downloadable=false fullscreen=true displayNavigation=true displayDigits=true align=center playlistThumbs=false</div>
+		</div><script type=\"text/javascript\">
+			var s1 = new SWFObject(\"/main/inc/lib/mediaplayer/player.swf\",\"single\",\"320\",\"240\",\"7\");
+			s1.addVariable(\"width\",\"320\");
+			s1.addVariable(\"height\",\"240\");
+			s1.addVariable(\"autostart\",\"false\");
+			s1.addVariable(\"file\",\"".api_get_path('WEB_COURSE_PATH').$courseRepository.'/document/video/flv/Bloedstolling.flv'."\");
+			s1.addVariable(\"repeat\",\"false\");
+			s1.addVariable(\"image\",\"\");
+			s1.addVariable(\"showdownload\",\"false\");
+			s1.addVariable(\"link\",\"".api_get_path('WEB_COURSE_PATH').$courseRepository.'/document/video/flv/Bloedstolling.flv'."\");
+			s1.addParam(\"allowfullscreen\",\"true\");
+			s1.addVariable(\"showdigits\",\"true\");
+			s1.addVariable(\"shownavigation\",\"true\");
+			s1.addVariable(\"logo\",\"\");
+			s1.write(\"player28445\");
+		</script></div></div>";
 
 		$html_img11 = "<table cellspacing=\"2\" cellpadding=\"0\" width=\"98%\" height=\"100%\" style=\"font-family: Comic Sans MS; font-size: 16px;\">
 		<tbody><tr><td align=\"center\" height=\"323px\"><img border=\"0\" align=\"absmiddle\" width=\"380\" vspace=\"0\" hspace=\"0\" height=\"143\" alt=\"sleeping_1.png\" src=\"".api_get_path('WEB_COURSE_PATH').$courseRepository.'/document/images/diagrams/templates/sleeping_1.png'."\" /></td></tr></tbody></table>";
@@ -2763,28 +2754,28 @@ function fill_Db_course($courseDbName, $courseRepository, $language,$default_doc
 		$html_img22 = "<table cellspacing=\"2\" cellpadding=\"0\" width=\"98%\" height=\"100%\" style=\"font-family: Comic Sans MS; font-size: 16px;\"><tbody><tr>  <td align=\"center\" height=\"323px\"><img border=\"0\" align=\"absmiddle\" width=\"380\" vspace=\"0\" hspace=\"0\" height=\"309\" alt=\"Board2_1.png\" src=\"".api_get_path('WEB_COURSE_PATH').$courseRepository.'/document/images/diagrams/templates/Board2_1.png'."\" /></td></tr></tbody></table>";
 
 		Database::query("INSERT INTO  `".$TABLEQUIZQUESTIONLIST . "` (`id`, `question`, `description`, `ponderation`, `position`, `type`, `picture`, `level`) VALUES
-		(1, '".lang2db(get_lang('DefaultQuizQuestion1')) ."', '".Database::escape_string($html_img1)."', 20.00, 1, 1, '', 1),
-		(2, '".lang2db(get_lang('DefaultQuizQuestion2')) ."', '".Database::escape_string($html_img2)."', 20.00, 2, 1, '', 1),
-		(3, '".lang2db(get_lang('DefaultQuizQuestion3')) ."', '".Database::escape_string($html_img3)."', 20.00, 3, 1, '', 1),
-		(4, '".lang2db(get_lang('DefaultQuizQuestion4')) ."', '".Database::escape_string($html_img4)."', 20.00, 4, 1, '', 1),
-		(5, '".lang2db(get_lang('DefaultQuizQuestion5')) ."', '".Database::escape_string($html_img5)."', 20.00, 5, 1, '', 1),
-		(6, '".lang2db(get_lang('DefaultQuizQuestion6')) ."', '".Database::escape_string($html_img6)."', 20.00, 6, 1, '', 1),
-		(7, '".lang2db(get_lang('DefaultQuizQuestion7')) ."', '".Database::escape_string($html_img7)."', 20.00, 7, 1, '', 1),
-		(8, '".lang2db(get_lang('DefaultQuizQuestion8')) ."', '".Database::escape_string($html_img8)."', 20.00, 8, 1, '', 1),
-		(9, '".lang2db(get_lang('DefaultQuizQuestion9')) ."', '".Database::escape_string($html_img9)."', 20.00, 9, 1, '', 1),
-		(10, '".lang2db(get_lang('DefaultQuizQuestion10')) ."', '".Database::escape_string($html_img10)."', 20.00, 10, 1, '', 1),
-		(11, '".lang2db(get_lang('DefaultQuizQuestion11')) ."', '".Database::escape_string($html_img11)."', 20.00, 11, 2, '', 1),	
-		(12, '".lang2db(get_lang('DefaultQuizQuestion12')) ."', '".Database::escape_string($html_img12)."', 20.00, 12, 8, '', 1),	
-		(13, '".lang2db(get_lang('DefaultQuizQuestion13')) ."', '".Database::escape_string($html_img13)."', 20.00, 13, 2, '', 1),	
-		(14, '".lang2db(get_lang('DefaultQuizQuestion14')) ."', '".Database::escape_string($html_img14)."', 20.00, 14, 8, '', 1),
-		(15, '".lang2db(get_lang('DefaultQuizQuestion15')) ."', '".Database::escape_string($html_img15)."', 60.00, 15, 3, '', 1),
-		(16, '".lang2db(get_lang('DefaultQuizQuestion16')) ."', '".Database::escape_string($html_img16)."', 20.00, 16, 3, '', 1),
-		(17, '".lang2db(get_lang('DefaultQuizQuestion17')) ."', '".Database::escape_string($html_img15)."', 50.00, 17, 3, '', 1),
-		(18, '".lang2db(get_lang('DefaultQuizQuestion18')) ."', '".Database::escape_string($html_img18)."', 30.00, 18, 3, '', 1),
-		(19, '".lang2db(get_lang('DefaultQuizQuestion19')) ."', '".Database::escape_string($html_img19)."', 250.00, 19, 3, '', 1),
-		(20, '".lang2db(get_lang('DefaultQuizQuestion20')) ."', '".Database::escape_string($html_img20)."', 20.00, 20, 5, '', 1),
-		(21, '".lang2db(get_lang('DefaultQuizQuestion21')) ."', '".Database::escape_string($html_img21)."', 20.00, 21, 5, '', 1),
-		(22, '".lang2db(get_lang('DefaultQuizQuestion22')) ."', '".Database::escape_string($html_img22)."', 20.00, 22, 5, '', 1),
+		(1, '".lang2db(get_lang('DefaultQuizQuestion1')) ."', '".$html_img1."', 20.00, 1, 1, '', 1),
+		(2, '".lang2db(get_lang('DefaultQuizQuestion2')) ."', '".$html_img2."', 20.00, 2, 1, '', 1),
+		(3, '".lang2db(get_lang('DefaultQuizQuestion3')) ."', '".$html_img3."', 20.00, 3, 1, '', 1),
+		(4, '".lang2db(get_lang('DefaultQuizQuestion4')) ."', '".$html_img4."', 20.00, 4, 1, '', 1),
+		(5, '".lang2db(get_lang('DefaultQuizQuestion5')) ."', '".$html_img5."', 20.00, 5, 1, '', 1),
+		(6, '".lang2db(get_lang('DefaultQuizQuestion6')) ."', '".$html_img6."', 20.00, 6, 1, '', 1),
+		(7, '".lang2db(get_lang('DefaultQuizQuestion7')) ."', '".$html_img7."', 20.00, 7, 1, '', 1),
+		(8, '".lang2db(get_lang('DefaultQuizQuestion8')) ."', '".$html_img8."', 20.00, 8, 1, '', 1),
+		(9, '".lang2db(get_lang('DefaultQuizQuestion9')) ."', '".$html_img9."', 20.00, 9, 1, '', 1),
+		(10, '".lang2db(get_lang('DefaultQuizQuestion10')) ."', '".$html_img10."', 20.00, 10, 1, '', 1),
+		(11, '".lang2db(get_lang('DefaultQuizQuestion11')) ."', '".$html_img11."', 20.00, 11, 2, '', 1),	
+		(12, '".lang2db(get_lang('DefaultQuizQuestion12')) ."', '".$html_img12."', 20.00, 12, 8, '', 1),	
+		(13, '".lang2db(get_lang('DefaultQuizQuestion13')) ."', '".$html_img13."', 20.00, 13, 2, '', 1),	
+		(14, '".lang2db(get_lang('DefaultQuizQuestion14')) ."', '".$html_img14."', 20.00, 14, 8, '', 1),
+		(15, '".lang2db(get_lang('DefaultQuizQuestion15')) ."', '".$html_img15."', 60.00, 15, 3, '', 1),
+		(16, '".lang2db(get_lang('DefaultQuizQuestion16')) ."', '".$html_img16."', 20.00, 16, 3, '', 1),
+		(17, '".lang2db(get_lang('DefaultQuizQuestion17')) ."', '".$html_img15."', 50.00, 17, 3, '', 1),
+		(18, '".lang2db(get_lang('DefaultQuizQuestion18')) ."', '".$html_img18."', 30.00, 18, 3, '', 1),
+		(19, '".lang2db(get_lang('DefaultQuizQuestion19')) ."', '".$html_img19."', 250.00, 19, 3, '', 1),
+		(20, '".lang2db(get_lang('DefaultQuizQuestion20')) ."', '".$html_img20."', 20.00, 20, 5, '', 1),
+		(21, '".lang2db(get_lang('DefaultQuizQuestion21')) ."', '".$html_img21."', 20.00, 21, 5, '', 1),
+		(22, '".lang2db(get_lang('DefaultQuizQuestion22')) ."', '".$html_img22."', 20.00, 22, 5, '', 1),
 		(23, '".lang2db(get_lang('DefaultQuestion18')) ."', '', 20.00, 23, 4, '', 1),
 		(24, '".lang2db(get_lang('DefaultQuestion19')) ."', '', 20.00, 24, 4, '', 1),
 		(25, '".lang2db(get_lang('DefaultQuizQuestion24')) ."', '', 20.00, 25, 4, '', 1),
@@ -3050,7 +3041,7 @@ function register_course($courseSysCode, $courseScreenCode, $courseRepository, $
 					title = '".Database :: escape_string($title) . "',
 					description = '".lang2db(get_lang('CourseDescription')) . "',
 					category_code = '".Database :: escape_string($category) . "',
-					visibility = '1',
+					visibility = '".$defaultVisibilityForANewCourse . "',
 					show_score = '',
 					disk_quota = '".api_get_setting('default_document_quotum') . "',
 					creation_date = now(),

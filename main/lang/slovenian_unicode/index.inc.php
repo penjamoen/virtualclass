@@ -40,6 +40,7 @@ $langMe = "*";
 $langSystemAnnouncements = "Obvestila sistema";
 $langHelpMaj = "Pomoč";
 $langNotRegistered = "Ni vpisan";
+$langAdmin = "Admin platforme";
 $Login = "Prijava";
 $langRegisterForCourse = "Vpis v nov tečaj";
 $langUnregisterForCourse = "Izpis iz tečajev";
@@ -69,5 +70,4 @@ $Messages = "Sporočila";
 $Inbox = "Prejeto";
 $Comppose = "Sestavi novo";
 $PendingInvitations = "Čakajoča povabila";
-$EditPublicPages = "Uredi domačo stran";
 ?>

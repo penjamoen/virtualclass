@@ -172,12 +172,11 @@ $IHaveReadAndAgree = "I have read and agree to the";
 $ByClickingRegisterYouAgreeTermsAndConditions = "By clicking on \'VALIDATE\' below you are agreeing to the Terms and Conditions";
 $User = "User";
 $LostPass = "Forgot your password ?";
-$EnterEmailUserAndWellSendYouPassword = "Enter your email address. We will send you a new password";
+$EnterEmailUserAndWellSendYouPassword = "Enter the username or the email address with which you registered and we will send your password.";
 $NoUserAccountWithThisEmailAddress = "There is no account with this user and/or e-mail address";
 $WithTheFollowingSettings = "with the following settings:";
 $IncorrectCaptcha = "Incorrect confirmation code";
 $CaptchaCheck = "Confirmation code";
 $CaptchaCheckExplanation = "You have to enter the confirmation code as displayed on the image above";
 $CouldNotResetPassword = "Could not reset password";
-$ALinkToRecoverYourPasswordHasBeenSentToYourEmailAddress = "A link to recover your password has been sent to your e-mail address";
 ?>

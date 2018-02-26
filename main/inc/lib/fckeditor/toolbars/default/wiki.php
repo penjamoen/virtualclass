@@ -11,7 +11,7 @@
 $config['ToolbarSets']['Normal'] = array(
 /*	array('NewPage','Templates','Save','PageBreak','Preview','FitWindow','-','PasteText','-','Undo','Redo','-','SelectAll','-','Find'),
 	array('Wikilink','Link','Unlink','Anchor'),
-	array('Image','videoPlayer',,'-','MP3','mimetex','asciimath'),
+	array('Image','flvPlayer','Flash','EmbedMovies','YouTube','MP3','mimetex','asciimath'),
 	array('Table','Smiley','SpecialChar','googlemaps'),
 	array('FontFormat','FontName','FontSize'),
 	array('Bold','Italic','Underline'),
@@ -20,7 +20,7 @@ $config['ToolbarSets']['Normal'] = array(
 
 	array('Save','FitWindow','-','PasteText'),
 	array('Wikilink','Link','Unlink','Anchor','Glossary'),
-	array('Image','imgmapPopup','MascotManager','MindmapManager','videoPlayer','MP3','mimetex','asciimath'),
+	array('Image','imgmapPopup','MascotManager','MindmapManager','flvPlayer','Flash','EmbedMovies','YouTube','MP3','mimetex','asciimath'),
 	array('Table','SpecialChar'),
 	array('Subscript','Superscript','-','OrderedList','UnorderedList','-','TextColor','BGColor'),
 	'/',

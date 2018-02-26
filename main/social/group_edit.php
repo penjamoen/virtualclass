@@ -6,7 +6,7 @@
  */
 
 // Language files that should be included
-$language_file = array('userInfo', 'group', 'admin');
+$language_file = array('userInfo');
 $cidReset = true;
 include '../inc/global.inc.php';
 $this_section = SECTION_SOCIAL;
@@ -19,22 +19,10 @@ require_once $libpath.'formvalidator/FormValidator.class.php';
 require_once $libpath.'image.lib.php';
 require_once $libpath.'mail.lib.inc.php';
 require_once $libpath.'social.lib.php';
-require_once $libpath.'group_portal_manager.lib.php';
-
-// delete group
-if (isset($_GET['action']) && $_GET['action'] == 'deletegroup') {
-    $gid = intval($_GET['id']);
-    if (api_is_platform_admin()) {
-        if (GroupPortalManager :: delete($gid)) {
-            header('Location: '.api_get_path(WEB_CODE_PATH).'social/groups.php?deleted=1');
-            exit;
-        } 
-    }
-}
 
 //$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.js" type="text/javascript" language="javascript"></script>'; //jQuery
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.js" type="text/javascript" language="javascript"></script>';
-$htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.css" type="text/css" media="projection, screen" />';
+$htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/thickbox.css" type="text/css" media="projection, screen">';
 
 $htmlHeadXtra[] = '<script type="text/javascript">
 var textarea = "";
@@ -140,16 +128,16 @@ if ( $form->validate()) {
 	$picture_uri = $group_data['picture_uri'];
 
 	if ($group['delete_picture']) {
-            $picture_uri = GroupPortalManager::delete_group_picture($group_id);
-	}
+		$picture_uri = GroupPortalManager::delete_group_picture($group_id);
+		}
 	elseif (!empty($picture['name'])) {
-            $picture_uri = GroupPortalManager::update_group_picture($group_id, $_FILES['picture']['name'], $_FILES['picture']['tmp_name']);
+		$picture_uri = GroupPortalManager::update_group_picture($group_id, $_FILES['picture']['name'], $_FILES['picture']['tmp_name']);
 	}
 
-	$name 		= $group['name'];
+	$name 			= $group['name'];
 	$description	= $group['description'];
-	$url 		= $group['url'];
-	$status 	= intval($group['visibility']);
+	$url 			= $group['url'];
+	$status 		= intval($group['visibility']);
 
 	GroupPortalManager::update($group_id, $name, $description, $url, $status, $picture_uri);
 	$tok = Security::get_token();
@@ -161,22 +149,17 @@ Display::display_header($tool_name);
 
 // Display actions
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('pixel.gif',get_lang('Home'),array('class' => 'toolactionplaceholdericon toolactionshome')).get_lang('Home').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('atom.png',get_lang('Home')).get_lang('Home').'</a>';
 // Only admins and teachers can create groups
 if (api_is_allowed_to_edit(null,true)) {
-    echo '<a href="'.api_get_path(WEB_PATH).'main/social/group_add.php">'.Display::return_icon('pixel.gif',get_lang('CreateAgroup'),array('class' => 'toolactionplaceholdericon toolactionsgroup')).get_lang('CreateAgroup').'</a>';
+    echo '<a href="'.api_get_path(WEB_PATH).'main/social/group_add.php">'.Display::return_icon('groupadd_32.png',get_lang('CreateAgroup')).get_lang('CreateAgroup').'</a>';
 }
-echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('pixel.gif',get_lang('MyGroups'),array('class' => 'toolactionplaceholdericon toolactiongroupimage')).get_lang('MyGroups').'</a>';
+echo '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('group.png',get_lang('MyGroups')).get_lang('MyGroups').'</a>';
 if (isset($_GET['id']) && $_GET['id'] >= 0) {
   $group_id = Security::remove_XSS($_GET['id']);
   $relation_group_title = get_lang('IamAnAdmin');
-  $links .=  '<a href="groups.php?id='.$group_id.'">'.Display::return_icon('pixel.gif',get_lang('MessageList'),array('class' => 'toolactionplaceholdericon toolsocialmessagelist')).get_lang('MessageList').'</a>';
-  $links .=  '<a href="group_edit.php?id='.$group_id.'">'.Display::return_icon('pixel.gif',get_lang('EditGroup'),array('class' => 'toolactionplaceholdericon tooledithome')).get_lang('EditGroup').'</a>';
-  
-  if (api_is_platform_admin()) {      
-      $links .=  '<a href="group_edit.php?action=deletegroup&id='.$group_id.'" onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset)).'\')) return false;" >'.Display::return_icon('pixel.gif',get_lang('DeleteGroup'),array('class' => 'toolactionplaceholdericon tooldeletegroup')).get_lang('Delete').'</a>';
-  }
-  
+  $links .=  '<a href="groups.php?id='.$group_id.'">'.				Display::return_icon('message_list.png', get_lang('MessageList')).get_lang('MessageList').'</a>';
+  $links .=  '<a href="group_edit.php?id='.$group_id.'">'.			Display::return_icon('group_edit.png', get_lang('EditGroup')).get_lang('EditGroup').'</a>';
   echo $links;
 }
 echo '</div>';
@@ -232,9 +215,9 @@ echo '</div>';
 echo '<div class="actions">';
 if (isset($_GET['id']) && $_GET['id'] >= 0) {
   $group_id = Security::remove_XSS($_GET['id']);
-  $links =  '<a href="group_members.php?id='.$group_id.'">'.		Display::return_icon('pixel.gif', get_lang('MemberList'), array('class' => 'actionplaceholdericon actiongroupstudentview')).get_lang('MemberList').'</a>';
-  $links .=  '<a href="group_waiting_list.php?id='.$group_id.'">'.	Display::return_icon('pixel.gif', get_lang('WaitingList'), array('class' => 'actionplaceholdericon actionlatestchanges')).get_lang('WaitingList').'</a>';
-  $links .=  '<a href="group_invitation.php?id='.$group_id.'">'.	Display::return_icon('pixel.gif', get_lang('InviteFriends'), array('class' => 'actionplaceholdericon actionadduser')).get_lang('InviteFriends').'</a>';
+  $links =  '<a href="group_members.php?id='.$group_id.'">'.		Display::return_icon('member_list.png', get_lang('MemberList')).get_lang('MemberList').'</a>';
+  $links .=  '<a href="group_waiting_list.php?id='.$group_id.'">'.	Display::return_icon('waiting_list.png', get_lang('WaitingList')).get_lang('WaitingList').'</a>';
+  $links .=  '<a href="group_invitation.php?id='.$group_id.'">'.	Display::return_icon('invitation_friend.png', get_lang('InviteFriends')).get_lang('InviteFriends').'</a>';
   echo $links;
 }
 echo '</div>';

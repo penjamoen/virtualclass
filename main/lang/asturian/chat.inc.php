@@ -30,7 +30,6 @@ $langLinkURL = "URL del enllaz";
 $langWelcomeToOnlineConf = "Bienveníu a la <b>Conferencia \'on line\'</b>";
 $langNoLinkAvailable = "Nun hai enllaz nengún";
 $langChat_reset_by = "Volver aniciar el chat";
-$langAdmin = "Alministración de la plataforma";
 $OrFile = "o archivu";
 $langCallSent = "Unvióse un pidimientu de chat. N\'espera d\'aprobación de la persona contautada.";
 $langChatDenied = "El so llamáu rechazóse. La persona contautada nun quier chatear con usté.";

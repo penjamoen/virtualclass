@@ -30,7 +30,6 @@ $langLinkURL = "Nuorodos URL";
 $langWelcomeToOnlineConf = "Sveiki atvykę į <b>Konferenciją</b>";
 $langNoLinkAvailable = "Nuorodų nėra";
 $langChat_reset_by = "išvalyti konferencijos žinutes";
-$langAdmin = "Sistemos administratorius";
 $OrFile = "Arba failas";
 $langCallSent = "Kvietimas išsiųstas. Laukiama patvirtinimo.";
 $langChatDenied = "Jūsų kvietimas atmestas.";

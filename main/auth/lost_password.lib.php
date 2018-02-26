@@ -54,7 +54,7 @@ function get_user_account_list($user, $reset = false, $by_username = false) {
 			$user_account_list = get_lang('YourRegistrationData')." : \n".get_lang('UserName').' : '.$user['loginName']."\n".get_lang('ResetLink').' : '.$reset_link.'';
 
 			if ($user_account_list) {
-				$user_account_list = $user_account_list;
+				$user_account_list = "\n------------------------\n" . $user_account_list;
 			}
 
 		} else {
@@ -70,7 +70,7 @@ function get_user_account_list($user, $reset = false, $by_username = false) {
 			}
 
 			if ($user_account_list) {
-				$user_account_list = implode("\n\n", $user_account_list);
+				$user_account_list = implode("\n------------------------\n", $user_account_list);
 			}
 		}
 
@@ -124,10 +124,9 @@ function send_password_to_user($user, $by_username = false) {
     $email_admin = api_get_setting('emailAdministrator');
 
 	if (@api_mail('', $email_to, $email_subject, $email_body, $sender_name, $email_admin) == 1) {
-		return get_lang('YourPasswordHasBeenEmailed');
+		Display::display_confirmation_message(get_lang('YourPasswordHasBeenEmailed'));
 	} else {
 		$message = get_lang('SystemUnableToSendEmailContact').' '.Display :: encrypted_mailto_link(api_get_setting('emailAdministrator'), get_lang('PlatformAdmin')).".</p>";
-                return $message;
 	}
 }
 
@@ -159,18 +158,20 @@ function handle_encrypted_password($user, $by_username = false) {
 
 	$secret_word = get_secret_word($email_to);
 	$email_body = get_lang('DearUser')." :\n".get_lang('password_request')."\n\n";
-	$email_body .= $user_account_list;
+	$email_body .= "-----------------------------------------------\n".$user_account_list."\n-----------------------------------------------\n\n";
 	$email_body .= get_lang('PasswordEncryptedForSecurity');
 	$emailBody .= " \n\n";
 	$emailBody .= get_lang('Formula').",\n".api_get_setting('administratorName')." ".api_get_setting('administratorSurname')."\n".get_lang('PlataformAdmin')." ".api_get_setting('siteName');
 	$sender_name = api_get_person_name(api_get_setting('administratorName'), api_get_setting('administratorSurname'), null, PERSON_NAME_EMAIL_ADDRESS);
-        $email_admin = api_get_setting('emailAdministrator');
+    $email_admin = api_get_setting('emailAdministrator');
 
 	if (@api_mail('', $email_to, $email_subject, $email_body, $sender_name, $email_admin) == 1) {
-		Display::display_confirmation_message(get_lang('ALinkToRecoverYourPasswordHasBeenSentToYourEmailAddress'), true, true);
+		//Display::display_confirmation_message(get_lang('YourPasswordHasBeenEmailed'));
+        echo get_lang('YourPasswordHasBeenEmailed');
 	} else {
 		$message = get_lang('SystemUnableToSendEmailContact').' '.Display :: encrypted_mailto_link(api_get_setting('emailAdministrator'), get_lang('PlatformAdmin')).".</p>";
-		Display::display_confirmation_message($message, true, true);
+		//Display::display_error_message($message, false);
+        echo $message;
 	}
 }
 
@@ -190,7 +191,7 @@ function get_secret_word($add) {
 function reset_password($secret, $id, $by_username = false) {
 	$tbl_user = Database::get_main_table(TABLE_MAIN_USER);
 	$id = intval($id);
-	$sql = "SELECT user_id AS uid, lastname AS lastName, firstname AS firstName, username AS loginName, password, email FROM ".$tbl_user." WHERE user_id='".Database::escape_string(Security::remove_XSS($id))."'";
+	$sql = "SELECT user_id AS uid, lastname AS lastName, firstname AS firstName, username AS loginName, password, email FROM ".$tbl_user." WHERE user_id=$id";
 	$result = Database::query($sql,__FILE__,__LINE__);
 	$num_rows = Database::num_rows($result);
 

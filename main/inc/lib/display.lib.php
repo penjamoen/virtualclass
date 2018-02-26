@@ -389,12 +389,12 @@ class Display {
 	* @param bool	Filter (true) or not (false)
 	* @return void
 	*/
-	public static function display_warning_message ($message, $filter=true, $force = false) {
+	public static function display_warning_message ($message,$filter=true) {
 		global $charset;
 		global $notification;
 
 		// no feedback messages
-		if (api_get_setting('display_feedback_messages') == 'false' && $force === false){
+		if (api_get_setting('display_feedback_messages') == 'false'){
 			return false;
 		}
 
@@ -412,7 +412,7 @@ class Display {
 						/*]]>*/
 						</style>';
 		}
-		echo '<div class="warning-message rounded">';
+		echo '<div class="warning-message">';
 		//Display :: display_icon('message_warning.png', get_lang('WarningMessage'), array ('style' => 'float:left; margin-right:10px;'));
 		/*
 		get_lang('WarningMessage', array ('style' => 'float:left; margin-right:10px;'));
@@ -428,13 +428,12 @@ class Display {
 	* @param bool	Filter (true) or not (false)
 	* @return void
 	*/
-	public static function display_confirmation_message ($message, $filter = true, $force = false) {
+	public static function display_confirmation_message ($message,$filter=true) {
 		global $charset;
 		global $notification;
 
 		// no feedback messages
-                // Always is necessary feedback, we are adding a lof code with divs(confirmation-message) and this is ugly when we have available a display function for make this, I added the force parameter that allow to use this function and avoid add more divs with class="confirmation-message"
-		if (api_get_setting('display_feedback_messages') == 'false' && $force === false){
+		if (api_get_setting('display_feedback_messages') == 'false'){
 			return false;
 		}
 
@@ -452,7 +451,7 @@ class Display {
 						/*]]>*/
 						</style>';
 		}
-		echo '<div class="confirmation-message rounded">';
+		echo '<div class="confirmation-message">';
 		//Display :: display_icon('message_confirmation.gif', get_lang('ConfirmationMessage'), array ('style' => 'float:left; margin-right:10px;margin-left:5px;'));
 		/*
 		get_lang('ConfirmationMessage', array ('style' => 'float:left; margin-right:10px;margin-left:5px;'));
@@ -471,12 +470,12 @@ class Display {
 	* @param bool	Filter (true) or not (false)
 	* @return void
 	*/
-	public static function display_error_message ($message, $filter = true, $force = false) {
+	public static function display_error_message ($message,$filter=true) {
 		global $charset;
 		global $notification;
 
 		// no feedback messages
-		if (api_get_setting('display_feedback_messages') == 'false' && $force === false){
+		if (api_get_setting('display_feedback_messages') == 'false'){
 			return false;
 		}
 
@@ -495,7 +494,7 @@ class Display {
 						/*]]>*/
 						</style>';
 		}
-		echo '<div class="error-message rounded">';
+		echo '<div class="error-message">';
 		//Display :: display_icon('message_error.png', get_lang('ErrorMessage'), array ('style' => 'float:left; margin-right:10px;'));
 		/*
 		get_lang('ErrorMessage', array ('style' => 'float:left; margin-right:10px;'));
@@ -795,7 +794,7 @@ class Display {
 	 * 		"quiz"
 	 * 		"scenario"
 	 * 		"templates"
-	 * @deprecated this code is not used anymore
+	 * 
 	 * @param action - string - action to display
 	 * @since October 2010
 	 * @return string, html code

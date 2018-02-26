@@ -19,7 +19,6 @@ require_once(api_get_path(SYS_CODE_PATH).'exercice/freeanswer.class.php');
 require_once(api_get_path(SYS_CODE_PATH).'exercice/hotspot.class.php');
 require_once(api_get_path(SYS_CODE_PATH).'exercice/matching.class.php');
 require_once(api_get_path(SYS_CODE_PATH).'exercice/hotspot.class.php');
-require_once(api_get_path(SYS_CODE_PATH).'exercice/reasoning.class.php');
 
 // answer types
 define('UNIQUE_ANSWER',		1);
@@ -32,7 +31,7 @@ define('FIB',				3);
 define('MATCHING',			4);
 define('FREE_ANSWER', 		5);
 define('HOTSPOT',			6);
-define('REASONING',			8);
+
 /**
  * The ScormQuestion class is a gateway to getting the answers exported 
  * (the question is just an HTML text, while the answers are the most important).
@@ -79,13 +78,9 @@ class ScormQuestion extends Question
 				$this->answer = new ScormAnswerHotspot($this->id); 
                 $this->answer->questionJSId = $this->js_id;
 				break;
-                        case REASONING : 
-				$this->answer = new ScormAnswerMultipleChoice($this->id, false);
-                $this->answer->questionJSId = $this->js_id;
-				break;
 			default :
 				$this->answer = null;
-                                $this->answer->questionJSId = $this->js_id;
+                $this->answer->questionJSId = $this->js_id;
 				break;
 		}
 
@@ -199,29 +194,9 @@ class ScormAnswerMultipleChoice extends Answer
 	    	$js .= 'questions_answers_correct['.$this->questionJSId.'] = new Array('.substr($jstmpc,0,-1).');'."\n";
 	    	$js .= 'questions_types['.$this->questionJSId.'] = \'mcma\';'."\n";
 	    	$js .= $jstmpw;
-        }  elseif ($type == REASONING) {
-        		//To this items we show the ThisItemIsNotExportable
-        	    $qId = $this->questionJSId;
-		    	$js = '';
-		    	$html = '<tr><td colspan="2"><table width="100%">' . "\n";
-				// some javascript must be added for that kind of questions
-				$html .= '<tr>' . "\n"
-						.	'<td>' . "\n"
-				    	. '<textarea name="question_'.$qId.'_free" id="question_'.$qId.'_exact" rows="20" cols="100"></textarea>' . "\n"
-				    	.	'</td>' . "\n"
-				    	.	'</tr>' . "\n";
-				$html .= '</table></td></tr>' . "\n";
-				// currently the exact answers cannot be displayed, so ignore the textarea
-				$html = '<tr><td colspan="2">'.get_lang('ThisItemIsNotExportable').'</td></tr>';
-				$js .= 'questions_answers['.$this->questionJSId.'] = new Array();'."\n";
-		    	$js .= 'questions_answers_correct['.$this->questionJSId.'] = new Array();'."\n";
-		    	$js .= 'questions_types['.$this->questionJSId.'] = \'exact\';'."\n";
-				$jstmpw = 'questions_answers_ponderation['.$this->questionJSId.'] = new Array();'."\n";
-				$jstmpw .= 'questions_answers_ponderation['.$this->questionJSId.'][0] = 0;'."\n";
-		    	$jstmpw .= 'questions_answers_ponderation['.$this->questionJSId.'][1] = 0;'.";\n";
-		    	$js .= $jstmpw;
-		        return array($js,$html);
-        } else {
+        }
+        else
+        {
         	//$questionTypeLang = get_lang('MultipleChoiceUniqueAnswer');
         	$id = 1;
         	$jstmp = '';

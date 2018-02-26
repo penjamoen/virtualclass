@@ -80,7 +80,7 @@ $limitOfDisplayedLogins = 25; // number of logins to display
 include(api_get_path(LIBRARY_PATH)."statsUtils.lib.inc.php");
 
 ////////////// OUTPUT //////////////////////
-Display::display_tool_header($nameTools, 'Tracking');
+Display::display_header($nameTools,"Tracking");
 api_display_tool_title($nameTools);
 
 /*

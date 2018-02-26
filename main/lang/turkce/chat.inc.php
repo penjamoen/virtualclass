@@ -30,7 +30,6 @@ $langLinkURL = "Ba&#287;lant&#305; URL";
 $langWelcomeToOnlineConf = "<b>Canl&#305; Konferansa Ho&#351;geldiniz</b>";
 $langNoLinkAvailable = "Kullan&#305;labilir ba&#287;lant&#305; bulunmuyor";
 $langChat_reset_by = "sohbeti s&#305;f&#305;rla";
-$langAdmin = "Platform Yöneticisi";
 $OrFile = "Veya dosya";
 $langCallSent = "Sohbet iste&#287;iniz gönderildi, cevap bekleniyor.";
 $langChatDenied = "Ça&#287;r&#305;n&#305;z kabul edilmedi.";

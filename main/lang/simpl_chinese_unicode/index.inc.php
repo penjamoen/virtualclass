@@ -36,6 +36,7 @@ $langMe = "我";
 $langSystemAnnouncements = "学校通知";
 $langHelpMaj = "帮助";
 $langNotRegistered = "未注册";
+$langAdmin = "系统管理";
 $langRegisterForCourse = "注册课程";
 $langUnregisterForCourse = "注销课程";
 $langCombinedCourse = "组合课程 -";

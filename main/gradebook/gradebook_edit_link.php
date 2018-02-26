@@ -1,27 +1,34 @@
 <?php
+/*
+==============================================================================
+	Dokeos - elearning and course management software
 
-/* For licensing terms, see /dokeos_license.txt */
+	Copyright (c) 2006 Dokeos S.A.
+	Copyright (c) 2007 Stijn Konings, Bert Stepp� (Hogeschool Gent)
 
-// name of the language file that needs to be included
+	For a full list of contributors, see "credits.txt".
+	The full license can be read in "license.txt".
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	See the GNU General Public License for more details.
+
+	Contact address: Dokeos, 44 rue des palais, B-1030 Brussels, Belgium
+	Mail: info@dokeos.com
+==============================================================================
+*/
 $language_file = array('gradebook','link');
-
-// setting the help
-$help_content = 'links';
-
-// including the global Dokeos file
+//$cidReset = true;
 require_once ('../inc/global.inc.php');
-
-// Including additional libraries.
 require_once ('lib/be.inc.php');
 require_once ('lib/gradebook_functions.inc.php');
 require_once ('lib/fe/linkform.class.php');
 require_once ('lib/fe/linkaddeditform.class.php');
-
-// Access restriciton
 api_block_anonymous_users();
 block_students();
-
-// additional javascript
 $htmlHeadXtra[] = '<script>
   $(document).ready(function (){
     $("div.label").attr("style","width: 100%;text-align:left");
@@ -29,11 +36,8 @@ $htmlHeadXtra[] = '<script>
     $("div.formw").attr("style","width: 100%;");
   });
 </script>';
-
-// variables
-$course_table 		= Database::get_main_table(TABLE_MAIN_COURSE);
-$tbl_grade_links 	= Database :: get_main_table(TABLE_MAIN_GRADEBOOK_LINK);
-
+$course_table = Database::get_main_table(TABLE_MAIN_COURSE);
+$tbl_grade_links = Database :: get_main_table(TABLE_MAIN_GRADEBOOK_LINK);
 //selected name of database
 $my_db_name=get_database_name_by_link_id(Security::remove_XSS($_GET['editlink']));
 $tbl_forum_thread = Database :: get_course_table(TABLE_FORUM_THREAD,$my_db_name);
@@ -58,10 +62,10 @@ if ($form->validate()) {
 	$link->set_visible(empty ($values['visible']) ? 0 : 1);
 	$link->save();
 	//Update weight into forum thread
-	$sql_t='UPDATE '.$tbl_forum_thread.' SET thread_weight='.$values['weight'].' WHERE thread_id=(SELECT ref_id FROM '.$tbl_grade_links.' where id='.Database::escape_string(Security::remove_XSS($_GET['editlink'])).' and type=5);';
+	$sql_t='UPDATE '.$tbl_forum_thread.' SET thread_weight='.$values['weight'].' WHERE thread_id=(SELECT ref_id FROM '.$tbl_grade_links.' where id='.Security::remove_XSS($_GET['editlink']).' and type=5);';
 	Database::query($sql_t);
 	//Update weight into student publication(work)
-	$sql_t='UPDATE '.$tbl_work.' SET weight='.$values['weight'].' WHERE id=(SELECT ref_id FROM '.$tbl_grade_links.' where id='.Database::escape_string(Security::remove_XSS($_GET['editlink'])).' and type=3);';
+	$sql_t='UPDATE '.$tbl_work.' SET weight='.$values['weight'].' WHERE id=(SELECT ref_id FROM '.$tbl_grade_links.' where id='.Security::remove_XSS($_GET['editlink']).' and type=3);';
 	Database::query($sql_t);	
 	header('Location: '.$_SESSION['gradebook_dest'].'?linkedited=&selectcat=' . $link->get_category_id());
 	exit;
@@ -74,7 +78,7 @@ $interbreadcrumb[] = array (
 
 Display::display_tool_header(get_lang('EditLink'));
 echo '<div class="actions">';
-echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.$linkcat.'&amp;'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.get_lang('Gradebook'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackTo').' '.get_lang('Gradebook').'</a>';
+echo '<a href="'.$_SESSION['gradebook_dest'].'?selectcat='.$linkcat.'&amp;'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png',get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook')).get_lang('Back').' '.get_lang('To').' '.get_lang('Gradebook').'</a>';
 echo '</div>';
 
 echo '<div id="content">';

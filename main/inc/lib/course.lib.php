@@ -1657,22 +1657,11 @@ class CourseManager {
 		$course_list = array();
 		$codes = array();
 
-		//we filter the courses from the URL
-		$join_access_url = $where_access_url = '';
-		global $_configuration;
-		if ($_configuration['multiple_access_urls'] == true) {
-			$access_url_id = api_get_current_access_url_id();
-			if ($access_url_id != -1) {
-				$tbl_url_course = Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_COURSE);
-				$join_access_url = "LEFT JOIN $tbl_url_course url_rel_course ON url_rel_course.course_code= c.code";
-				$where_access_url = " AND access_url_id = $access_url_id ";
-			}
-		}
 		$result = Database::query('SELECT c.code,c.db_name,c.title,cru.user_course_cat as category_id
 				FROM '.Database::get_main_table(TABLE_MAIN_COURSE).' c
 				INNER JOIN '.Database::get_main_table(TABLE_MAIN_COURSE_USER).' cru
-				ON c.code=cru.course_code '.$join_access_url.'
-				WHERE cru.user_id='.$user_id.' '.$where_access_url.' ORDER BY cru.sort', __FILE__, __LINE__);
+				ON c.code=cru.course_code
+				WHERE cru.user_id='.$user_id.' ORDER BY cru.sort', __FILE__, __LINE__);
 
 		while ($row = Database::fetch_array($result, 'ASSOC')) {
 			$course_list[] = $row;
@@ -2050,19 +2039,7 @@ class CourseManager {
 	function get_total_of_courses_in_user_category ($cat_id) {
 		// Database table definition
 		$tbl_course_rel_user = Database::get_main_table(TABLE_MAIN_COURSE_USER);
-		//we filter the courses from the URL
-		$join_access_url = $where_access_url = '';
-		global $_configuration;
-		if ($_configuration['multiple_access_urls'] == true) {
-			$access_url_id = api_get_current_access_url_id();
-			if ($access_url_id != -1) {
-				$tbl_url_course = Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_COURSE);
-				$join_access_url = "LEFT JOIN $tbl_url_course url_rel_course ON url_rel_course.course_code= cru.course_code";
-				$where_access_url = " AND access_url_id = $access_url_id ";
-			}
-		}
-		$sql = "SELECT count(*) as total FROM $tbl_course_rel_user cru $join_access_url WHERE cru.user_id='".Database::escape_string(api_get_user_id())."' AND cru.user_course_cat ='".Database::escape_string($cat_id)."' $where_access_url";
-
+		$sql = "SELECT count(*) as total FROM $tbl_course_rel_user WHERE user_id='".Database::escape_string(api_get_user_id())."' AND user_course_cat ='".Database::escape_string($cat_id)."'";
 		$rs = Database::query($sql, __FILE__,__LINE__);
 		$row = Database::fetch_array($rs);
 		return $row['total'];
@@ -2092,28 +2069,5 @@ class CourseManager {
      }
      return $course_list;
     }
-    /**
-     * Get a list of Course Ids where the user is registerd
-     * @param int The user ID
-     * @return array List of course Ids for a platform user
-     */
-	function get_course_id_list_by_user_id ($user_id) {
-	   if (api_is_platform_admin()) {
-         $course_user_table = Database::get_main_table(TABLE_MAIN_COURSE);
-         $course_code = "code";
-         $where = "";
-	   } else {
-         $course_user_table = Database::get_main_table(TABLE_MAIN_COURSE_USER);
-         $course_code = "course_code";
-         $where = " WHERE user_id = '".Database::escape_string($user_id)."'";
-	   }
-       
-       $sql = "SELECT $course_code AS course_code FROM $course_user_table $where ";
-       $rs = Database::query($sql, __FILE__, __LINE__);
-       $course_id_list = array();
-       while ($row = Database::fetch_array($rs)) {
-         $course_id_list[] = $row['course_code'];
-       }
-       return $course_id_list;
-	}
+
 } //end class CourseManager

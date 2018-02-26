@@ -40,6 +40,7 @@ $langMe = "jeg";
 $langSystemAnnouncements = "Systemmeldinger";
 $langHelpMaj = "Hjelp";
 $langNotRegistered = "Ikke registrert";
+$langAdmin = "Administrator";
 $Login = "Logg inn";
 $langRegisterForCourse = "Melde på nytt kurs";
 $langUnregisterForCourse = "Melde av kurs";

@@ -114,15 +114,4 @@ $GroupsPerUser = "Grupos pelo usuário";
 $NoCategory = "Nenhuma categoria";
 $JoinGroup = "Integrar o grupo";
 $GroupMembership = "Membro do Grupo";
-$Tutoring = "Tutoria";
-$Collaboration = "Colaboração";
-$Competition = "Competição";
-$ScenarioText1 = "Os alunos interagem só com o tutor. Não ocorre nenhuma interação entre os alunos.";
-$ScenarioText2 = "Os alunos interagem com o tutor e entre si. E eles podem ver (mas não editar) documentos de outros grupos.";
-$ScenarioText3 = "Os alunos interagem com o tutor e entre si. E eles não podem ver documentos de outros grupos.";
-$ScenarioTools1 = "Ferramentas: Tarefas + e-mail Privado.";
-$ScenarioTools2 = "Ferramentas: Tarefas + e-mail Privado + Chat + Forum";
-$ScenarioTools3 = "Ferramentas: Tarefas + e-mail Privado + Chat + Forum";
-$NewGroupCreated = "Novo Grupo criado automaticamente para dar espaço para novos usuários";
-$GroupChat = "Chat";
 ?>

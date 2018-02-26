@@ -58,40 +58,15 @@ $this_section=SECTION_COURSES;
 
 api_protect_course_script(true);
 //$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.js" type="text/javascript" language="javascript"></script>'; //jQuery
-//$htmlHeadXtra[] = '<link rel="stylesheet" href="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/thickbox.css" type="text/css" media="screen" />';
-//$htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/thickbox.js"></script>';
-$htmlHeadXtra[] = '<script type="text/javascript" >
-$("a.thickbox").live("click", function() {
-    var url = this.href;
-    var dialog = $(".dialog");
-    if ($(".dialog").length == 0) {
-        dialog = $("<div id=\"dialog\" style=\"display:hidden\"></div>").appendTo("body");
-    }
-
-    // load remote content
-    dialog.load(
-            url,
-            {},
-            function(responseText, textStatus, XMLHttpRequest) {
-                dialog.html(responseText);
-                dialog.dialog({
-                modal: true,
-                width:500,
-                title:"'.get_lang('IntegrateDocInCourse').'"
-                });
-            }
-        );
-    //prevent the browser to follow the link
-    return false;
-});
-    </script>';
+$htmlHeadXtra[] = '<link rel="stylesheet" href="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/thickbox.css" type="text/css" media="screen" />';
+$htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/thickbox.js"></script>';
 //session
 if(isset($_GET['id_session']))
 $_SESSION['id_session'] = Security::remove_XSS($_GET['id_session']);
 
-//create certificates folder
+//create directory certificates
 $course_id=api_get_course_id();
-DocumentManager::create_specifics_folder_in_course($course_id,'certificates');
+DocumentManager::create_directory_certificate_in_course($course_id);
 
 //show preview
 if (isset($_GET['curdirpath']) && $_GET['curdirpath']=='/certificates' && isset($_GET['set_preview']) && $_GET['set_preview']==strval(intval($_GET['set_preview']))) {
@@ -110,7 +85,7 @@ if (isset($_GET['curdirpath']) && $_GET['curdirpath']=='/certificates' && isset(
 
 		$path_image_in_dokeos_main=api_get_path(WEB_IMG_PATH);
 		$new_content_html=str_replace('/main/img/',$path_image_in_dokeos_main,$new_content_html);
-		echo '<a href="javascript:window.print();">'.Display::return_icon('pixel.gif', get_lang('Print'), array('class' => 'actionplaceholdericon actionprint')).' ' . get_lang('Print') . '</a>';
+		echo '<a href="javascript:window.print();"><img src="../img/printmgr.gif" alt="' . get_lang('Print') . '" /> ' . get_lang('Print') . '</a>';
 		print_r($new_content_html);
 		exit;
 	}
@@ -155,7 +130,7 @@ if(isset($_GET['curdirpath']) && $_GET['curdirpath']!='') {
 } else {
 	$curdirpath = '/';
 }
-$curdirpathurl = $curdirpath;
+$curdirpathurl = urlencode($curdirpath);
 
 //I'm in the certification module?
 $is_certificate_mode = DocumentManager::is_certificate_mode($curdirpath);
@@ -214,7 +189,9 @@ if(isset($_SESSION['_gid']) && $_SESSION['_gid']!='')
 		$req_gid = '';
 	}
 	$_SESSION['group_member_with_upload_rights'] = $group_member_with_upload_rights;
-} else {
+}
+else
+{
 	$to_group_id = 0;
 	$req_gid = '';
 }
@@ -235,15 +212,17 @@ require_once api_get_path(LIBRARY_PATH) . 'fileUpload.lib.php';
 //-----------------------------------------------------------
 //check the path
 //if the path is not found (no document id), set the path to /
-if(!DocumentManager::get_document_id($_course,$curdirpath)) {
+if(!DocumentManager::get_document_id($_course,$curdirpath))
+{
 	$curdirpath = '/';
 	//urlencoded version
 	$curdirpathurl = '%2F';
 }
 //if they are looking at group documents they can't see the root
-if($to_group_id!=0 && $curdirpath=='/') {
+if($to_group_id!=0 && $curdirpath=='/')
+{
 	$curdirpath = $group_properties['directory'];
-	$curdirpathurl = Security::remove_XSS($group_properties['directory']);
+	$curdirpathurl = urlencode($group_properties['directory']);
 }
 //-----------------------------------------------------------
 
@@ -266,10 +245,12 @@ $course_quota = DocumentManager::get_course_quota();
  */
 
 //-------------------------------------------------------------------//
-if (isset($_GET['action']) && $_GET['action']=="download") {
-	$my_get_id = Security::remove_XSS($_GET['id']);
+if (isset($_GET['action']) && $_GET['action']=="download")
+{
+	$my_get_id=Security::remove_XSS($_GET['id']);
 	//check if the document is in the database
-	if (!DocumentManager::get_document_id($_course,$my_get_id)) {
+	if(!DocumentManager::get_document_id($_course,$my_get_id))
+	{
 		//file not found!
 		header('HTTP/1.0 404 Not Found');
 		$error404 = '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">';
@@ -300,14 +281,15 @@ if (isset($_GET['action']) && $_GET['action']=="download") {
 //-------------------------------------------------------------------//
 
 //download of an completed folder
-if (isset($_GET['action']) && $_GET['action'] == "downloadfolder") {
-    include_once 'downloadfolder.inc.php';
+if(isset($_GET['action']) && $_GET['action']=="downloadfolder")
+{
+	include('downloadfolder.inc.php');
 }
 //-------------------------------------------------------------------//
 
 // slideshow inititalisation
 $_SESSION['image_files_only']='';
-$image_files_only = array();
+$image_files_only='';
 
 /*
  -----------------------------------------------------------
@@ -322,10 +304,11 @@ if ($is_certificate_mode) {
 
 //------interbreadcrumb for the current directory root path
 
-$dir_array = explode("/",$curdirpath);
-$array_len = count($dir_array);
+$dir_array=explode("/",$curdirpath);
+$array_len=count($dir_array);
 
 if (!$is_certificate_mode) {
+
 	if ($array_len > 1) {
 		if(empty($_SESSION['_gid'])) {
 			$url_dir='document.php?&curdirpath=/';
@@ -384,9 +367,12 @@ if($to_group_id !=0) //add group name after for group documents
 $fck_attribute['Width'] = '100%';
 $fck_attribute['Height'] = '300';
 $fck_attribute['ToolbarSet'] = 'Introduction';
-if(!empty($_SESSION['_gid'])) {
+if(!empty($_SESSION['_gid']))
+{
 	Display::display_introduction_section(TOOL_DOCUMENT.$_SESSION['_gid']);
-} else {
+}
+else
+{
 	Display::display_introduction_section(TOOL_DOCUMENT);
 }
 $fck_attribute = null; // Clearing this global variable immediatelly after it has been used.
@@ -442,7 +428,7 @@ if($is_allowed_to_edit || $group_member_with_upload_rights) // TEACHER ONLY
 				update_db_info("update", $_POST['move_file'], $_POST['move_to']."/".basename($_POST['move_file']));
 				//set the current path
 				$curdirpath = $_POST['move_to'];
-				$curdirpathurl = Security::remove_XSS($_POST['move_to']);
+				$curdirpathurl = urlencode($_POST['move_to']);
 				Display::display_confirmation_message(get_lang('DirMv'));
 			}
 			else
@@ -481,23 +467,35 @@ if($is_allowed_to_edit || $group_member_with_upload_rights) // TEACHER ONLY
 				DocumentManager::remove_attach_certificate ($course_id,$default_certificate_id);
 			}
 			//	Display::display_confirmation_message(get_lang('DocDeleted'));
-			if(isset($_GET['type']) && $_GET['type'] == 'media') {
-				echo "<script>window.location.href='mediabox_view.php?".api_get_cidReq()."&curdirpath=".urldecode($_GET['curdirpath'])."&slide_id=".Security::remove_XSS($_GET['slide_id'])."&msg=DEL'</script>";
-			} elseif(isset($_GET['type']) && $_GET['type'] == 'list') {
+			if(isset($_GET['type']) && $_GET['type'] == 'media')
+			{
+				echo "<script>window.location.href='mediabox_view.php?".api_get_cidReq()."&curdirpath=".urldecode($_GET['curdirpath'])."&slide_id=".$_GET['slide_id']."&msg=DEL'</script>";
+			}
+			elseif(isset($_GET['type']) && $_GET['type'] == 'list')
+			{
 				Display::display_confirmation_message(get_lang('DocDeleted'));
-			} else {
-				echo "<script>window.location.href='slideshow.php?".api_get_cidReq()."&curdirpath=".urldecode($_GET['curdirpath'])."&slide_id=".Security::remove_XSS($_GET['slide_id'])."&msg=DEL'</script>";
+			}
+			else
+			{
+				echo "<script>window.location.href='slideshow.php?".api_get_cidReq()."&curdirpath=".urldecode($_GET['curdirpath'])."&slide_id=".$_GET['slide_id']."&msg=DEL'</script>";
 			}
 		} else {
 			//	Display::display_error_message(get_lang('DocDeleteError'));
-			if(isset($_GET['type']) && $_GET['type'] == 'media') {
-				echo "<script>window.location.href='mediabox_view.php?".api_get_cidReq()."&curdirpath=".urldecode($_GET['curdirpath'])."&slide_id=".Security::remove_XSS($_GET['slide_id'])."&msg=ERR'</script>";
-			} elseif(isset($_GET['type']) && $_GET['type'] == 'list') {
+			if(isset($_GET['type']) && $_GET['type'] == 'media')
+			{
+				echo "<script>window.location.href='mediabox_view.php?".api_get_cidReq()."&curdirpath=".urldecode($_GET['curdirpath'])."&slide_id=".$_GET['slide_id']."&msg=ERR'</script>";
+			}
+			elseif(isset($_GET['type']) && $_GET['type'] == 'list')
+			{
 				Display::display_confirmation_message(get_lang('DocDeleteError'));
-			} else {
-				echo "<script>window.location.href='slideshow.php?".api_get_cidReq()."&curdirpath=".urldecode($_GET['curdirpath'])."&slide_id=".Security::remove_XSS($_GET['slide_id'])."&msg=ERR'</script>";
+			}
+			else
+			{
+				echo "<script>window.location.href='slideshow.php?".api_get_cidReq()."&curdirpath=".urldecode($_GET['curdirpath'])."&slide_id=".$_GET['slide_id']."&msg=ERR'</script>";
 			}
 		}
+
+
 	}
 
 	if( isset($_POST['action']))
@@ -518,11 +516,9 @@ if($is_allowed_to_edit || $group_member_with_upload_rights) // TEACHER ONLY
 					}
 				}
 
-				foreach($_POST['path'] as $index => $path) {
-                                    // These folders are not allowed be removed, because we need that folders in the mediabox tool
-					if (strcmp($path,'/audio')===0 or strcmp($path,'/flash')===0 or strcmp($path,'/images')===0 or strcmp($path,'/shared_folder')===0 
-                                                or strcmp($path,'/video')===0 or strcmp($path,'/screencasts')===0 or strcmp($path,'/animations')===0 
-                                                or strcmp($path,'/mascot')===0 or strcmp($path,'/mindmap')===0 or strcmp($path,'/podcasts')===0 or strcmp($path,'/photos')===0) {
+				foreach($_POST['path'] as $index => $path)
+				{
+					if (strcmp($path,'/audio')===0 or strcmp($path,'/flash')===0 or strcmp($path,'/images')===0 or strcmp($path,'/shared_folder')===0 or strcmp($path,'/video')===0) {
 						continue;
 					} else {
 						$delete_document = DocumentManager::delete_document($_course,$path,$base_work_dir);
@@ -758,7 +754,8 @@ if(isset($_GET['add_to_course']) && isset($_POST['doc_add'])) {
 	}
 	$query = "SELECT max(display_order) AS disporder FROM ".$tbl_lp_item." WHERE lp_id=".$lp_id;
 	$result = api_sql_query($query, __FILE__, __LINE__);
-	while($obj = Database::fetch_object($result)) {
+	while($obj = Database::fetch_object($result))
+	{
 		$display_order = $obj->disporder;
 	}
 
@@ -773,7 +770,7 @@ if(isset($_GET['add_to_course']) && isset($_POST['doc_add'])) {
 						display_order) VALUES(" . $lp_id. ",
 						'document',
 						'".($maxid+1)."',
-						'" . Database::escape_string($doc_name) . "',
+						'" . $doc_name . "',
 						'',
 						'" . Database::escape_string($doc_id) . "',
 						'" . $maxid . "',
@@ -798,12 +795,36 @@ if (isset($_GET['curdirpath']) && $_GET['curdirpath']=='/certificates' && isset(
  */
 
 $docs_and_folders = DocumentManager::get_all_document_data($_course,$curdirpath,$to_group_id,NULL,$is_allowed_to_edit || $group_member_with_upload_rights);
+?>
+
+<?php
 $folders = DocumentManager::get_all_document_folders($_course,$to_group_id,$is_allowed_to_edit || $group_member_with_upload_rights);
-if ($folders === false) {
+if ($folders===false) {
 	$folders = array();
 }
+?>
+
+<?php
 //	echo '<div class="actions">';
 echo '<div>';
+
+/* GO TO PARENT DIRECTORY */
+//	if ($curdirpath!= '/' && $curdirpath!=$group_properties['directory']&& !$is_certificate_mode)  {
+?>
+<!--	 <a href="<?php echo api_get_self(); ?>?<?php echo api_get_cidreq();?>&curdirpath=<?php echo urlencode((dirname($curdirpath)=='\\')?'/':dirname($curdirpath)).$req_gid ?>">
+				<img src="../img/folder_up.gif" border="0" title="<?php echo get_lang('Up'); ?>" alt="" />
+				<?php echo get_lang('Up'); ?></a>&nbsp;-->
+				<?php
+				//	}
+
+				//	if ($is_certificate_mode & $curdirpath!= '/certificates')  {
+				?>
+<!--	 <a href="<?php echo api_get_self(); ?>?<?php echo api_get_cidreq();?>&curdirpath=<?php echo urlencode((dirname($curdirpath)=='\\')?'/':dirname($curdirpath)).$req_gid ?>">
+				<img src="../img/folder_up.gif" border="0" title="<?php echo get_lang('Up'); ?>" alt="" />
+				<?php echo get_lang('Up'); ?></a>&nbsp;-->
+				<?php
+				//	}
+
 
 				if (isset($docs_and_folders) && is_array($docs_and_folders)) {
 					//*************************************************************************************************
@@ -854,7 +875,6 @@ echo '<div>';
 
 						//icons (clickable)
 						//$row[]= build_document_icon_tag($id['filetype'],$id['path']);
-                                                
 						$row[] = create_document_link($curdirpath, $http_www,  $document_name,  $id['path'], $id['filetype'],  $size, $id['visibility'], true, $id['id']);
 
 						//document title with hyperlink
@@ -873,15 +893,19 @@ echo '<div>';
 
 
 						//admins get an edit column
-						if ($is_allowed_to_edit || $group_member_with_upload_rights) {
+						if ($is_allowed_to_edit || $group_member_with_upload_rights)
+						{
 							$is_template = (isset($id['is_template'])?$id['is_template']:false);
 							// if readonly, check if it the owner of the file or if the user is an admin
-							if ($id['insert_user_id'] == $_user['user_id'] || api_is_platform_admin()) {
+							if ($id['insert_user_id'] == $_user['user_id'] || api_is_platform_admin())
+							{
 								$edit_icons = build_edit_icons($curdirpath,$id['filetype'],$id['path'],$id['visibility'],$key, $is_template,0, $_GET['selectcat']);
 								$move_icons = build_move_icons($curdirpath,$id['filetype'],$id['path'],$id['visibility'],$key, $is_template,0, $_GET['selectcat']);
 								$visible_icons = build_visible_icons($curdirpath,$id['filetype'],$id['path'],$id['visibility'],$key, $is_template,0, $_GET['selectcat']);
 								$template_icons = build_template_icons($curdirpath,$id['filetype'],$id['path'],$id['visibility'],$key, $is_template,0);
-							} else {
+							}
+							else
+							{
 								$edit_icons = build_edit_icons($curdirpath,$id['filetype'],$id['path'],$id['visibility'],$key, $is_template,$id['readonly'] , $_GET['selectcat']);
 								$move_icons = build_move_icons($curdirpath,$id['filetype'],$id['path'],$id['visibility'],$key, $is_template,$id['readonly'] , $_GET['selectcat']);
 								$visible_icons = build_visible_icons($curdirpath,$id['filetype'],$id['path'],$id['visibility'],$key, $is_template,$id['readonly'] , $_GET['selectcat']);
@@ -907,14 +931,12 @@ echo '<div>';
 						/*$row[] = $last_edit_date;
 						$row[] = $size;
 						$total_size=$total_size+$size;*/
-                                                // Add certificate icons
-                                                if ($curdirpath == '/certificates') {
+                        // Add certificate icons
+                        if ($curdirpath == '/certificates') {
 						  $row[] = build_certificate_icons($curdirpath,$id['filetype'],$id['path'],$id['visibility'],$key, $is_template,0, $_GET['selectcat']);
 						  $row[] = build_certificate_icons($curdirpath,$id['filetype'],$id['path'],$id['visibility'],$key, $is_template,0, $_GET['selectcat'],'preview');
-                                                }
-                                                $row[] = $last_edit_date;
-						$row[] = $size;
-                                                $sortable_data[] = $row;
+                        }
+                        $sortable_data[] = $row;
 					}
 					//*******************************************************************************************
 				}
@@ -928,45 +950,68 @@ echo '<div>';
 
 				// ACTIONS
 				echo '<div class="actions rel">';
-				if(!empty($_SESSION['_gid'])){
-					echo '<a href="../group/group_space.php?cidReq='.$_course[id].'&group_id='.$_SESSION['_gid'].'">'.Display::return_icon('pixel.gif', get_lang('Groups'), array('class' => 'toolactionplaceholdericon toolactionback')).'</a>';
-				}
 				if ($is_allowed_to_edit || $group_member_with_upload_rights) {
 					if (!$is_certificate_mode) {
-						echo '<a href="create_document.php?'.api_get_cidreq().'&amp;dir='.$curdirpathurl.$req_gid.'">'.Display::return_icon('pixel.gif', get_lang('CreateDoc'), array('class' => 'toolactionplaceholdericon toolactiondocumentcreate')).' '.get_lang('CreateDoc').'</a>';
-						echo '<a href="template_gallery.php?doc=N&dir='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('Templates'), array('class' => 'toolactionplaceholdericon toolactiontemplates')).' '.get_lang('Templates').'</a>';
-						echo '<a href="mediabox.php?curdirpath='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('Mediabox'), array('class' => 'toolactionplaceholdericon toolactionmediabox')).' '.get_lang('Mediabox').'</a>';
-						echo '<a href="upload.php?'.api_get_cidreq().'&amp;path='.$curdirpathurl.$req_gid.'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('UplUpload'), array('class' => 'toolactionplaceholdericon toolactionupload')).' '.get_lang('UplUpload').'</a>';
+						echo '<a href="create_document.php?'.api_get_cidreq().'&amp;dir='.$curdirpathurl.$req_gid.'">'.Display::return_icon('create_doc.png',get_lang('CreateDoc')).' '.get_lang('CreateDoc').'</a>';
+					    echo '<a href="template_gallery.php?doc=N&dir='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('tools_wizard_48.png',get_lang('Templates')).' '.get_lang('Templates').'</a>';
+					    echo '<a href="mediabox.php?curdirpath='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'">'.Display::return_icon('mediaplayer.png',get_lang('Mediabox')).' '.get_lang('Mediabox').'</a>';
+					    echo '<a href="upload.php?'.api_get_cidreq().'&amp;path='.$curdirpathurl.$req_gid.'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('up.png',get_lang('UplUpload')).' '.get_lang('UplUpload').'</a>';
 					} else {
-						echo '<a href="create_document.php?'.api_get_cidreq().'&amp;dir='.$curdirpathurl.$req_gid.'&amp;certificate=true&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('CreateCertificate'), array('class' => 'toolactionplaceholdericon toolactiondocumentcreate')).' '.get_lang('CreateCertificate').'</a>';
-						echo '<a href="template_gallery.php?doc=N&dir='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'&amp;certificate=true&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('Templates'), array('class' => 'toolactionplaceholdericon toolactiontemplates')).' '.get_lang('Templates').'</a>';
-						echo '<a href="mediabox.php?&amp;certificate=true&amp;curdirpath='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('Mediabox'), array('class' => 'toolactionplaceholdericon toolactionmediabox')).' '.get_lang('Mediabox').'</a>';
-						echo '<a href="upload.php?'.api_get_cidreq().'&amp;certificate=true&amp;path='.$curdirpathurl.$req_gid.'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('UplUpload'), array('class' => 'toolactionplaceholdericon toolactionupload')).' '.get_lang('UplUpload').'</a>';
+						echo '<a href="create_document.php?'.api_get_cidreq().'&amp;dir='.$curdirpathurl.$req_gid.'&amp;certificate=true&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('create_doc.png',get_lang('CreateCertificate')).' '.get_lang('CreateCertificate').'</a>';
+					    echo '<a href="template_gallery.php?doc=N&dir='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'&amp;certificate=true&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('tools_wizard_48.png',get_lang('Templates')).' '.get_lang('Templates').'</a>';
+					    echo '<a href="mediabox.php?&amp;certificate=true&amp;curdirpath='.$curdirpathurl.$req_gid.'&'.  api_get_cidreq().'">'.Display::return_icon('mediaplayer.png',get_lang('Mediabox')).' '.get_lang('Mediabox').'</a>';
+					    echo '<a href="upload.php?'.api_get_cidreq().'&amp;certificate=true&amp;path='.$curdirpathurl.$req_gid.'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('up.png',get_lang('UplUpload')).' '.get_lang('UplUpload').'</a>';
 					}
+					// these actions have been moved to the bottom bar
+					/*
+					$upload_name =  get_lang('UplUploadDocument');
+					if ($is_certificate_mode) {
+					$upload_name =	 get_lang('UploadCertificate');
+					}
+
+					echo '<a href="upload.php?'.api_get_cidreq().'&amp;path='.$curdirpathurl.$req_gid.'&amp;selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('submit_file.gif',$upload_name).' '.$upload_name.'</a>';
+
+					// create a folder and view the quota
+					if (!$is_certificate_mode) {
+
+					echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;curdirpath='.$curdirpathurl.$req_gid.'&amp;createdir=1' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('folder_new.gif',get_lang('CreateDir')).' '.get_lang('CreateDir').'</a>';
+					echo '<a href="quota.php?'.api_get_cidreq().'">'.Display::return_icon('statistics.png',get_lang('ShowCourseQuotaUse')).' '.get_lang('ShowCourseQuotaUse').'</a>';
+					}
+
+					// download the current folder as a zip file
+					if ($docs_and_folders!=null) {
+					global $total_size;
+					if ($total_size!=0){
+					if (!$is_certificate_mode) {
+					echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=downloadfolder">'.Display::return_icon('zip_save.gif',get_lang('SaveZip')).' '.get_lang('SaveZip').'</a>';
+					}
+					}
+					}
+					*/
 					// Slideshow by Patrick Cool, May 2004
-					include_once("document_slideshow.inc.php");
+					include("document_slideshow.inc.php");
 					if ($image_present) {
-						echo '<a href="slideshow.php?'.api_get_cidreq().'&curdirpath='.$curdirpathurl.'&slide_id=all">'.Display::return_icon('pixel.gif', get_lang('ViewSlideshow'), array('class' => 'toolactionplaceholdericon toolactiongallery')).' '.get_lang('ViewSlideshow').'</a>';
+						echo '<a href="slideshow.php?'.api_get_cidreq().'&curdirpath='.$curdirpathurl.'">'.Display::return_icon('gallery.png',get_lang('ViewSlideshow')).' '.get_lang('ViewSlideshow').'</a>';
 					}
 				}
 
 				// Slide show is allowed for students, security cheks are in api_protect_course_script at the begin of this file
-				if (!api_is_allowed_to_edit() && !$group_member_with_upload_rights) {
-					include_once("document_slideshow.inc.php");
+				if (!api_is_allowed_to_edit()) {
+					include("document_slideshow.inc.php");
 					if ($image_present) {
-						echo '<a href="slideshow.php?'.api_get_cidreq().'&curdirpath='.$curdirpathurl.'">'.Display::return_icon('pixel.gif', get_lang('ViewSlideshow'), array('class' => 'toolactionplaceholdericon toolactiongallery')).' '.get_lang('ViewSlideshow').'</a>';
+						echo '<a href="slideshow.php?'.api_get_cidreq().'&curdirpath='.$curdirpathurl.'">'.Display::return_icon('gallery.png',get_lang('ViewSlideshow')).' '.get_lang('ViewSlideshow').'</a>';
 					}
 				}
 				// directory navigation: one folder up, quickly select a certain directory
 				if ($curdirpath!= '/'&& $curdirpath!=$group_properties['directory'])
 				{
-					echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;curdirpath='.urlencode((dirname($curdirpath)=='\\')?'/':dirname($curdirpath)).$req_gid.'">'.Display::return_icon('pixel.gif', get_lang('Up'), array('class' => 'toolactionplaceholdericon toolactionfolderup')).' '.get_lang('Up').'</a>';
+					echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;curdirpath='.urlencode((dirname($curdirpath)=='\\')?'/':dirname($curdirpath)).$req_gid.'">'.Display::return_icon('folder_up.png',get_lang('Up')).' '.get_lang('Up').'</a>';
 					if (!$is_certificate_mode && !api_is_allowed_to_edit()){
 						echo build_directory_selector($folders,$curdirpath,(isset($group_properties['directory'])?$group_properties['directory']:array()),true);
 					}
 				}
 
-				echo '<a href="search.php?action=search&'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('Search'), array('class' => 'toolactionplaceholdericon toolactionsearch')).' '.get_lang('Search').'</a>';
+				echo '<a href="search.php?action=search&'.api_get_cidreq().'">'.Display::return_icon('search.png').' '.get_lang('Search').'</a>';
 
 				// closing the actions
 				echo '</div>';
@@ -984,21 +1029,21 @@ echo '<div>';
 				$column_show[]=1;
 				$column_show[]=1;
 				$column_show[]=1;
-                                // Show columns
+                // Show columns
 				if ($is_allowed_to_edit || $group_member_with_upload_rights) {
 					$column_show[]=1;
 					$column_show[]=1;
 					$column_show[]=1;
 					$column_show[]=1;
 					$column_show[]=1;
-                                        if ($curdirpath == '/certificates') {
+                    if ($curdirpath == '/certificates') {
 					  $column_show[]=1; // Display certificate column in the sortetable
 					  $column_show[]=1; // Display preview column in the sortetable
-                                        }
+                    }
 				}
 				//$column_show[]=0;
 
-		/*		$column_order=array();
+				$column_order=array();
 
 				if ( count($row) == 10 ) {
 					$column_order[]=1;
@@ -1011,20 +1056,6 @@ echo '<div>';
 					$column_order[]=2;
 					$column_order[]=7;
 					$column_order[]=4;
-				}*/
-
-				$column_order=array();				
-				if ( count($row) == 12 ) {					
-					$column_order[]=1;
-					$column_order[]=2;
-					$column_order[]=11;
-					$column_order[]=10;
-					$column_order[]=9;
-				} else if ( count($row) == 7 ) {					
-					$column_order[]=1;
-					$column_order[]=2;
-					$column_order[]=11;
-					$column_order[]=8;
 				}
 
 				$default_column = $is_allowed_to_edit ? 2 : 1;
@@ -1034,7 +1065,8 @@ echo '<div>';
 
 				$query_vars['curdirpath'] = $curdirpath;
 
-				if(isset($_SESSION['_gid'])){
+				if(isset($_SESSION['_gid']))
+				{
 					$query_vars['gidReq'] = $_SESSION['_gid'];
 				}
 				$query_vars['cidReq'] = api_get_course_id();
@@ -1048,13 +1080,13 @@ echo '<div>';
 				//$table->set_header($column++,get_lang('Type'));
 				//$table->set_header($column++,get_lang('Name'));
 				$table->set_header($column++,get_lang('Type'),true,"","style='width:5%;align:center;'");
-				$table->set_header($column++,get_lang('Name'), true, 'align="left"');
+				$table->set_header($column++,get_lang('Name'));
 
 				//$column_header[] = array(get_lang('Comment'),true);  => display comment under the document name
 				//$table->set_header($column++,get_lang('Size'));
 				//$table->set_header($column++,get_lang('Date'));
-				$table->set_header($column++,get_lang('Size'),true,"align='left' style='width:5%;align:left;'");
-				$table->set_header($column++,get_lang('Date'), true,"","align='center' style='width:12%;align:center;'");
+				$table->set_header($column++,get_lang('Size'),true,"","style='width:5%;align:center;'");
+				$table->set_header($column++,get_lang('Date'),true,"","style='width:12%;align:center;'");
 				//admins get an edit column
 				if ($is_allowed_to_edit || $group_member_with_upload_rights) {
 					$table->set_header($column++,get_lang('Edit'),true,"","style='width:5%;align:center;'");
@@ -1062,11 +1094,11 @@ echo '<div>';
 					$table->set_header($column++,get_lang('Visible'),true,"","style='width:5%;align:center;'");
 					$table->set_header($column++,get_lang('Template'),false,"","style='width:8%;align:center;'");
 					$table->set_header($column++,get_lang('Learnpath'),false,"","style='width:8%;align:center;'");
-                                        // Header for certificate icons
-                                        if ($curdirpath == '/certificates') {
+                    // Header for certificate icons
+                    if ($curdirpath == '/certificates') {
 					  $table->set_header($column++,get_lang('Certificate'),false,"","style='width:8%;align:center;'");
 					  $table->set_header($column++,get_lang('Preview'),false,"","style='width:8%;align:center;'");
-                                        }
+                    }
 				}
 
 				//actions on multiple selected documents
@@ -1080,7 +1112,7 @@ echo '<div>';
 				}
 
 				// start the content div
-				echo '<div id="content">';
+				echo '<div id="content_with_secondary_actions">';
 				// Currently we have many icons in the top bar,due to this we have the folder list in the content page
 				if ($curdirpath!= '/'&& $curdirpath!=$group_properties['directory']) {
 					if (!$is_certificate_mode && api_is_allowed_to_edit()){
@@ -1097,11 +1129,11 @@ echo '<div>';
 				// bottom actions
 				echo '	<div class="actions">';
 				if ($is_allowed_to_edit) {
-					echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpathurl.$req_gid.'&amp;createdir=1">'.Display::return_icon('pixel.gif', get_lang('CreateDir'), array('class' => 'actionplaceholdericon actioncreatefolder')).' '.get_lang('CreateDir').'</a>';
+					echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpathurl.$req_gid.'&amp;createdir=1"><img style="vertical-align:middle;" src="../img/folder_new1.png" border="0" title="'.get_lang('CreateDir').' alt ="" />'.get_lang("CreateDir").'</a>';
 				}
-				echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=downloadfolder">'.Display::return_icon('pixel.gif', get_lang('SaveZip'), array('class' => 'actionplaceholdericon actionsavezip')).' '.get_lang('SaveZip').'</a>';
+				echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=downloadfolder"><img src="../img/go-jump.png" border="0" title="'.get_lang('SaveZip').' '.get_lang('SaveZip').'" alt="" />'.get_lang('SaveZip').'</a>';
 				if ($is_allowed_to_edit) {
-					echo '<a href="quota.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('DiskQuota'), array('class' => 'actionplaceholdericon actionquota')).'  '.get_lang("DiskQuota").'</a>';
+					echo '<a href="quota.php?'.api_get_cidreq().'"><img src="../img/diskquota.png" border="0" title="'.get_lang("DiskQuota").'" />'.get_lang("DiskQuota").'</a>';
 				}
 				echo '</div>';
 

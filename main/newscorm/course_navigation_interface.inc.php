@@ -16,7 +16,7 @@
 */
  function getMenuItemsFromToc($tocs = array(), $currentId = 1){
  		if(empty($tocs) || !is_array($tocs))		return false;
-		 		
+ 		
  		$menuItems = array();
  		 		
 		for( $i=0 ; $i < count($tocs) ; $i++ ){
@@ -25,9 +25,8 @@
 
 			$item ['href']= "#";
 			$item ['onclick']= 'javascript:switch_item('.$currentId.', '.$tocs[$i]['id'].'); hideCourseMenu(); return false;';
-			$item ['text']= $tocs[$i]['title'];			
+			$item ['text']= $tocs[$i]['title'];
 			$item ['class'] = str_replace(" ", '_', $tocs[$i]['status']) .  $currentClass;
-			$item ['id'] = $tocs[$i]['id'];
 
 			$menuItems []= $item;
 		}
@@ -195,15 +194,9 @@
 		$onclick =	(array_key_exists('onclick', $item))	?	$item['onclick'] 	: "javascript:return false;";
 		$href =		(array_key_exists('href', $item))		?	$item['href'] 		: "#";
 		$class = 	(array_key_exists('class', $item))		?	$item['class'] 		: "";
-		if (isset($_GET['action']) && $_GET['action']=="view") {// Allow display resource on click event
-			$html.= "<li id=\"toggle_menu_item_".$item['id']."\" onclick='$onclick' class='$class'>";
-			$html.= "<a href='$href' onclick='$onclick'>$text</a>";
-        } else {// Allow display just informative items
-           $html.= "<li  class='$class'>";
-           $html.= "<span style='cursor:default;'>$text</span>";
-        }
-		/*$html.= "<li onclick='$onclick' class='$class'>";
-		$html.= "<a href='$href' onclick='$onclick'>$text</a>";*/
+		
+		$html.= "<li onclick='$onclick' class='$class'>";
+		$html.= "<a href='$href' onclick='$onclick'>$text</a>";
 		$html.= "</li>";
 	}
 	$html .= "</ul>";

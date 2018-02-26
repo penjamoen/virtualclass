@@ -84,9 +84,10 @@ $interbreadcrumb[]= array ("url"=>"lp_controller.php?action=list", "name"=> get_
 $interbreadcrumb[]= array ("url"=>"#", "name"=> get_lang("_add_learnpath"));
 
 Display::display_tool_header(null,'Path');
+
 echo	'<div class="actions">';
 //echo	'<a href="lp_controller.php?cidReq='.$_course['sysCode'].'">'.Display::return_icon('scorm.gif',get_lang('ReturnToLearningPaths')).' '.get_lang('ReturnToLearningPaths').'</a>';
-echo		'<a href="lp_controller.php?cidReq='.$_course['sysCode'].'">'.Display::return_icon('pixel.gif', get_lang('ReturnToLearningPaths'), array('class' => 'toolactionplaceholdericon toolactionback')).''.get_lang('ReturnToLearningPaths').'</a>';
+echo		'<a href="lp_controller.php?cidReq='.$_course['sysCode'].'">'.Display::render_author_action("author").'</a>';
 echo	'</div>';
 
 Display::display_normal_message(get_lang('AddLpIntro'),false);
@@ -103,13 +104,7 @@ echo '<form class="orange" method="post" style="margin:70px 0 0 20%;">';
 //	echo '<label for="idTitle"><span class="form_required">*</span> '.get_lang('LPName').'</label>';
 	echo '<label for="idTitle" class="title">'.get_lang('LPName').'</label>';
 	echo '<input id="idTitle" name="learnpath_name" type="text" size="50" />';
-	if (api_get_setting('search_enabled') == 'true' && extension_loaded('xapian')) {
-            //TODO: include language file
-            echo '<input type="hidden" name="index_document" value="1"/>'.
-             '<input type="hidden" name="language" value="' . api_get_setting('platformLanguage') . '"/>';
-            echo '<div class="label"><br/>'.get_lang('SearchKeywords').':</div>';
-            echo '<div class="formw"><textarea cols="47" rows="2" name="search_terms"></textarea></div>';
-        }
+	
 	echo '<button class="save" style="margin-top:15px;" type="submit"/>'.get_lang('CreateLearningPath').'</button>';
 //	echo '<input type="submit" value="'.get_lang('CreateLearningPath').'" />';
 	echo '<input name="post_time" type="hidden" value="' . time() . '" />';

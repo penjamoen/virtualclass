@@ -65,7 +65,7 @@ if ( isset($_REQUEST['user_friend']) ) {
                 ?>
                 <div id="display_response_id" style="height:200px;">
 					<?php echo api_xml_http_response_encode(get_lang('AddPersonalMessage'));  ?> :<br /><br />				
-					<textarea id="txt_area_invite" rows="5" cols="40"><?php echo get_lang('DefaultInvitationContent').api_get_setting('siteName'); ?></textarea><br /><br />
+					<textarea id="txt_area_invite" rows="5" cols="40"></textarea><br /><br />
  					<button class="save" type="button" value="<?php echo api_xml_http_response_encode(get_lang('SocialAddToFriends')); ?>" onclick="action_database_panel('4','<?php echo $userfriend_id;?>')" >
  					<?php echo api_xml_http_response_encode(get_lang('SendInvitation')) ?></button>
  				</div>

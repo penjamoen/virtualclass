@@ -30,7 +30,6 @@ $langLinkURL = "URL poveznice";
 $langWelcomeToOnlineConf = "Dobrodošli na <b>Konferenciju uživo</b>";
 $langNoLinkAvailable = "Poveznice nedostupne";
 $langChat_reset_by = "resetiraj chat";
-$langAdmin = "nadzornik platforme";
 $OrFile = "Ili datoteka";
 $langCallSent = "Poziv za chat je poslan. Pri&#269;ekajte odobrenje sugovornika.";
 $langChatDenied = "Sugovornik je odbio poziv.";

@@ -380,20 +380,15 @@ class scorm extends learnpath {
 	    	}
 	     	$myname = $oOrganization->get_name();
 	     	$myname = str_replace("'",' ', $myname);
-
-                //session_id
-                $session_id = api_get_session_id();
-
 	     	//$this->manifest_encoding = 'UTF-8';
 	     	global $charset;
 	     	if(!empty($charset) && !empty($this->manifest_encoding) && $this->manifest_encoding != $charset){
 	     		$myname = api_convert_encoding($myname,$charset,$this->manifest_encoding);
 	     	}
-			$sql = "INSERT INTO $new_lp (lp_type, name, ref, description, path, force_commit, default_view_mod, default_encoding, js_lib,display_order,session_id)" .
-					"VALUES (2,'".Database::escape_string($myname)."', '".Database::escape_string($oOrganization->get_ref())."','','".Database::escape_string($this->subdir)."', 0, 'embedded', '".$this->manifest_encoding."','scorm_api.php',$dsp,$session_id)";
+			$sql = "INSERT INTO $new_lp (lp_type, name, ref, description, path, force_commit, default_view_mod, default_encoding, js_lib,display_order)" .
+					"VALUES (2,'".Database::escape_string($myname)."', '".Database::escape_string($oOrganization->get_ref())."','','".Database::escape_string($this->subdir)."', 0, 'embedded', '".$this->manifest_encoding."','scorm_api.php',$dsp)";
 			if($this->debug>1){error_log('New LP - In import_manifest(), inserting path: '. $sql,0);}
-			
-                        $res = Database::query($sql,__FILE__,__LINE__);
+			$res = Database::query($sql,__FILE__,__LINE__);
 			$lp_id = Database::insert_id();
 			$this->lp_id = $lp_id;
 			//insert into item_property
@@ -678,7 +673,6 @@ class scorm extends learnpath {
 			if($this->debug>=1){error_log('New LP - Changing dir to '.$course_sys_dir.$new_dir,0);}
 			$saved_dir = getcwd();
 			chdir($course_sys_dir.$new_dir);
-			ini_set('memory_limit', '512M');
 			$unzippingState = $zipFile->extract();
 			for($j=0;$j<count($unzippingState);$j++)
 			{
@@ -758,7 +752,7 @@ class scorm extends learnpath {
 	 	if($lp!=0){
 	 		$tbl_lp = Database::get_course_table(TABLE_LP_MAIN);
 	 		$sql = "UPDATE $tbl_lp SET content_local = '$proxy' WHERE id = ".$lp;
-                        $res = Database::query($sql);
+	 		$res = Database::query($sql);
 	 		return $res;
 	 	}else{
 	 		return false;

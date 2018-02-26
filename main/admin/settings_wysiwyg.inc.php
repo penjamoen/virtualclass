@@ -139,7 +139,6 @@ $buttons[] = '';
 $additional_buttons[]=array('name'=>'imgmapPopup',	'image'=>api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/imgmap/images/icon_silver.gif');
 $additional_buttons[]=array('name'=>'MP3',			'image'=>api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/MP3/mp3.gif');
 $additional_buttons[]=array('name'=>'flvPlayer',	'image'=>api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/flvPlayer/flvPlayer.gif');
-$additional_buttons[]=array('name'=>'videoPlayer',	'image'=>api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/videoPlayer/videoPlayer.png');
 $additional_buttons[]=array('name'=>'YouTube',		'image'=>api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/youtube/youtube.gif');
 $additional_buttons[]=array('name'=>'googlemaps',	'image'=>api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/googlemaps/images/mapIcon.gif');
 

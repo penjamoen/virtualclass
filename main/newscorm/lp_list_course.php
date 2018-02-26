@@ -37,50 +37,8 @@ $htmlHeadXtra[] =
 		else																		return false;
 	}
 </script>";
-
-$htmlHeadXtra[] = '
-  <script>
-        $(function(){
-         $("<div id=\'hdnTypeSort\'><input type=\'hidden\' name=\'hdnType\' value=\'CourseModuleSortable\'></div>").insertBefore("body");         
-         $( "#GalleryContainer" ).sortable({
-            connectWith: "#GalleryContainer",
-            stop: function(event) {
-               $this=$(event.target);
-               $("input[name=\'hdnItemOrder[]\']").each(function(i) {
-                 $("input[name=\'hdnItemOrder[]\']").eq(i).val(i+1);
-               });
-               var query = $("#hdnTypeSort input").add($this.find("input[name=\'hdnItemId[]\']")).add($this.find("input[name=\'hdnItemOrder[]\']")).serialize();                        
-               $.ajax({
-                  type: "GET",
-                  url: "lp_ajax_order_items_scenario.php?"+query,
-                  success: function(msg){}
-              })                                                
-            }
-       });
-       $( ".imageBox" ).addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" );
-       $( "#GalleryContainer" ).disableSelection();
-      });
-  </script>
-';
-
-$htmlHeadXtra[] = '
-    <style>
-        .ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; background: transparent !important; }
-    </style>
-';
-//$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.ui.all.js" type="text/javascript" language="javascript"></script>';
+$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.ui.all.js" type="text/javascript" language="javascript"></script>';
 }
-// Unregister the session if it exists
-if(isset($_SESSION['lpobject'])) {
-  $oLP = unserialize($_SESSION['lpobject']);
-    if(is_object($oLP)){
-      api_session_unregister('oLP');
-      api_session_unregister('lpobject');
-    }
-  } elseif (is_null($_SESSION['lpobject']) && isset($_SESSION['oLP'])) {
-    api_session_unregister('oLP');
- }
- 
 // setting the breadcrumbs
 $interbreadcrumb[] = array ("url"=>"overview.php", "name"=> get_lang('OverviewOfAllCodeTemplates'));
 $interbreadcrumb[] = array ("url"=>"coursetool.php", "name"=> get_lang('CourseTool'));
@@ -209,23 +167,24 @@ function savelporder(str)
 	if (api_failure::get_last_failure())	    Display::display_normal_message(api_failure::get_last_failure());
 
 	echo '<div class="actions">';
-		echo '<a class="" href="'.api_get_self().'?'.api_get_cidReq().'">'.Display::return_icon('pixel.gif', get_lang('Author'), array('class' => 'toolactionplaceholdericon toolactionauthor')).'</a>';
+		echo '<a class="" href="'.api_get_self().'?'.api_get_cidReq().'">'.Display::return_icon('author.png'). get_lang("Author").'</a>';
 	echo '</div>';
 }
 
 /*---------------------------------------------------------------------------------------------------------------------------------*/
 ?>
 <div id="content">
+
 	<?php	
+		
+		
 		$list = new LearnpathList(api_get_user_id());
 		$flat_list = $list->get_flat_list();
 		if (is_array($flat_list) && !empty($flat_list))
 		{
-			echo '<div id="GalleryContainer">';	
-                        $i = 0;
+			echo '<div id="GalleryContainer">';			
 			foreach ($flat_list as $id => $details)
 			{
-                                if (intval($details['lp_visibility']) == 0) { continue; }
 				$name = Security::remove_XSS($details['lp_name']);
 				$progress_bar = learnpath::get_db_progress($id,api_get_user_id());	
 				
@@ -238,21 +197,19 @@ function savelporder(str)
 				$display_name = $name;
 				}
  				$html = "<div class=\"border\" style='width:100%;height:18px;'><div class=\"progressbar\" style='width:$progress_bar;height:20px;'></div></div>";
+
 				echo '<div class="imageBox" id="imageBox'.$id.'">
                   <div class="imageBox_theImage" style="'.$drag_style.'"><div class="quiz_content_actions" style="width:200px;height:80%;">';
-                                echo '<input type="hidden" name="hdnItemId[]" value="'.$id.'">
-                                      <input type="hidden" name="hdnItemOrder[]" value="'.($i+1).'">';
                 echo '<table width="100%">';
 				echo '<tr style="height:50px;"><td colspan="2" align="center">'.$display_name.'</td></tr>';
-				echo '<tr><td>&nbsp;</td></tr></table><table width="100%">';
-				echo '<tr><td width="80%" valign="top">'.$html.'</td><td align="center"><a href="lp_controller.php?'.api_get_cidReq().'&action=view&lp_id='.$id.'">'.Display::return_icon('pixel.gif', get_lang('View'), array('class' => 'actionplaceholdericon actionviewmodule')).'</a></td></tr>';
+				echo '<tr><td>&nbsp;</td></tr>';
+				echo '<tr><td width="80%" valign="top">'.$html.'</td><td align="center"><a href="lp_controller.php?'.api_get_cidReq().'&action=view&lp_id='.$id.'"><img src="../img/exaile_old22.png"></a></td></tr>';
 				echo '</table>';				
 				echo '</div></div>';
 				if (api_is_allowed_to_edit()) {
-				  echo '<div align="center"><a href="lp_controller.php?'.api_get_cidReq().'&action=add_item&type=step&lp_id='.$id.'">'.Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')).'</a></div>';
+				  echo '<div><a href="lp_controller.php?'.api_get_cidReq().'&action=add_item&type=step&lp_id='.$id.'"><img style="padding-left:190px;" src="../img/edit_link.png" ></a></div>';
 				}
 				echo '</div>';
-                                $i++;
 			}
 			echo '</div>
 		<div id="insertionMarker">

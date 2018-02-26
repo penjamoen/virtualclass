@@ -92,17 +92,6 @@ function saveDelineationHotspot(question_id, hotspot_id, coordinates)
 	document.frm_exercise["hotspot_coordinates["+hotspot_id+"]"].value = coordinates;
 	document.frm_exercise["hotspot_type["+hotspot_id+"]"].value = "delineation";
 }
-
-function saveOARHotspot(question_id, hotspot_id, coordinates)
-
-{
-
-	document.frm_exercise["hotspot_coordinates["+hotspot_id+"]"].value = coordinates;
-
-	document.frm_exercise["hotspot_type["+hotspot_id+"]"].value = "oar";
-
-}
-
 function jsdebug(debug_string)
 {
 	alert(debug_string);

@@ -64,17 +64,13 @@ jQuery(document).ready( function($) {
 		image_url = $(this).attr("src");
 		image = image_url.replace("<?php echo api_get_path(WEB_IMG_PATH); ?>","");
 
-                // This code is added in order for support the tablet style
-                image_css_info = $(this).attr("class");
-                current_css = image_css_info.replace("actionplaceholderminiicon","");
-                current_css = jQuery.trim(current_css);
 		// are we making the tool visible or invisible? This all depend on the current icon
-		if (image=="closedeye_tr.png" || current_css=="toolactionhide"){
+		if (image=="closedeye_tr.png"){
 			action = "make_visible";
 		} else {
 			action = "make_invisible";
 		}
-                 
+
 		// the id of the tool that we are changing
 		tool_id = $(this).attr("id").replace("linktool_","");
 
@@ -86,35 +82,33 @@ jQuery(document).ready( function($) {
 			},
 			type: "GET",
 			url: "<?php echo api_get_path(WEB_CODE_PATH);?>course_home/ajax.php",
-			data: "id="+tool_id+"&action="+action+"&current_css="+current_css,
+			data: "id="+tool_id+"&action="+action,
 			success: function(data) {
 				// make the tool visible
 				if (action == 'make_visible'){
 					// change the visibility icon, its alt text and its title
-                                        if (current_css=='toolactionhide') {
-					  $("#linktool_"+tool_id).attr("src", "<?php echo api_get_path(WEB_IMG_PATH); ?>pixel.gif");
-					  $("#linktool_"+tool_id).attr("class", "actionplaceholderminiicon toolactionview");
-                                        } else {
-					  $("#linktool_"+tool_id).attr("src", "<?php echo api_get_path(WEB_IMG_PATH); ?>visible_link.png");
-                                        }
+					$("#linktool_"+tool_id).attr("src", "<?php echo api_get_path(WEB_IMG_PATH); ?>visible_link.png");
 					$("#linktool_"+tool_id).attr("alt", "<?php echo get_lang('VisibleClickToMakeInvisible'); ?>");
 					$("#linktool_"+tool_id).attr("title", "<?php echo get_lang('VisibleClickToMakeInvisible'); ?>");
 
 					// the feedback message that should be displayed
 					message = "<?php echo get_lang('ToolIsNowVisible', '');?>";
 
-					// change the visible style
-					$("#tool_"+tool_id).toggleClass('invisible');
+					// change the tool icon
+					tool_image = $("#toolimage_"+tool_id).attr("src");
+					
+					if(tool_image.match(".gif"))
+						tool_image = tool_image.replace("_na.gif",".gif");
+					else
+						tool_image = tool_image.replace("_na.png",".png");
+						
+					$("#toolimage_"+tool_id).attr("src",tool_image);
 				}
 
 				// make the tool invisible
 				if (action == 'make_invisible'){
-                                        if (current_css=='toolactionview') {
-					  $("#linktool_"+tool_id).attr("src", "<?php echo api_get_path(WEB_IMG_PATH); ?>pixel.gif");
-					  $("#linktool_"+tool_id).attr("class", "actionplaceholderminiicon toolactionhide");
-                                        } else {
-					  $("#linktool_"+tool_id).attr("src", "<?php echo api_get_path(WEB_IMG_PATH); ?>closedeye_tr.png");
-                                        }
+					// change the visibility icon, its alt text and its title
+					$("#linktool_"+tool_id).attr("src", "<?php echo api_get_path(WEB_IMG_PATH); ?>closedeye_tr.png");
 					$("#linktool_"+tool_id).attr("alt", "<?php echo get_lang('InvisibleClickToMakeVisible'); ?>");
 					$("#linktool_"+tool_id).attr("title", "<?php echo get_lang('InvisibleClickToMakeVisible'); ?>");
 					
@@ -124,8 +118,12 @@ jQuery(document).ready( function($) {
 					// change the tool icon
 					tool_image = $("#toolimage_"+tool_id).attr("src");
 					
-					// change the visible style
-					$("#tool_"+tool_id).toggleClass('invisible');
+					if(tool_image.match(".gif"))
+						tool_image = tool_image.replace(".gif","_na.gif");
+					else
+						tool_image = tool_image.replace(".png","_na.png");
+						
+					$("#toolimage_"+tool_id).attr("src",tool_image);
 				}
 
 				// add or remove the invisible class to the tool link

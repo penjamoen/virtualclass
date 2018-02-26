@@ -53,11 +53,7 @@ define('TABLE_MAIN_SYSTEM_TEMPLATE', 'system_template');
 define('TABLE_MAIN_OPENID_ASSOCIATION', 'openid_association');
 define('TABLE_MAIN_SESSION_CURSUS', 'session_cursus');
 define('TABLE_MAIN_SINGLE_SIGN_ON_ASSOCIATION', 'single_sign_on_association');
-define('TABLE_MAIN_SEARCH_ENGINE_KEYWORDS', 'search_engine_keywords');
-define('TABLE_MAIN_CATALOGUE', 'catalogue');
-define('TABLE_MAIN_TOPIC', 'topic');
-define('TABLE_MAIN_SESSION_REL_CATEGORY', 'session_rel_category');
-define('TABLE_MAIN_SESSION_CATEGORY_REL_USER', 'session_category_rel_user');
+
 // Gradebook
 define('TABLE_MAIN_GRADEBOOK_CATEGORY', 	'gradebook_category');
 define('TABLE_MAIN_GRADEBOOK_EVALUATION', 	'gradebook_evaluation');
@@ -71,11 +67,6 @@ define('TABLE_MAIN_GRADEBOOK_CERTIFICATE', 	'gradebook_certificate');
 define('TABLE_MAIN_USER_FIELD',			'user_field');
 define('TABLE_MAIN_USER_FIELD_OPTIONS',	'user_field_options');
 define('TABLE_MAIN_USER_FIELD_VALUES',	'user_field_values');
-
-
-// Certificates
-define('TABLE_MAIN_CERTIFICATE', 	  'certificate');
-define('TABLE_MAIN_CERTIFICATE_TEMPLATE', 'certificate_template');
 
 //User tags
 define('TABLE_MAIN_TAG',				'tag');
@@ -98,7 +89,6 @@ define('TABLE_MAIN_ACCESS_URL', 'access_url');
 define('TABLE_MAIN_ACCESS_URL_REL_USER',	'access_url_rel_user');
 define('TABLE_MAIN_ACCESS_URL_REL_COURSE', 	'access_url_rel_course');
 define('TABLE_MAIN_ACCESS_URL_REL_SESSION', 'access_url_rel_session');
-define('TABLE_MAIN_ACCESS_URL_REL_ADMIN', 'access_url_rel_admin');
 
 // Global calendar
 define('TABLE_MAIN_SYSTEM_CALENDAR', 'sys_calendar');
@@ -117,17 +107,10 @@ define('TABLE_MAIN_SOCIAL_CHAT', 'user_chat');
 
 // Web services
 define('TABLE_MAIN_USER_API_KEY', 'user_api_key');
-define('TABLE_MAIN_COURSE_FIELD', 'course_field');
-define('TABLE_MAIN_COURSE_FIELD_VALUES', 'course_field_values');
-define('TABLE_MAIN_SESSION_FIELD', 'session_field');
-define('TABLE_MAIN_SESSION_FIELD_VALUES', 'session_field_values');
-define('TABLE_MAIN_COUNTRY', 'country');
-define('TABLE_MAIN_PAYMENT_LOG', 'payment_log');
-define('TABLE_MAIN_PAYMENT_ATOS', 'payment_atos');
-
-//Slides
-define('TABLE_MAIN_SLIDES', 'slides');
-define('TABLE_MAIN_SLIDES_MANAGEMENT', 'slides_management');
+define('TABLE_MAIN_COURSE_FIELD',			'course_field');
+define('TABLE_MAIN_COURSE_FIELD_VALUES',	'course_field_values');
+define('TABLE_MAIN_SESSION_FIELD',			'session_field');
+define('TABLE_MAIN_SESSION_FIELD_VALUES',	'session_field_values');
 
 // Message
 define('TABLE_MAIN_MESSAGE', 'message');

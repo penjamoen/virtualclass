@@ -81,12 +81,12 @@ if (empty($charset)) {
 // Display the header
 Display::display_tool_header();
 // display the actions
-echo '<div class="actions" >';
+echo '<div class="actions" style="padding:3px;" >';
 echo lp_mindmap_actions();
 echo '</div>';
 
 // start the content div
-echo '<div id="content">';
+echo '<div id="content_with_secondary_actions">';
 
 // the main content
 lp_mindmap_main();
@@ -110,10 +110,10 @@ function lp_mindmap_actions(){
 
   $lp_id = Security::remove_XSS($_GET['lp_id']);
   $return = "";
-  $return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', $author_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthor')).' '.$author_lang_var . '</a>';
-  $return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $content_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorcontent')).$content_lang_var . '</a>';
-  $return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $scenario_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorscenario')).$scenario_lang_var . '</a>';
-  $return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $view_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorpreview')).$view_lang_var . '</a>';
+  $return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('author.png', $author_lang_var).$author_lang_var . '</a>';
+  $return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $lp_id . '">' . Display::return_icon('content.png', $content_lang_var).$content_lang_var . '</a>';
+  $return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $lp_id . '">' . Display::return_icon('organize.png', $scenario_lang_var).$scenario_lang_var . '</a>';
+  $return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $lp_id . '">' . Display::return_icon('search.png', $view_lang_var).$view_lang_var . '</a>';
 	 return $return;
 }
 

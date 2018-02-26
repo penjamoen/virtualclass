@@ -40,6 +40,7 @@ $langMe = "eu";
 $langSystemAnnouncements = "Anunturi din sistem";
 $langHelpMaj = "Ajutor";
 $langNotRegistered = "Neinregistrat";
+$langAdmin = "Administratorul platformei";
 $Login = "Logare";
 $langRegisterForCourse = "Inscrie-te la curs";
 $langUnregisterForCourse = "Renunta la curs";

@@ -30,7 +30,6 @@ $langLinkURL = "URL de l\'enllaç";
 $langWelcomeToOnlineConf = "Benvingut a la <b>Conferència en línia</b>";
 $langNoLinkAvailable = "No hi ha enllaços disponibles";
 $langChat_reset_by = "Reiniciar el xat";
-$langAdmin = "Administració de la plataforma";
 $OrFile = "O el fitxer";
 $langCallSent = "S\'ha enviat una demanda de \"xat\". En espera de l\'aprovació de la persona contactada.";
 $langChatDenied = "La vostra petició ha estat refusada per la persona contactada.";

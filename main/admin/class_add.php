@@ -40,12 +40,8 @@ if ($form->validate()) {
 // Displaying the header.
 Display :: display_header($tool_name);
 
-echo '<div id="content">';
-
 // Displaying the form.
 $form->display();
-
-echo '</div>';
 
 // Displaying the footer.
 Display :: display_footer();

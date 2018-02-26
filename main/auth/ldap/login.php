@@ -51,22 +51,17 @@
 	*/
 //require_once('../../inc/global.inc.php'); - this script should be loaded by the /index.php script anyway, so global is already loaded
 require_once('authldap.php');
+
 $loginLdapSucces = ldap_login($login, $password);
 
 if ($loginLdapSucces)
 {
-  if($ldap_update_userinfo) 
-  {
-    $info_array = ldap_find_user_info($login);
-    ldap_update_user_info($login, $info_array);
-  }
-  //prepare user info for hime ti be logged in 
-  //when executing the rest of local.inc.php
 	$loginFailed = false;
 	$uidReset = true;
 	$_user['user_id'] = $uData['user_id'];
-	api_session_register('_user');
-  event_login();
+	api_session_register('_uid');
+    // Jand: copied from event_login in events.lib.php to enable login statistics:
+    event_login();
 }
 else
 {

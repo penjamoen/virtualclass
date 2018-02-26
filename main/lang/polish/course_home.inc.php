@@ -24,10 +24,4 @@ $Authoring = "Dost&#281;pne";
 $Administration = "Administracyjne";
 $IntroductionTextUpdated = "Tekst wprowadzaj&#261;cy zosta&#322; zaktualizowany";
 $IntroductionTextDeleted = "Tekst wprowadzaj&#261;cy usuni&#281;ty";
-$SessionIdentifier = "Identyfikator sesji";
-$SessionName = "Nazwa sesji";
-$SessionCategory = "Kategoria sesji";
-$SessionData = "Dane sesji";
-$ViewHomeAsLearner = "Zobacz jak ucze&#324;";
-$ViewHomeAsTrainer = "Zobacz jako nauczyciel";
 ?>

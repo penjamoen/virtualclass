@@ -1,18 +1,29 @@
 <?php
+/*
+==============================================================================
+	Dokeos - elearning and course management software
 
-/* For licensing terms, see /dokeos_license.txt */
+	Copyright (c) Dokeos SPRL
 
+	For a full list of contributors, see "credits.txt".
+	For licensing terms, see "dokeos_license.txt"
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	See the GNU General Public License for more details.
+
+	http://www.dokeos.com
+==============================================================================
+*/
 
 /**
 ==============================================================================
 *	@package dokeos.calendar
 ==============================================================================
 */
-
-// google calendar import
-if (api_get_setting('calendar_google_import')=='true'){
-	require_once ('google.inc.php');	
-}
 
 /**
  * Display the links that appear in the action bar in the course calendar
@@ -49,10 +60,10 @@ function calendar_actions() {
 
 						// previous
 						$("#my-prev-button").click(function() {
-                            //move to previous month/week/day
+                                                        //move to previous month/week/day
 							$("#calendar").fullCalendar("prev");
-							view = $("#calendar").fullCalendar("getView");
-							// make the today button active
+                                                        view = $("#calendar").fullCalendar("getView");
+                                                        // make the today button active
 							$("#my-today-button").removeClass("fc-state-disabled");
 
 							// update the title
@@ -63,7 +74,7 @@ function calendar_actions() {
 						$("#my-next-button").click(function() {
 							//move to next month/week/day
 							$("#calendar").fullCalendar("next");
-							view = $("#calendar").fullCalendar("getView");
+                                                        view = $("#calendar").fullCalendar("getView");
 							// make the today button active
 							$("#my-today-button").removeClass("fc-state-disabled");
 
@@ -75,7 +86,7 @@ function calendar_actions() {
 						$("#my-today-button").click(function() {
 							// move to today
 							$("#calendar").fullCalendar("today");
-							view = $("#calendar").fullCalendar("getView");
+                                                        view = $("#calendar").fullCalendar("getView");
 							// make the today button inactive
 							$("#my-today-button").addClass("fc-state-disabled");
 
@@ -87,7 +98,7 @@ function calendar_actions() {
 						$("#my-month-view").click(function() {
 							// change view to month view
 							$("#calendar").fullCalendar("changeView","month");
-							view = $("#calendar").fullCalendar("getView");
+                                                        view = $("#calendar").fullCalendar("getView");
 							// make all the views inactive except the one clicked
 							$(".myview").removeClass("fc-state-active");
 							$("#my-month-view").addClass("fc-state-active");
@@ -100,7 +111,7 @@ function calendar_actions() {
 						$("#my-week-view").click(function() {
 							// change view to month view
 							$("#calendar").fullCalendar("changeView","agendaWeek");
-							view = $("#calendar").fullCalendar("getView");
+                                                        view = $("#calendar").fullCalendar("getView");
 							// make all the views inactive except the one clicked
 							$(".myview").removeClass("fc-state-active");
 							$("#my-week-view").addClass("fc-state-active");
@@ -113,7 +124,7 @@ function calendar_actions() {
 						$("#my-day-view").click(function() {
 							// change view to month view
 							$("#calendar").fullCalendar("changeView","agendaDay");
-							view = $("#calendar").fullCalendar("getView");
+                                                        view = $("#calendar").fullCalendar("getView");
 							// make all the views inactive except the one clicked
 							$(".myview").removeClass("fc-state-active");
 							$("#my-day-view").addClass("fc-state-active");
@@ -157,40 +168,33 @@ function calendar_actions() {
 		case 'add' :
 			// return to the calendar display
 			if (!isset($_POST['submit_agenda_item'])) {
-				$return .= '<a href="agenda.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('ReturnToCalendar'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('ReturnToCalendar').'</a>';
+				$return .= '<a href="agenda.php?'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png', get_lang('ReturnToCalendar')).' '.get_lang('ReturnToCalendar').'</a>';
 			}
-			$return .= '<a href="agenda.php?'.api_get_cidreq().'&action=add">'.Display::return_icon('pixel.gif', get_lang('AgendaAdd'), array('class' => 'toolactionplaceholdericon toolcalendaraddevent')).get_lang('AgendaAdd').'</a>';
+			$return .= '<a href="agenda.php?'.api_get_cidreq().'&action=add">'.Display::return_icon('add_32.png', get_lang('AgendaAdd')).' '.get_lang('AgendaAdd').'</a>';
 			break;
 		case 'edit' :
 			// return to the calendar display
 			if (!isset($_POST['submit_agenda_item'])) {
-				$return .= '<a href="agenda.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('ReturnToCalendar'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('ReturnToCalendar').'</a>';
+				$return .= '<a href="agenda.php?'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png', get_lang('ReturnToCalendar')).' '.get_lang('ReturnToCalendar').'</a>';
 			}
 			// adding of event
 			if (api_is_allowed_to_edit(false,true) OR (api_get_course_setting('allow_user_edit_agenda') && !api_is_anonymous() && api_is_allowed_to_session_edit(false,true) ) OR (api_get_setting('user_manage_group_agenda')=='true' AND !empty($group_memberships))){
-				$return .= '<a href="agenda.php?'.api_get_cidreq().'&action=add">'.Display::return_icon('pixel.gif', get_lang('AgendaAdd'), array('class' => 'toolactionplaceholdericon toolcalendaraddevent')).get_lang('AgendaAdd').'</a>';
+				$return .= '<a href="agenda.php?'.api_get_cidreq().'&action=add">'.Display::return_icon('add_32.png', get_lang('AgendaAdd')).get_lang('AgendaAdd').'</a>';
 			}
 			break;
 		case 'detail' :
 			// return to the calendar display
-			$return .= '<a href="agenda.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('ReturnToCalendar'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('ReturnToCalendar').'</a>';
-                        break;
-		case 'delete' :
-			// return to the calendar display
-			$return .= '<a href="agenda.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('ReturnToCalendar'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('ReturnToCalendar').'</a>';
+			$return .= '<a href="agenda.php?'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png', get_lang('ReturnToCalendar')).' '.get_lang('ReturnToCalendar').'</a>';
 		case '':
 			// adding of event
 			if (api_is_allowed_to_edit(false,true) OR (api_get_course_setting('allow_user_edit_agenda') && !api_is_anonymous() && api_is_allowed_to_session_edit(false,true) ) OR (api_get_setting('user_manage_group_agenda')=='true' AND !empty($group_memberships))){
-				$return .= '<a href="agenda.php?'.api_get_cidreq().'&action=add">'.Display::return_icon('pixel.gif', get_lang('AgendaAdd'), array('class' => 'toolactionplaceholdericon toolcalendaraddevent')).get_lang('AgendaAdd').'</a>';
+				$return .= '<a href="agenda.php?'.api_get_cidreq().'&action=add">'.Display::return_icon('add_32.png', get_lang('AgendaAdd')).get_lang('AgendaAdd').'</a>';
 			}
 			break;
 	}
 	// export of all events
 	if (api_get_setting('calendar_export_all')=='true'){
-		$return .= '<a href="agenda.php?action=export">'.Display::return_icon('pixel.gif', get_lang('IcalExport'), array('class' => 'toolactionplaceholdericon toolcalendaricalexport')).get_lang('IcalExport').'</a>';
-	}
-	if (api_get_setting('calendar_google_import')=='true'){
-		$return .= google_calendar_action_link();
+		$return .= '<a href="agenda.php?action=export">'.Display::return_icon ( 'calendar_export.png', get_lang ( 'IcalExport' )).' '.get_lang('IcalExport').'</a>';
 	}
 	return $return;
 }
@@ -298,49 +302,46 @@ function mycalendar_actions() {
 
 
 		// the 	buttons in the actions bar
-                if (!in_array($_GET['action'], array('myadd', 'myedit'))) {
-                    $return .= '<table border="0" id="my-navigation">';
-                    $return .= '<tr>';
-                    $return .= '<td width="50%" id="my-fc-header-center">';
-                    $return .= '			<center><h2 id="my-title" class="fc-header-title"></h2></center>';
-                    $return .= '</td>';
-                    $return .= '<td width="25%">';
-                    $return .= '	<table border="0" id="my-fc-header-left" >';
-                    $return .= '		<tr>';
-                    $return .= '			<td><div id="my-prev-button" class="fc-button-prev fc-state-default fc-corner-left fc-no-right"><a><span>&nbsp;&#9668;&nbsp;</span></a></div></td>';
-                    $return .= '			<td><div id="my-next-button" class="fc-button-next fc-state-default fc-corner-right"><a><span>&nbsp;&#9658;&nbsp;</span></a></div></td>';
-                    $return .= '			<td><span class="fc-header-space"></span></td>';
-                    $return .= '			<td><div id="my-today-button" class="fc-button-today fc-state-default fc-corner-left fc-corner-right fc-state-disabled"><a><span>'.get_lang('Today').'</span></a></div></td>';
-                    $return .= '		</tr>';
-                    $return .= '	</table>';
-                    $return .= '</td>';
-                    $return .= '<td width="25%">';
-                    $return .= '	<table border="0" id="my-fc-header-right">';
-                    $return .= '		<tr>';
-                    $return .= '			<td><div id="my-month-view" class="myview fc-button-month fc-state-default fc-corner-left fc-no-right"><a><span>'.get_lang('MonthView').'</span></a></div></td>';
-                    $return .= '			<td><div id="my-week-view" class="myview fc-button-agendaWeek fc-state-default fc-no-right"><a><span>'.get_lang('WeekView').'</span></a></div></td>';
-                    $return .= '			<td><div id="my-day-view" class="myview fc-button-agendaDay fc-state-default fc-corner-right"><a><span>'.get_lang('DayView').'</span></a></div></td>';
-                    $return .= '		</tr>';
-                    $return .= '	</table>';
-                    $return .= '</td>';
-                    $return .= '</table>';
-                }
-                
+		$return .= '<table border="0" id="my-navigation">';
+		$return .= '<tr>';
+		$return .= '<td width="50%" id="my-fc-header-center">';
+		$return .= '			<center><h2 id="my-title" class="fc-header-title"></h2></center>';
+		$return .= '</td>';
+		$return .= '<td width="25%">';
+		$return .= '	<table border="0" id="my-fc-header-left" >';
+		$return .= '		<tr>';
+		$return .= '			<td><div id="my-prev-button" class="fc-button-prev fc-state-default fc-corner-left fc-no-right"><a><span>&nbsp;&#9668;&nbsp;</span></a></div></td>';
+		$return .= '			<td><div id="my-next-button" class="fc-button-next fc-state-default fc-corner-right"><a><span>&nbsp;&#9658;&nbsp;</span></a></div></td>';
+		$return .= '			<td><span class="fc-header-space"></span></td>';
+		$return .= '			<td><div id="my-today-button" class="fc-button-today fc-state-default fc-corner-left fc-corner-right fc-state-disabled"><a><span>'.get_lang('Today').'</span></a></div></td>';
+		$return .= '		</tr>';
+		$return .= '	</table>';
+		$return .= '</td>';
+		$return .= '<td width="25%">';
+		$return .= '	<table border="0" id="my-fc-header-right">';
+		$return .= '		<tr>';
+		$return .= '			<td><div id="my-month-view" class="myview fc-button-month fc-state-default fc-corner-left fc-no-right"><a><span>'.get_lang('MonthView').'</span></a></div></td>';
+		$return .= '			<td><div id="my-week-view" class="myview fc-button-agendaWeek fc-state-default fc-no-right"><a><span>'.get_lang('WeekView').'</span></a></div></td>';
+		$return .= '			<td><div id="my-day-view" class="myview fc-button-agendaDay fc-state-default fc-corner-right"><a><span>'.get_lang('DayView').'</span></a></div></td>';
+		$return .= '		</tr>';
+		$return .= '	</table>';
+		$return .= '</td>';
+		$return .= '</table>';
 	}
 
 	switch ($_GET ['action']) {
 		case 'myadd' :
 			// return to the calendar display
-			$return .= '<a href="myagenda.php">'.Display::return_icon('pixel.gif', get_lang('ReturnToCalendar'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('ReturnToCalendar').'</a>';
+			$return .= '<a href="myagenda.php">'.Display::return_icon('go_previous_32.png', get_lang('ReturnToCalendar')).' '.get_lang('ReturnToCalendar').'</a>';
 			break;
 		case 'myedit' :
 			// return to the calendar display
-			$return .= '<a href="myagenda.php">'.Display::return_icon('pixel.gif', get_lang('ReturnToCalendar'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('ReturnToCalendar').'</a>';
+			$return .= '<a href="myagenda.php">'.Display::return_icon('go_previous_32.png', get_lang('ReturnToCalendar')).' '.get_lang('ReturnToCalendar').'</a>';
 			break;
 		case '':
 			// add an agenda
 			if (api_get_setting('allow_personal_agenda') == 'true'){
-				$return .= '<a href="myagenda.php?action=myadd">'.Display::return_icon('pixel.gif', get_lang('AgendaAddPersonal'), array('class' => 'toolactionplaceholdericon toolcalendaraddevent')).get_lang('AgendaAddPersonal').'</a>';
+				$return .= '<a href="myagenda.php?action=myadd">'.Display::return_icon('add_32.png', get_lang('AgendaAddPersonal')).' '.get_lang('AgendaAddPersonal').'</a>';
 			}
 			break;
 	}
@@ -358,7 +359,7 @@ function platformcalendar_actions() {
 	$return = '';
 
 	// adding of agenda item
-	$return .= '<a href="agenda.php?action=platformadd">'.Display::return_icon('pixel.gif', get_lang('AgendaAddPlatform'), array('class' => 'toolactionplaceholdericon toolcalendaraddevent')).get_lang('AgendaAddPlatform').'</a>';
+	$return .= '<a href="agenda.php?action=platformadd">'.Display::return_icon('add_32.png', get_lang('AgendaAddPlatform')).get_lang('AgendaAddPlatform').'</a>';
 	return $return;
 }
 
@@ -393,7 +394,7 @@ function handle_calendar_actions() {
 			break;
 		case 'delete' :
 			if (api_is_allowed_to_edit(false,true) OR (api_get_course_setting('allow_user_edit_agenda') && !api_is_anonymous() && api_is_allowed_to_session_edit(false,true) ) OR (api_get_setting('user_manage_group_agenda')=='true' AND !empty($group_memberships))){
-				delete_agenda_item($_GET['id']);
+				delete_agenda_item((int)$_GET['id']);
 				Display::display_confirmation_message(get_lang('AgendaDeleteSuccess'));
 			}
 			break;
@@ -414,10 +415,6 @@ function handle_calendar_actions() {
 		case 'detail' :
 			display_detail($_GET['id'], $_GET['event_type']);
 			break;
-	}
-
-	if (api_get_setting('calendar_google_import')=='true'){
-		google_calendar_action_handling();
 	}
 }
 
@@ -493,7 +490,9 @@ function show_agenda_form($input_values,$date='') {
 	}
 
 	// a hidden form with the id of the agenda item we are editing
-	$form->addElement ( 'hidden', 'agenda_id', $input_values['agenda_id'], array('id' => 'agenda_id'));
+	if ($input_values and is_numeric ( $input_values ['agenda_id'] )) {
+		$form->addElement ( 'hidden', 'agenda_id', $input_values ['agenda_id'] );
+	}
 
 	if (api_is_allowed_to_edit(false,true) OR (api_get_course_setting('allow_user_edit_agenda') && !api_is_anonymous() && api_is_allowed_to_session_edit(false,true) )){
 		// The receivers: groups
@@ -532,10 +531,10 @@ function show_agenda_form($input_values,$date='') {
 	$form->addElement ( 'datepicker', 'end_date', get_lang ( 'EndDate' ), array ('form_name' => 'new_agenda_item', 'id' => 'end_date' ) );
 
 	// The title
-	$form->addElement ( 'text', 'title', get_lang ( 'Title' ), array ('maxlength' => '250', 'style' => 'width:600px', 'class' => 'focus' ) );
+	$form->addElement ( 'text', 'title', get_lang ( 'Title' ), array ('maxlength' => '250', 'style' => 'width:715px', 'class' => 'focus' ) );
 
 	// The message
-	$form->addElement ( 'textarea', 'content', get_lang ( 'Text' ), 'rows="12" cols="83"');
+	$form->addElement ( 'html_editor', 'content', get_lang ( 'Text' ), 'style="vertical-align:middle"',array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '90%', 'Height' => '200') );
 
 	// the recurrence button
 	//$form->addElement ( 'static', 'recurrence_image', null, '<span onclick="toggle_recurrency_form();" class="link_alike">' . Display::return_icon ( 'recurrence.png' ) . ' ' . get_lang ( 'Recurrence' ) . '</span>' );
@@ -564,10 +563,10 @@ function show_agenda_form($input_values,$date='') {
 	$form->addElement ( 'html', '</div>' );
 	$form->addElement ( 'html', '</div>' );
 
-	// google calendar import
-	if (api_get_setting('calendar_google_import')=='true'){
-		google_calendar_form($form);
-	}
+	// The resource linker
+	//$form->add_resource_button ( TOOL_CALENDAR_EVENT );
+	//$form->addElement('static',null,null,return_resources(0));
+
 
 	// export and delete
 	if (!empty($input_values) AND api_get_setting('agenda_show_actions_on_edit')=='true')
@@ -587,7 +586,7 @@ function show_agenda_form($input_values,$date='') {
 	else
 	{
 		// The OK button
-		$form->addElement ( 'style_submit_button', 'submit_agenda_item', get_lang ( 'SaveEvent' ) ,'id="submit_agenda_item" class="save" style="margin-left:520px;"');
+		$form->addElement ( 'style_submit_button', 'submit_agenda_item', get_lang ( 'SaveEvent' ) ,'class="save" style="margin-left:520px;"');
 	}
 
 
@@ -700,9 +699,8 @@ function show_agenda_form($input_values,$date='') {
 	// The validation or display
 	if ($form->validate ()) {
 		$values = $form->exportValues ();
-		$values = $form->exportValues ();
-                $form_actions = $values['formactions'];
-		if (isset ( $_POST ['submit_agenda_item'] ) || isset($form_actions['submit_agenda_item'])) {
+
+		if (isset ( $_POST ['submit_agenda_item'] )) {
 			// store_agenda_item
 			if (! $values ['agenda_id'] or ! is_numeric ( $values ['agenda_id'] )) {
 				$id = store_new_agenda_item ( $values );
@@ -743,10 +741,10 @@ function show_myagenda_form($input_values,$date='') {
 	$form = new FormValidator ( 'new_myagenda_item', 'post', $_SERVER ['REQUEST_URI'] );
 
 	// the header for the form
-	if ($_GET ['action'] == 'myadd') {
+	if ($_GET ['action'] == 'add') {
 		$form->addElement ( 'header', '', get_lang ( 'AgendaAdd' ) );
 	}
-	if ($_GET ['action'] == 'myedit') {
+	if ($_GET ['action'] == 'edit') {
 		$form->addElement ( 'header', '', get_lang ( 'AgendaEdit' ) );
 	}
 
@@ -755,18 +753,6 @@ function show_myagenda_form($input_values,$date='') {
 		$form->addElement ( 'hidden', 'agenda_id', $input_values ['agenda_id'] );
 	}
 
-        // The receivers: users
-        if ($_GET ['action'] == 'myadd') {
-            $receivers = array();
-            $user_table = Database::get_main_table(TABLE_MAIN_USER);
-            $rs_users = Database::query("SELECT user_id, lastname, firstname FROM $user_table WHERE status <> ".ANONYMOUS." AND user_id <> ".api_get_user_id());
-            if (Database::num_rows($rs_users) > 0) {
-                while ($row_users = Database::fetch_array($rs_users, 'ASSOC')) {
-                    $receivers[$row_users['user_id']] = $row_users['lastname'] . ' ' . $row_users['firstname'];
-                }
-            }
-            $form->addElement ( 'receivers', 'send_to', get_lang ( 'VisibleFor' ), array ('receivers' => $receivers, 'receivers_selected' => '' ));
-        }
 	// Start Date
 	$form->addElement ( 'datepicker', 'start_date', get_lang ( 'StartDate' ), array ('form_name' => 'new_agenda_item', 'id' => 'start_date', 'onchange' => 'update_enddate();' ) );
 
@@ -774,10 +760,10 @@ function show_myagenda_form($input_values,$date='') {
 	$form->addElement ( 'datepicker', 'end_date', get_lang ( 'EndDate' ), array ('form_name' => 'new_agenda_item', 'id' => 'end_date' ) );
 
 	// The title
-	$form->addElement ( 'text', 'title', get_lang ( 'Title' ), array ('maxlength' => '250', 'size' => '80', 'class' => 'focus' ) );
+	$form->addElement ( 'text', 'title', get_lang ( 'Title' ), array ('maxlength' => '250', 'size' => '100', 'class' => 'focus' ) );
 
 	// The message
-	$form->addElement ( 'textarea', 'content', get_lang ( 'Text' ), 'rows="12" cols="90"');
+	$form->addElement ( 'html_editor', 'content', get_lang ( 'Text' ) );
 
 	// the recurrence button
 	//$form->addElement ( 'static', 'recurrence_image', null, '<span onclick="toggle_recurrency_form();" class="link_alike">' . Display::return_icon ( 'recurrence.png' ) . ' ' . get_lang ( 'Recurrence' ) . '</span>' );
@@ -899,32 +885,19 @@ function show_myagenda_form($input_values,$date='') {
 	// The validation or display
 	if ($form->validate ()) {
 		$values = $form->exportValues ();
-                $check = Security::check_token('post');
-                if($check) {
-                    if (isset ( $_POST ['submit_agenda_item'] )) {
-                            // store_agenda_item
-                            if (! $values ['agenda_id'] or ! is_numeric ( $values ['agenda_id'] )) {
-                                $saved = store_new_myagenda_item ( $values );
-                            } else {
-                                $saved = store_edit_myagenda_item ( $values );
-                            }
-                            Display::display_confirmation_message ( get_lang ( 'AgendaStored' ) );
-                            echo '<script>location.href="'.api_get_path(WEB_CODE_PATH).'calendar/myagenda.php";</script>';
-                            //echo mycalendar_javascript();
-                    }
-                } else {
-                    //echo mycalendar_javascript();
-                    echo '<script>location.href="'.api_get_path(WEB_CODE_PATH).'calendar/myagenda.php";</script>';
-                }
-                Security::clear_token();
+
+		if (isset ( $_POST ['submit_agenda_item'] )) {
+			// store_agenda_item
+			if (! $values ['agenda_id'] or ! is_numeric ( $values ['agenda_id'] )) {
+				$id = store_new_myagenda_item ( $values );
+			} else {
+				store_edit_myagenda_item ( $values );
+			}
+			Display::display_confirmation_message ( get_lang ( 'AgendaStored' ) );
+			echo mycalendar_javascript();
+		}
+
 	} else {
-                if (isset($_POST['submit'])) {
-                        Security::clear_token();
-                }
-                $token = Security::get_token();
-                $form->addElement('hidden', 'sec_token');
-                $defaults['sec_token'] = $token;
-            
 		$form->setDefaults ($defaults);
 		$form->display ();
 	}
@@ -943,7 +916,7 @@ function show_myagenda_form($input_values,$date='') {
 function show_platformagenda_form($input_values,$date='') {
 	// initiate the object
 	$form = new FormValidator ( 'new_myagenda_item', 'post', $_SERVER ['REQUEST_URI'] );
-        $editor_config = array('ToolbarSet' => 'PortalNews', 'Width' => '97%', 'Height' => '300');
+
 	// the header for the form
 	if ($_GET ['action'] == 'add') {
 		$form->addElement ( 'header', '', get_lang ( 'AgendaAdd' ) );
@@ -967,7 +940,7 @@ function show_platformagenda_form($input_values,$date='') {
 	$form->addElement ( 'text', 'title', get_lang ( 'Title' ), array ('maxlength' => '250', 'style' => 'width:450px', 'class' => 'focus' ) );
 
 	// The message
-	$form->addElement ( 'html_editor', 'content', get_lang ( 'Text' ),'style="vertical-align:middle"',$editor_config);
+	$form->addElement ( 'html_editor', 'content', get_lang ( 'Text' ),'style="vertical-align:middle"',array('Width' => '97%', 'Height' => '400'));
 
 	// the recurrence button
 	$form->addElement ( 'static', 'recurrence_image', null, '<span onclick="toggle_recurrency_form();" class="link_alike">' . Display::return_icon ( 'recurrence.png',get_lang ( 'Recurrence' )) . ' ' . get_lang ( 'Recurrence' ) . '</span>' );
@@ -1147,12 +1120,9 @@ function store_new_agenda_item($values) {
 	// storing the resources
 	//store_resources($_SESSION['source_type'],$last_id);
 
+
 	// storing the recurrence
 	do_recurrence ( $values );
-
-	if (api_get_setting('calendar_google_import')=='true'){
-		store_google($values, $last_id);
-	}
 
 	return $last_id;
 }
@@ -1176,61 +1146,25 @@ function store_new_myagenda_item($values) {
 	$content = trim ( $values ['content'] );
 	$start_date = $values ['start_date'];
 	$end_date = $values ['end_date'];
+	//$start_date=(int)$_POST['fyear']."-".(int)$_POST['fmonth']."-".(int)$_POST['fday']." ".(int)$_POST['fhour'].":".(int)$_POST['fminute'].":00";
+	//$end_date=(int)$_POST['end_fyear']."-".(int)$_POST['end_fmonth']."-".(int)$_POST['end_fday']." ".(int)$_POST['end_fhour'].":".(int)$_POST['end_fminute'].":00";
 
-        $affected_rows = 0;
-        // first save the original event
-        Database::query("INSERT INTO ".$table_agenda."(user, title, text, date, enddate)
+
+	// store in the table calendar_event
+	$sql = "INSERT INTO " . $table_agenda . "
+					        (user, title, text, date, enddate)
 					        VALUES (
-                                        '" . intval($_user['user_id'])."',
+					        	'" . Database::escape_string ( $_user['user_id'] ) . "',
 					        	'" . Database::escape_string ( $title ) . "',
 					        	'" . Database::escape_string ( $content ) . "',
 					        	'" . Database::escape_string ( $start_date ) . "',
 					        	'" . Database::escape_string ( $end_date ) . "'
-                                        )");         
-        $parent_event_id = Database::insert_id();
-        $affected_rows += Database::affected_rows();
-        // Now send the event to selected users
-        if ($parent_event_id) {
-            if (isset($values['send_to']['receivers'])) {
-                $receivers = intval($values['send_to']['receivers']);                
-                if ($receivers == 0) {                                        
-                    $user_table = Database::get_main_table(TABLE_MAIN_USER);
-                    $rs_users = Database::query("SELECT user_id FROM $user_table WHERE status <> ".ANONYMOUS." AND user_id <> ".api_get_user_id());
-                    if (Database::num_rows($rs_users) > 0) {
-                        while ($row_users = Database::fetch_array($rs_users, 'ASSOC')) {
-                            Database::query("INSERT INTO ".$table_agenda."(user, title, text, date, enddate, parent_event_id)
-                                            VALUES (
-                                                        '" . intval($row_users['user_id'])."',
-                                                        '" . Database::escape_string ($title) . "',
-                                                        '" . Database::escape_string ($content) . "',
-                                                        '" . Database::escape_string ($start_date) . "',
-                                                        '" . Database::escape_string ($end_date) . "',
-                                                        '".intval($parent_event_id)."'
-                                                        )");
-                            $affected_rows += Database::affected_rows();
-}
-                    }
-                } else if ($receivers == 1) {
-                     $users = $values['send_to']['to'];
-                     if (!empty($users)) {
-                        foreach ($users as $user_id) {
-                            if (api_is_anonymous($user_id, true) || $user_id == $_user['user_id']) { continue; }                
-                            Database::query("INSERT INTO ".$table_agenda."(user, title, text, date, enddate, parent_event_id)
-                                                VALUES (
-                                                            '" . intval($user_id)."',
-                                                            '" . Database::escape_string ($title) . "',
-                                                            '" . Database::escape_string ($content) . "',
-                                                            '" . Database::escape_string ($start_date) . "',
-                                                            '" . Database::escape_string ($end_date) . "',
-                                                            '".intval($parent_event_id)."'
-                                                            )");
-                            $affected_rows += Database::affected_rows();
-                        }
-                    }                                        
-                }                               
-            }
-        }           
-	return $affected_rows;
+					        	)";
+
+	$result = Database::query( $sql, __FILE__, __LINE__ );
+	$last_id = mysql_insert_id ();
+
+	return $last_id;
 }
 
 /**
@@ -1302,32 +1236,25 @@ function store_edit_myagenda_item($values) {
 	$content = trim ( $values ['content'] );
 	$start_date = $values ['start_date'];
 	$end_date = $values ['end_date'];
+	//$start_date=(int)$_POST['fyear']."-".(int)$_POST['fmonth']."-".(int)$_POST['fday']." ".(int)$_POST['fhour'].":".(int)$_POST['fminute'].":00";
+	//$end_date=(int)$_POST['end_fyear']."-".(int)$_POST['end_fmonth']."-".(int)$_POST['end_fday']." ".(int)$_POST['end_fhour'].":".(int)$_POST['end_fminute'].":00";
 
-        $affected_rows = 0;
 
-        // first edit the original event
-	Database::query("UPDATE " . $table_agenda . " SET
+	// store in the table calendar_event
+	$sql = "UPDATE " . $table_agenda . " SET
 							title = '" . Database::escape_string ( $title ) . "',
-							`text` = '" . Database::escape_string ( $content ) . "',
-							`date` = '" . Database::escape_string ( $start_date ) . "',
-							enddate = '" . Database::escape_string ( $end_date ) . "'
+							content = '" . Database::escape_string ( $content ) . "',
+							start_date = '" . Database::escape_string ( $start_date ) . "',
+							end_date = '" . Database::escape_string ( $end_date ) . "'
 				WHERE id = " . intval( $values ['agenda_id'] )."
-                        AND user = " . intval( $_user['user_id']));
-        $affected_rows += Database::affected_rows();
+				AND user = " . intval( $_user['user_id']);
+	$result = api_sql_query ( $sql, __FILE__, __LINE__ );
+	$last_id = mysql_insert_id ();
 
-        // now edit the copied messages
-        Database::query("UPDATE " . $table_agenda . " SET
-                            title = '" . Database::escape_string ( $title ) . "',
-                            `text` = '" . Database::escape_string ( $content ) . "',
-                            `date` = '" . Database::escape_string ( $start_date ) . "',
-                            enddate = '" . Database::escape_string ( $end_date ) . "'
-                        WHERE parent_event_id = " . intval( $values ['agenda_id'] ));
-        $affected_rows += Database::affected_rows();
-        
 	// storing the recurrence
 	do_recurrence ( $values , 'personal');
 
-	return $affected_rows;
+	return $last_id;
 }
 
 /**
@@ -1901,15 +1828,12 @@ function get_platformagenda_item($agenda_id) {
 function delete_agenda_item($id)
 {
 	global $_course, $_user;
-	if (api_get_setting('calendar_google_import')=='true' AND strstr($id,'google_')){
-		google_calendar_delete_event($id);
-		return true;
-	}
+
 	if (api_is_allowed_to_edit(false,true)  OR (api_get_course_setting('allow_user_edit_agenda') && !api_is_anonymous()))
 	{
 		if (isset($_GET['id']) && $_GET['id'] && isset($_GET['action']) && $_GET['action']=="delete")
 		{
-			$id=(int)$id;
+			$id=(int)$_GET['id'];
 			api_item_property_update($_course,TOOL_CALENDAR_EVENT,$id,'delete',api_get_user_id());
 		}
 	}
@@ -2024,12 +1948,12 @@ function mymove_agenda_item($id,$day_delta, $minute_delta)
 {
 	// table definitions
 	$table_agenda = Database :: get_user_personal_table(TABLE_PERSONAL_AGENDA);
+
 	// we convert the hour delta into minutes and add the minute delta
 	$delta = ($day_delta * 60 * 24) + $minute_delta;
-	Database::query("UPDATE $table_agenda SET `date` = DATE_ADD(date,INTERVAL $delta MINUTE), enddate = DATE_ADD(enddate,INTERVAL $delta MINUTE) WHERE id = ".intval($id));
-        if (Database::affected_rows()) {
-            Database::query("UPDATE $table_agenda SET `date` = DATE_ADD(date,INTERVAL $delta MINUTE), enddate = DATE_ADD(enddate,INTERVAL $delta MINUTE) WHERE parent_event_id = ".intval($id));
-          }
+
+	$sql = "UPDATE $table_agenda SET date = DATE_ADD(date,INTERVAL $delta MINUTE), enddate = DATE_ADD(enddate,INTERVAL $delta MINUTE) WHERE id=".Database::escape_string($id);
+	$result = api_sql_query ( $sql, __FILE__, __LINE__ );
 }
 
 /**
@@ -2108,10 +2032,9 @@ function myresize_agenda_item($id,$day_delta, $minute_delta)
 
 	// we convert the hour delta into minutes and add the minute delta
 	$delta = ($day_delta * 60 * 24) + $minute_delta;
-	Database::query("UPDATE $table_agenda SET enddate = DATE_ADD(enddate,INTERVAL $delta MINUTE) WHERE id=".intval($id)); 
-        if (Database::affected_rows()) {
-            Database::query("UPDATE $table_agenda SET enddate = DATE_ADD(enddate,INTERVAL $delta MINUTE) WHERE parent_event_id=".intval($id));
-        }
+
+	$sql = "UPDATE $table_agenda SET enddate = DATE_ADD(enddate,INTERVAL $delta MINUTE) WHERE id=".Database::escape_string($id);
+	$result = api_sql_query ( $sql, __FILE__, __LINE__ );
 }
 
 /**
@@ -2156,8 +2079,9 @@ function get_course_agenda_items($course_db='', $coursecode, $full_information=f
 	}
 
 	// session restriction
-	$session_condition = intval($_SESSION['id_session'])==0 ? '' : ' AND agenda.session_id IN (0,'.intval($_SESSION['id_session']).') ';        
-	if (api_is_allowed_to_edit(false,true) OR (api_get_course_setting('allow_user_edit_agenda', $coursecode) == 'true' && !api_is_anonymous()))
+	$session_condition = intval($_SESSION['id_session'])==0 ? '' : ' AND agenda.session_id IN (0,'.intval($_SESSION['id_session']).') ';
+
+	if (api_is_allowed_to_edit(false,true) OR (api_get_course_setting('allow_user_edit_agenda') && !api_is_anonymous()))
 	{
 		// A.1. you are a course admin with a USER filter
 		// => see only the messages of this specific user + the messages of the group (s)he is member of.
@@ -2336,8 +2260,8 @@ function get_course_agenda_items($course_db='', $coursecode, $full_information=f
 			}
 		}
 		else
-		{                                            
-                    $events[$row['id']] = array('id'=>'course_events'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['start']), 'end'=>date('c',$row['start']), "allDay"=>false, 'visibility'=>$row['visibility'],'className'=>$class_name, 'type'=>'course', 'editable'=>$editable);
+		{
+			$events[$row['id']] = array('id'=>'course_events'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['start']), 'end'=>date('c',$row['end']), "allDay"=>false, 'visibility'=>$row['visibility'],'className'=>$class_name, 'type'=>'course', 'editable'=>$editable);
 		}
 	}
 
@@ -2352,23 +2276,19 @@ function get_course_agenda_items($course_db='', $coursecode, $full_information=f
  * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University, Belgium
  * @version june 2010
  */
-function get_all_course_agenda_items($coursedb, $coursecode = null){
+function get_all_course_agenda_items($coursedb){
 	global $_user;
   	global $_course;
 	// variable initialisation
 	$events = array();
 
-        if (!isset($coursecode)) {
-            $coursecode = $_SESSION['sysCode'];
-            if (empty($coursedb)) {
-                    $coursedb = $_course['dbName'];
-            }
-        }
-        
+	$coursecode = $_SESSION['sysCode'];
+	if (empty($coursedb)) {
+		$coursedb = $_course['dbName'];
+	}
 	// getting all the course events
-        $editable = api_is_allowed_to_edit()?true:false;
-        $course_events = get_course_agenda_items($coursedb, $coursecode, false, $editable);
-        $events = array_merge($events,$course_events);
+	$course_events = get_course_agenda_items($coursedb, $coursecode);
+	$events = array_merge($events,$course_events);
 
 	// getting the platform events
 	if (api_get_setting('calendar_types','platformevents') == 'true')
@@ -2424,18 +2344,18 @@ function get_session_events($coursecode){
 	// Database table definition
 	$table_session 				= Database::get_main_table(TABLE_MAIN_SESSION);
 	$table_session_rel_course 	= Database::get_main_table(TABLE_MAIN_SESSION_COURSE);
-                
+
 	$sql = "SELECT session.id, session.name, UNIX_TIMESTAMP(session.date_start) as date_start, UNIX_TIMESTAMP(session.date_end) as date_end
 		FROM $table_session session
 		LEFT JOIN $table_session_rel_course sessioncourse ON session.id = sessioncourse.id_session
 		WHERE sessioncourse.course_code = '".Database::escape_string($coursecode)."'";
 	$result=Database::query($sql,__FILE__,__LINE__) or die(Database::error());
-        
-	while ($row=Database::fetch_array($result)) {
-		//$events[] = array('id'=>'session'.$row['id'], 'title'=>htmlentities($row['name']), 'start'=>date('c',$row['date_start']), 'end'=>date('c',$row['date_end']), "allDay"=>false, 'visibility'=>'1','className'=>'session', 'editable' => false);
-                $events[] = array('id'=>'session'.$row['id'], 'title'=>htmlentities($row['name']), 'start'=>date('c',$row['date_start']), 'end'=>date('c',$row['date_start']), "allDay"=>false, 'visibility'=>'1','className'=>'session', 'editable' => false);
-	}                
+	while ($row=Database::fetch_array($result))
+	{
+		$events[] = array('id'=>'session'.$row['id'], 'title'=>htmlentities($row['name']), 'start'=>date('c',$row['date_start']), 'end'=>date('c',$row['date_end']), "allDay"=>false, 'visibility'=>'1','className'=>'session', 'editable' => false);
+	}
 	return $events;
+
 }
 
 /**
@@ -2482,8 +2402,7 @@ function get_quiz_events($coursedb){
 	$result=Database::query($sql,__FILE__,__LINE__) or die(Database::error());
 	while ($row=Database::fetch_array($result))
 	{
-		//$events[] = array('id'=>'quiz'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['date_start']), 'end'=>date('c',$row['date_end']), "allDay"=>false, 'visibility'=>$row['visiblity'],'className'=>'quiz', 'editable' => false);
-                $events[] = array('id'=>'quiz'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['date_start']), 'end'=>date('c',$row['date_start']), "allDay"=>false, 'visibility'=>$row['visiblity'],'className'=>'quiz', 'editable' => false);
+		$events[] = array('id'=>'quiz'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['date_start']), 'end'=>date('c',$row['date_end']), "allDay"=>false, 'visibility'=>$row['visiblity'],'className'=>'quiz', 'editable' => false);
 	}
 
 	return $events;
@@ -2509,8 +2428,7 @@ function get_assignment_events($coursedb)
 	$result=Database::query($sql,__FILE__,__LINE__) or die(Database::error());
 	while ($row=Database::fetch_array($result))
 	{
-		//$events[] = array('id'=>'assignment'.$row['id'], 'title'=>htmlentities(str_replace('/','',$row['title'])), 'start'=>date('c',$row['date_start']), 'end'=>date('c',$row['date_end']), "allDay"=>false, 'visibility'=>'1','className'=>'assignment', 'editable' => false);
-                $events[] = array('id'=>'assignment'.$row['id'], 'title'=>htmlentities(str_replace('/','',$row['title'])), 'start'=>date('c',$row['date_start']), 'end'=>date('c',$row['date_start']), "allDay"=>false, 'visibility'=>'1','className'=>'assignment', 'editable' => false);
+		$events[] = array('id'=>'assignment'.$row['id'], 'title'=>htmlentities(str_replace('/','',$row['title'])), 'start'=>date('c',$row['date_start']), 'end'=>date('c',$row['date_end']), "allDay"=>false, 'visibility'=>'1','className'=>'assignment', 'editable' => false);
 	}
 	//return array();
 	return $events;
@@ -2557,8 +2475,7 @@ function get_platform_agenda_items($full_information=false,$editable = false) {
 			$row['start_full'] 	= $row['start'];
 			$row['start'] 		= date('c',$row['start']);
 			$row['end_full'] 	= $row['end'];
-			//$row['end'] 		= date('c',$row['end']);
-                        $row['end'] 		= date('c',$row['start']);
+			$row['end'] 		= date('c',$row['end']);
 			$row['allDay'] 		= false;
 			$row['className'] 	= 'platform';
 			$row['type']		= 'platform';
@@ -2567,8 +2484,7 @@ function get_platform_agenda_items($full_information=false,$editable = false) {
 		}
 		else
 		{
-			//$events[] = array('id'=>'platform'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['start']), 'end'=>date('c',$row['end']), "allDay"=>false, 'visibility'=>'1','className'=>'platform', 'editable'=>$editable);
-                        $events[] = array('id'=>'platform'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['start']), 'end'=>date('c',$row['start']), "allDay"=>false, 'visibility'=>'1','className'=>'platform', 'editable'=>$editable);
+			$events[] = array('id'=>'platform'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['start']), 'end'=>date('c',$row['end']), "allDay"=>false, 'visibility'=>'1','className'=>'platform', 'editable'=>$editable);
 	}
 	}
 	return $events;
@@ -2610,13 +2526,11 @@ function get_personal_agenda_items($full_information=false) {
 			$row['allDay'] 		= false;
 			$row['className'] 	= $class_name;
 			$row['type']		= 'course';
-                        $row['parent_event_id'] =  isset($row['parent_event_id'])?intval($row['parent_event_id']):0;
-                        $row['editable']	= !empty($row['parent_event_id'])?false:true;
-			$events[$row['id']]     = $row;
+			$events[$row['id']] = $row;
 		}
 		else
 		{
-			$events[$row['id']] = array('id'=>'personal'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['start']), 'end'=>date('c',$row['end']), "allDay"=>false, 'visibility'=>'1','className'=>'personal', 'parent_event_id' => isset($row['parent_event_id'])?intval($row['parent_event_id']):0, 'editable' => !empty($row['parent_event_id'])?false:true);
+			$events[$row['id']] = array('id'=>'personal'.$row['id'], 'title'=>htmlentities($row['title']), 'start'=>date('c',$row['start']), 'end'=>date('c',$row['end']), "allDay"=>false, 'visibility'=>'1','className'=>'personal');
 		}
 	}
 	return $events;
@@ -2636,7 +2550,6 @@ function get_personal_agenda_items($full_information=false) {
  * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University, Belgium
  * @version june 2010
  */
-
 function get_all_agenda_items($full_information=false) {
 	// getting all the courses that this user is subscribed to
 	$courses = get_all_courses_of_user();
@@ -2647,13 +2560,14 @@ function get_all_agenda_items($full_information=false) {
 
 	// variable initialisation
 	$events = array();
+
 	// getting all the calendar events of the courses
-        $course_events = array();
-	foreach ($courses as $key=>$course){                        
-            $course_events = get_all_course_agenda_items($course['db'], $course['code']);
-            $events = array_merge($events,$course_events);
+	foreach ($courses as $key=>$course){
+		$course_events = array();
+		$course_events = get_course_agenda_items($course['db'],$course['code'],$full_information,false);
+		$events = array_merge($events,$course_events);
 	}
-        
+
 	// getting the personal calendar events
 	$personal_events = get_personal_agenda_items($full_information);
 	$events = array_merge($events,$personal_events);
@@ -3042,11 +2956,6 @@ function calendar_javascript(){
 		$actionicons = "$(this).children('a').append('<span class=\"fc-event-actions\"><img src=\"../img/edit.png\" id=\"edit_'+calEvent.id+'\" class=\"edit\" alt=\"" . get_lang ( 'Edit' ) . "\"/><img src=\"../img/delete.png\" id=\"delete_'+calEvent.id+'\" class=\"delete\" alt=\"" . get_lang ( 'Delete' ) . "\"/><img src=\"../img/'+visibility_icon+'\" id=\"visibility_'+calEvent.id+'\" class=\"visibility\" alt=\"" . get_lang ( 'ChangeVisibility' ) . "\"/><img src=\"../img/export.png\" id=\"export_'+calEvent.id+'\" class=\"export\" alt=\"" . get_lang ( 'IcalExport' ) . "\"/></span>');";
 	}
 
-	// google calendar import
-	if (api_get_setting('calendar_google_import')=='true'){
-		$google_calendar_get_id_js = google_calendar_get_id_js();
-	}
-
 	// detail view
 	if (api_get_setting('calendar_detail_view') == 'detail'){
 		$detailview = 'detail';
@@ -3069,12 +2978,6 @@ function calendar_javascript(){
 					},";
 	}
 
-	// Sources of the events
-	global $sources, $htmlHeadXtra;
-	$sources[] = "'ajax.php?action=getevents&output=json&group=".Security::Remove_XSS($_GET['group'])."'";
-	if (api_get_setting('calendar_google_import')=='true'){
-		google_calendar_sources();
-	}
 
 	if (api_is_allowed_to_edit())
 	{
@@ -3301,9 +3204,7 @@ function calendar_javascript(){
 					height: 1200,
 					" . $defaultview . "
 					editable: true,
-					eventSources: [
-						".implode(",",$sources)."
-						],
+					events: \"ajax.php?action=getevents&output=json&group=".Security::Remove_XSS($_GET['group'])."\",
 					eventMouseover: function(calEvent,jsEvent) {
 							// the appropriate visibility icon
 							if (calEvent.visibility == 1){
@@ -3313,9 +3214,6 @@ function calendar_javascript(){
 							}
 						if ($(this).hasClass('courseagenda')){
 							".$actionicons."
-						}
-						if ($(this).hasClass('gcal-event')) {
-							$(this).children('a').append('<span class=\"fc-event-actions\"><img src=\"../img/edit.gif\" id=\"edit_google_'+calEvent.id+'\" class=\"edit gcaledit\" alt=\"" . get_lang ( 'Edit' ) . "\"/><img src=\"../img/delete.gif\" id=\"delete_google_'+calEvent.id+'\" class=\"delete gcaldelete\" alt=\"" . get_lang ( 'Delete' ) . "\"/></span>');
 						}
 					},
 					eventMouseout: function(calEvent,jsEvent) {
@@ -3421,39 +3319,28 @@ function calendar_javascript(){
 			// clicking the edit icon
 				$('.fc-event-actions .edit').live('click', function(){
 					id=$(this).attr('id');
-					var gcal_id = '';
-					".$google_calendar_get_id_js."
-					$(location).attr('href','agenda.php?".api_get_cidreq()."&action=edit&id='+id.replace('edit_','') + '&calendar=' + gcal_id);
-					event.stopPropagation();
-					return false;
+					$(location).attr('href','agenda.php?".api_get_cidreq()."&action=edit&id='+id.replace('edit_',''));
+				event.stopPropagation();
 				});
 
 			// clicking the delete icon
-			$('.fc-event-actions .delete').live('click', function(){
-				id=$(this).attr('id');
+				$('.fc-event-actions .delete').live('click', function(){
+					id=$(this).attr('id');
 
-				var gcal_id = '';
-				".$google_calendar_get_id_js."
+					// remove from database
+					$.ajax({
+					  url: 'ajax.php',
+					  data: {action: 'delete', id: id.replace('delete_','')}
+					});
 
-				// remove from database
-				$.ajax({
-				  url: 'ajax.php',
-				  data: {action: 'delete', id: id.replace('delete_',''), calendar: gcal_id},
-				  success: function(data){
-						$('#content').html(data);
-					}
-				});
+					// get the fc_index
+					var fc_index = $('.fc-event').index($(this).parent().parent().parent());
 
-				// get the fc_index
-				var fc_index = $('.fc-event').index($(this).parent().parent().parent());
-
-				// remove the fc-event
+					// remove the fc-event
 				DokeosCalendar.fullCalendar('removeEvents',id.replace('delete_',''));
 
 				// also updating the list view of the item
 				$('#list_'+id.replace('delete_','')).remove();
-
-				return false;
 			});
 
 			// clicking the visibility icon
@@ -3850,13 +3737,7 @@ function calendar_javascript(){
                           try {
                             _event_type = 'course_events';
                             data_id = id.split('course_events');
-                            // Get the ID of the session
-                            if (data_id[1] == 'undefined') {
-                                get_id = id;
-                            } else {
-                                get_id = data_id[1];
-                            }
-                            
+                            get_id = data_id[1];// Get the ID of the session
                             if (get_id > 0) {
                               find = false;
                             }
@@ -3927,14 +3808,8 @@ function mycalendar_javascript(){
 	}
 
 	// display action icons or not
-	if (api_get_setting('agenda_action_icons') == 'true') {                                        
-            $actionicons = "
-                if (calEvent.parent_event_id && calEvent.parent_event_id != 0) {
-                    $(this).children('a').append('<span class=\"fc-event-actions\"><img src=\"../img/delete.png\" id=\"delete_'+calEvent.id+'\" class=\"delete\" alt=\"" . get_lang ( 'Delete' ) . "\"/></span>');
-                } else {
-                    $(this).children('a').append('<span class=\"fc-event-actions\"><img src=\"../img/edit.png\" id=\"edit_'+calEvent.id+'\" class=\"edit\" alt=\"" . get_lang ( 'Edit' ) . "\"/><img src=\"../img/delete.png\" id=\"delete_'+calEvent.id+'\" class=\"delete\" alt=\"" . get_lang ( 'Delete' ) . "\"/></span>');
-	}
-            ";
+	if (api_get_setting('agenda_action_icons') == 'true'){
+		$actionicons = "$(this).children('a').append('<span class=\"fc-event-actions\"><img src=\"../img/edit.png\" id=\"edit_'+calEvent.id+'\" class=\"edit\" alt=\"" . get_lang ( 'Edit' ) . "\"/><img src=\"../img/delete.png\" id=\"delete_'+calEvent.id+'\" class=\"delete\" alt=\"" . get_lang ( 'Delete' ) . "\"/></span>');";
 	}
 
 	// detail view

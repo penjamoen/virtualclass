@@ -26,7 +26,7 @@ if(file_exists(api_get_path(INCLUDE_PATH).'/conf/mail.conf.php')) {
  */
 function api_mail($recipient_name, $recipient_email, $subject, $message, $sender_name="", $sender_email="", $extra_headers="") {
 
-   global $regexp, $charset;
+   global $regexp;
    global $platform_email;
 
    $mail = new PHPMailer();
@@ -75,44 +75,17 @@ function api_mail($recipient_name, $recipient_email, $subject, $message, $sender
    {
       $mail->FromName = $platform_email['SMTP_FROM_NAME'];
    }
-   
-      // Convert default message to UTF-8 for support accents in french,russian...
-      //$to_charset = isset($extra_headers['charset']) ? $extra_headers['charset'] : $mail->CharSet;
-      //$mail->Subject = api_convert_encoding($subject, $to_charset, $charset);
-      //$mail->Body = api_convert_encoding($message, $to_charset, $charset);
-      
       $mail->Subject = $subject;
-      $mail->Body = $message;
-      
+      $mail->Body    = $message;
       //only valid address
       if(eregi( $regexp, $recipient_email ))
       {
      	 $mail->AddAddress($recipient_email, $recipient_name);
       }
 
-	if (is_array($extra_headers) && count($extra_headers)>0){
-		foreach($extra_headers as $key=>$value)
-		{
-			switch(strtolower($key)){
-				case 'encoding':
-				case 'content-transfer-encoding':
-					$mail->Encoding = $value;
-					break;
-				case 'charset':
-					$mail->CharSet = $value;
-					break;
-				case 'contenttype':
-				case 'content-type':
-					$mail->ContentType = $value;
-					break;
-				default:
-					$mail->AddCustomHeader($key.':'.$value);
-					break;
-			}
-		}
+	if ($extra_headers != ""){
+		$mail->AddCustomHeader($extra_headers);
 	}
-    // WordWrap the html body (phpMailer only fixes AltBody) FS#2988
-    $mail->Body = $mail->WrapText($mail->Body, $mail->WordWrap);
    //send mail
    if (!$mail->Send())
    {
@@ -149,7 +122,6 @@ function api_mail_html($recipient_name, $recipient_email, $subject, $message, $s
  
    global $regexp;
    global $platform_email;
-   global $charset;
 
    $mail = new PHPMailer();
    $mail->Mailer  = $platform_email['SMTP_MAILER'];
@@ -197,13 +169,9 @@ function api_mail_html($recipient_name, $recipient_email, $subject, $message, $s
    {
       $mail->FromName = $platform_email['SMTP_FROM_NAME'];
    }
-      
-      // Convert default message to UTF-8 for support accents in french,russian...
-      //$to_charset = isset($extra_headers['charset']) ? $extra_headers['charset'] : $mail->CharSet;
-      $mail->Subject = $subject;
+      $mail->Subject = $subject;            
       $mail->AltBody = strip_tags(str_replace('<br />',"\n", api_html_entity_decode($message)));
       $mail->Body = '<html><head></head><body>'.$message.'</body></html>';
-      
       // attachment ...
       if (!empty($data_file)) {
       	$mail->AddAttachment($data_file['path'], $data_file['filename']);
@@ -240,7 +208,7 @@ function api_mail_html($recipient_name, $recipient_email, $subject, $message, $s
 					$mail->Encoding = $value;
 					break;
 				case 'charset':
-					$mail->CharSet = $value;
+					$mail->Charset = $value;
 					break;
 				case 'contenttype':
 				case 'content-type':

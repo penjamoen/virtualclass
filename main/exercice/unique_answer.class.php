@@ -58,7 +58,7 @@ if (!class_exists('UniqueAnswer')):
    */
   function createAnswersForm($form) {
    // getting the exercise list
-   global $charset;
+	global $charset;
    $obj_ex = $_SESSION['objExercise'];
    $navigator_info = api_get_navigator(); 
 
@@ -68,7 +68,7 @@ if (!class_exists('UniqueAnswer')):
    $nb_answers = isset($_POST['nb_answers']) ? (int) $_POST['nb_answers'] : 4;
    $nb_answers += ( isset($_POST['lessAnswers']) ? -1 : (isset($_POST['moreAnswers']) ? 1 : 0));
 
-	if(isset($_POST['formsize']))
+   if(isset($_POST['formsize']))
 	{
 		$formsize = $_POST['formsize'];
 	}
@@ -107,11 +107,14 @@ if (!class_exists('UniqueAnswer')):
    $answer_lang_var = api_convert_encoding(get_lang('Answer'), $charset, api_get_system_encoding());
    $form->addElement('html', '<div style="float:right;padding-right:20px;"><img style="cursor: pointer;" src="../img/SmallFormFilled.png" alt="" onclick="lowlineform()" />&nbsp;<img style="cursor: pointer;" src="../img/BigFormClosed.png" alt="" onclick="highlineform()" /></div>');
 
-   $form->addElement('html', '<div id="leftcontainer" class="quiz_answer_small_squarebox">');
+   $form->addElement('html', '<div style="float:left">');
    $html = '
-		<div class="row">			
+		<div class="row">
+			<!--<div class="label">
+			' . get_lang('Answers') . ' <br /> <img src="../img/fill_field.png">
+			</div>-->
 			<div>
-				<table class="data_table" style="width:100%;">
+				<table class="data_table" style="width:50%;">
 					<tr style="text-align: center;">
 						<th>'.get_lang('True').'</th>
 						<th>
@@ -206,16 +209,17 @@ if (!class_exists('UniqueAnswer')):
      $temp_scenario['try' . $i] = $try_result;
      $temp_scenario['lp' . $i] = $lp;
      $temp_scenario['destination' . $i] = $list_dest;
- /*  $pre_list_destination=explode(';',$list_dest);
-	 $list_destination=array();
-	 foreach($pre_list_destination as $value)
-	 {
-	   $list_destination[]=$value;
-	 }
-	 $defaults['destination'.$i]=$list_destination;     
-     $defaults['destination'.$i] = $list_destination;*/
+     /* $pre_list_destination=explode(';',$list_dest);
+       $list_destination=array();
+       foreach($pre_list_destination as $value)
+       {
+       $list_destination[]=$value;
+       }
+       $defaults['destination'.$i]=$list_destination;
+      */
+     //$defaults['destination'.$i] = $list_destination;
     }else {
-	 /*$defaults['answer[1]']  = get_lang('langDefaultUniqueAnswer1');
+     /* 	$defaults['answer[1]']  = get_lang('langDefaultUniqueAnswer1');
        $defaults['weighting[1]'] = 10;
        $defaults['answer[2]']  = get_lang('langDefaultUniqueAnswer2');
        $defaults['weighting[2]'] = 0; */
@@ -226,18 +230,21 @@ if (!class_exists('UniqueAnswer')):
     $defaults['scenario'] = $temp_scenario;
 
     $renderer = & $form->defaultRenderer();
-    $renderer->setElementTemplate('<td align="center"><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>');
- //	$answer_number=$form->addElement('text', null,null,'value="'.$i.'"');
- //	$answer_number->freeze();
+    $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>');
+    //	$answer_number=$form->addElement('text', null,null,'value="'.$i.'"');
+    //	$answer_number->freeze();
 
     $form->addElement('radio', 'correct', null, null, $i, 'class="checkbox" style="margin-left: 0em;"');
- // $form->addElement('html_editor', 'answer['.$i.']', null, 'style="vertical-align:middle"', $editor_config);
- // $form->addElement('textarea', 'answer[' . $i . ']', null, 'id="answer['.$i.']" cols="55" rows="1"', $editor_config);
-    $form->add_html_editor('answer[' . $i . ']','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '100%', 'Height' => ''.$formsize_px.''));
- //	$form->addElement('textarea', 'answer['.$i.']',null, array('rows'=>'2','cols'=>'70'));
+    //$form->addElement('html_editor', 'answer['.$i.']', null, 'style="vertical-align:middle"', $editor_config);
+ //   $form->addElement('textarea', 'answer[' . $i . ']', null, 'id="answer['.$i.']" cols="55" rows="1"', $editor_config);
+    $form->add_html_editor('answer[' . $i . ']','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '450px', 'Height' => ''.$formsize_px.''));
+    //	$form->addElement('textarea', 'answer['.$i.']',null, array('rows'=>'2','cols'=>'70'));
     $form->addRule('answer[' . $i . ']', get_lang('ThisFieldIsRequired'), 'required');
- // $form->addElement('select', 'destination'.$i, get_lang('SelectQuestion').' : ',$select_question,'multiple');
- // $form->addElement('text', 'weighting[' . $i . ']', null, 'style="vertical-align:middle;margin-left: 0em;" size="5"');
+
+
+    //$form->addElement('select', 'destination'.$i, get_lang('SelectQuestion').' : ',$select_question,'multiple');
+
+    //$form->addElement('text', 'weighting[' . $i . ']', null, 'style="vertical-align:middle;margin-left: 0em;" size="5"');
     $form->addElement('html', '</tr>');
    }
    $form->addElement('html', '</table>');
@@ -252,59 +259,62 @@ if (!class_exists('UniqueAnswer')):
 		else {
 		$form->addElement('html','<div style="float:right;">');
 		}	
- // $form->addElement('submit', 'lessAnswers', get_lang('LessAnswer'), 'class="minus"');
- // $form->addElement('submit', 'moreAnswers', get_lang('PlusAnswer'), 'class="plus"');
-	$form->addElement('submit', 'lessAnswers', '', 'class="button_less"');
-	$form->addElement('submit', 'moreAnswers', '', 'class="button_more"');	
+    //$form->addElement('submit', 'lessAnswers', get_lang('LessAnswer'), 'class="minus"');
+    //$form->addElement('submit', 'moreAnswers', get_lang('PlusAnswer'), 'class="plus"');
+	$form->addElement('submit', 'lessAnswers', '', 'style="background:url(\'../img/form-minus.png\') no-repeat;width:35px;height:40px;border:0px;"');
+	$form->addElement('submit', 'moreAnswers', '', 'style="background:url(\'../img/form-plus.png\') no-repeat;width:35px;height:40px;border:0px;"');	
    } else {
 	  $form->addElement('html','<div align="right">');
   //  $form->addElement('style_submit_button', 'lessAnswers', get_lang('LessAnswer'), 'class="minus"');
   //  $form->addElement('style_submit_button', 'moreAnswers', get_lang('PlusAnswer'), 'class="plus"');
-	  $form->addElement('submit', 'lessAnswers', '', 'class="button_less"');
-	  $form->addElement('submit', 'moreAnswers', '', 'class="button_more"');	
+	  $form->addElement('html','<input type="image" value="lessAnswers" src="../img/form-minus.png" name="lessAnswers" style="border:0px;background:transparent;">');
+	  $form->addElement('html','<input type="image" value="moreAnswers" src="../img/form-plus.png"  name="moreAnswers" style="border:0px;background:transparent;"> ');	
    }
-   $form->addElement('html', '</div></td></tr></table>');   
+   $form->addElement('html', '</div></td></tr></table>');
+
+   
    $form->addElement('html', '</div></div>');
+
    $form->addElement('html', '</div>');
 
    // Feedback container
    $form->addElement('html', '<div id="feedback_container" style="float:left;width:100%">');
-/* $form->addElement('html', '<br/><br/>');
-   Add fields for add the feedback
-   $form -> addElement ('html', '<table width="100%"><tr><td width="15%"><font size="2">Feedback if True</font>');
-   $feedbacktrue=$form->addElement('text', null,null,'value="Feedback if True"');
-   $feedbacktrue->freeze();
-   $form -> addElement ('html', '</td><td>'); 
-   $form->addElement('html_editor', 'comment[1]',null,'style="vertical-align:middle"',array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '70%', 'Height' => '65'));*/
+//  $form->addElement('html', '<br/><br/>');
+   // Add fields for add the feedback
+   /* $form -> addElement ('html', '<table width="100%"><tr><td width="15%"><font size="2">Feedback if True</font>');
+     //		$feedbacktrue=$form->addElement('text', null,null,'value="Feedback if True"');
+     //		$feedbacktrue->freeze();
+     $form -> addElement ('html', '</td><td>'); */
+   //$form->addElement('html_editor', 'comment[1]',null,'style="vertical-align:middle"',array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '70%', 'Height' => '65'));
    $form->addElement('html', '<div style="float:left;width:50%;text-align:left;">' . get_lang('FeedbackIfTrue'));
-// $form->addElement('textarea', 'comment[1]', null, 'id="comment[1]" cols="55" rows="1"');
+//   $form->addElement('textarea', 'comment[1]', null, 'id="comment[1]" cols="55" rows="1"');
    $form->add_html_editor('comment[1]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => ''.$formsize_px.''));
    $form->addElement('html', '</div>');
- /* $form -> addElement ('html', '</td></tr>');
-    $form -> addElement ('html', '<tr><td><font size="2">Feedback if False</font>'); 
- 	$feedbackfalse=$form->addElement('text', null,null,'value="Feedback if False"');
- 	$feedbackfalse->freeze();
-    $form -> addElement ('html', '</td><td>');
-    $form->addElement('html_editor', 'comment[2]',null,'style="vertical-align:middle"',array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '70%', 'Height' => '65'));*/
+   /* $form -> addElement ('html', '</td></tr>');
+     $form -> addElement ('html', '<tr><td><font size="2">Feedback if False</font>'); */
+   //	$feedbackfalse=$form->addElement('text', null,null,'value="Feedback if False"');
+   //	$feedbackfalse->freeze();
+   //$form -> addElement ('html', '</td><td>');
+   //$form->addElement('html_editor', 'comment[2]',null,'style="vertical-align:middle"',array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '70%', 'Height' => '65'));
    $form->addElement('html', '<div style="float:right;width:50%;text-align:right">');
 
    $form->addElement('html', '<div style="float:right;text-align:left">' . get_lang('FeedbackIfFalse'));
-// $form->addElement('textarea', 'comment[2]', null, 'id="comment[2]" cols="55" rows="1"');
-   $form->add_html_editor('comment[2]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => ''.$formsize_px.''));
+//   $form->addElement('textarea', 'comment[2]', null, 'id="comment[2]" cols="55" rows="1"');
+	$form->add_html_editor('comment[2]','', false, false, array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '400px', 'Height' => ''.$formsize_px.''));
    $form->addElement('html', '</div></div>');
    $form->addElement('html', '<div style="float:right;text-align:left">');
-/* $form -> addElement ('html', '</td></tr>');
-   $form -> addElement ('html', '</table>'); */   
+   /* 	$form -> addElement ('html', '</td></tr>');
+     $form -> addElement ('html', '</table>'); */   
    //ie6 fix
    if ($navigator_info['name'] == 'Internet Explorer' && $navigator_info['version'] == '6') {
     //$form->addElement('submit', 'lessAnswers', get_lang('LessAnswer'),'class="minus"');
     //$form->addElement('submit', 'moreAnswers', get_lang('PlusAnswer'),'class="plus"');
-      $form->addElement('style_submit_button', 'submitQuestion', get_lang('Validate'), 'class="save"  style="float:right"');
+    $form->addElement('style_submit_button', 'submitQuestion', get_lang('Validate'), 'class="save"  style="float:right"');
    } else {
     //$form->addElement('style_submit_button', 'lessAnswers', get_lang('LessAnswer'),'class="minus"');
     //$form->addElement('style_submit_button', 'moreAnswers', get_lang('PlusAnswer'),'class="plus"');
-    //setting the save button here and not in the question class.php
-      $form->addElement('style_submit_button', 'submitQuestion', get_lang('Validate'), 'class="save" style="float:right"');
+    // setting the save button here and not in the question class.php
+    $form->addElement('style_submit_button', 'submitQuestion', get_lang('Validate'), 'class="save" style="float:right"');
    }
 
    $renderer->setElementTemplate('{element}', 'submitQuestion');

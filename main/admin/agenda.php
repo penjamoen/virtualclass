@@ -82,7 +82,7 @@ $(document).ready(function() {
 						var visibility_icon = 'invisible.gif';
 					}	
 					if ($(this).hasClass('platform')) {
-						$(this).children('a').append('<span class=\"fc-event-actions\">".Display::return_icon('pixel.gif', get_lang('Edit').' '.strtolower(get_lang('Edit')),array('class' => 'actionplaceholdericon actionedit')).Display::return_icon('pixel.gif', get_lang('Cancel').' '.strtolower(get_lang('Canel')),array('class' => 'actionplaceholdericon actiondelete'))."</span>');
+						$(this).children('a').append('<span class=\"fc-event-actions\"><img src=\"../img/edit.gif\" id=\"edit_'+calEvent.id+'\" class=\"edit\" alt=\"" . get_lang('Edit') . "\"/><img src=\"../img/delete.gif\" id=\"delete_'+calEvent.id+'\" class=\"delete\" alt=\"" . get_lang('Delete') . "\"/></span>');
 					}
 			},
 			eventMouseout: function(calEvent,jsEvent) {

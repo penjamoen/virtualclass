@@ -30,7 +30,6 @@ $langLinkURL = "Hivatkozás URL-je";
 $langWelcomeToOnlineConf = "Üdvözöljük az <b>Online konferencián</b>";
 $langNoLinkAvailable = "Nincs elérhet&#337; hivatkozás";
 $langChat_reset_by = "cseveg&#337; kiürítése";
-$langAdmin = "Felület adminisztrátor";
 $OrFile = "vagy fájl";
 $langCallSent = "Chat-felhívás elküldve";
 $langChatDenied = "Visszautasítva.";

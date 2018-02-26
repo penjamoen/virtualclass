@@ -40,21 +40,12 @@ $language_file[] = 'widgets';
 
 $use_anonymous = true;
 
-// Inlcuding the global initialization file.
-require_once '../../main/inc/global.inc.php';
-$css_name = api_get_setting('allow_course_theme') == 'true'?(api_get_course_setting('course_theme', null, true)?api_get_course_setting('course_theme', null, true):api_get_setting('stylesheets')):api_get_setting('stylesheets');
-
-// Check if we have a CSS with tablet support
-$css_info = array();
-$css_info = api_get_css_info($css_name);
-$css_type = !is_null($css_info['type']) ? $css_info['type'] : '';
-
 // everywhere inside the course the banner can be hidden but we have to display this always when we are on the course homepage. 
-if ($css_type == 'tablet') { // Display header 2 - - for 2.1 stylesheets
-$htmlHeadXtra[]='<script>jQuery(document).ready( function($) { $("#header2").show(); });</script>';
-} else { // Display header1, header 2 - for 2.0 stylesheets
 $htmlHeadXtra[]='<script>jQuery(document).ready( function($) { $("#header1, #header2").show(); });</script>';
-}
+
+// Inlcuding the global initialization file.
+require '../../main/inc/global.inc.php';
+
 // include additional libraries
 require 'course_home_functions.php';
 include_once(api_get_path(LIBRARY_PATH) . 'course.lib.php');
@@ -132,16 +123,18 @@ if($is_allowed_in_course == false)
 -----------------------------------------------------------
 */
 
-if (api_get_setting('homepage_view') == 'activity' && $css_type != 'tablet') {
-	require_once 'activity.php';
-} elseif(api_get_setting('homepage_view') == '2column' && $css_type != 'tablet') {
-	require_once '2column.php';
-} elseif($css_type == 'tablet') {
-	require_once 'tablet.php';
-} elseif(api_get_setting('homepage_view') == '3column' && $css_type != 'tablet') {
-	require_once '3column.php';
-} elseif(api_get_setting('homepage_view') == "widget" && $css_type != 'tablet') {
-	require_once 'widget.php';
+if (api_get_setting('homepage_view') == 'activity') {
+	require 'activity.php';
+}
+elseif(api_get_setting('homepage_view') == '2column') {
+	require '2column.php';
+}
+elseif(api_get_setting('homepage_view') == '3column') {
+	require '3column.php';
+}
+elseif(api_get_setting('homepage_view') == "widget")
+{
+	include('widget.php');
 }
 
 // Display the footer

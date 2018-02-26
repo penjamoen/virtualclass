@@ -46,7 +46,6 @@ function dokeos_preprocess_results($results) {
 	    }
 
 	    $processed_results = array();
-            
 	    foreach ($results_by_tool as $toolid => $rows) {
 	        $tool_processor_class = $toolid .'_processor';
 	        $tool_processor_path = api_get_path(LIBRARY_PATH) .'search/tool_processors/'. $tool_processor_class .'.class.php';

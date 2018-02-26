@@ -36,7 +36,7 @@ $doc_url = $_GET['file'];
 //change the '&' that got rewritten to '///' by mod_rewrite back to '&'
 $doc_url = str_replace('///', '&', $doc_url);
 //still a space present? it must be a '+' (that got replaced by mod_rewrite)
-//$doc_url = str_replace(' ', '+', $doc_url);
+$doc_url = str_replace(' ', '+', $doc_url);
 $doc_url = str_replace('/..', '', $doc_url); //echo $doc_url;
 if (! isset($_course)) {
 	api_not_allowed(true);

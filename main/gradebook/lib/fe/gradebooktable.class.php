@@ -274,13 +274,13 @@ private function build_id_column ($item) {
 
 	private function build_type_column ($item) {
 		if($item->get_type() == 'evaluation') {
-		  return Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionexam_22', 'border'=>'0', 'hspace'=>'5', 'align'=>'middle', 'alt'=>''));
+		  return '<img src="../img/exam_22.png" border="0" hspace="5" align="middle" alt="" />';
 		} elseif($item->get_type() == 'presence') {
-		  return Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actionpresence_22', 'border'=>'0', 'hspace'=>'5', 'align'=>'middle', 'alt'=>''));
+		  return '<img src="../img/presence_22.png" border="0" hspace="5" align="middle" alt="" />';
 		} elseif ($item->get_type() == 'category') {
 		  return '<img src="../img/gradebook_eval_not_empty.png" border="0" hspace="5" align="middle" alt="" />';
         } else {
-		  return Display::return_icon('pixel.gif','',array('class'=>'actionplaceholdericon actiononline_22', 'border'=>'0', 'hspace'=>'5', 'align'=>'middle', 'alt'=>''));
+		  return '<img src="../img/online_22.png" border="0" hspace="5" align="middle" alt="" />';
 		}
 	}
 

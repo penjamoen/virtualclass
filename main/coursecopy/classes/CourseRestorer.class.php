@@ -107,7 +107,6 @@ class CourseRestorer
 			$course_info = api_get_course_info();
 			$this->course->destination_db = $course_info['dbName'];
 			$this->course->destination_path = $course_info['path'];
-			$this->destination_course_code = api_get_course_id();
 		} else {
 			$course_info = Database :: get_course_info($destination_course_code);
 			$this->course->destination_db = $course_info['database'];
@@ -806,7 +805,6 @@ class CourseRestorer
 			$table_qui = Database :: get_course_table(TABLE_QUIZ_TEST, $this->course->destination_db);
 			$table_rel = Database :: get_course_table(TABLE_QUIZ_TEST_QUESTION, $this->course->destination_db);
 			$table_doc = Database :: get_course_table(TABLE_DOCUMENT, $this->course->destination_db);
-			$tbl_quiz_scenario = Database :: get_course_table(TABLE_QUIZ_SCENARIO, $this->course->destination_db);
 			$resources = $this->course->resources;
 			foreach ($resources[RESOURCE_QUIZ] as $id => $quiz)
 			{
@@ -847,17 +845,6 @@ class CourseRestorer
 						$condition_session;
 					Database::query($sql, __FILE__, __LINE__);
 					$new_id = Database::insert_id();
-					
-					$scenario_types = array(1, 2);
-				    foreach ($scenario_types as $scenario) {
-				    $rsScenario = Database::query("INSERT INTO $tbl_quiz_scenario (exercice_id, scenario_type,
-				    title, description, sound, type, random, active, results_disabled,
-				    max_attempt, start_time, end_time, feedback_type) VALUES('".$new_id."','".$scenario."',
-				    '".Database::escape_string($quiz->title)."','".Database::escape_string($quiz->description)."','".Database::escape_string($doc)."',
-				    '".$quiz->quiz_type."','".$quiz->random."','".$quiz->active."',
-				    '".(int)$quiz->results_disabled."','".(int)$quiz->attempts."','".$quiz->start_time."',
-				    '".$quiz->end_time."','".(int)$quiz->feedback_type."')", __FILE__, __LINE__);
-				    }
 				}
 				else
 				{
@@ -866,15 +853,8 @@ class CourseRestorer
 				}
 				$this->course->resources[RESOURCE_QUIZ][$id]->destination_id = $new_id;
 				foreach ($quiz->question_ids as $index => $question_id) {
-                                        if (is_array($question_id)) {
-                                            $question_order = $question_id['position'];
-                                            $question_id = $question_id['id'];
-                                        } else {
-                                            $question_order = $index;
-                                            $question_id = $question_id;  
-                                        }
 					$qid = $this->restore_quiz_question($question_id);
-					$sql = "INSERT IGNORE INTO ".$table_rel." SET question_order = ".$question_order.",question_id = ".$qid.", exercice_id = ".$new_id;
+					$sql = "INSERT IGNORE INTO ".$table_rel." SET question_order = ".$index.",question_id = ".$qid.", exercice_id = ".$new_id;
                     Database::query($sql, __FILE__, __LINE__);
 				}
 			}
@@ -1168,11 +1148,6 @@ class CourseRestorer
 			$table_main 	= Database :: get_course_table(TABLE_LP_MAIN, $this->course->destination_db);
 			$table_item 	= Database :: get_course_table(TABLE_LP_ITEM, $this->course->destination_db);
 			$table_tool 	= Database::get_course_table(TABLE_TOOL_LIST, $this->course->destination_db);
-			
-			// check nb tools
-			$sql = 'SELECT MAX(id) FROM '.$table_tool;
-			$rs = Database::query($sql, __FILE__, __LINE__);
-			$max_tool_id = Database::result($rs, 0, 0);
 
 			$resources = $this->course->resources;
 
@@ -1205,8 +1180,7 @@ class CourseRestorer
 				$new_lp_id = Database::insert_id();
 
 				if($lp->visibility) {
-					$tool_id = $max_tool_id + intval($lp->tool_id);
-					$sql = "INSERT INTO $table_tool SET id=$tool_id, name='".Database::escape_string($lp->name)."', link='newscorm/lp_controller.php?action=view&lp_id=$new_lp_id', image='scormbuilder.gif', visibility='1', admin='0', address='squaregrey.gif'";
+					$sql = "INSERT INTO $table_tool SET name='".Database::escape_string($lp->name)."', link='newscorm/lp_controller.php?action=view&lp_id=$new_lp_id', image='scormbuilder.gif', visibility='1', admin='0', address='squaregrey.gif'";
 					Database::query($sql, __FILE__, __LINE__);
 				}
 

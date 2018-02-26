@@ -1,13 +1,13 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$langCourseProgram  = "Descrizione";
+$langCourseProgram  = "Descrizione del Corso";
 $langThisCourseDescriptionIsEmpty  = "Questo corso non è stato ancora descritto";
 $langEditCourseProgram  = "Crea o modifica la descrizione";
-$QuestionPlan  = "Help";
+$QuestionPlan  = "Informazioni da dare:";
 $langInfo2Say  = "Informazioni da fornire ai corsisti";
 $langOuAutreTitre  = "Titolo";
-$langNewBloc  = "Calendario";
+$langNewBloc  = "Altro";
 $langAddCat  = "Aggiungi una categoria";
 $langAdd  = "Aggiungi";
 $langValid  = "Conferma";

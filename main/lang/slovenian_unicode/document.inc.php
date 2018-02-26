@@ -225,8 +225,4 @@ $Photos = "Fotografije";
 $Mascot = "Maskota";
 $Template = "Predloga";
 $Filename = "Ime datoteke";
-$TemplateTitleTwoColumns = "Dva stolpca";
-$TemplateTitleTwoColumnsDescription = "Dva stolpca";
-$TemplateTitleCertificate = "Certifikat";
-$TemplateTitleCertificateDescription = "Certifikat";
 ?>

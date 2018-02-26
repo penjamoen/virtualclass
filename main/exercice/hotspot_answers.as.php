@@ -66,12 +66,6 @@ while ($hotspot = mysql_fetch_array($result))
 	{
 		$output .= "&hotspot_".$hotspot['id']."_type=delineation";
 	}
-	
-	// oar
-	if ($hotspot['hotspot_type'] == 'oar')
-	{
-		$output .= "&hotspot_".$hotspot['id']."_type=delineation";
-	}	
 
 	$output .= "&hotspot_".$hotspot['id']."_coord=".$hotspot['hotspot_coordinates']."";
 

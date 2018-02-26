@@ -39,11 +39,7 @@ switch ($_POST['action']) {
 		break;
 	case 'editcontent_bis' : 
 		content_bis_display_form ($_POST['content_bis_id']);
-		break;
-	case 'savecontentorder'	:
-		if($_POST['widget'] == 'content_bis'){
-			save_content_bis_order($_POST['content_bis']);
-	}
+		break;		
 }
 switch ($_GET ['action']) {
 	case 'get_widget_information' :
@@ -105,7 +101,7 @@ function content_bis_get_content() {
 			</style>';	
 	
 	if (api_is_allowed_to_edit ()) {
-		echo '<a href="' . api_get_path ( WEB_PATH ) . 'main/widgets/content_bis/widgetfunctions.php?action=addcontent_bis" title="' . get_lang ( 'AddContent' ) . '" class="dialoglink">' . Display::return_icon ( 'new_test.gif' ) . ' ' . get_lang ( 'AddContent' ) . '</a>';
+		echo '<a href="' . api_get_path ( WEB_PATH ) . 'main/widgets/content_bis/widgetfunctions.php?action=addcontent_bis" title="' . get_lang ( 'Addcontent' ) . '" class="dialoglink">' . Display::return_icon ( 'new_test.gif' ) . ' ' . get_lang ( 'AddContent' ) . '</a>';
 		;
 	}
 	
@@ -191,25 +187,12 @@ function content_bis_get_content() {
 		$sql = "SELECT *, content_bis.id as content_bis_id, content_bis.title as content_bis_title FROM $table_content_bis ORDER BY content_bis.display_order DESC";
 	}
 	$result = Database::query ( $sql, __FILE__, __LINE__ );
-	echo '<script>';
-	echo '$("div.contentbiswrapper").sortable({ 
-			handle:	".contentmovehandle",
-			update: function(){ 
-				var parameters = "action=savecontentorder&widget=content_bis&"+$(this).sortable("serialize"); 
-				$.post("'.api_get_path(WEB_CODE_PATH).'widgets/content_bis/widgetfunctions.php", parameters, function(theResponse){
-					$("#debug").html(theResponse);
-				});
-				}
-			});';	
-	echo '</script>';
-	echo '<div class="contentbiswrapper">';
 	while ( $row = Database::fetch_array ( $result, 'ASSOC' ) ) {
 		$content_bis = '';
 		echo '<div id="content_bis_' . $row ['content_bis_id'] . '" class="content_bis" style="border: 1px solid #ddd; margin-bottom: 10px; padding: 5px;">';
 		echo '<div class="content_bis_title">' . $row ['content_bis_title'];
 		if (api_is_allowed_to_edit ()) {
 			echo '<span class="content_bisactions">';
-			Display::display_icon('draggable.png', get_lang('Move'), array('height' => '22px', 'class' => 'contentmovehandle'));
 			echo '<a href="' . api_get_path ( WEB_PATH ) . 'main/widgets/content_bis/widgetfunctions.php?action=editcontent_bis&content_bis_id=' . $row ['content_bis_id'] . '" title="' . get_lang ( 'EditContent' ) . '" class="dialoglink">' . Display::return_icon ( 'edit.png' ) . '</a>';
 			echo '<a href="' . $row ['content_bis_id'] . '" title="' . get_lang ( 'DeleteContent' ) . '" class="deletecontent_bis">' . Display::return_icon ( 'delete.png' ) . '</a>';
 			echo '</span>';
@@ -230,14 +213,14 @@ function content_bis_get_content() {
 		if ($row ['comments_allowed']) {
 			echo '<div class="content_bis_number_of_comments"><a href="' . $row ['content_bis_id'] . '"><span class="number">' . ( int ) $comment [$row ['content_bis_id']] . '</span> ' . get_lang ( 'Comments' ) . '</a></div>';
 			if (!api_is_anonymous()){
-				echo '<div class="content_bis_add_comment"><a href="' . $row ['content_bis_id'] . '" title="' . get_lang ( 'AddContent' ) . '" class="">' . get_lang ( 'AddComment' ) . '</a></div>';
+				echo '<div class="content_bis_add_comment"><a href="' . $row ['content_bis_id'] . '" title="' . get_lang ( 'Addcontent' ) . '" class="">' . get_lang ( 'AddComment' ) . '</a></div>';
 			}
 		}
 		echo '<div class="content_bis_list" style="display:none;"></div>';
 		echo '</div>';
 		echo '</div>';
 	}
-	echo '</div>';
+
 }
 
 function content_bis_get_content_bis_info($content_bis_id=0){
@@ -292,7 +275,7 @@ function content_bis_display_form($content_bis_id=0) {
 	$group [] = & HTML_QuickForm::createElement ( 'radio', 'content_bis_comments_allowed', null, get_lang ( 'Yes' ), 1 );
 	$group [] = & HTML_QuickForm::createElement ( 'radio', 'content_bis_comments_allowed', null, get_lang ( 'No' ), 0 );
 	$form->addGroup ( $group, 'content_bis_comments_allowed', get_lang ( 'AreCommentsAllowed' ), '&nbsp;' );
-	$form->addElement ( 'style_submit_button', 'submit_add_content_bis', get_lang ( 'SaveContent' ), 'class="add"' );
+	$form->addElement ( 'style_submit_button', 'submit_add_content_bis', get_lang ( 'Savecontent' ), 'class="add"' );
 	
 	// setting the rules
 	$form->addRule ( 'content_bis_title', '<div class="required">' . get_lang ( 'ThisFieldIsRequired' ), 'required' );
@@ -385,10 +368,6 @@ function content_bis_display_form($content_bis_id=0) {
 function content_bis_save($formelements) {
 	global $_course, $_user;
 	
-	// access restriction
-	if (!api_is_allowed_to_edit ()) {
-		return false;
-	}
 	// database table definitions
 	$table_documents = Database::get_course_table ( TABLE_DOCUMENT );
 	if (!empty($_course) AND is_array($_course)){
@@ -531,19 +510,8 @@ function content_bis_install() {
 }
 
 function content_bis_comment_display_form() {
-	// access restriction.
-	/*
-	if (!api_is_allowed_to_edit ()) {
-		return false;
-	}
-	*/
 	require_once (api_get_path ( LIBRARY_PATH ) . 'formvalidator/FormValidator.class.php');
-	echo '<style>
-		div.row div.formw{
-			width: 210px; 					
-		} 		
-		</style>';
-
+	
 	// we have to do this without ajax because the current fckeditor implementation in Dokeos does not support ajaxsubmit (too many changes)
 	$form = new FormValidator ( 'addcomment', 'post', api_get_path ( WEB_PATH ) . 'main/widgets/content_bis/widgetfunctions.php' );
 	
@@ -551,12 +519,12 @@ function content_bis_comment_display_form() {
 	$form->addElement ( 'header', '', get_lang ( 'AddComment' ) );
 	$form->addElement ( 'hidden', 'action', get_lang ( 'Action' ) );
 	$form->addElement ( 'hidden', 'content_bis_id', get_lang ( 'contentId' ) );
-	$form->addElement ( 'text', 'comment_title', get_lang ( 'Title' ), array ('size' => 30 ) );
-	$form->addElement ( 'textarea', 'comment_text', get_lang ( 'Comment' ), array ('rows' => 5, 'cols' => 30 ) );
+	$form->addElement ( 'text', 'comment_title', get_lang ( 'Title' ), array ('size' => 53 ) );
+	$form->addElement ( 'textarea', 'comment_text', get_lang ( 'Title' ), array ('rows' => 5, 'cols' => 50 ) );
 	$form->addElement ( 'style_submit_button', 'submit_add_comment', get_lang ( 'SaveComment' ), 'class="add submit_add_comment"' );
 	
 	// setting the rules
-	$form->addRule ( 'comment_title', '<div class="required">' . get_lang ( 'ThisFieldIsRequired' ), 'required' );
+	$form->addRule ( 'content_bis_title', '<div class="required">' . get_lang ( 'ThisFieldIsRequired' ), 'required' );
 	
 	// default values
 	$defaults ['action'] = 'save_comment';
@@ -691,10 +659,6 @@ function content_bis_save_comment($values) {
 
 function delete_content_bis($content_bis_id) {
 	global $_course;
-	// access restriction
-	if (!api_is_allowed_to_edit ()) {
-		return false;
-	}
 	
 	// database table definition
 	$table_document = Database::get_course_table ( 'document' );
@@ -725,31 +689,6 @@ function delete_content_bis($content_bis_id) {
 	if (!empty($_course) AND is_array($_course)){
 		include_once (api_get_path ( LIBRARY_PATH ) . 'document.lib.php');
 		DocumentManager::delete_document ( $_course, $content_bis_info ['path'], api_get_path(SYS_COURSE_PATH).$_course['path']."/document");
-	}
-}
-
-function save_content_bis_order($content){
-	global $_course;
-
-	// access restriction
-	if (!api_is_allowed_to_edit ()) {
-		return false;
-	}
-
-	// database table definitions
-	if (!empty($_course) AND is_array($_course)){
-		$table_content = Database::get_course_table ('content_bis');
-	} else {
-		$table_content = Database::get_main_table ('content_bis');
-	}
-
-	$max = count($content);
-
-	$counter = $max;
-	foreach ($content as $key=>$contentid){
-		$sql = "UPDATE $table_content SET display_order = '".Database::escape_string($counter)."' WHERE id = '".Database::escape_string($contentid)."'";
-		$result = Database::query ( $sql, __FILE__, __LINE__ );
-		$counter--;
 	}
 }
 ?>

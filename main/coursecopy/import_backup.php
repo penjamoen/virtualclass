@@ -8,7 +8,7 @@ $language_file = array('exercice', 'coursebackup', 'admin');
 $help_content = 'importbackup';
 
 // including the global file
-require_once ('../inc/global.inc.php');
+include ('../inc/global.inc.php');
 
 // include additional libraries
 include_once(api_get_path(LIBRARY_PATH) . 'fileManage.lib.php');
@@ -78,9 +78,9 @@ if((isset($_POST['action']) && $_POST['action'] == 'course_select_form' ) || (is
 		$cr = new CourseRestorer($course);
 		$cr->set_file_option($_POST['same_file_name_option']);
 		$cr->restore();
-		echo '<div class="confirmation-message">'.get_lang('ImportFinished').'</div>'.
+		Display::display_normal_message(get_lang('ImportFinished').
                 //'<a class="bottom-link" href="../course_home/course_home.php?'.api_get_cidreq().'">&gt;&gt; '.get_lang('CourseHomepage').'</a>',false); // This is not the preferable way to go to the course homepage.
-                '<a class="bottom-link" href="'.api_get_path(WEB_COURSE_PATH).api_get_course_path().'/index.php">&lt;&lt; '.get_lang('CourseHomepage').'</a>';
+                '<a class="bottom-link" href="'.api_get_path(WEB_COURSE_PATH).api_get_course_path().'/index.php">&lt;&lt; '.get_lang('CourseHomepage').'</a>',false);
 	} else {
 		if(!$error){
 			Display::display_warning_message(get_lang('NoResourcesInBackupFile').
@@ -95,7 +95,6 @@ if((isset($_POST['action']) && $_POST['action'] == 'course_select_form' ) || (is
 	}
 	CourseArchiver::clean_backup_dir();
 } elseif (isset($_POST['import_option']) && $_POST['import_option'] == 'select_items') {
-   
 	if( $_POST['backup_type'] == 'server') {
 		$filename = $_POST['backup_server'];
 		$delete_file = false;

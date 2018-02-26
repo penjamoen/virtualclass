@@ -116,22 +116,18 @@ function get_lang($variable, $notrans = 'DLTT', $language = null) {
 	global $language_interface_initial_value;
 
 	// Caching results from some API functions, for speed.
-	static $langpath, $test_server_mode, $hide_dltt_markup;
+	static $langpath;
 	if (!isset($langpath)) {
 		$langpath = api_get_path(SYS_CODE_PATH).'lang/';
 	}
-        /*
+	static $test_server_mode;
 	if (!isset($test_server_mode)) {
 		$test_server_mode = api_get_setting('server_type') == 'test';
 	}
 	static $hide_dltt_markup;
 	if (!isset($hide_dltt_markup)) {
 		$hide_dltt_markup = api_get_setting('hide_dltt_markup') == 'true';
-	}         
-         */
-        
-        $test_server_mode = api_get_setting('server_type') == 'test';
-        $show_special_markup = api_get_setting('hide_dltt_markup') != 'true' || $test_server_mode;
+	}
 
 	// Combining both ways for requesting specific language.
 	if (empty($language)) {
@@ -171,19 +167,12 @@ function get_lang($variable, $notrans = 'DLTT', $language = null) {
 	}
 
 	// Opening and closing tags for missing variables.
-        /*
 	if ($hide_dltt_markup || !$dltt) {
 		$ot = ''; $ct = '';
 	} else {
 		$ot = '[='; $ct = '=]';
-	}*/
-        
-        if (!$show_special_markup) {
-		$ot = ''; $ct = '';
-	} else {
-		$ot = '[='; $ct = '=]';
 	}
-        
+
 	// Translation mode for production servers.
 	if (!$test_server_mode) {
 		if ($read_global_variables) {

@@ -115,12 +115,7 @@ class MessageManager
 			$condition_msg_status = ' msg_status IN('.MESSAGE_STATUS_NEW.','.MESSAGE_STATUS_UNREAD.') ';
 		}
 
-		if(api_is_allowed_to_edit()){
-		$sql_query = "SELECT COUNT(*) as number_messages FROM $table_message WHERE $condition_msg_status";
-		}
-		else {
 		$sql_query = "SELECT COUNT(*) as number_messages FROM $table_message WHERE $condition_msg_status AND user_receiver_id=".api_get_user_id();
-		}
 		$sql_result = Database::query($sql_query);
 		$result = Database::fetch_array($sql_result);
 		return $result['number_messages'];
@@ -150,16 +145,9 @@ class MessageManager
 
 		$table_message = Database::get_main_table(TABLE_MESSAGE);
 		$request=api_is_xml_http_request();
-		if(api_is_allowed_to_edit()){
 		$sql_query = "SELECT id as col0, user_sender_id as col1, title as col2, send_date as col3, msg_status as col4 FROM $table_message " .
 					 " WHERE user_receiver_id=".api_get_user_id()." AND msg_status IN (0,1)" .
 					 " ORDER BY col$column $direction LIMIT $from,$number_of_items";
-		}
-		else {
-		$sql_query = "SELECT id as col0, user_sender_id as col1, title as col2, send_date as col3, msg_status as col4 FROM $table_message " .
-					 " WHERE user_receiver_id=".api_get_user_id()." AND msg_status IN (0,1)" .
-					 " ORDER BY col$column $direction LIMIT $from,$number_of_items";
-		}
 
 		$sql_result = Database::query($sql_query);
 		$i = 0;
@@ -173,49 +161,37 @@ class MessageManager
 			 }
 
 			$result[2] = Security::remove_XSS($result[2]);
+
 			$result[2] = cut($result[2],80,true);
 
 			if ($request===true) {
+
+				/*if($result[4]==0) {
+					$message[1] = Display::return_icon('mail_open.png',get_lang('AlreadyReadMessage'));//Message already read
+				} else {
+					$message[1] = Display::return_icon('mail.png',get_lang('UnReadMessage'));//Message without reading
+				}*/
+
 				$message[1] = '<a onclick="get_action_url_and_show_messages(1,'.$result[0].')" href="javascript:void(0)">'.GetFullUserName($result[1]).'</a>';
 				$message[2] = '<a onclick="get_action_url_and_show_messages(1,'.$result[0].')" href="javascript:void(0)">'.str_replace("\\","",$result[2]).'</a>';
-				$message[4] = '<a onclick="reply_to_messages(\'show\','.$result[0].',\'\')" href="javascript:void(0)">'.Display::return_icon('pixel.gif',get_lang('ReplyToMessage'), array('class' => 'actionplaceholdericon actionsmessagereply')).'</a>'.
-						  '&nbsp;&nbsp;<a onclick="delete_one_message('.$result[0].')" href="javascript:void(0)"  >'.Display::return_icon('pixel.gif',get_lang('DeleteMessage'), array('class' => 'actionplaceholdericon actionsmessagedelete')).'</a>';
+				$message[4] = '<a onclick="reply_to_messages(\'show\','.$result[0].',\'\')" href="javascript:void(0)">'.Display::return_icon('message_reply.png',get_lang('ReplyToMessage')).'</a>'.
+						  '&nbsp;&nbsp;<a onclick="delete_one_message('.$result[0].')" href="javascript:void(0)"  >'.Display::return_icon('message_delete.png',get_lang('DeleteMessage')).'</a>';
 			} else {
 				if($result[4]==1) {
 					$class = 'class = "unread"';
 				} else {
 					$class = 'class = "read"';
 				}
-
 				$link = '';
 				if ($_GET['f']=='social') {
 					$link = '&f=social';
 				}
-
-				if (isset($_REQUEST['cidReq'])) {
-					$link = '&cidReq='.Security::remove_XSS($_REQUEST['cidReq']);
-				}
-				if (isset($_REQUEST['id_session'])) {
-					$link .= '&id_session='.Security::remove_XSS($_REQUEST['id_session']);
-				}
-				
-                // If request comes from social network or group ID is not defined
-				if ($_GET['f']=='social' || !isset($_GET['group_id'])) {
-                    $message[1] = '<a '.$class.' href="view_message.php?id='.$result[0].$link.'">'.GetFullUserName(($result[1])).'</a>';;
-                    $message[2] = '<a '.$class.' href="view_message.php?id='.$result[0].$link.'">'.$result[2].'</a>';
-				}
-				else {
-                    $message[1] = '<a '.$class.' href="../group/view_message.php?id='.$result[0].$link.'">'.GetFullUserName(($result[1])).'</a>';;
-                    $message[2] = '<a '.$class.' href="../group/view_message.php?id='.$result[0].$link.'">'.$result[2].'</a>';
-				}
-                    $message[4] = '<a href="new_message.php?re_id='.$result[0].$link.'">'.Display::return_icon('pixel.gif',get_lang('ReplyToMessage'), array('class' => 'actionplaceholdericon actionsmessagereply')).'</a>'.
-						  '&nbsp;&nbsp;<a delete_one_message('.$result[0].') href="inbox.php?action=deleteone&id='.$result[0].$link.'">'.Display::return_icon('pixel.gif',get_lang('DeleteMessage'), array('class' => 'actionplaceholdericon actionsmessagedelete')).'</a>';
+				$message[1] = '<a '.$class.' href="view_message.php?id='.$result[0].$link.'">'.GetFullUserName(($result[1])).'</a>';;
+				$message[2] = '<a '.$class.' href="view_message.php?id='.$result[0].$link.'">'.$result[2].'</a>';
+				$message[4] = '<a href="new_message.php?re_id='.$result[0].'&f='.Security::remove_XSS($_GET['f']).'">'.Display::return_icon('message_reply.png',get_lang('ReplyToMessage')).'</a>'.
+						  '&nbsp;&nbsp;<a delete_one_message('.$result[0].') href="inbox.php?action=deleteone&id='.$result[0].'&f='.Security::remove_XSS($_GET['f']).'">'.Display::return_icon('message_delete.png',get_lang('DeleteMessage')).'</a>';
 			}
-			$datetime = explode(" ", $result[3]);
-			$dateparts = explode("-", $datetime[0]);		
-			$message_date = $dateparts[2].'-'.$dateparts[1].'-'.$dateparts[0];
-
-			$message[3] = $message_date; //date stays the same
+			$message[3] = $result[3]; //date stays the same
 			foreach($message as $key => $value) {
 				$message[$key] = api_xml_http_response_encode($value);
 			}
@@ -369,12 +345,7 @@ class MessageManager
 			// delete attachment file
 			$res = self::delete_message_attachment_file($id,$user_receiver_id);
 			// delete message
-			if(api_is_allowed_to_edit()){
-			$query = "UPDATE $table_message SET msg_status=3 WHERE id=".$id;
-			}
-			else {
 			$query = "UPDATE $table_message SET msg_status=3 WHERE user_receiver_id=".$user_receiver_id." AND id=".$id;
-			}
 			//$query = "DELETE FROM $table_message WHERE user_receiver_id=".Database::escape_string($user_receiver_id)." AND id=".$id;
 			$result = Database::query($query);
 			return $result;
@@ -636,16 +607,9 @@ class MessageManager
 
 		$table_message = Database::get_main_table(TABLE_MESSAGE);
 		$request=api_is_xml_http_request();
-		if(api_is_allowed_to_edit()){
 		$sql_query = "SELECT id as col0, user_sender_id as col1, title as col2, send_date as col3, user_receiver_id as col4, msg_status as col5 FROM $table_message " .
 					 "WHERE user_sender_id=".api_get_user_id()." AND msg_status=".MESSAGE_STATUS_OUTBOX." " .
 					 "ORDER BY col$column $direction LIMIT $from,$number_of_items";
-		}
-		else {
-		$sql_query = "SELECT id as col0, user_sender_id as col1, title as col2, send_date as col3, user_receiver_id as col4, msg_status as col5 FROM $table_message " .
-					 "WHERE user_sender_id=".api_get_user_id()." AND msg_status=".MESSAGE_STATUS_OUTBOX." " .
-					 "ORDER BY col$column $direction LIMIT $from,$number_of_items";
-		}
 
 		$sql_result = Database::query($sql_query);
 		$i = 0;
@@ -664,41 +628,17 @@ class MessageManager
 			if ($request===true) {
 				$message[1] = '<a onclick="show_sent_message('.$result[0].')" href="javascript:void(0)">'.GetFullUserName($result[4]).'</a>';
 				$message[2] = '<a onclick="show_sent_message('.$result[0].')" href="javascript:void(0)">'.str_replace("\\","",$result[2]).'</a>';
-
-				$datetime = explode(" ", $result[3]);
-				$dateparts = explode("-", $datetime[0]);		
-				$message_date = $dateparts[2].'-'.$dateparts[1].'-'.$dateparts[0];
-
-				$message[3] = $message_date; //date stays the same
-				$message[4] = '&nbsp;&nbsp;<a onclick="delete_one_message_outbox('.$result[0].')" href="javascript:void(0)"  >'.Display::return_icon('pixel.gif',get_lang('DeleteMessage'), array('class' => 'actionplaceholdericon actionsmessagedelete')).'</a>';
+					$message[3] = $result[3]; //date stays the same
+				$message[4] = '&nbsp;&nbsp;<a onclick="delete_one_message_outbox('.$result[0].')" href="javascript:void(0)"  >'.Display::return_icon('message_delete.png',get_lang('DeleteMessage')).'</a>';
 			} else {
 				$link = '';
 				if ($_GET['f']=='social') {
 					$link = '&f=social';
 				}
-
-				if (isset($_REQUEST['cidReq'])) {
-					$link = '&cidReq='.$_REQUEST['cidReq'];
-				}
-				if (isset($_REQUEST['id_session'])) {
-					$link .= '&id_session='.$_REQUEST['id_session'];
-				}
-				
-				if ($_GET['f']=='social') {
 				$message[1] = '<a '.$class.' onclick="show_sent_message ('.$result[0].')" href="../messages/view_message.php?id_send='.$result[0].$link.'">'.GetFullUserName($result[4]).'</a>';
 				$message[2] = '<a '.$class.' onclick="show_sent_message ('.$result[0].')" href="../messages/view_message.php?id_send='.$result[0].$link.'">'.$result[2].'</a>';
-				}
-				else {
-				$message[1] = '<a '.$class.' onclick="show_sent_message ('.$result[0].')" href="../group/view_message.php?id_send='.$result[0].$link.'">'.GetFullUserName($result[4]).'</a>';
-				$message[2] = '<a '.$class.' onclick="show_sent_message ('.$result[0].')" href="../group/view_message.php?id_send='.$result[0].$link.'">'.$result[2].'</a>';
-				}
-				
-				$datetime = explode(" ", $result[3]);
-				$dateparts = explode("-", $datetime[0]);		
-				$message_date = $dateparts[2].'-'.$dateparts[1].'-'.$dateparts[0];
-
-				$message[3] = $message_date; //date stays the same
-				$message[4] = '<a href="outbox.php?action=deleteone&id='.$result[0].$link.'"  onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang('ConfirmDeleteMessage')))."'".')) return false;">'.Display::return_icon('pixel.gif',get_lang('DeleteMessage'), array('class' => 'actionplaceholdericon actionsmessagedelete')).'</a>';
+					$message[3] = $result[3]; //date stays the same
+				$message[4] = '<a href="outbox.php?action=deleteone&id='.$result[0].'&f='.Security::remove_XSS($_GET['f']).'"  onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang('ConfirmDeleteMessage')))."'".')) return false;">'.Display::return_icon('message_delete.png',get_lang('DeleteMessage')).'</a>';
 			}
 
 			foreach($message as $key => $value) {
@@ -718,13 +658,7 @@ class MessageManager
 	 */
 	 public static function get_number_of_messages_sent () {
 		$table_message = Database::get_main_table(TABLE_MESSAGE);
-
-		if(api_is_allowed_to_edit()){
-		$sql_query = "SELECT COUNT(*) as number_messages FROM $table_message WHERE msg_status=".MESSAGE_STATUS_OUTBOX;
-		}
-		else {
 		$sql_query = "SELECT COUNT(*) as number_messages FROM $table_message WHERE msg_status=".MESSAGE_STATUS_OUTBOX." AND user_sender_id=".api_get_user_id();
-		}
 		$sql_result = Database::query($sql_query);
 		$result = Database::fetch_array($sql_result);
 		return $result['number_messages'];
@@ -743,28 +677,17 @@ class MessageManager
 
 		if ($source == 'outbox') {
 			if (isset($message_id) && is_numeric($message_id)) {
-				if(api_is_allowed_to_edit()){
-				$query	= "SELECT * FROM $table_message WHERE id=".$message_id." AND msg_status=4;";
-				}
-				else {
 				$query	= "SELECT * FROM $table_message WHERE user_sender_id=".api_get_user_id()." AND id=".$message_id." AND msg_status=4;";
-				}
 				$result = Database::query($query);
 			    $path	= 'outbox.php';
 			}
 		} else {
 			if (is_numeric($message_id) && !empty($message_id)) {
-				if(api_is_allowed_to_edit()){
-				$query = "SELECT * FROM $table_message WHERE msg_status<>4 AND id='".$message_id."';";
-				$result = Database::query($query);
-				}
-				else {
 				$query = "UPDATE $table_message SET msg_status = '".MESSAGE_STATUS_NEW."' WHERE user_receiver_id=".api_get_user_id()." AND id='".$message_id."';";
 				$result = Database::query($query);
 
 				$query = "SELECT * FROM $table_message WHERE msg_status<>4 AND user_receiver_id=".api_get_user_id()." AND id='".$message_id."';";
 				$result = Database::query($query);
-				}
 			}
 			$path='inbox.php';
 		}
@@ -833,21 +756,13 @@ class MessageManager
 		    if ($_GET['f'] == 'social') {
 		    	$social_link = 'f=social';
 		    }
-
-			if (isset($_REQUEST['cidReq'])) {
-				$social_link = '&cidReq='.$_REQUEST['cidReq'];
-			}
-			if (isset($_REQUEST['id_session'])) {
-				$social_link .= '&id_session='.$_REQUEST['id_session'];
-			}
-
 		    if ($source == 'outbox') {
-		    	$message_content .= '<a href="outbox.php?'.$social_link.'">'.Display::return_icon('pixel.gif',get_lang('ReturnToOutbox'), array('class' => 'actionplaceholdericon actionprev')).get_lang('ReturnToOutbox').'</a> &nbsp';
+		    	$message_content .= '<a href="outbox.php?'.$social_link.'">'.Display::return_icon('back.png',get_lang('ReturnToOutbox')).get_lang('ReturnToOutbox').'</a> &nbsp';
 		    } else {
-		    	$message_content .= '<a href="inbox.php?'.$social_link.'">'.Display::return_icon('pixel.gif',get_lang('ReturnToOutbox'), array('class' => 'actionplaceholdericon actionprev')).get_lang('ReturnToInbox').'</a> &nbsp';
-		    	$message_content .= '<a href="new_message.php?re_id='.$message_id.'&'.$social_link.'">'.Display::return_icon('pixel.gif',get_lang('ReplyToMessage'), array('class' => 'actionplaceholdericon actionsmessagereply')).get_lang('ReplyToMessage').'</a> &nbsp';
+		    	$message_content .= '<a href="inbox.php?'.$social_link.'">'.Display::return_icon('back.png',get_lang('ReturnToInbox')).get_lang('ReturnToInbox').'</a> &nbsp';
+		    	$message_content .= '<a href="new_message.php?re_id='.$message_id.'&'.$social_link.'">'.Display::return_icon('message_reply.png',get_lang('ReplyToMessage')).get_lang('ReplyToMessage').'</a> &nbsp';
 		    }
-			$message_content .= '<a href="inbox.php?action=deleteone&id='.$message_id.'&'.$social_link.'" >'.Display::return_icon('pixel.gif',get_lang('DeleteMessage'), array('class' => 'actionplaceholdericon actionsmessagedelete')).''.get_lang('DeleteMessage').'</a>&nbsp';
+			$message_content .= '<a href="inbox.php?action=deleteone&id='.$message_id.'&'.$social_link.'" >'.Display::return_icon('message_delete.png',get_lang('DeleteMessage')).''.get_lang('DeleteMessage').'</a>&nbsp';
 
 			$message_content .='</div></td>
 		      <td width=10></td>
@@ -1001,10 +916,10 @@ class MessageManager
 								$html .= '<a name="topic_'.$topic['id'].'"></a>';
 								$html.= '<div style="margin-bottom:10px">';
 									$html.= '<div id="message-reply-link" style="margin-right:10px">
-											<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=390&width=610&&user_friend='.$current_user_id.'&group_id='.$group_id.'&message_id='.$topic['id'].'&action=reply_message_group&anchor_topic=topic_'.$topic['id'].'&topics_page_nr='.intval($_GET['topics_page_nr']).'&items_page_nr='.intval($_GET['items_page_nr']).'" class="thickbox" title="'.get_lang('Reply').'">'.Display :: return_icon('pixel.gif', get_lang('Reply'),array('class'=>'actionplaceholdericon actionforum')).'</a>';
+											<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=390&width=610&&user_friend='.$current_user_id.'&group_id='.$group_id.'&message_id='.$topic['id'].'&action=reply_message_group&anchor_topic=topic_'.$topic['id'].'&topics_page_nr='.intval($_GET['topics_page_nr']).'&items_page_nr='.intval($_GET['items_page_nr']).'" class="thickbox" title="'.get_lang('Reply').'">'.Display :: return_icon('forum_middle.png', get_lang('Reply')).'</a>';
 
 									if (($my_group_role == GROUP_USER_PERMISSION_ADMIN || $my_group_role == GROUP_USER_PERMISSION_MODERATOR) || $topic['user_sender_id'] == $current_user_id) {
-										$html.= '&nbsp;&nbsp;<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=390&width=610&&user_friend='.$current_user_id.'&group_id='.$group_id.'&message_id='.$topic['id'].'&action=edit_message_group&anchor_topic=topic_'.$topic['id'].'&topics_page_nr='.intval($_GET['topics_page_nr']).'&items_page_nr='.intval($_GET['items_page_nr']).'" class="thickbox" title="'.get_lang('Edit').'">'.Display :: return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).'</a>';
+										$html.= '&nbsp;&nbsp;<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=390&width=610&&user_friend='.$current_user_id.'&group_id='.$group_id.'&message_id='.$topic['id'].'&action=edit_message_group&anchor_topic=topic_'.$topic['id'].'&topics_page_nr='.intval($_GET['topics_page_nr']).'&items_page_nr='.intval($_GET['items_page_nr']).'" class="thickbox" title="'.get_lang('Edit').'">'.Display :: return_icon('edit.gif', get_lang('Edit')).'</a>';
 									}
 
 									$html.=	'</div>';
@@ -1029,10 +944,10 @@ class MessageManager
 								$html_items .= '<div class="social-box-content3 quiz_content_actions">';
 								$html_items.= '<div id="message-reply-link">';
 
-								$html_items.=	'<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=390&width=610&&user_friend='.api_get_user_id().'&group_id='.$group_id.'&message_id='.$item['id'].'&action=reply_message_group&anchor_topic=topic_'.$topic['id'].'&topics_page_nr='.intval($_GET['topics_page_nr']).'&items_page_nr='.intval($items_page_nr).'&topic_id='.$topic['id'].'" class="thickbox" title="'.get_lang('Reply').'">'.Display :: return_icon('pixel.gif', get_lang('Reply'),array('class'=>'actionplaceholdericon actionforum')).'</a>';
+								$html_items.=	'<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=390&width=610&&user_friend='.api_get_user_id().'&group_id='.$group_id.'&message_id='.$item['id'].'&action=reply_message_group&anchor_topic=topic_'.$topic['id'].'&topics_page_nr='.intval($_GET['topics_page_nr']).'&items_page_nr='.intval($items_page_nr).'&topic_id='.$topic['id'].'" class="thickbox" title="'.get_lang('Reply').'">'.Display :: return_icon('forum_middle.png', get_lang('Reply')).'</a>';
 
 								if (($my_group_role == GROUP_USER_PERMISSION_ADMIN || $my_group_role == GROUP_USER_PERMISSION_MODERATOR) || $item['user_sender_id'] == $current_user_id) {
-									$html_items.= '&nbsp;&nbsp;<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=390&width=610&&user_friend='.$current_user_id.'&group_id='.$group_id.'&message_id='.$item['id'].'&action=edit_message_group&anchor_topic=topic_'.$topic['id'].'&topics_page_nr='.intval($_GET['topics_page_nr']).'&items_page_nr='.intval($items_page_nr).'&topic_id='.$topic['id'].'" class="thickbox" title="'.get_lang('Edit').'">'.Display :: return_icon('pixel.gif', get_lang('Edit'),array('class'=>'actionplaceholdericon actionedit')).'</a>';
+									$html_items.= '&nbsp;&nbsp;<a href="'.api_get_path(WEB_CODE_PATH).'social/message_for_group_form.inc.php?view_panel=1&height=390&width=610&&user_friend='.$current_user_id.'&group_id='.$group_id.'&message_id='.$item['id'].'&action=edit_message_group&anchor_topic=topic_'.$topic['id'].'&topics_page_nr='.intval($_GET['topics_page_nr']).'&items_page_nr='.intval($items_page_nr).'&topic_id='.$topic['id'].'" class="thickbox" title="'.get_lang('Edit').'">'.Display :: return_icon('edit.gif', get_lang('Edit')).'</a>';
 								}
 								$html_items.= '</div>';
 								$html_items.= '<div class="message-group-title">'.Security::remove_XSS($item['title']).'&nbsp;</div>';
@@ -1175,9 +1090,9 @@ class MessageManager
 	 * Checks if there is a new chat invitation
 	 * @param integer $user_receiver_id
 	 */
-	public static function check_for_new_chat_invitation ($user_sender_id, $user_receiver_id) {
+	public static function check_for_new_chat_invitation ($user_receiver_id) {
 		$tbl_message = Database::get_main_table(TABLE_MESSAGE);
-		$sql = "SELECT COUNT(*) as count FROM $tbl_message WHERE user_sender_id = '".Database::escape_string($user_sender_id)."' AND user_receiver_id = '".Database::escape_string($user_receiver_id)."' AND msg_status = '10'";
+		$sql = "SELECT COUNT(*) as count FROM $tbl_message WHERE user_sender_id = '".api_get_user_id()."' AND user_receiver_id = '".Database::escape_string($user_receiver_id)."' AND msg_status = '10'";
 		$rs = Database::query($sql, __FILE__,__LINE__);
 		$row = Database::fetch_array($rs,'ASSOC');
         return $row['count'];
@@ -1190,7 +1105,7 @@ class MessageManager
 	 */
 	public static function add_new_chat_invitation ($user_sender_id, $user_receiver_id) {
 		$tbl_message = Database::get_main_table(TABLE_MESSAGE);
-		if (self::check_for_new_chat_invitation($user_sender_id,$user_receiver_id) == 0) {
+		if (self::check_for_new_chat_invitation($user_receiver_id) == 0) {
 			$user_info = api_get_user_info($user_sender_id);
 			$full_name = $user_info['firstName'].' '.$user_info['lastName'];
 			$content = array('content' => get_lang('YouHaveReceivedAChatInvitationOf').' '.$full_name,
@@ -1403,10 +1318,10 @@ function inbox_display() {
 	$title=api_xml_http_response_encode(get_lang('Title'));
 	$action=api_xml_http_response_encode(get_lang('Actions'));
 
-	$table->set_header(1,api_xml_http_response_encode(get_lang('From')),true, "align='left'");
+	$table->set_header(1,api_xml_http_response_encode(get_lang('From')),true);
 	$table->set_header(2,$title,true);
-	$table->set_header(3,api_xml_http_response_encode(get_lang('Date')),true, array('style' => 'width:150px;', 'align'=>'left'));
-	$table->set_header(4,$action,false,array ('style' => 'width:70px;','align'=>'left'));
+	$table->set_header(3,api_xml_http_response_encode(get_lang('Date')),true, array('style' => 'width:150px;'));
+	$table->set_header(4,$action,false,array ('style' => 'width:70px;'));
 
 	if ($_REQUEST['f']=='social') {
 		$parameters['f'] = 'social';
@@ -1488,9 +1403,9 @@ function outbox_display() {
 	$title = api_xml_http_response_encode(get_lang('Title'));
 	$action= api_xml_http_response_encode(get_lang('Actions'));
 
-	$table->set_header(1, api_xml_http_response_encode(get_lang('To')),true,"align='left'");
-	$table->set_header(2, $title,true,"align='left'");
-	$table->set_header(3, api_xml_http_response_encode(get_lang('Date')),true,array ('style' => 'width:150px;','align'=>'left'));
+	$table->set_header(1, api_xml_http_response_encode(get_lang('To')),true);
+	$table->set_header(2, $title,true);
+	$table->set_header(3, api_xml_http_response_encode(get_lang('Date')),true,array ('style' => 'width:150px;'));
 	$table->set_header(4,$action, false,array ('style' => 'width:70px;'));
 
 	/*

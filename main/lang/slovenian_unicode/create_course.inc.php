@@ -111,8 +111,4 @@ $langPhotos = "Slike";
 $langPodcasts = "Podcasti";
 $langScreencasts = "Screencasti";
 $langThemes = "Teme";
-$langAnswer10_a = "<p>Resnično.</p>";
-$langAnswer10_b = "<p>Neresnično.</p>";
-$langAnswer10_c = "<p>Da.</p>";
-$langAnswer10_d = "<p>Ne.</p>";
 ?>

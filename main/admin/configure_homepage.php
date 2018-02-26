@@ -15,23 +15,18 @@ $cidReset = true;
 $help_content = 'platformadministrationplatformnews';
 
 // including the global Dokeos file
-require_once '../inc/global.inc.php';
+require ('../inc/global.inc.php');
 
 // including additional libraries
 require_once (api_get_path(LIBRARY_PATH).'WCAG/WCAG_rendering.php');
 require_once (api_get_path(LIBRARY_PATH).'fileUpload.lib.php');
 require_once (api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php');
 require_once (api_get_path(LIBRARY_PATH).'security.lib.php');
-require_once (api_get_path(LIBRARY_PATH).'language.lib.php');
 
 // setting the section (for the tabs)
 $this_section = SECTION_PLATFORM_ADMIN;
 
-$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.5.1.min.js" language="javascript"></script>';
-//Code changed like this for testing.
-//$htmlHeadXtra[] = '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" language="javascript"></script>';
-$htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/slides.min.jquery.js" language="javascript"></script>';
-//$htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css" type="text/css" media="screen" />';
+$htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css" type="text/css" media="screen" />';
 
 // This session help for display media resources in the Fck portal admin
 $_SESSION['this_section'] = $this_section;
@@ -99,21 +94,14 @@ if(!empty($action)){
 // global.inc.php, the variables used for language purposes below are considered safe.
 
 $lang = ''; //el for "Edit Language"
-$count_lang_availables = LanguageManager::count_available_languages();
-
-/*if(!empty($_SESSION['user_language_choice']) && $count_lang_availables > 1) {
+if(!empty($_SESSION['user_language_choice'])) {
 	$lang=$_SESSION['user_language_choice'];
-} elseif(!empty($_SESSION['_user']['language']) && $count_lang_availables > 1) {
-	//$lang=$_SESSION['_user']['language'];
+} elseif(!empty($_SESSION['_user']['language'])) {
+	$lang=$_SESSION['_user']['language'];
 } else {
 	$lang=api_get_setting('platformLanguage');
-}*/
-
-if(!empty($_SESSION['user_language_choice']) && $count_lang_availables > 1) {
-	$lang=$_SESSION['user_language_choice'];
-}else {
-	$lang=api_get_setting('platformLanguage');
 }
+
 // ----- Ensuring availability of main files in the corresponding language -----
 
 if ($_configuration['multiple_access_urls']==true) {
@@ -128,9 +116,8 @@ if ($_configuration['multiple_access_urls']==true) {
 
 		$homep = '../../home/'; //homep for Home Path
 		$homep_new = '../../home/'.$clean_url; //homep for Home Path added the url
-
 		$new_url_dir = api_get_path(SYS_PATH).'home/'.$clean_url;
-		//we create the new dir for the new sitesrea
+		//we create the new dir for the new sites
 		if (!is_dir($new_url_dir)){
 			umask(0);
 			$perm = api_get_setting('permissions_for_new_directories');
@@ -143,13 +130,7 @@ if ($_configuration['multiple_access_urls']==true) {
 	$homep = '../../home/'; //homep for Home Path
 }
 
-// Templates files for multisite mode
-$homepaget = 'Homepage';
-$demopaget = 'Demo';
-$overviewpaget = 'Overview';
-$teampaget = 'Team';
-$testimonialpaget = 'Testimonial';
-// Home files
+
 $menuf	 = 'home_menu'; //menuf for Menu File
 $newsf	 = 'home_news'; //newsf for News File
 $topf 	 = 'home_top'; //topf for Top File
@@ -157,8 +138,7 @@ $noticef = 'home_notice'; //noticef for Notice File
 $menutabs= 'home_tabs'; //menutabs for tabs Menu
 $ext 	 = '.html'; //ext for HTML Extension - when used frequently, variables are
 				// faster than hardcoded strings
-$homef = array($menuf,$newsf,$topf,$noticef,$menutabs,$homepagef);
-$hometemplates = array($homepaget,$demopaget,$overviewpaget,$teampaget,$testimonialpaget);
+$homef = array($menuf,$newsf,$topf,$noticef,$menutabs);
 
 // If language-specific file does not exist, create it by copying default file
 foreach($homef as $my_file) {
@@ -172,16 +152,6 @@ foreach($homef as $my_file) {
 		}
 	}
 }
-
-// If language-specific file does not exist, create it by copying default template file
-foreach($hometemplates as $my_file) {
-	if ($_configuration['multiple_access_urls']==true) {
-		if (!file_exists($homep_new.$my_file.$ext)) {
-			copy($homep.$my_file.$ext,$homep_new.$my_file.$ext);
-		}		
-	}
-}
-
 if ($_configuration['multiple_access_urls']==true) {
 	$homep = $homep_new; 
 }
@@ -346,26 +316,13 @@ if(!empty($action)) {
 				// replace link to templates.css with {CSS}
 				$link_html = str_replace(api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css', '{CURRENT_CSS_PATH}', $link_html);
 				
-                                // replace to curren template css path
-                                if (preg_match('!/css/(.+)/templates.css!', $link_html, $matches)) {                
-                                    $link_html = str_replace('/'.$matches[1].'/templates.css', '/'.api_get_setting('stylesheets').'/templates.css', $link_html);
-                                }
-                                // replace to curren default css path
-                                if (preg_match('!/css/(.+)/default.css!', $link_html, $matches)) {                
-                                    $link_html = str_replace('/'.$matches[1].'/default.css', '/'.api_get_setting('stylesheets').'/default.css', $link_html);
-                                }
-                                // remove default.css
-                                if (preg_match('/(<link href="(.*)\/default\.css" rel="(.*)" type="(.*)" \/>)/i', $link_html)) {
-                                   $link_html = preg_replace('/(<link href="(.*)\/default\.css" rel="(.*)" type="(.*)" \/>)/i', '', $link_html);
-                                }
-                                
 				$filename=trim(stripslashes($_POST['filename']));
 				$target_blank=$_POST['target_blank']?true:false;
 
 				if($link_url == 'http://') {
 					$link_url='';
 				}
-				elseif(!empty($link_url) && !strstr($link_url,'://') && !strstr($link_url,'mailto')) {
+				elseif(!empty($link_url) && !strstr($link_url,'://')) {
 					$link_url='http://'.$link_url;
 				}
 				$menuf = ($action == 'insert_tabs' || $action == 'edit_tabs')? $menutabs : $menuf;
@@ -398,10 +355,10 @@ if(!empty($action)) {
 					foreach($home_menu as $key=>$enreg) {
 						$home_menu[$key]=trim($enreg);
 					}
-                                       if (isset($_POST['create_from_template']) && $_POST['create_from_template'] == 1) {
-                                         $file_path = api_get_path(SYS_PATH).'home/'.$filename;
-                                         file_put_contents($file_path, $link_html);
-                                       }
+                   if (isset($_POST['create_from_template']) && $_POST['create_from_template'] == 1) {
+                     $file_path = api_get_path(SYS_PATH).'home/'.$filename;
+                     file_put_contents($file_path, $link_html);
+                   }
 					// If the given link url is empty, then replace the link url by a link to the link file created
 					if(empty($link_url)) {
 						$link_url=api_get_path(WEB_PATH).'index.php?include='.urlencode($filename);
@@ -550,21 +507,7 @@ if(!empty($action)) {
                         $home_top=str_replace('{WEB_PATH}',api_get_path(WEB_PATH),$home_top);
                         $home_top=str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css',$home_top);
                         $home_top=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$home_top);
-                        
-                        // replace to curren template css path
-                        if (preg_match('!/css/(.+)/templates.css!', $home_top, $matches)) {                
-                            $home_top = str_replace('/'.$matches[1].'/templates.css', '/'.api_get_setting('stylesheets').'/templates.css', $home_top);
-                        }
-                        // replace to curren default css path
-                        if (preg_match('!/css/(.+)/default.css!', $home_top, $matches)) {                
-                            $home_top = str_replace('/'.$matches[1].'/default.css', '/'.api_get_setting('stylesheets').'/default.css', $home_top);
-                        }
-                        // remove default.css
-                        if (preg_match('/(<link href="(.*)\/default\.css" rel="(.*)" type="(.*)" \/>)/i', $home_top)) {
-                           $home_top = preg_replace('/(<link href="(.*)\/default\.css" rel="(.*)" type="(.*)" \/>)/i', '', $home_top);
-                        }       
-                        
-                        break;
+				break;
 			case 'edit_notice':
 				// This request is only the preparation for the update of the home_notice
 				$home_notice = '';
@@ -583,7 +526,7 @@ if(!empty($action)) {
 					$errorMsg=get_lang('HomePageFilesNotReadable');
 				}
 				$notice_title=strip_tags($home_notice[0]);
-				$notice_text=strip_tags(str_replace('<br />',"\n",$home_notice[1]),'<a><img>');
+				$notice_text=strip_tags(str_replace('<br />',"\n",$home_notice[1]),'<a>');
 				break;
 			case 'edit_news':
 				// This request is the preparation for the update of the home_news page
@@ -700,22 +643,8 @@ if(!empty($action)) {
 								
 								// replace {CSS} by link to templates.css
 								$link_html = str_replace('{CURRENT_CSS_PATH}', api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css', $link_html);
-                                                                $link_html=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$link_html);
+                                $link_html=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$link_html);
 								$link_html = str_replace('{WEB_PATH}',api_get_path(WEB_PATH), $link_html);
-                                                                
-                                                                // replace to curren template css path
-                                                                if (preg_match('!/css/(.+)/templates.css!', $link_html, $matches)) {                
-                                                                    $link_html = str_replace('/'.$matches[1].'/templates.css', '/'.api_get_setting('stylesheets').'/templates.css', $link_html);
-                                                                }
-                                                                // replace to curren default css path
-                                                                if (preg_match('!/css/(.+)/default.css!', $link_html, $matches)) {                
-                                                                    $link_html = str_replace('/'.$matches[1].'/default.css', '/'.api_get_setting('stylesheets').'/default.css', $link_html);
-                                                                }
-                                                                // remove default.css
-                                                                if (preg_match('/(<link href="(.*)\/default\.css" rel="(.*)" type="(.*)" \/>)/i', $link_html)) {
-                                                                   $link_html = preg_replace('/(<link href="(.*)\/default\.css" rel="(.*)" type="(.*)" \/>)/i', '', $link_html);
-                                                                }
-                                                                
 								$link_url='';
 							} else {
 								$filename='';
@@ -737,31 +666,21 @@ else //if $action is empty, then prepare a list of the course categories to disp
 // Display the header
 Display::display_header($tool_name);
 
-if(isset($_REQUEST['language'])){
-	$language = $_REQUEST['language'];
-	$add_param = '?language='.$language;
-}
-else {
-	$language = api_get_interface_language();
-	$add_param = '';
-}
-
 // display the tool title
 //api_display_tool_title($tool_name);
 if ($action == 'open_link' && !empty($link)) {
   // Back to home page
   echo '<div class="actions">';
-  echo '<a href="configure_homepage.php">'.Display::return_icon('pixel.gif', get_lang("Back"), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('Back').'</a>';
+  echo '<a href="configure_homepage.php">'.Display::return_icon('go_previous_32.png', get_lang('Back')).get_lang('Back').'</a>';
   echo '</div>';
 } else {
 ?>
 <div class="actions">
   <div class="float_l">
-  <a href="<?php echo api_get_self(); ?>"><?php echo Display::return_icon('pixel.gif', get_lang("HomePage"), array('class' => 'toolactionplaceholdericon toolactionhomepage')).get_lang('HomePage'); ?></a>
-  <a href="<?php echo api_get_self(); ?>?action=edit_top&edit_template=false"><?php echo Display::return_icon('pixel.gif', get_lang("EditHomePage"), array('class' => 'toolactionplaceholdericon tooledithome')).get_lang('EditHomePage'); ?></a>
-  <a href="<?php echo api_get_self(); ?>?action=insert_link&edit_template=false&from_template=true"><?php echo Display::return_icon('pixel.gif', get_lang("CreatePageFromATemplate"), array('class' => 'toolactionplaceholdericon toolactiontemplates')).get_lang('CreatePageFromATemplate'); ?></a>
-  <a href="slides_management.php<?php echo $add_param; ?>"><?php echo Display::return_icon('pixel.gif', get_lang("SlidesManagement"), array('class' => 'toolactionplaceholdericon toolallpages')).get_lang('SlidesManagement'); ?></a>
-  <!--<a href="<?php echo api_get_self(); ?>?action=insert_link"><?php echo Display::return_icon('form-plus.png', get_lang('InsertLink')).get_lang('InsertLink'); ?></a>-->
+  <a href="<?php echo api_get_self(); ?>"><?php echo Display::return_icon('atom.png', get_lang('HomePage')).get_lang('HomePage'); ?></a>
+  <a href="<?php echo api_get_self(); ?>?action=edit_top&edit_template=false"><?php echo Display::return_icon('edit_32.png', get_lang('EditHomePage')).get_lang('EditHomePage'); ?></a>
+  <a href="<?php echo api_get_self(); ?>?action=insert_link&edit_template=false&from_template=true"><?php echo Display::return_icon('tools_wizard_32.png', get_lang('CreatePageFromATemplate')).get_lang('CreatePageFromATemplate'); ?></a>
+  <a href="<?php echo api_get_self(); ?>?action=insert_link"><?php echo Display::return_icon('form-plus.png', get_lang('InsertLink')).get_lang('InsertLink'); ?></a>
   </div>
   <div class="float_r">
   <?php api_display_language_form(true,'',true);?>
@@ -827,113 +746,15 @@ if(strstr($_SERVER["HTTP_USER_AGENT"], "MSIE")) { // Fix IE issue
 
 echo '<div class="'.$content_class.'" id="content">';
 
-$slides_management_table = Database :: get_main_table(TABLE_MAIN_SLIDES_MANAGEMENT);
-
-$sql = "SELECT * FROM $slides_management_table LIMIT 1";
-$rs = Database::query($sql,__FILE__,__LINE__);
-while($row = Database::fetch_array($rs)){
-	$slide_speed = $row['slide_speed'];
-	$show_slide  = $row['show_slide'];
-}
-$slide_speed_millisec = $slide_speed * 1000;
-
-if($slide_speed_millisec == 0){
-	$slide_speed_millisec = 6000;
-}
-
-echo "<script type='text/javascript'>
-		$(function(){
-			$('#slides').mouseover(function () {
-				$('#nextbutton').show();
-		});
-		$('#slides').mouseout(function () {
-				$('#nextbutton').hide();
-		});
-			$('#slides').slides({
-				preload: true,
-				preloadImage: 'img/loading.gif',
-				play: ".$slide_speed_millisec.",
-				pause: 2000,
-				hoverPause: true,
-				animationStart: function(current){
-					$('.slide_caption').animate({
-						bottom:-35
-					},100);
-					if (window.console && console.log) {
-						// example return of current slide number
-						console.log('animationStart on slide: ', current);
-					};
-				},
-				animationComplete: function(current){
-					$('.slide_caption').animate({
-						bottom:0
-					},200);
-					if (window.console && console.log) {
-						// example return of current slide number
-						console.log('animationComplete on slide: ', current);
-					};
-				},
-				slidesLoaded: function() {
-					$('.slide_caption').animate({
-						bottom:0
-					},200);
-				}
-			});
-		});
-	</script>";
-
-$slides_table = Database :: get_main_table(TABLE_MAIN_SLIDES);
-
-
-
-$sql = "SELECT * FROM $slides_table WHERE language = '".Database::escape_string($language)."' ORDER BY display_order";
-$res = Database::query($sql,__FILE__,__LINE__);	
-$num_of_slides = Database::num_rows($res);
-$slides = array();
-$img_dir = api_get_path(WEB_PATH). 'home/default_platform_document/';
-
-if($num_of_slides <> 0){
-	while($row = Database::fetch_array($res)){	
-		$image = $img_dir.$row['image'];
-		if(empty($row['title'])){
-			$title = get_lang('Title');
-		}
-		else {
-			$title = $row['title'];
-		}
-		if(empty($row['link'])){
-			$link = '#';
-		}
-		else {
-			$link = $row['link'];
-		}
-		if(empty($row['alternate_text'])){
-			$alternate_text = get_lang('AltText');
-		}
-		else {
-			$alternate_text = $row['alternate_text'];
-		}
-		$slides[] = array('image'=>$image,'title'=>$title,'link'=>$link,'caption'=>$row['caption'],'alttext'=>$alternate_text);
-	}
-}
-else {
-	$slides[] = array('image'=>'../img/slide01.jpg','title'=>get_lang('YourTitle1'),'link'=>'#','caption'=>get_lang('YourCaption1'),'alttext'=>get_lang('AltText1'));
-	$slides[] = array('image'=>'../img/slide02.jpg','title'=>get_lang('YourTitle2'),'link'=>'#','caption'=>get_lang('YourCaption2'),'alttext'=>get_lang('AltText2'));
-	$slides[] = array('image'=>'../img/slide03.jpg','title'=>get_lang('YourTitle3'),'link'=>'#','caption'=>get_lang('YourCaption3'),'alttext'=>get_lang('AltText3'));
-}
-
 switch($action){
 	case 'open_link':
-		if(!empty($_GET['link']))
+		if(!empty($link))
 		{
 			// $link is only set in case of action=open_link and is filtered
 			//include($homep.$link);
-                    $my_link = Security::remove_XSS($_GET['link']);                    
-                    $link_content = file_get_contents($homep.$my_link);                    
-                    $link_content = str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css', $link_content);
-                    $link_content=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$link_content);
-                    $link_content=str_replace('{WEB_PATH}',api_get_path(WEB_PATH),$link_content);                    
-                    echo $link_content;
+            $link_content = file_get_contents($homep.$link);
+            $link_content=str_replace('{WEB_PATH}',api_get_path(WEB_PATH),$link_content);
+            echo $link_content;
 		}
 		break;
 	case 'edit_notice':
@@ -952,8 +773,8 @@ switch($action){
 
 		?>
 
-		<table cellspacing="5" border="0" style="border-collapse:separate;">
-		<tr><td colspan="2"><?php echo '<span>'.get_lang('LetThoseFieldsEmptyToHideTheNotice').'</span>'; ?></tr>
+		<table border="0" style="border-collapse:separate;">
+		<tr><td colspan="2"><?php echo '<span style="font-style: italic;">'.get_lang('LetThoseFieldsEmptyToHideTheNotice').'</span>'; ?></tr>
 		<tr>
 		  <td nowrap="nowrap"><?php echo get_lang('NoticeTitle'); ?> :</td>
 		  <td><input type="text" name="notice_title" size="30" maxlength="50" value="<?php echo api_htmlentities($notice_title,ENT_QUOTES,$charset); ?>" style="width: 350px;"/></td>
@@ -1071,25 +892,12 @@ switch($action){
               $link_content=str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css',$link_content);
               $link_content=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$link_content);
               $link_content = str_replace('{rel_path}', api_get_path(REL_PATH), $link_content);
-              
-              // replace to curren template css path
-              if (preg_match('!/css/(.+)/templates.css!', $link_content, $matches)) {                
-                $link_content = str_replace('/'.$matches[1].'/templates.css', '/'.api_get_setting('stylesheets').'/templates.css', $link_content);
-              }
-              // replace to curren default css path
-              if (preg_match('!/css/(.+)/default.css!', $link_html, $matches)) {                
-                $link_content = str_replace('/'.$matches[1].'/default.css', '/'.api_get_setting('stylesheets').'/default.css', $link_content);
-              }
-              // remove default.css
-              if (preg_match('/(<link href="(.*)\/default\.css" rel="(.*)" type="(.*)" \/>)/i', $link_content)) {
-                 $link_content = preg_replace('/(<link href="(.*)\/default\.css" rel="(.*)" type="(.*)" \/>)/i', '', $link_content);
-              }
-              
             } else {
              $link_content = '&nbsp;';
             }
 			$default['link_html'] = $link_content;
-                        $form->add_html_editor('link_html', '', true, false, array('ToolbarSet' => 'PortalHomePage', 'Width' => '100%', 'Height' => '600'));
+
+		    $form->add_html_editor('link_html', '', true, false, array('ToolbarSet' => 'PortalHomePage', 'Width' => '100%', 'Height' => '600'));
 			$form->addElement('html', '</td></tr><tr><td>');
 			$form->addElement('style_submit_button', null, get_lang('Save'), 'class="save"');
 			$form->addElement('html', '</td></tr>');
@@ -1164,7 +972,7 @@ switch($action){
 		} else {
             $content = str_replace('{rel_path}', api_get_path(REL_PATH), $open);
 			$default[$name] = $content;
-			$form->add_html_editor($name, '', true, false, array('ToolbarSet' => 'PortalHomePage', 'Width' => '100%', 'Height' => '600'));
+			$form->add_html_editor($name, '', true, false, array('ToolbarSet' => 'PortalHomePage', 'Width' => '100%', 'Height' => '820'));
 		}
 		$form->addElement('style_submit_button', null, get_lang('Save'), 'class="save"');
 		$form->setDefaults($default);
@@ -1178,44 +986,6 @@ switch($action){
 		  <td width="80%" colspan="2" valign="top">
 			<table border="0" cellpadding="5" cellspacing="0" width="100%" style="border-collapse:separate;">
 			<tr>
-			<td colspan="2">
-			<div style="width:80%">
-			<?php
-			if($show_slide == 1){
-			echo '<div id="container" >
-					<div id="example">
-						<div id="slides">
-							<div class="slides_container">';
-								foreach($slides as $slide){
-									echo '<div class="slide">';	
-									if(!empty($slide['link']) && $slide['link'] != '#'){
-									echo '<a href="'.$slide['link'].'" title="'.$slide['title'].'" target="_blank"><img src="'.$slide['image'].'" width="720" height="240" alt="'.$slide['alttext'].'"></a>';
-									}
-									else {
-									echo '<img src="'.$slide['image'].'" width="720" height="240" title="'.$slide['title'].'" alt="'.$slide['alttext'].'">';
-									}
-									echo '<div class="slide_caption" style="bottom:0">';
-										if(!empty($slide['caption'])){
-											echo '<p>'.$slide['caption'].'</p>';
-										}
-									echo '</div>';
-									
-									echo '</div>';			
-								}
-			echo '</div>
-				<div id="nextbutton" style="display:none;">
-				<a href="#" class="prev"><img src="../img/arrow-prev.png" width="24" height="43" alt="Arrow Prev"></a>
-				<a href="#" class="next"><img src="../img/arrow-next.png" width="24" height="43" alt="Arrow Next"></a>
-				</div>
-			</div>
-		</div>		
-	</div>';
-		}
-			?>
-			</div>
-			</td>
-			</tr>
-			<tr>
 			  <td colspan="2">
 				<?php
 					//print home_top contents
@@ -1225,18 +995,8 @@ switch($action){
 						$home_top_temp=file_get_contents($homep.$topf.$ext);
 					}
 					$open=str_replace('{rel_path}',api_get_path(REL_PATH),$home_top_temp);
-                                        $open=str_replace('{WEB_PATH}',api_get_path(WEB_PATH),$open);
-                                        $open=str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css',$open);
-                                        $open=str_replace('{DEFAULT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/default.css',$open);
-                                        
-                                         // replace to curren template css path
-                                        if (preg_match('!/css/(.+)/templates.css!', $open, $matches)) {                
-                                            $open = str_replace('/'.$matches[1].'/templates.css', '/'.api_get_setting('stylesheets').'/templates.css', $open);
-                                        } 
-                                        // replace to curren default css path
-                                        if (preg_match('!/css/(.+)/default.css!', $open, $matches)) {                
-                                            $open = str_replace('/'.$matches[1].'/default.css', '/'.api_get_setting('stylesheets').'/default.css', $open);
-                                        }                                        
+                    $open=str_replace('{WEB_PATH}',api_get_path(WEB_PATH),$open);
+                    $open=str_replace('{CURRENT_CSS_PATH}',api_get_path(WEB_CSS_PATH).api_get_setting('stylesheets').'/templates.css',$open);
 					echo $open;
 				?>
 			  </td>
@@ -1249,21 +1009,74 @@ switch($action){
 				$access_url_id = api_get_current_access_url_id();
 			}
 			echo '<td width="50%">';
+			if ($access_url_id ==1) {
+				echo '<div class="actions">';
+				echo '<a href="course_category.php">'.Display::return_icon('edit.png', get_lang('EditCategories')).get_lang('EditCategories').'</a>';
+				echo '</div>';
+			}
 			echo '</td>
 				  <td width="50%">
 				  <br />';
+			/* <!--<a href="<?php echo api_get_self(); ?>?action=edit_news"><?php Display::display_icon('edit.png', get_lang('Edit')); ?></a> <a href="<?php echo api_get_self(); ?>?action=edit_news"><?php echo get_lang('EditNews'); ?></a>--> */
 			echo '</td></tr>
 				<tr>
 				<td width="50%" valign="top">
 				<table border="0" width="100%" style="border-collapse:separate;">';
+				if ($access_url_id ==1) {
+					if(sizeof($Categories)) {
+						foreach($Categories as $enreg) {
+							echo '<tr><td>'.Display::return_icon('folder_new_22.png', $enreg['name']).'&nbsp;'.$enreg['name'].'</td></tr>';
+						}
+						unset($Categories);
+					} else {
+						echo get_lang('NoCategories');
+					}
+				}
+
 				echo '</table>';
 				?>
 			  </td>
+			  <!--<td width="50%" valign="top">
+				<?php
+				if(file_exists($homep.$newsf.'_'.$lang.$ext)) {
+					include ($homep.$newsf.'_'.$lang.$ext);
+				} else {
+					include ($homep.$newsf.$ext);
+				}
+
+			?>
+			  </td>-->
 			</tr>
 			</table>
 		  </td>
-		  <td valign="top" width="20%" rowspan="3" style="padding-left:10px;vertical-align:top;">
+		  <td width="20%" rowspan="3" style="padding-left:10px;">
 			<div class="menu" style="width: 100%;">
+			<form id="formLogin">
+				<table cellpadding="0" style="border-collapse:separate;">
+					<tr>
+						<td style="width:50%;"><label><?php echo get_lang('LoginName'); ?></label></td>
+						<td style="width:50%;"><input type="text" id="login" value="" disabled="disabled" /></td>
+					</tr>
+					<tr>
+						<td><label><?php echo get_lang('UserPassword'); ?></label></td>
+						<td><input type="password" id="password" size="15" disabled="disabled" /></td>
+					</tr>
+					<tr>
+						<td colspan="2"><button class="login" type="button" name="submitAuth" value="<?php echo get_lang('Ok'); ?>" disabled="disabled"><?php echo get_lang('Ok'); ?></button></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+                          <ul class="menulist">
+                          <li><span style="color: #9D9DA1; font-weight: bold;"><?php echo api_ucfirst(get_lang('Registration')); ?></span></li>
+                          <li><span style="color: #9D9DA1; font-weight: bold;"><?php echo api_ucfirst(get_lang('LostPassword')); ?></span></li>
+                          </ul>
+                        </td>
+					</tr>
+				</table>
+			</form>
+			<!--<div class="menusection">
+				<span class="menusectioncaption"><?php echo get_lang('User'); ?></span>
+			</div>-->
 			<div class="section">
 				<div class="sectiontitle"><?php echo api_ucfirst(get_lang('MenuGeneral')); ?></div>
                 <div class="sectioncontent">
@@ -1271,13 +1084,11 @@ switch($action){
 
 				<?php
 					$home_menu = '';
-
 					if(file_exists($homep.$menuf.'_'.$lang.$ext)) {
 						$home_menu = file($homep.$menuf.'_'.$lang.$ext);
 					} else {
 						$home_menu = file ($homep.$menuf.$ext);
 					}
-
 					foreach($home_menu as $key=>$enreg) {
 						$enreg=trim($enreg);
                         $enreg=str_replace('{WEB_PATH}',api_get_path(WEB_PATH),$enreg);
@@ -1285,10 +1096,10 @@ switch($action){
                         $enreg = str_replace(array('<li>','</li>'), array('<div>','</div>'), $enreg);
                         if(!empty($enreg)) {
                            // Display Edit link
-                           $edit_link='<a href="'.api_get_self().'?action=edit_link&amp;link_index='.$key.'">'.Display::return_icon('pixel.gif', get_lang("Edit"), array('class' => 'actionplaceholdericon actionedit')).'</a>';
+                           $edit_link='<a href="'.api_get_self().'?action=edit_link&amp;link_index='.$key.'">'.Display::return_icon('edit.png', get_lang('Edit')).'</a>';
                            $delete_link = '';
                            // Display delete link
-                           $delete_link='<a href="'.api_get_self().'?action=delete_link&amp;link_index='.$key.'" onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset)).'\')) return false;">'.Display::return_icon('pixel.gif', get_lang("Delete"), array('class' => 'actionplaceholdericon actiondelete')).'</a>';
+                           $delete_link='<a href="'.api_get_self().'?action=delete_link&amp;link_index='.$key.'" onclick="javascript:if(!confirm(\''.addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES,$charset)).'\')) return false;">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>';
                            echo str_replace(array('href="'.api_get_path(WEB_PATH).'index.php?include=','</div>'),array('href="'.api_get_path(WEB_CODE_PATH).'admin/'.basename(api_get_self()).'?action=open_link&link=','<br />'.$edit_link.' '.$delete_link.'</div>'),$enreg);
                         }
 					}
@@ -1298,7 +1109,9 @@ switch($action){
               </div>
 			</div>
             <div class="actions">
-             <a href="<?php echo api_get_self(); ?>?action=edit_notice"><?php echo Display::return_icon('pixel.gif', get_lang("EditNotice"), array('class' => 'actionplaceholdericon actionedit')).get_lang('EditNotice'); ?></a></div>
+             <a href="<?php echo api_get_self(); ?>?action=edit_notice"><?php echo Display::return_icon('edit.png', get_lang('EditNotice')).get_lang('EditNotice'); ?></a></div>
+			<div class=" note">
+
 			<?php
 			$home_notice = '';
 			if(file_exists($homep.$noticef.'_'.$lang.$ext)) {
@@ -1306,12 +1119,10 @@ switch($action){
 			} else {
 				$home_notice = @file_get_contents($homep.$noticef.$ext);
 			}
-                if (!empty($home_notice)) {
-                    echo '<div class=" actions">';
-                    echo $home_notice;
-                    echo '</div>';
-                }
+			echo $home_notice
 			?>
+
+			</div>
 			</div>
 		  </td>
 		</tr>

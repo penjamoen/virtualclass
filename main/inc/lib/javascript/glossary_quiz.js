@@ -18,67 +18,40 @@ $(document).ready(function() { // This script need be improved
         specific_terms=data_terms[i].split("__|__|");
         var real_term = specific_terms[1];
         var real_code = specific_terms[0];
-        $('.quiz_content_actions, .media_scroll, .quiztitle').highlight(real_term, false, real_code);
+        $('.quiz_content_actions').removeHighlight().highlight(real_term,real_code);
       }
     //mouse over event
-    $(".quiz_content_actions .glossary-ajax, .quiztitle .glossary-ajax, .media_scroll .glossary-ajax").mouseover(function(){
-      var div_content_id="div_content_id";
-      if ($("#"+div_content_id).length > 0) {
-            $("#"+div_content_id).remove();
-      }
-
-      var text_box = $(this).text();
-      $("<div style='display:none;' title='"+ text_box +"' id="+div_content_id+">&nbsp;</div>").insertAfter(this);
-	  
+    $(".quiz_content_actions .glossary-ajax").mouseover(function(){
+      random_id=Math.round(Math.random()*100);
+      div_show_id="div_show_id"+random_id;
+      div_content_id="div_content_id"+random_id;
+      $(this).append("<div id="+div_show_id+" ><div id="+div_content_id+">&nbsp;</div></div>");
+      $("div#"+div_show_id).attr("style","display:inline;float:left;position:absolute;background-color:#F2F2F2;border-bottom: 1px solid #2E2E2E;border-right: 1px solid #2E2E2E;border-left: 1px solid #2E2E2E;border-top: 1px solid #2E2E2E;color:#305582;margin-left:5px;margin-right:5px;");
+      $("div#"+div_content_id).attr("style","background-color:#F2F2F2;color:#0B3861;margin-left:8px;margin-right:8px;margin-top:5px;margin-bottom:5px;");
       notebook_id = $(this).attr("name");
       data_notebook = notebook_id.split("link");
       my_glossary_id=data_notebook[1];
       $.ajax({
         contentType: "application/x-www-form-urlencoded",
         beforeSend: function(content_object) {
-          //$("div#"+div_content_id).html("<img src="+my_protocol+"//"+location.host+work_path+"/main/inc/lib/javascript/indicator.gif />");
+          $("div#"+div_content_id).html("<img src="+my_protocol+"//"+location.host+work_path+"/main/inc/lib/javascript/indicator.gif />");
         },
         type: "POST",
         url: my_protocol+"//"+location.host+work_path+"/main/glossary/glossary_ajax_request.php",
         data: "glossary_id="+my_glossary_id,
         success: function(datas) {
-          $("div#"+div_content_id).show();
-          $("div#"+div_content_id).css({
-                'width':'500px', 
-                'border':'6px solid #525252', 
-                'min-height':'120px',
-                'padding':'0px 10px',
-                '-moz-border-radius': '5px',
-                '-webkit-border-radius': '5px',
-                'border-radius': '5px',
-                'z-index':'100000',
-                'font-size':'12px',
-                'font-family':'Verdana',
-                'color':'#000',
-                'overflow':'auto',
-                'font-weight':'normal'
-          });               
-          $("div#"+div_content_id).center();          
-          var btn_close = '<div class="btn-glossary-close" style="text-align:right;background-color: #E8E8E8;margin:-5px -10px;padding:0px;"><table width="100%"><tr><td align="left" style="font-weight:bold;">'+text_box+'</td><td align="right" width="50px;"><a href="javascript:void(0)" onclick="closeGlossaryPopup(\'div_content_id\');" style="padding-right:0px !important;"><img src="../img/close.gif" border="0" /></a></td></tr></table></div>';
-          $("div#"+div_content_id).html(btn_close+datas);          
+          $("div#"+div_content_id).html(datas);
         }
       });
+    });
+    //mouse out event
+    $(".quiz_content_actions .glossary-ajax").mouseout(function(){
+      var current_element;
+      current_element = $(this);
+      div_show_id=current_element.find("div").attr("id");
+      $("div#"+div_show_id).remove();
     });
    }
   });
  });
 });
-
-function closeGlossaryPopup(obj) {
-    $("div#"+obj).hide("slow");    
-    $("div#"+obj).remove();
-}
-
-jQuery.fn.center = function () {
-    this.css("position","fixed");
-    this.css("_position","absolute");
-    this.css("top", "30%");
-    this.css("left", "35%");
-   
-    return this;
-}

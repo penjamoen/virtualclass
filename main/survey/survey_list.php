@@ -25,7 +25,7 @@ require ('../inc/global.inc.php');
 // including additional libraries
 require_once('survey.lib.php');
 require_once (api_get_path(LIBRARY_PATH)."course.lib.php");
-require_once api_get_path(LIBRARY_PATH)  . 'searchengine.lib.php';
+
 $htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
 $add_lp_param = "";
 if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0) {
@@ -115,7 +115,6 @@ Display::display_introduction_section('survey', 'left');
 // Action handling: deleting a survey
 if (isset($_GET['action']) AND $_GET['action'] == 'delete' AND isset($_GET['survey_id']) AND is_numeric($_GET['survey_id']))
 {
-        
 	// getting the information of the survey (used for when the survey is shared)
 	$survey_data = survey_manager::get_survey($_GET['survey_id']);
 	if(api_is_course_coach() && intval($_SESSION['id_session']) != $survey_data['session_id'])
@@ -179,20 +178,8 @@ if ($_POST['action'])
 			{
 				survey_manager::delete_survey($survey_data['survey_share'], true);
 			}
-                        
-                        if(api_get_setting('search_enabled') == true) {
-                            //delete search engine keyword
-                            $searchkey = new SearchEngineManager();
-                            $searchkey->idobj = $value;
-                            $searchkey->course_code = api_get_course_id();
-                            $searchkey->tool_id = TOOL_SURVEY;
-                            $searchkey->deleteKeyWord();
-                            
-                            survey_manager::search_engine_delete($value);
-                        }
 			// delete the actual survey
 			survey_manager::delete_survey($value);
-                        
 		}
 		Display :: display_confirmation_message(get_lang('SurveysDeleted'), false);
 	}
@@ -206,10 +193,10 @@ echo '<div class="actions">';
 if (!api_is_course_coach() || $extend_rights_for_coachs=='true')
 {
 	// Action links
-	echo  '<a href="create_new_survey.php?'.api_get_cidreq().'&amp;action=add">'.Display::return_icon('pixel.gif', get_lang('CreateNewSurvey'),array("class" => "toolactionplaceholdericon toolactionSurveyAddNew")).get_lang('CreateNewSurvey').'</a> ';
+	echo  '<a href="create_new_survey.php?'.api_get_cidreq().'&amp;action=add">'.Display::return_icon('survey.png', get_lang('CreateNewSurvey')) .get_lang('CreateNewSurvey').'</a> ';
 }
 //echo '<a href="survey_all_courses.php">'.get_lang('CreateExistingSurvey').'</a> ';
-echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;search=advanced">'.Display::return_icon('pixel.gif', get_lang('Search'),array("class" => "toolactionplaceholdericon toolactionSurveySearch")) .get_lang('Search').'</a>';
+echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;search=advanced">'.Display::return_icon('search.png', get_lang('Search')) .get_lang('Search').'</a>';
 echo '</div>';
 
 // start the content div

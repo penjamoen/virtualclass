@@ -80,7 +80,7 @@ if ($origin == 'learnpath') {
 
 // actions bar
 echo '<div class="actions">';
-echo '<a href="survey.php?'.  api_get_cidreq().'&survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.strtolower(get_lang('Survey')), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackTo').' '.strtolower(get_lang('Survey')).'</a>';
+echo '<a href="survey.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('go_previous_32.png',get_lang('BackTo').' '.strtolower(get_lang('Survey'))).' '.get_lang('BackTo').' '.strtolower(get_lang('Survey')).'</a>';
 echo '</div>';
 }
 echo '<script type="text/javascript" src="' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/customInput.jquery.js" language="javascript"></script>';
@@ -121,7 +121,7 @@ if (!api_is_allowed_to_edit(false,true))
 	Display :: display_error_message(get_lang('NotAllowed'), false);
 }*/
 // only a course admin is allowed to preview a survey: you are a course admin
-if (api_is_platform_admin() || api_is_course_admin() || (api_is_course_admin() && $_GET['isStudentView']=='true') || api_is_allowed_to_session_edit(false,true)) {
+if (api_is_course_admin() || (api_is_course_admin() && $_GET['isStudentView']=='true') || api_is_allowed_to_session_edit(false,true)) {
 	// survey information
 	echo '<div class="actions" style="height:auto;min-height:250px;">';
 	echo '<div id="survey_title">'.$survey_data['survey_title'].'</div>';
@@ -139,9 +139,8 @@ if (api_is_platform_admin() || api_is_course_admin() || (api_is_course_admin() &
 	{
 		echo '<div id="survey_content" class="survey_content"><strong>'.get_lang('SurveyFinished').' </strong>'.$survey_data['survey_thanks'].'</div>';
 	//	Display :: display_footer();
-             echo '</div></div><div class="actions"></div>';
-
-            exit();
+		Display::display_tool_footer();
+		exit;
 	}
 
 	$sql = "SELECT * FROM $table_survey_question
@@ -201,7 +200,7 @@ if (api_is_platform_admin() || api_is_course_admin() || (api_is_course_admin() &
 	{
 		$show = 0;
 	}
-	echo '<form id="question" name="question" method="post" action="'.api_get_self().'?'.  api_get_cidreq().'&survey_id='.Security::remove_XSS($survey_id).'&show='.$show.$origin_string.'">';
+	echo '<form id="question" name="question" method="post" action="'.api_get_self().'?survey_id='.Security::remove_XSS($survey_id).'&show='.$show.$origin_string.'">';
 	if(is_array($questions) && count($questions)>0)
 	{
 		foreach ($questions as $key=>$question)
@@ -337,7 +336,6 @@ echo '</div>';
 echo '<div class="actions">';
 echo '</div>';
 // Footer
-if ($origin != 'learnpath') {
-Display::display_tool_footer(); 
-}
+//Display :: display_footer();
+Display::display_tool_footer();
 ?>

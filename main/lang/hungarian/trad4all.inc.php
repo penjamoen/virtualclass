@@ -634,6 +634,4 @@ $Menu = "Menü";
 $BackToUserList = "Vissza a felhasználói listához";
 $GraphicNotAvailable = "Kép nem található";
 $Parent  = "Szül&#337;";
-$ToolIsNowHidden = "Eszköz elrejtve a hallgatók el&#337;l";
-$ToolIsNowVisible = "Eszköz most már ismét látható a hallgatók számára";
 ?>

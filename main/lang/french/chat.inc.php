@@ -30,7 +30,6 @@ $langLinkURL = "URL du lien";
 $langWelcomeToOnlineConf = "Bienvenue à la <b>Conversation en ligne</b>";
 $langNoLinkAvailable = "Aucun lien disponible";
 $langChat_reset_by = "La conversation à été rafraichie par ";
-$langAdmin = "Administrateur de la plateforme";
 $OrFile = "Ou le fichier";
 $langCallSent = "Une demande de conversation a été envoyée. En attente d\'approbation de la personne contactée.";
 $langChatDenied = "Votre appel a été refusé par la personne contactée.";

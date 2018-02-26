@@ -65,7 +65,7 @@ function activetools_get_content(){
 	// adding the style of the active tools (the actual style is determined by the id of the div which comes from api_get_setting('activetools','style')
 	echo '<style type="text/css" media="screen, projection">
 			/*<![CDATA[*/
-			@import "'.api_get_path(WEB_PATH).'main/widgets/activetools/menu.css";
+			@import "'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu.css";
 			/*]]>*/
 			</style>';
 	
@@ -135,20 +135,20 @@ function activetools_settings_form(){
 	// The style for the activetools
 	echo '<div class="widget_setting">';
 	echo '<div  class="ui-corner-all widget_setting_subtitle">'.get_lang('ActiveToolsDisplayStyle').'</div>';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu1" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu1').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu1.gif" alt="Menu1"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu2" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu2').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu2.gif" alt="Menu2"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu3" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu3').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu3.gif" alt="Menu3"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu4" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu4').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu4.gif" alt="Menu4"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu5" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu5').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu5.gif" alt="Menu5"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu6" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu6').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu6.gif" alt="Menu6"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu7" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu7').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu7.gif" alt="Menu7"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu8" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu8').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu8.gif" alt="Menu8"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu9" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu9').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu9.gif" alt="Menu9"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu10" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu10').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu10.gif" alt="Menu10"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu11" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu11').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu11.gif" alt="Menu11"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu12" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu12').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu12.gif" alt="Menu12"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu13" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu13').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu13.gif" alt="Menu13"/></label><br />';
-  	echo '<label><input type="radio" name="widget_setting_style" value="menu14" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu14').'/><img src="'.api_get_path(WEB_PATH).'main/widgets/activetools/menu14.gif" alt="Menu14"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu1" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu1').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu1.gif" alt="Menu1"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu2" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu2').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu2.gif" alt="Menu2"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu3" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu3').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu3.gif" alt="Menu3"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu4" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu4').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu4.gif" alt="Menu4"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu5" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu5').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu5.gif" alt="Menu5"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu6" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu6').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu6.gif" alt="Menu6"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu7" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu7').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu7.gif" alt="Menu7"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu8" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu8').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu8.gif" alt="Menu8"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu9" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu9').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu9.gif" alt="Menu9"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu10" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu10').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu10.gif" alt="Menu10"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu11" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu11').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu11.gif" alt="Menu11"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu12" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu12').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu12.gif" alt="Menu12"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu13" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu13').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu13.gif" alt="Menu13"/></label><br />';
+  	echo '<label><input type="radio" name="widget_setting_style" value="menu14" '.active_tools_style_checked(api_get_setting('activetools','style'),'menu14').'/><img src="'.api_get_path(WEB_PATH).'main/course_home/widgets/activetools/menu14.gif" alt="Menu14"/></label><br />';
 	echo '</div>';	
 }
 

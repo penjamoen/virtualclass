@@ -40,6 +40,7 @@ $langMe = "*";
 $langSystemAnnouncements = "Obvestila sistema";
 $langHelpMaj = "Pomoè";
 $langNotRegistered = "Ni vpisan";
+$langAdmin = "Admin platforme";
 $Login = "Prijava";
 $langRegisterForCourse = "Vpis v nov teèaj";
 $langUnregisterForCourse = "Izpis iz teèajev";

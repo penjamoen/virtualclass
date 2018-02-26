@@ -12,7 +12,7 @@
 */
 
 // name of the language file that needs to be included
-$language_file=array('exercice','tracking','admin');
+$language_file=array('exercice','tracking');
 
 // including the global dokeos file
 include('../inc/global.inc.php');
@@ -22,7 +22,6 @@ include_once('exercise.class.php');
 include_once('question.class.php'); //also defines answer type constants
 include_once('answer.class.php');
 include_once(api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php');
-require_once(api_get_path(LIBRARY_PATH).'geometry.lib.php');
 //$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.js" type="text/javascript" language="javascript"></script>';
 //$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.corners.min.js" type="text/javascript"></script>';
 
@@ -97,13 +96,25 @@ if ( empty ( $action ) ) {
 $current_user_id = api_get_user_id();
 $current_user_id = "'".$current_user_id."'";
 $current_attempt = $_SESSION['current_exercice_attempt'][$current_user_id];
-$course_code = api_get_course_id();
 
+//Is fraudulent exercice
+$current_time = time();
+
+if (isset($_SESSION['expired_time'])) { //Only for exercice of type "One page"
+	$expired_date = $_SESSION['expired_time'];
+	$expired_time = strtotime($expired_date);
+
+	//Validation in case of fraud
+	$total_time_allowed = $expired_time + 30;
+	if ($total_time_allowed < $current_time) {
+	  $sql_fraud = "UPDATE $TBL_TRACK_ATTEMPT SET answer = 0, marks=0, position=0 WHERE exe_id = '$current_attempt' ";
+	  Database::query($sql_fraud,__FILE__,__LINE__);
+	}	
+}
 //Unset session for clock time
 unset($_SESSION['current_exercice_attempt'][$current_user_id]);
-unset($_SESSION['expired_time'][$course_code][intval($_SESSION['id_session'])][$exercise_id][$learnpath_id]);
-unset($_SESSION['end_expired_time'][$exercise_id][$learnpath_id]);
-
+unset($_SESSION['expired_time']);
+unset($_SESSION['end_expired_time']);
 
 $is_allowedToEdit=api_is_allowed_to_edit() || $is_courseTutor;
 $nameTools=get_lang('CorrectTest');
@@ -136,8 +147,6 @@ if($origin=='user_course') {
 if ($origin != 'learnpath') {
 	Display::display_tool_header($nameTools,"Exercise");
 } else {
-    // If the quiz is into modules then we must load jquery library
-        $htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
 	Display::display_reduced_header();
 }
 $emailId   = $_REQUEST['email'];
@@ -415,51 +424,16 @@ function display_hotspot_answer($answerId, $answer, $studentChoice, $correctComm
 	<?php
 }
 
-function display_hotspot_delineation_answer($answerId, $answer, $studentChoice, $answerComment)
-{
-	//global $hotspot_colors;
-	$hotspot_colors = array("", // $i starts from 1 on next loop (ugly fix)
-            						"#4271B5",
-									"#FE8E16",
-									"#3B3B3B",
-									"#BCD631",
-									"#D63173",
-									"#D7D7D7",
-									"#90AFDD",
-									"#AF8640",
-									"#4F9242",
-									"#F4EB24",
-									"#ED2024",
-									"#45C7F0",
-									"#F7BDE2");
-	?>
-		<tr>
-				<td valign="top" align="left">
-					<div style="width:100%;">
-						<div style="height:11px; width:11px; background-color:<?php echo $hotspot_colors[$answerId]; ?>; float:left; margin:3px;"></div>
-						<div><?php echo $answer ?></div>
-					</div>
-				</td>
-				<td valign="top" align="left"></td>
-			
-		</tr>
-	<?php
-}
-
 /*
 ==============================================================================
 		MAIN CODE
 ==============================================================================
 */
 
-if ($origin != 'learnpath') {    
-        echo '<div class="actions">';        
-        if (api_is_course_admin()) {
-            echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/admin.php?'.api_get_cidreq().'&exerciseId='.$exercise_id.'">' . Display::return_icon('pixel.gif', get_lang('GoBackToEx'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('GoBackToEx').'</a>';
-            echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/exercise_admin.php?scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.$exercise_id.'">' . Display::return_icon('pixel.gif', get_lang('Scenario'), array('class' => 'toolactionplaceholdericon toolactionscenario')) . get_lang('Scenario') . '</a>';
-        } else {
-            echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/exercice.php?'.api_get_cidreq().'">' . Display::return_icon('pixel.gif', get_lang('GoBackToEx'), array('class' => 'toolactionplaceholdericon toolactionback')) . get_lang('GoBackToEx').'</a>';
-        }
+if (api_is_course_admin() && $origin != 'learnpath') {
+	echo '<div class="actions">';
+	echo '<a href="admin.php?'.api_get_cidreq().'&exerciseId='.$exercise_id.'">' . Display::return_icon('go_previous_32.png', get_lang('GoBackToEx')) . get_lang('GoBackToEx').'</a>';
+	echo '<a href="exercise_admin.php?scenario=yes&modifyExercise=yes&' . api_get_cidreq() . '&exerciseId='.$exercice_id.'">' . Display :: return_icon('dokeos_scenario.png', get_lang('Scenario')) . get_lang('Scenario') . '</a>';
 	echo '</div>';
 }
 ?>
@@ -485,8 +459,7 @@ if (Database::num_rows($result)>0 && isset($id)) {
 			$show_results = false;
 			//Display::display_warning_message(get_lang('CantViewResults'));
 			if ($origin!='learnpath') {
-				echo '<div class="quiz_content_actions">'.get_lang('ThankYouForPassingTheTest').'<br /><br /><a href="exercice.php">'.(get_lang('BackToExercisesList')).'</a></div>';
-			//	Display::display_warning_message(get_lang('ThankYouForPassingTheTest').'<br /><br /><a href="exercice.php">'.(get_lang('BackToExercisesList')).'</a>', false);						
+				Display::display_warning_message(get_lang('ThankYouForPassingTheTest').'<br /><br /><a href="exercice.php">'.(get_lang('BackToExercisesList')).'</a>', false);						
 				echo '</td>
 				</tr>
 				</table>';
@@ -497,9 +470,10 @@ if (Database::num_rows($result)>0 && isset($id)) {
 		$user_restriction = $is_allowedToEdit ? '' :  "AND user_id=".intval($_user['user_id'])." ";
 		$query = "SELECT attempts.question_id, answer  from ".$TBL_TRACK_ATTEMPT." as attempts  
 						INNER JOIN ".$TBL_TRACK_EXERCICES." as stats_exercices ON stats_exercices.exe_id=attempts.exe_id 
-						INNER JOIN ".$TBL_QUESTIONS." as questions ON questions.id=attempts.question_id    
+						INNER JOIN ".$TBL_EXERCICE_QUESTION." as quizz_rel_questions ON quizz_rel_questions.exercice_id=stats_exercices.exe_exo_id AND quizz_rel_questions.question_id = attempts.question_id
+						INNER JOIN ".$TBL_QUESTIONS." as questions ON questions.id=quizz_rel_questions.question_id    
 				  WHERE attempts.exe_id='".Database::escape_string($id)."' $user_restriction
-				  GROUP BY attempts.question_id"; 
+				  GROUP BY quizz_rel_questions.question_order, attempts.question_id"; 
 					//GROUP BY questions.position, attempts.question_id";					
 		$result =api_sql_query($query, __FILE__, __LINE__);
 	}							
@@ -588,7 +562,6 @@ if ($show_results) {
 		$questionWeighting=$objQuestionTmp->selectWeighting();
 		$answerType=$objQuestionTmp->selectType();
 		$quesId =$objQuestionTmp->selectId(); //added by priya saini
-		$mediaPosition = $objQuestionTmp->selectMediaPosition();
 
 		// destruction of the Question object
 		unset($objQuestionTmp);
@@ -603,35 +576,18 @@ if ($show_results) {
 		}
 		?>	
 		<div style="padding:0px 0px 20px 0px;"><div class="rounded" style="width: 100%; padding: 1px; background-color:#ccc;"><table class="rounded_inner" style="width: 100%; background-color:#fff;"><tr><td>
-    	<div id="question_title" class="quiz_report_content">
+    	<div id="question_title" class="quiz_content_actions" style="font-weight:bold;margin: 0px 10px 10px 10px;padding: 5px 15px;top:-10px;position: relative;border: 1px solid #ED9438;">
     		<?php echo get_lang("Question").' '.($counter).' : '.$questionName; ?>
     	</div>	   
-  <!--	<div id="question_description" class="scroll_feedback">
+    	<div id="question_description">
     		<?php echo $questionDescription; ?>
-    	</div>-->
+    	</div>
 
 	 	<?php
-		$s = '';
-		if(!empty($questionDescription)){
-			if($mediaPosition == 'top'){
-			$s .= '<div align="center"><div class="quiz_content_actions" style="width:40%;">'.$questionDescription.'</div></div>';
-			}
-			elseif($mediaPosition == 'right'){
-			$s .= '<div class="quiz_content_actions" style="width:40%;float:right">'.$questionDescription.'</div>';
-			}
-		}
 		if ($answerType == MULTIPLE_ANSWER) {
 			$choice=array();
-			if($mediaPosition == 'top' || $mediaPosition == 'nomedia' || empty($questionDescription)){
-			$s .= '<div class="quiz_content_actions" style="width:95%;float:left;">';
-			}
-			elseif($mediaPosition == 'right'){
-			$s .= '<div class="quiz_content_actions" style="width:52%;float:left;height:auto;min-height:350px;">';
-			}
-			$s .= '<table width="100%" border="0" class="data_table"><tr class="row_odd"><td>'.get_lang("Choice").'</td><td>'.get_lang("ExpectedChoice").'</td><td>'.get_lang("Answer").'</td></tr>';
-
 			?>
-	<!--	<table width="100%" border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions">
+			<table width="100%" border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions">
 			<tr>
 			<td>&nbsp;</td>
 			</tr>
@@ -639,11 +595,11 @@ if ($show_results) {
 				<td><i><?php echo get_lang("Choice"); ?></i> </td>
 				<td><i><?php echo get_lang("ExpectedChoice"); ?></i></td>
 				<td><i><?php echo get_lang("Answer"); ?></i></td>
-			    <td><i><?php echo get_lang("Comment"); ?></i></td>		
+			<!--<td><i><?php echo get_lang("Comment"); ?></i></td>	-->				
 			</tr>
 			<tr>
 			<td>&nbsp;</td>
-			</tr>-->
+			</tr>
 			<?php
 			// construction of the Answer object
 			$objAnswerTmp=new Answer($questionId);
@@ -679,23 +635,16 @@ if ($show_results) {
 					}
 				}
 				
-			/*	echo '<tr><td>';
+				echo '<tr><td>';
 				if ($answerId==1) {
 						display_unique_or_multiple_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,$answerId);
 				} else {
 						display_unique_or_multiple_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,"");
 				}
-				echo '</td></tr>';*/
-
-				if ($answerId==1) {
-					$s .= display_unique_or_multiple_or_reasoning_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,$answerId);
-				} else {
-					$s .= display_unique_or_multiple_or_reasoning_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,"");
-				}
-
+				echo '</td></tr>';
 				$i++;
 		 	}
-		/*	echo '<tr><td colspan="3">';
+			echo '<tr><td colspan="3">';
 			if($correctChoice == 'Y' && $answerWrong == 'N')
 			{
 				echo '<br/><b>'.get_lang('Feedback').'  </b><br/><br/><span>'.nl2br(make_clickable($feedback_if_true)).'</span>';	
@@ -705,36 +654,11 @@ if ($show_results) {
 				echo '<br/><b>'.get_lang('Feedback').'  </b><br/><br/><span>'.nl2br(make_clickable($feedback_if_false)).'</span>';
 			}
 			echo '</td></tr>';
-		 	echo '</table>';*/
-
-			$s .= '<tr><td colspan="3">&nbsp;</td></tr>';
-			if($correctChoice == 'Y' && $answerWrong == 'N') {
-				if (empty($feedback_if_true)) {
-					$feedback_if_true = get_lang('NoTrainerComment');
-				}
-				$s .= '<tr><td colspan="3"><b>' . get_lang('Feedback') . '</b></td></tr><tr><td colspan="3">' . $feedback_if_true . '</td></tr>';
-			} else {
-				if (empty($feedback_if_false)) {
-					$feedback_if_false = get_lang('NoTrainerComment');
-				}
-				$s .= '<tr><td colspan="3"><b>' . get_lang('Feedback') . '</b></td></tr><tr><td colspan="3">' . $feedback_if_false . '</td></tr>';
-			}
-					
-			$s .= '</table></div>';
-			echo $s;
-
+		 	echo '</table>';
 		} elseif ($answerType == REASONING) {
 			$choice=array();
-
-			if($mediaPosition == 'top' || $mediaPosition == 'nomedia' || empty($questionDescription)){
-			$s .= '<div class="quiz_content_actions" style="width:95%;float:left;">';
-			}
-			elseif($mediaPosition == 'right'){
-			$s .= '<div class="quiz_content_actions" style="width:52%;float:left;">';
-			}
-			$s .= '<table width="100%" border="0" class="data_table"><tr class="row_odd"><td>'.get_lang("Choice").'</td><td>'.get_lang("ExpectedChoice").'</td><td>'.get_lang("Answer").'</td></tr>';
 			?>
-	<!--	<table width="100%" border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions">
+			<table width="100%" border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions">
 			<tr>
 			<td>&nbsp;</td>
 			</tr>
@@ -745,7 +669,7 @@ if ($show_results) {
 			</tr>
 			<tr>
 			<td>&nbsp;</td>
-			</tr>-->
+			</tr>
 			<?php
 			// construction of the Answer object
 			$objAnswerTmp=new Answer($questionId);
@@ -798,19 +722,13 @@ if ($show_results) {
 					$noStudentChoice = 'Y';		
 					$answerWrong = 'Y';	
 				}	
-			/*	echo '<tr><td>';
+				echo '<tr><td>';
 				if ($answerId==1) {
 						display_reasoning_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,$answerId);
 				} else {
 						display_reasoning_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,"");
 				}				
-				echo '</td></tr>';*/
-
-				if ($answerId==1) {
-						$s .= display_unique_or_multiple_or_reasoning_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,$answerId);
-				} else {
-						$s .= display_unique_or_multiple_or_reasoning_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,"");
-				}	
+				echo '</td></tr>';
 				$i++;
 		 	}
 			if ($answerType == REASONING  && $noStudentChoice == 'Y'){						
@@ -826,7 +744,7 @@ if ($show_results) {
 						}
 					}	
 					
-		/*	echo '<tr><td colspan="3">';
+			echo '<tr><td colspan="3">';
 			if($correctChoice == 'Y' && $answerWrong == 'N')
 			{
 				echo '<b>'.get_lang('Feedback').' - '.get_lang('FeedbackReason').'  </b><span>'.nl2br(make_clickable($feedback_if_true)).'</span>';	
@@ -836,46 +754,22 @@ if ($show_results) {
 				echo '<b>'.get_lang('Feedback').' - '.get_lang('FeedbackReason').'  </b><span>'.nl2br(make_clickable($feedback_if_false)).'</span>';
 			}
 			echo '</td></tr>';
-		 	echo '</table>';*/
-
-			$s .= '<tr><td colspan="3">&nbsp;</td></tr>';
-			if ($correctChoice == 'Y' && $answerWrong == 'N') {
-				if (empty($feedback_if_true)) {
-					$feedback_if_true = get_lang('NoTrainerComment');
-				}
-				$s .= '<tr><td colspan="3"><b>' . get_lang('Feedback') . '</b></td></tr><tr><td colspan="3">' . $feedback_if_true . '</td></tr>';
-			} else {
-				if (empty($feedback_if_false)) {
-					$feedback_if_false = get_lang('NoTrainerComment');
-				}
-				$s .= '<tr><td colspan="3"><b>' . get_lang('Feedback') . '</b></td></tr><tr><td colspan="3">' . $feedback_if_false . '</td></tr>';
-			}
-					
-			$s .= '</table></div>';
-			echo $s;
-
+		 	echo '</table>';
 		}  elseif ($answerType == UNIQUE_ANSWER) {
-
-			if($mediaPosition == 'top' || $mediaPosition == 'nomedia' || empty($questionDescription)){
-			$s .= '<div class="quiz_content_actions" style="width:95%;float:left;">';
-			}
-			elseif($mediaPosition == 'right'){
-			$s .= '<div class="quiz_content_actions" style="width:52%;float:left;height:auto;min-height:300px;">';
-			}
-			$s .= '<table width="100%" border="0" class="data_table"><tr class="row_odd"><td>'.get_lang("Choice").'</td><td>'.get_lang("ExpectedChoice").'</td><td>'.get_lang("Answer").'</td></tr>';
 			?>
-		<!--<table width="100%" border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions">
+			<table width="100%" border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions">
 				<tr>
 				<td>&nbsp;</td>
 				</tr>
 				<tr>
 					<td><i><?php echo get_lang("Choice"); ?></i> </td>
 					<td><i><?php echo get_lang("ExpectedChoice"); ?></i></td>
-					<td><i><?php echo get_lang("Answer"); ?></i></td>					
+					<td><i><?php echo get_lang("Answer"); ?></i></td>
+					<!--<td><i><?php echo get_lang("Comment"); ?></i></td>	-->		
 				</tr>
 				<tr>
 				<td>&nbsp;</td>
-				</tr>-->
+				</tr>
 			<?php
 			$objAnswerTmp=new Answer($questionId);
 			$nbrAnswers=$objAnswerTmp->selectNbrAnswers();
@@ -905,22 +799,16 @@ if ($show_results) {
 					   $feedback_if_false = $objAnswerTmp->selectComment($answerId);
 				   }
 				}
-		/*		echo '<tr><td>';
+				echo '<tr><td>';
 				if ($answerId==1) {
 					display_unique_or_multiple_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,$answerId);
 				} else {
 					display_unique_or_multiple_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,"");
 				}						
-				echo '</td></tr>';*/
-
-				if ($answerId==1) {
-					$s .= display_unique_or_multiple_or_reasoning_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,$answerId);
-				} else {
-					$s .= display_unique_or_multiple_or_reasoning_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect,$id,$questionId,"");
-				}
+				echo '</td></tr>';
 				$i++;
 			}
-	/*		echo '<tr><td colspan="3">';
+			echo '<tr><td colspan="3">';
 			if($correctChoice == 'Y')
 			{
 				echo '<b>'.get_lang('Feedback').'  </b><span>'.nl2br(make_clickable($feedback_if_true)).'</span>';	
@@ -930,28 +818,12 @@ if ($show_results) {
 				echo '<b>'.get_lang('Feedback').'  </b><span>'.nl2br(make_clickable($feedback_if_false)).'</span>';
 			}
 			echo '</td></tr>';
-			echo '</table>';*/
-
-			$s .= '<tr><td colspan="3">&nbsp;</td></tr>';
-			if ($correctChoice == 'Y') {
-				if (empty($feedback_if_true)) {
-					$feedback_if_true = get_lang('NoTrainerComment');
-				}
-				$s .= '<tr><td colspan="3"><b>' . get_lang('Feedback') . '</b></td></tr><tr><td colspan="3">' . $feedback_if_true . '</td></tr>';
-			} else {
-				if (empty($feedback_if_false)) {
-					$feedback_if_false = get_lang('NoTrainerComment');
-				}
-				$s .= '<tr><td colspan="3"><b>' . get_lang('Feedback') . '</b></td></tr><tr><td colspan="3">' . $feedback_if_false . '</td></tr>';
-			}
-					
-			$s .= '</table></div>';
-			echo $s;
+			echo '</table>';
 
 		} elseif ($answerType == FILL_IN_BLANKS) {
 
 			?>
-	<!--	<table  border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions" style="width:98%;">
+			<table  border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions" style="width:98%;">
 			<tr>
 			<td>&nbsp;</td>
 			</tr>
@@ -960,7 +832,7 @@ if ($show_results) {
 			</tr>
 			<tr>
 			<td>&nbsp;</td>
-			</tr>-->
+			</tr>
 			<?php
 			$objAnswerTmp=new Answer($questionId);
 			$nbrAnswers=$objAnswerTmp->selectNbrAnswers();
@@ -1047,7 +919,7 @@ if ($show_results) {
 
 												
 						// if the word entered by the student IS the same as the one defined by the professor
-						if (trim(api_strtolower(api_substr($temp,0,$pos))) == trim(api_strtolower($choice[$j]))) {
+						if (api_strtolower(api_substr($temp,0,$pos)) == api_strtolower($choice[$j])) {
 							$feedback_anscorrect[] = "Y";
 							// gives the related weighting to the student
 							$questionScore+=$answerWeighting[$j];
@@ -1118,12 +990,9 @@ if ($show_results) {
 					$answer = str_replace('rn', '', $answer);
 				}
 				//echo $questionScore."-".$totalScore;
-			//	echo '<tr><td>';	
+				echo '<tr><td>';	
 			//	display_fill_in_blanks_answer($answer,$id,$questionId);
-			//	echo '<table align="center" width="100%"><tr><td colspan="3">' . $answer . '</td></tr>';
-			//	echo '<table align="center" width="100%"><tr><td colspan="3"><div class="scroll_feedback">' . $answer . '</div></td></tr>';
-			/*	echo '<div class="scroll_feedback">' . $answer . '</div>';
-				echo '<table align="center" width="100%">';
+				echo '<table align="center" width="100%"><tr><td colspan="3">' . $answer . '</td></tr>';
 				for($k=0;$k<sizeof($feedback_anscorrect);$k++)
 				{
 					echo '<tr><td>'.$feedback_usertag[$k].' / '.$feedback_correcttag[$k].'</td>';
@@ -1137,39 +1006,11 @@ if ($show_results) {
 					}				
 				}
 				echo '</table>';
-				echo '</td></tr>';*/
-
-				if($mediaPosition == 'top' || $mediaPosition == 'nomedia' || empty($questionDescription)){
-				$s .= '<div class="quiz_content_actions" style="width:95%;float:left;">';
-				}
-				elseif($mediaPosition == 'right'){
-				$s .= '<div class="quiz_content_actions" style="width:52%;float:left;height:auto;min-height:300px;">';
-				}
-				$s .= '<div class="scroll_feedback"><b>' . $answer . '</b></div>';
-				$s .= '<table width="100%" border="0"><tr><td colspan="3"><b>'.get_lang('Feedaback').'</b></td></tr>';
-				for ($k = 0; $k < sizeof($feedback_anscorrect); $k++) {
-					$s .= '<tr><td>' . $feedback_usertag[$k] . ' / ' . $feedback_correcttag[$k] . '</td>';
-					if ($feedback_anscorrect[$k] == "Y") {
-						$s .= '<td><img src="../img/Right32tr.png" style="vertical-align:middle;">&nbsp;' . get_lang('Right') . '</td><td>' . $feedback_true . '</td></tr>';
-					} else {
-						$s .= '<td><img src="../img/Wrong32tr.png" style="vertical-align:middle;">&nbsp;' . get_lang('Wrong') . '</td><td>' . $feedback_false . '</td></tr>';
-					}
-				}
-				$s .= '</table></div>';
+				echo '</td></tr>';
 				$i++;
 			}
-			echo $s;
-		//	echo '</table>';
-		} elseif ($answerType == FREE_ANSWER) {
-
-			$answer = $str;		
-			if($mediaPosition == 'top' || $mediaPosition == 'nomedia' || empty($questionDescription)){
-			$s .= '<div class="quiz_content_actions" style="width:95%;float:left;">';
-			}
-			elseif($mediaPosition == 'right'){
-			$s .= '<div class="quiz_content_actions" style="width:52%;float:left;height:auto;min-height:300px;">';
-			}
-			echo $s;
+			echo '</table>';
+		} elseif ($answerType == FREE_ANSWER) {$answer = $str;
 			?>
 			<table border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions" style="width:98%;">
 			<tr>
@@ -1223,7 +1064,7 @@ if ($show_results) {
 			
 			$res_answers = api_sql_query($sql_select_answer, __FILE__, __LINE__);
 			
-			echo '<table border="0" cellspacing="3" cellpadding="3" align="center" class="quiz_content_actions" style="width:98%;">';
+			echo '<table border="0" cellspacing="3" cellpadding="3" align="center" class="feedback_actions" style="width:98%;">';
 			echo '<tr><td colspan="3">&nbsp;</td></tr>';
 			echo '<tr>
 					<td align="center" width="30%"><span style="font-style: italic;color:#4171B5;font-weight:bold;">'.get_lang("ElementList").'</span> </td>		
@@ -1297,380 +1138,66 @@ if ($show_results) {
 			}
 			echo '</tr></table>';
 		} elseif ($answerType == HOT_SPOT) {
-			$objAnswerTmp = new Answer($questionId);
-			$nbrAnswers = $objAnswerTmp->selectNbrAnswers();
-			$questionScore = 0;
-			$correctComment = array();
-			$answerOk = 'N';
-			$answerWrong = 'N';
+			?>
+			<table width="500" border="0">		
 
-			$hotspot_colors = array("", // $i starts from 1 on next loop (ugly fix)
-										"#4271B5",
-										"#FE8E16",
-										"#3B3B3B",
-										"#BCD631",
-										"#D63173",
-										"#D7D7D7",
-										"#90AFDD",
-										"#AF8640",
-										"#4F9242",
-										"#F4EB24",
-										"#ED2024",
-										"#45C7F0",
-										"#F7BDE2");
+			<?php
+			$objAnswerTmp=new Answer($questionId);
+			$nbrAnswers=$objAnswerTmp->selectNbrAnswers();
+			$questionScore=0;
+			$correctComment=array();
+			?>
+				<tr>
+					<td valign="top" align="center" style="padding-left:0px;" >
+						<table border="1" bordercolor="#A4A4A4" style="border-collapse: collapse;" width="552">
+			<?php 
+			for ($answerId=1;$answerId <= $nbrAnswers;$answerId++) {
+				$answer=$objAnswerTmp->selectAnswer($answerId);
+				$answerComment=$objAnswerTmp->selectComment($answerId);
+				$answerCorrect=$objAnswerTmp->isCorrect($answerId);
+				$answerWeighting=$objAnswerTmp->selectWeighting($answerId);
 
-			$s .= '<table width="100%" border="0"><tr><td><div align="center"><object type="application/x-shockwave-flash" data="../plugin/hotspot/hotspot_solution.swf?modifyAnswers=' . Security::remove_XSS($questionId) . '&exe_id=' . $id . '&from_db=1" width="610" height="410">
-				<param name="movie" value="../plugin/hotspot/hotspot_solution.swf?modifyAnswers=' . Security::remove_XSS($questionId) . '&exe_id=' . $id . '&from_db=1" />
-			  </object></div></td><td width="40%" valign="top"><div class="quiz_content_actions" style="height:380px;"><div class="quiz_header">'.get_lang('Feedback').'</div><div align="center"><img src="../img/MouseHotspots64.png"></div><br/>';
-			 
-			 $s .= '<div><table width="90%" border="1" class="data_table">';
-			 for ($answerId = 1; $answerId <= $nbrAnswers; $answerId++) {
-				$answer = $objAnswerTmp->selectAnswer($answerId);
-				$answerComment = $objAnswerTmp->selectComment($answerId);
-				$correctComment[] = $objAnswerTmp->selectComment($answerId);
-				$answerCorrect = $objAnswerTmp->isCorrect($answerId);
-				if ($nbrAnswers == 1) {
-					$correctComment = explode("~", $objAnswerTmp->selectComment($answerId));
-				} else {
-					if ($answerId == 1) {
-						$correctComment[] = $objAnswerTmp->selectComment(1);
-						$correctComment[] = $objAnswerTmp->selectComment(2);
-					} else {
-						$correctComment[] = $objAnswerTmp->selectComment($answerId);
-					}
+				if($nbrAnswers == 1)
+				{
+					$correctComment = explode("~",$objAnswerTmp->selectComment($answerId));
 				}
-
-				$TBL_TRACK_HOTSPOT = Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_HOTSPOT);
-				$query = "select hotspot_correct from " . $TBL_TRACK_HOTSPOT . " where hotspot_exe_id = '" . Database::escape_string($id) . "' and hotspot_question_id= '" . Database::escape_string($questionId) . "' AND hotspot_answer_id='" . Database::escape_string($answerId) . "'";
-				$resq = api_sql_query($query);
-				$choice = Database::result($resq, 0, "hotspot_correct");
-				
-				$queryfree = "select marks from ".$TBL_TRACK_ATTEMPT." where exe_id = '".Database::escape_string($id)."' and question_id= '".Database::escape_string($questionId)."'";
-				$resfree = api_sql_query($queryfree, __FILE__, __LINE__);
-				$questionScore= Database::result($resfree,0,"marks");
-				$totalScore+=$questionScore;
-
-				if ($choice) {
-					$answerOk = 'Y';
-					$img_choice = get_lang('Right');
-				} else {
-					$answerOk = 'N';
-					$answerWrong = 'Y';
-					$img_choice = get_lang('Wrong');
-				}
-				$s .= '<tr><td><div style="height:11px; width:11px; background-color:'.$hotspot_colors[$answerId].'; display:inline; float:left; margin-top:3px;"></div>&nbsp;'.$answerId.'</td><td>'.$answer.'</td><td>'.$img_choice.'</td></tr>';
-			 }
-			 $s .= '</table></div><br/><br/>';
-			 if ($answerOk == 'Y' && $answerWrong == 'N') {
-				 if ($nbrAnswers == 1){
-					 $feedback = $correctComment[0]; 
-				 }
-				 else {
-					 $feedback = $correctComment[1];  
-				 }
-			 }
-			 else
-			 {
-				 if ($nbrAnswers == 1){
-					 $feedback = $correctComment[1]; 
-				 }
-				 else {
-					 $feedback = $correctComment[2];  
-				 }				         
-			 }
-			 if(!empty($feedback)){
-			 $s .= '<div align="center" class="quiz_feedback"><b>'.get_lang('Feedback').'</b> : '.$feedback.'</div>';		 
-			 }
-			 $s .= '</div></td></tr></table>';
-			 echo $s;
-		}
-		else if($answerType == HOT_SPOT_DELINEATION) {
-		$objAnswerTmp=new Answer($questionId);
-		$nbrAnswers=$objAnswerTmp->selectNbrAnswers();
-		//$nbrAnswers=1; // based in the code found in exercise_show.php
-		$questionScore=0;		
-		
-		//based on exercise_submit modal
-		/*  Hot spot delinetion parameters */		
-		$choice=$exerciseResult[$questionid];
-		$destination=array();
-		$comment='';
-		$next=1;
-		$_SESSION['hotspot_coord']=array();
-		$_SESSION['hotspot_dest']=array();
-		$overlap_color=$missing_color=$excess_color=false;
-		$organs_at_risk_hit=0;
-
-		$final_answer = 0;
-				for($answerId=1;$answerId <= $nbrAnswers;$answerId++) {
-					
-					$answer			=$objAnswerTmp->selectAnswer($answerId);
-					$answerComment	=$objAnswerTmp->selectComment($answerId);
-					$answerCorrect	=$objAnswerTmp->isCorrect($answerId);
-					$answerWeighting=$objAnswerTmp->selectWeighting($answerId);
-					
-					//delineation						
-					$answer_delineation_destination=$objAnswerTmp->selectDestination(1);
-					$delineation_cord=$objAnswerTmp->selectHotspotCoordinates(1);					
-					
-					if ($answerId===1) {					
-						$_SESSION['hotspot_coord'][1]=$delineation_cord;
-						$_SESSION['hotspot_dest'][1]=$answer_delineation_destination;
-					}	
-										
-					// getting the user answer 
-					$TBL_TRACK_HOTSPOT = Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_HOTSPOT);
-					$query = "select hotspot_correct, hotspot_coordinate from ".$TBL_TRACK_HOTSPOT." where hotspot_exe_id = '".Database::escape_string($id)."' and hotspot_question_id= '".Database::escape_string($questionId)."' AND hotspot_answer_id='1'"; //by default we take 1 because it's a delineation 
-					$resq=api_sql_query($query);
-					$row = Database::fetch_array($resq,'ASSOC');
-					$choice = $row['hotspot_correct'];
-					$user_answer = $row['hotspot_coordinate'];	
-					
-					$queryfree = "select marks from ".$TBL_TRACK_ATTEMPT." where exe_id = '".Database::escape_string($id)."' and question_id= '".Database::escape_string($questionId)."'";
-					$resfree = api_sql_query($queryfree, __FILE__, __LINE__);
-					$questionScore= Database::result($resfree,0,"marks");
-					$totalScore+=$questionScore;
-							
-					// THIS is very important otherwise the poly_compile will throw an error!!
-					// round-up the coordinates
-					$coords = explode('/',$user_answer);
-					$user_array = '';
-					foreach ($coords as $coord) {
-					    list($x,$y) = explode(';',$coord);
-					    $user_array .= round($x).';'.round($y).'/';
-					}
-					$user_array = substr($user_array,0,-1);									
-							
-					if ($next) {							                    
-						//$tbl_track_e_hotspot = Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_HOTSPOT);
-								
-					// Save into db
-					/*	$sql = "INSERT INTO $tbl_track_e_hotspot (hotspot_user_id, hotspot_course_code, hotspot_exe_id, hotspot_question_id, hotspot_answer_id, hotspot_correct, hotspot_coordinate ) 
-								VALUES ('".Database::escape_string($_user['user_id'])."', '".Database::escape_string($_course['id'])."', '".Database::escape_string($exeId)."', '".Database::escape_string($questionId)."', '".Database::escape_string($answerId)."', '".Database::escape_string($studentChoice)."', '".Database::escape_string($user_array)."')";							
-						$result = api_sql_query($sql,__FILE__,__LINE__);*/						
-						$user_answer = $user_array;
-					
-						// we compare only the delineation not the other points
-						$answer_question	= $_SESSION['hotspot_coord'][1];	
-						$answerDestination	= $_SESSION['hotspot_dest'][1];
-						
-						//calculating the area
-                        $poly_user 			= convert_coordinates($user_answer,'/'); 
-                        $poly_answer		= convert_coordinates($answer_question,'|');
-                        $max_coord 			= array('x'=>600,'y'=>400);//poly_get_max($poly_user,$poly_answer);	                   
-                        $poly_user_compiled = poly_compile($poly_user,$max_coord);	                             
-                        $poly_answer_compiled = poly_compile($poly_answer,$max_coord);
-                        $poly_results 		= poly_result($poly_answer_compiled,$poly_user_compiled,$max_coord);
-                              
-                        $overlap = $poly_results['both'];
-                        $poly_answer_area = $poly_results['s1'];
-                        $poly_user_area = $poly_results['s2'];
-                        $missing = $poly_results['s1Only'];
-                        $excess = $poly_results['s2Only'];
-                        
-                        //$overlap = round(polygons_overlap($poly_answer,$poly_user)); //this is an area in pixels
-                        if ($dbg_local>0) { error_log(__LINE__.' - Polygons results are '.print_r($poly_results,1),0);}
-                        if ($overlap < 1) {
-                            //shortcut to avoid complicated calculations
-                        	$final_overlap = 0;
-                            $final_missing = 100;
-                            $final_excess = 100;
-                        } else {
-                            // the final overlap is the percentage of the initial polygon that is overlapped by the user's polygon
-                        	$final_overlap = round(((float)$overlap / (float)$poly_answer_area)*100);
-                            if ($dbg_local>1) { error_log(__LINE__.' - Final overlap is '.$final_overlap,0);}
-                            // the final missing area is the percentage of the initial polygon that is not overlapped by the user's polygon
-                            $final_missing = 100 - $final_overlap;
-                            if ($dbg_local>1) { error_log(__LINE__.' - Final missing is '.$final_missing,0);}
-                            // the final excess area is the percentage of the initial polygon's size that is covered by the user's polygon outside of the initial polygon
-                            $final_excess = round((((float)$poly_user_area-(float)$overlap)/(float)$poly_answer_area)*100);
-                            if ($dbg_local>1) { error_log(__LINE__.' - Final excess is '.$final_excess,0);}
-                        }
-						
-						//checking the destination parameters parsing the "@@"				
-						$destination_items= explode('@@', $answerDestination);	                        
-				        $threadhold_total = $destination_items[0];			            
-				        $threadhold_items=explode(';',$threadhold_total);				        		            
-			            $threadhold1 = $threadhold_items[0]; // overlap
-			            $threadhold2 = $threadhold_items[1]; // excess
-			            $threadhold3 = $threadhold_items[2];	 //missing          
-						
-						// if is delineation
-						if ($answerId===1) {
-							//setting colors
-							if ($final_overlap>=$threadhold1) {	
-								$overlap_color=true; //echo 'a';
-							}
-							//echo $excess.'-'.$threadhold2;
-							if ($final_excess<=$threadhold2) {	
-								$excess_color=true; //echo 'b';
-							}
-							//echo '--------'.$missing.'-'.$threadhold3;
-							if ($final_missing<=$threadhold3) {	
-								$missing_color=true; //echo 'c';
-							}					
-							
-							// if pass
-							if ($final_overlap>=$threadhold1 && $final_missing<=$threadhold3 && $final_excess<=$threadhold2) {																
-								$next=1; //go to the oars	
-								$result_comment=get_lang('Acceptable');	
-								$final_answer = 1;	// do not update with  update_exercise_attempt
-								$comment=$answerDestination=$objAnswerTmp->selectComment(1);
-							} else {									
-								$next=1; //Go to the oars. If $next =  0 we will show this message: "One (or more) area at risk has been hit" instead of the table resume with the results	
-								$result_comment=get_lang('Unacceptable');									
-								$comment=$answerDestination=$objAnswerTmp->selectComment(2);																
-								$answerDestination=$objAnswerTmp->selectDestination(1);
-								//checking the destination parameters parsing the "@@"	
-								$destination_items= explode('@@', $answerDestination);
-								/*
-								$try_hotspot=$destination_items[1];
-	            				$lp_hotspot=$destination_items[2];
-	           					$select_question_hotspot=$destination_items[3];
-	            				$url_hotspot=$destination_items[4]; */	 		            											
-								 //echo 'show the feedback';
-							}
-						} elseif($answerId>1) {
-                            if ($objAnswerTmp->selectHotspotType($answerId) == 'noerror') {
-                                if ($dbg_local>0) { error_log(__LINE__.' - answerId is of type noerror',0);}
-                            	//type no error shouldn't be treated
-                                $next = 1;
-                                continue;
-                            }
-                            if ($dbg_local>0) { error_log(__LINE__.' - answerId is >1 so we\'re probably in OAR',0);}
-							//check the intersection between the oar and the user												
-							//echo 'user';	print_r($x_user_list);		print_r($y_user_list);
-							//echo 'official';print_r($x_list);print_r($y_list);												
-							//$result = get_intersection_data($x_list,$y_list,$x_user_list,$y_user_list);
-							$inter= $result['success'];
-
-                            //$delineation_cord=$objAnswerTmp->selectHotspotCoordinates($answerId);
-                            $delineation_cord=$objAnswerTmp->selectHotspotCoordinates($answerId);
-
-                            $poly_answer 			= convert_coordinates($delineation_cord,'|');
-                            $max_coord 				= poly_get_max($poly_user,$poly_answer);                            
-                            $poly_answer_compiled 	= poly_compile($poly_answer,$max_coord); 
-                            $overlap 				= poly_touch($poly_user_compiled, $poly_answer_compiled,$max_coord);
-                                          				
-                            if ($overlap == false) {
-                            	//all good, no overlap
-                                $next = 1;
-                                continue;
-                            } else {								
-                                if ($dbg_local>0) { error_log(__LINE__.' - Overlap is '.$overlap.': OAR hit',0);}
-                                $organs_at_risk_hit++;  
-                                //show the feedback
-                                $next=0;								
-                                $comment=$answerDestination=$objAnswerTmp->selectComment($answerId);                                
-                                $answerDestination=$objAnswerTmp->selectDestination($answerId);
-                                                    
-                                $destination_items= explode('@@', $answerDestination);
-                                 /*
-                                $try_hotspot=$destination_items[1];
-                                $lp_hotspot=$destination_items[2];
-                                $select_question_hotspot=$destination_items[3];
-                                $url_hotspot=$destination_items[4];*/                                                                                 
-                            }
-						}
+				else
+				{
+					if($answerId == 1)
+					{
+					$correctComment[] = $objAnswerTmp->selectComment(1);
+					$correctComment[] = $objAnswerTmp->selectComment(2);
 					}
 					else
-					{	// the first delineation feedback		
-                        if ($dbg_local>0) { error_log(__LINE__.' first',0);}								
-					}			
-				} // end for				
-						
-		if ($overlap_color) {
-			$overlap_color='green';
-	    } else {
-			$overlap_color='red';
-	    }
-	    
-		if ($missing_color) {
-			$missing_color='green';
-	    } else {
-			$missing_color='red';
-	    }
-		if ($excess_color) {
-			$excess_color='green';
-	    } else {
-			$excess_color='red';
-	    }
-	    
-	    
-	    if (!is_numeric($final_overlap)) {
-    	$final_overlap = 0;
-	    }
-	    
-	    if (!is_numeric($final_missing)) {
-	    	$final_missing = 0;
-	    }
-	    if (!is_numeric($final_excess)) {
-	    	$final_excess = 0;
-	    }
-	    
-	    if ($final_excess>100) {
-	    	$final_excess = 100;
-	    }
+					{
+					$correctComment[] = $objAnswerTmp->selectComment($answerId);
+					}
+				}
+				
+				$TBL_TRACK_HOTSPOT = Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_HOTSPOT);
+				$query = "select hotspot_correct from ".$TBL_TRACK_HOTSPOT." where hotspot_exe_id = '".Database::escape_string($id)."' and hotspot_question_id= '".Database::escape_string($questionId)."' AND hotspot_answer_id='".Database::escape_string($answerId)."'";
+				$resq=api_sql_query($query);
+				$choice = Database::result($resq,0,"hotspot_correct");
+				display_hotspot_answer($answerId,$answer,$choice,$correctComment);
 
-		if ($answerType!= HOT_SPOT_DELINEATION) {
-			$item_list=explode('@@',$destination);
-			//print_R($item_list);
-			$try = $item_list[0];
-			$lp = $item_list[1];
-			$destinationid= $item_list[2];
-			$url=$item_list[3];
-			$table_resume='';
-		} else {
-			if ($next==0) {
-				$try = $try_hotspot;
-				$lp = $lp_hotspot;
-				$destinationid= $select_question_hotspot;
-				$url=$url_hotspot;
-			} else {				
-				//show if no error
-				//echo 'no error';				
-			//	$comment=$answerComment=$objAnswerTmp->selectComment($nbrAnswers);	
-			//	$comment=$answerComment=$objAnswerTmp->selectComment(2);	
-				$answerDestination=$objAnswerTmp->selectDestination($nbrAnswers);
-			}
-		} 
+				$i++;
+		 	}
+		 	$queryfree = "select marks from ".$TBL_TRACK_ATTEMPT." where exe_id = '".Database::escape_string($id)."' and question_id= '".Database::escape_string($questionId)."'";
+			$resfree = api_sql_query($queryfree, __FILE__, __LINE__);
+			$questionScore= Database::result($resfree,0,"marks");
+			$totalScore+=$questionScore;
+			echo '</table></td></tr>';
+		 	echo '<tr>
+				<td colspan="2">'.
+					//<object type="application/x-shockwave-flash" data="../plugin/hotspot/hotspot_solution.swf?modifyAnswers='.$questionId.'&exe_id='.$id.'&from_db=1" width="556" height="421">
+					'<object type="application/x-shockwave-flash" data="../plugin/hotspot/hotspot_solution.swf?modifyAnswers='.Security::remove_XSS($questionId).'&exe_id='.$id.'&from_db=1" width="610" height="410">
+						<param name="movie" value="../plugin/hotspot/hotspot_solution.swf?modifyAnswers='.Security::remove_XSS($questionId).'&exe_id='.$id.'&from_db=1" />
+					</object>
 
-		echo '<table width="100%" border="0">';	
-		echo '<tr><td><object type="application/x-shockwave-flash" data="../plugin/hotspot/hotspot_solution.swf?modifyAnswers='.$questionId.'&exe_id='.$id.'&from_db=1" width="610" height="410">
-						<param name="movie" value="../plugin/hotspot/hotspot_solution.swf?modifyAnswers='.$questionId.'&exe_id='.$id.'&from_db=1" />
-							
-					</object></td>';
-		echo '<td width="40%" valign="top"><div class="quiz_content_actions" style="height:380px;"><div class="quiz_header">'.get_lang('Feedback').'</div><p align="center"><img src="../img/mousepolygon64.png"></p><div><table width="100%" border="1" class="data_table"><tr class="row_odd"><td>&nbsp;</td><td>'.get_lang('Requirement').'</td><td>'.get_lang('YourContour').'</td></tr><tr class="row_even"><td align="right">'.get_lang('Overlap').'</td><td align="center">'.get_lang('Min').' '.$threadhold1.' %</td><td align="center"><div style="color:'.$overlap_color.'">'.(($final_overlap < 0)?0:intval($final_overlap)).'</div></td></tr><tr class="row_even"><td align="right">'.get_lang('Excess').'</td><td align="center">'.get_lang('Max').' '.$threadhold2.' %</td><td align="center"><div style="color:'.$excess_color.'">'.(($final_excess < 0)?0:intval($final_excess)).'</div></td></tr><tr class="row_even"><td align="right">'.get_lang('Missing').'</td><td align="center">'.get_lang('Max').' '.$threadhold3.' %</td><td align="center"><div style="color:'.$missing_color.'">'.(($final_missing < 0)?0:intval($final_missing)).'</div></td></tr>';
-
-		if ($answerType == HOT_SPOT_DELINEATION) {			
-			if ($organs_at_risk_hit>0) {
-				$message= get_lang('ResultIs').' <b>'.$result_comment.'</b>';				
-				$message.= '<p style="color:#DC0A0A;"><b>'.get_lang('OARHit').'</b></p>';
-			} else {				
-				$message = '<p>'.get_lang('ResultIs').' <b>'.$result_comment.'</b></p>';
-			}
-		
-			echo '<tr><td colspan="3" align="center">'.$message.'</td></tr>';
-			
-			// by default we assume that the answer is ok but if the final answer after calculating the area in hotspot delineation =0 then update  
-			if ($final_answer==0) {
-				$sql = 'UPDATE '.$TBL_TRACK_ATTEMPT.' SET answer="", marks = 0 WHERE question_id = '.$questionId.' AND exe_id = '.$exeId;
-				Database::query($sql, __FILE__, __LINE__);
-			}
-			
-		} else {
-			//echo '<p>'.$comment.'</p>';
-			echo '<tr><td colspan="3">'.$comment.'</td></tr>';
+				</td>
+			</tr>
+			</table><br/>';
 		}
-		
-		echo '</table></div><br/><br/>';
-		if(!empty($comment)){
-		echo '<div align="center" class="quiz_feedback"><b>'.get_lang('Feedback').'</b> : '.$comment.'</div>';
-		}
-		echo '</div></td></tr>';
-		
-		echo '</table>';
-	}
 
 		echo '<table width="100%" border="0" cellspacing="3" cellpadding="0">';		
 		if ($is_allowedToEdit) {
@@ -1685,7 +1212,7 @@ if ($show_results) {
 				echo get_lang('EditCommentsAndMarks'); 
 			} else {
 				if ($action=='edit') {
-					echo Display::return_icon('pixel.gif',get_lang('EditIndividualComment'),array('class'=>'actionplaceholdericon actionedit')).get_lang('EditIndividualComment');
+					echo '<img src="../img/edit.png"/>'.get_lang('EditIndividualComment');
 				} else {
 					echo get_lang('AddComments');
 				}
@@ -1792,35 +1319,13 @@ if (is_array($arrid) && is_array($arrmarks)) {
 	$marksid = implode(",",$arrmarks);
 }
 
-echo '<script>
-$(document).ready(function() {
-	$("input[name=quizstatus]").change(function() {  
-   showmailcontent();
-});
-function showmailcontent() {
-	var quizstatus = $("input[name=quizstatus]:checked").val();	
-	if(quizstatus == "success")
-	{
-	$("#successmailcontent").show();
-	$("#failuremailcontent").hide();
-	}
-	else
-	{
-	$("#failuremailcontent").show();
-	$("#successmailcontent").hide();
-	}
-}
-});
-
-</script>';
-
 echo '<div style="padding:0px 0px 20px 0px;">';
-if ($is_allowedToEdit) {
+if ($is_allowedToEdit) {		
 	if (in_array($origin, array('tracking_course','user_course'))) {
-		echo ' <form name="myform" id="myform" action="exercice.php?'.  api_get_cidreq().'&comments=update&exeid='.$id.'&test='.urlencode($test).'&emailid='.$emailId.'&origin='.$origin.'&student='.Security::remove_XSS($_GET['student']).'&details=true&course='.Security::remove_XSS($_GET['cidReq']);
+		echo ' <form name="myform" id="myform" action="exercice.php?show=result&comments=update&exeid='.$id.'&test='.urlencode($test).'&emailid='.$emailId.'&origin='.$origin.'&student='.$_GET['student'].'&details=true&course='.$_GET['cidReq'];
 		if(isset($_REQUEST['quizpopup']))
 		{
-			//echo "&quizpopup=1";
+			echo "&quizpopup=1";
 		}
 		echo '" method="post">';
 		echo ' <input type = "hidden" name="totalWeighting" value="'.$totalWeighting.'">';
@@ -1835,18 +1340,36 @@ if ($is_allowedToEdit) {
 			<?php		 
 		}
 	} else {
-		echo ' <form name="myform" id="myform" action="exercice.php?'.  api_get_cidreq().'&comments=update&exeid='.$id.'&test='.$test.'&emailid='.$emailId.'&totalWeighting='.$totalWeighting;
+		echo ' <form name="myform" id="myform" action="exercice.php?show=result&comments=update&exeid='.$id.'&test='.$test.'&emailid='.$emailId.'&totalWeighting='.$totalWeighting;
 		if(isset($_REQUEST['quizpopup']))
 		{
-			//echo "&quizpopup=1";
+			echo "&quizpopup=1";
 		}	
 		echo '" method="post">';
 	}					
-	if ($origin!='learnpath' && $origin!='student_progress') {
+	if ($origin!='learnpath' && $origin!='student_progress' && $_REQUEST['action'] == 'qualify') {
+		global $language_interface;
 
-		$success_content = getMailContent('success');
-		$failure_content = getMailContent('failure');
-
+		$table_emailtemplate 	= Database::get_main_table(TABLE_MAIN_EMAILTEMPLATES);
+		$sql = "SELECT * FROM $table_emailtemplate WHERE description = 'Quizreport' AND language= '".$language_interface."'";
+		$result = api_sql_query($sql, __FILE__, __LINE__);
+		while($row = Database::fetch_array($result))
+		{				
+			$content = $row['content'];
+		}
+		if(empty($content))
+		{
+			$content = get_lang('DearStudentEmailIntroduction')."\n\n";
+			$content .= get_lang('AttemptVCC')."\n\n";
+			$content .= get_lang('Question').": {ques_name} \n";	
+			$content .= get_lang('Exercice')." :{test} \n\n";
+			$content .= get_lang('ClickLinkToViewComment')." - {url} \n\n";
+			$content .= get_lang('Regards')."\n\n";	
+			$content .= "{administratorSurname} \n";
+			$content .= get_lang('Manager')."\n";
+			$content .= "{administratorTelephone} \n";
+			$content .= get_lang('Email')." : {emailAdministrator}";
+		}
 		?>					
 		<script>
 			function showcontent(){			
@@ -1860,19 +1383,10 @@ if ($is_allowedToEdit) {
 			document.getElementById('viewcontent').style.display = 'block';
 		}
 		</script>
-		<?php
-			if($_REQUEST['action'] == 'qualify'){			
-		?>
-		<div><table><tr><td valign="top"><?php echo get_lang('Notes'); ?> : </td><td><textarea name="notes" rows="5" cols="75"></textarea></td></tr></table></div>
-		<div><table><tr><td><label><input type="radio" name="quizstatus" value="success" /><?php echo get_lang('Showsuccesscontent'); ?></label></td><td><label><input type="radio" name="quizstatus" value="failure" /><?php echo get_lang('Showfailurecontent'); ?></label></td></tr></table></div><br/>	
-	<!--<div id="viewcontent"><a href="#mailcontent" onclick="showcontent()"><?php echo get_lang('Showemailcontent'); ?></a></div>
-		<div id="hidecontent" style="display:none;"><a href="#mailcontent" onclick="hidecontent()"><?php echo get_lang('Hideemailcontent'); ?></a></div>-->		
-		<div id="successmailcontent" style="display:none;"><?php echo get_lang('Dontedittext'); ?><br/><textarea name="successcontent" rows="10" cols="75"><?php echo $success_content; ?></textarea></div>
-		<div id="failuremailcontent" style="display:none;"><?php echo get_lang('Dontedittext'); ?><br/><textarea name="failurecontent" rows="10" cols="75"><?php echo $failure_content; ?></textarea></div>
-		<button type="submit" class="save" value="<?php echo get_lang('Ok'); ?>" onclick="getFCK('<?php echo $strids; ?>','<?php echo $marksid; ?>');"><?php echo get_lang('FinishTest'); ?></button>
-		<?php
-		}
-		?>
+		<div id="viewcontent"><a href="#mailcontent" onclick="showcontent()"><?php echo get_lang('Showemailcontent'); ?></a></div>
+		<div id="hidecontent" style="display:none;"><a href="#mailcontent" onclick="hidecontent()"><?php echo get_lang('Hideemailcontent'); ?></a></div>
+		<div id="mailcontent" style="display:none;"><textarea name="content" rows="10" cols="75"><?php echo $content; ?></textarea></div>
+		<button type="submit" class="save" value="<?php echo get_lang('Ok'); ?>" onclick="getFCK('<?php echo $strids; ?>','<?php echo $marksid; ?>');"><?php echo get_lang('FinishTest'); ?></button>				 
 		</form>
 		<?php 
 	}
@@ -1899,7 +1413,7 @@ if ($origin!='learnpath' || ($origin == 'learnpath' && isset($_GET['fb_type'])))
 			$my_result = float_format($my_result,1);
 			echo $my_result."%";
 		} else {
-			$my_total_score  = round($totalScore);
+			$my_total_score  = round(float_format($totalScore,1));
 			$my_total_weight = float_format($totalWeighting,1);
 			echo $my_total_score."/".$my_total_weight;
 		}
@@ -1925,87 +1439,6 @@ if ($origin != 'learnpath') {
 		Display::display_normal_message(get_lang('ExerciseFinished'));
 	}
 }
-
-function getMailContent($quizresult)
-{
-	global $language_interface;
-	if($quizresult == 'success')
-	{
-		$description = "Quizsuccess";
-	}
-	elseif($quizresult == 'failure')
-	{
-		$description = "Quizfailure";
-	}
-	$table_emailtemplate 	= Database::get_main_table(TABLE_MAIN_EMAILTEMPLATES);
-	$sql = "SELECT * FROM $table_emailtemplate WHERE description = '".$description."' AND language= '".$language_interface."'";
-	$result = api_sql_query($sql, __FILE__, __LINE__);
-	while($row = Database::fetch_array($result))
-	{				
-		$content = $row['content'];
-	}
-	if(empty($content))
-	{
-		$content = get_lang('DearStudentEmailIntroduction')."\n\n";
-		$content .= get_lang('AttemptVCC')."\n\n";
-		if($quizresult == 'success'){
-		$content .= get_lang('Quizsuccess')."\n\n";
-		}
-		else {
-		$content .= get_lang('Quizfailure')."\n\n";
-		}
-		$content .= get_lang('Question').": {ques_name} \n";	
-		$content .= get_lang('Exercice')." :{test} \n\n";
-		$content .= get_lang('ClickLinkToViewComment')." - {url} \n\n";
-		$content .= get_lang('Notes')."\n\n";	
-		$content .= "{notes} \n\n";
-		$content .= get_lang('Regards')."\n\n";	
-		$content .= "{administratorSurname} \n";
-		$content .= get_lang('Manager')."\n";
-		$content .= "{administratorTelephone} \n";
-		$content .= get_lang('Email')." : {emailAdministrator}";
-	}
-	return $content;
-}
-
-function display_unique_or_multiple_or_reasoning_answer($answerType, $studentChoice, $answer, $answerComment, $answerCorrect, $id, $questionId, $ans)
-{
-	if($answerType == UNIQUE_ANSWER){
-		$img = 'radio';
-	}
-	else {
-		$img = 'checkbox';
-	}
-	if($studentChoice){
-		$your_choice = $img.'_on'.'.gif';
-	}
-	else {
-		$your_choice = $img.'_off'.'.gif';
-	}
-
-	if($answerCorrect){
-		$expected_choice = $img.'_on'.'.gif';
-	}
-	else {
-		$expected_choice = $img.'_off'.'.gif';
-	}
-
-	$s .= '
-	<tr>
-	<td width="5%" align="center">
-		<img src="../img/'.$your_choice.'"
-		border="0" alt="" />
-	</td>
-	<td width="5%" align="center">
-		<img src="../img/'.$expected_choice.'"
-		border="0" alt=" " />
-	</td>
-	<td width="40%" style="border-bottom: 1px solid #4171B5;">'.api_parse_tex($answer).'	
-	</td>		
-	</tr>';
-	return $s;
-}
-
 //destroying the session 
 api_session_unregister('questionList');
 unset ($questionList);

@@ -48,7 +48,6 @@ ALTER TABLE message ADD INDEX idx_message_parent(parent_id);
 ALTER TABLE message ADD update_date datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
 ALTER TABLE course ADD COLUMN default_enrolment INT NOT NULL DEFAULT 0;
 -- ALTER TABLE session MODIFY nb_days_access_before_beginning tinyint(3) unsigned NULL DEFAULT '0' COMMENT '', MODIFY nb_days_access_after_end tinyint(3) unsigned NULL DEFAULT '0' COMMENT '';
-
 ALTER TABLE reservation_subscription DROP item_id;
 ALTER TABLE user ADD COLUMN login_counter INT UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE user ADD COLUMN login_failed_counter INT UNSIGNED NOT NULL DEFAULT 0;
@@ -56,20 +55,18 @@ ALTER TABLE user ADD COLUMN login_failed_counter INT UNSIGNED NOT NULL DEFAULT 0
 --
 -- Table structure for quiz templates
 --
-DROP TABLE IF EXISTS quiz_answer_templates;
-CREATE TABLE quiz_answer_templates ( id mediumint(8) unsigned NOT NULL,  question_id mediumint(8) unsigned NOT NULL,  answer text NOT NULL,  correct mediumint(8) unsigned DEFAULT NULL,  comment text,  ponderation float(6,2) NOT NULL DEFAULT '0.00',  position mediumint(8) unsigned NOT NULL DEFAULT '1',  hotspot_coordinates text,  hotspot_type enum('square','circle','poly','delineation') DEFAULT NULL, destination text NOT NULL,  PRIMARY KEY (id,question_id));
-DROP TABLE IF EXISTS quiz_question_templates;
-CREATE TABLE quiz_question_templates ( id mediumint(8) unsigned NOT NULL AUTO_INCREMENT, question varchar(200) NOT NULL, description text, ponderation float(6,2) NOT NULL DEFAULT '0.00', position mediumint(8) unsigned NOT NULL DEFAULT '1', type tinyint(3) unsigned NOT NULL DEFAULT '2', picture varchar(50) DEFAULT NULL, level int(10) unsigned NOT NULL DEFAULT '0', image varchar(50) DEFAULT NULL,  PRIMARY KEY (id),  KEY position (position));
-
+DROP TABLE IF EXISTS `quiz_answer_templates`;
+CREATE TABLE `quiz_answer_templates` ( `id` mediumint(8) unsigned NOT NULL,  `question_id` mediumint(8) unsigned NOT NULL,  `answer` text NOT NULL,  `correct` mediumint(8) unsigned DEFAULT NULL,  `comment` text,  `ponderation` float(6,2) NOT NULL DEFAULT '0.00',  `position` mediumint(8) unsigned NOT NULL DEFAULT '1',  `hotspot_coordinates` text,  `hotspot_type` enum('square','circle','poly','delineation') DEFAULT NULL, `destination` text NOT NULL,  PRIMARY KEY (`id`,`question_id`));
+DROP TABLE IF EXISTS `quiz_question_templates`;
+CREATE TABLE `quiz_question_templates` ( `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, `question` varchar(200) NOT NULL, `description` text, `ponderation` float(6,2) NOT NULL DEFAULT '0.00', `position` mediumint(8) unsigned NOT NULL DEFAULT '1', `type` tinyint(3) unsigned NOT NULL DEFAULT '2', `picture` varchar(50) DEFAULT NULL, `level` int(10) unsigned NOT NULL DEFAULT '0', `image` varchar(50) DEFAULT NULL,  PRIMARY KEY (`id`),  KEY `position` (`position`));
 --
 -- Settings changes
 --
 ALTER TABLE settings_current ADD COLUMN subcategory VARCHAR(250) DEFAULT NULL;
-CREATE TABLE session_category (id int(11) NOT NULL auto_increment,  name varchar(100) DEFAULT NULL,  description text,  topic int(11) NOT NULL DEFAULT '0',  location varchar(250) DEFAULT NULL,  modality varchar(255) DEFAULT NULL,  keywords text,  date_start date DEFAULT NULL,  date_end date DEFAULT NULL,  student_access varchar(50) DEFAULT NULL,  language varchar(50) NOT NULL DEFAULT 'English',  visible char(1) NOT NULL DEFAULT '0',  cost float NOT NULL DEFAULT '0',  currency varchar(250) DEFAULT NULL,  tax int(11) NOT NULL DEFAULT '0',  method_payment varchar(100) NOT NULL,  code varchar(100) DEFAULT NULL,  inscription_date_start date DEFAULT NULL,  inscription_date_end date DEFAULT NULL,  PRIMARY KEY  (id));
-
+CREATE TABLE session_category (id int(11) NOT NULL auto_increment, name varchar(100) default NULL, date_start date default NULL, date_end date default NULL, PRIMARY KEY  (id));
 UPDATE settings_current SET selected_value = selected_value*10 WHERE variable='default_document_quotum';
 UPDATE settings_current SET selected_value = 'dokeos2_orange' WHERE variable='stylesheets';
-UPDATE settings_current SET selected_value = '2.0.1.11575' WHERE variable = 'dokeos_database_version';
+UPDATE settings_current SET selected_value = '2.0.11278' WHERE variable = 'dokeos_database_version';
 UPDATE settings_current SET selected_value = 'session_name_and_course_title' WHERE variable = 'breadcrumbs_course_homepage';
 UPDATE settings_current SET selected_value = 'isautomatic' WHERE variable = 'show_glossary_in_documents';
 UPDATE settings_current SET selected_value = 'true' WHERE variable = 'allow_message_tool';
@@ -175,7 +172,7 @@ INSERT INTO settings_current (variable, subkey, type, category, subcategory, sel
 
 -- forgotten settings 
 INSERT INTO settings_current (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable) VALUES ('allow_user_edit_agenda','','radio','Tools','false','AllowUserEditAgendaTitle','AllowUserEditAgendaTitle',1, NULL, 1),('block_copy_paste_for_students',NULL,'radio','Editor','false','BlockCopyPasteForStudentsTitle','BlockCopyPasteForStudentsComment',NULL,NULL, 0),('extend_rights_for_coach_on_survey',NULL,'radio','Security','true','ExtendRightsForCoachOnSurveyTitle','ExtendRightsForCoachOnSurveyComment',NULL,NULL, 0),('math_asciimathML',NULL,'radio','Editor','false','MathASCIImathMLTitle','MathASCIImathMLComment',NULL,NULL, 0),('math_mimetex',NULL,'radio','Editor','false','MathMimetexTitle','MathMimetexComment',NULL,NULL, 0),('message_max_upload_filesize',NULL,'textfield','Tools','20971520','MessageMaxUploadFilesizeTitle','MessageMaxUploadFilesizeComment',NULL,NULL, 0),('more_buttons_maximized_mode',NULL,'radio','Editor','false','MoreButtonsForMaximizedModeTitle','MoreButtonsForMaximizedModeComment',NULL,NULL, 0),('show_quizcategory', '', 'radio', 'Platform', 'false', 'ShowQuizCategoryTitle','ShowQuizCategoryComment','0',NULL, 1),('show_session_data', NULL, 'radio', 'Course', 'false', 'ShowSessionDataTitle', 'ShowSessionDataComment', NULL, NULL, 1),('students_download_folders',NULL,'radio','Tools','true','AllowStudentsDownloadFoldersTitle','AllowStudentsDownloadFoldersComment',NULL,NULL, 0),('youtube_for_students',NULL,'radio','Editor','true','YoutubeForStudentsTitle','YoutubeForStudentsComment',NULL,NULL, 0);
-INSERT INTO settings_options (variable, value, display_text) VALUES ('allow_user_edit_agenda','true','Yes'), ('allow_user_edit_agenda','false','No'),('block_copy_paste_for_students','true','Yes'),('block_copy_paste_for_students','false','No'),('extend_rights_for_coach_on_survey', 'true', 'Yes'),('extend_rights_for_coach_on_survey', 'false', 'No'),('math_asciimathML','true','Yes'),('math_asciimathML','false','No'),('math_mimetex','true','Yes'),('math_mimetex','false','No'),('more_buttons_maximized_mode','true','Yes'),('more_buttons_maximized_mode','false','No'),('show_quizcategory','true','Yes'),('show_quizcategory','false','No'),('show_session_data ', 'true', 'Yes'),('show_session_data ', 'false', 'No'),('students_download_folders','true','Yes'),('students_download_folders','false','No'),('youtube_for_students','true','Yes'),('youtube_for_students','false','No'),('show_email_of_teacher_or_tutor ', 'true', 'Yes'),('show_email_of_teacher_or_tutor ', 'false', 'No');
+INSERT INTO settings_options (variable, value, display_text) VALUES ('allow_user_edit_agenda','true','Yes'), ('allow_user_edit_agenda','false','No'),('block_copy_paste_for_students','true','Yes'),('block_copy_paste_for_students','false','No'),('extend_rights_for_coach_on_survey', 'true', 'Yes'),('extend_rights_for_coach_on_survey', 'false', 'No'),('math_asciimathML','true','Yes'),('math_asciimathML','false','No'),('math_mimetex','true','Yes'),('math_mimetex','false','No'),('more_buttons_maximized_mode','true','Yes'),('more_buttons_maximized_mode','false','No'),('show_quizcategory','true','Yes'),('show_quizcategory','false','No'),('show_session_data ', 'true', 'Yes'),('show_session_data ', 'false', 'No'),('students_download_folders','true','Yes'),('students_download_folders','false','No'),('youtube_for_students','true','Yes'),('youtube_for_students','false','No'),('portal_view','widget','PortalViewWidget'),('portal_view','classic','PortalViewClassic'),('show_email_of_teacher_or_tutor ', 'true', 'Yes'),('show_email_of_teacher_or_tutor ', 'false', 'No'),('widget_hidden_title_behaviour','showonhover','ShowOnHover'),('widget_hidden_title_behaviour','showtoggle','ShowToggle'),('widget_homepage','widgethomepage1','widgethomepage1'),('widget_homepage','widgethomepage2','widgethomepage2'),('widget_homepage','widgethomepage3','widgethomepage3'),('widget_homepage','widgethomepage4','widgethomepage4'),('widget_homepage','widgethomepage5','widgethomepage5'),('widget_homepage','widgethomepage6','widgethomepage6'); 
 --
 -- user fields changes
 --
@@ -309,5 +306,3 @@ INSERT INTO tool VALUES (NULL, 'mediabox','document/mediabox.php','podcast.png',
 INSERT INTO tool VALUES (NULL, 'mindmap','mindmap/index.php','mindmap.png','1','0','squaregrey.gif','NO','_self','interaction','0');
 INSERT INTO tool VALUES (NULL,'copy_course_content','coursecopy/copy_course.php','copy.png','1','1','','NO','_self', 'admin','0');
 INSERT INTO tool VALUES (NULL, 'author','newscorm/lp_controller.php','author.png','1','0','squaregrey.gif','NO','_self','authoring','0');
-UPDATE course_setting SET value='dokeos2_orange' WHERE variable='course_theme';
-ALTER TABLE document ADD COLUMN display_order int NOT NULL default 0;

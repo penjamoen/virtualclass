@@ -25,8 +25,6 @@ $lang_back_to_course_selection              = "返回课程选择";
 $lang_up  = "返回上级分类";
 $langCatList  = "分类";
 $langCourseList  = "课程列表";
-$Subscribe = "订阅";
-$AlreadySubscribed = "已经订阅";
 $langWithoutTimeLimits = "没有时间限制";
 $lang_back_to_main_category_list = "返回主分类列表";
 $langAdded = "添加";
@@ -42,5 +40,4 @@ $langEnrollToCourseSuccessful = "您已经注册了该课程";
 $langSubCat = "子分类";
 $langUnsubscribeNotAllowed = "不允许取消注册";
 $langCourseAdminUnsubscribeNotAllowed  = "您是课程管理员";
-$DefaultCategory = "默认分类";
 ?>

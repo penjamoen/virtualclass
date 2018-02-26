@@ -25,7 +25,6 @@ require '../inc/global.inc.php';
 if (api_get_setting('password_length') <> 0){
 	$password_length_rule = 'minLength: '.api_get_setting('password_length').',';
 }
-if (api_get_path('show_force_password_change') == 'true') {
 $htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path ( WEB_CODE_PATH ) . 'inc/lib/javascript/jquery.strengthy-0.0.1.js" language="javascript"></script>';
 $htmlHeadXtra[] = '<script type="text/javascript">
 							var messages = [
@@ -53,7 +52,6 @@ $htmlHeadXtra[] = '<script type="text/javascript">
 							});
 					</script>';
 
-}
 // including additional libraries
 require_once api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php';
 require_once api_get_path(LIBRARY_PATH).'usermanager.lib.php';
@@ -82,7 +80,6 @@ if (api_get_setting('allow_terms_conditions') == 'true') {
 			}
 			$tool_name = get_lang('TermsAndConditions');
 			Display :: display_header('');
-                        echo '<div id="content">';
 			echo '<div class="actions-title">';
 			echo $tool_name;
 			echo '</div>';
@@ -91,7 +88,6 @@ if (api_get_setting('allow_terms_conditions') == 'true') {
 			} else {
 				echo get_lang('ComingSoon');
 			}
-                        echo '</div>';
 			Display :: display_footer();
 			exit;
 		}
@@ -208,30 +204,21 @@ if ($display_all_form === true) {
 	$form->addRule('username', get_lang('UsernameWrong'), 'username');
 	$form->addRule('username', get_lang('UserTaken'), 'username_available');
 	//	PASSWORD
-        
-        if (api_get_path('show_force_password_change') == 'true') {
-            $form->addElement('password', 'pass1', get_lang('Pass'),         array('size' => 20, 'id'=> 'pass1'));
-            $form->addElement('password', 'pass2', get_lang('Confirmation'), array('size' => 20));
-            $form->addRule('pass1', get_lang('ThisFieldIsRequired'), 'required');
-            $form->addRule('pass2', get_lang('ThisFieldIsRequired'), 'required');
-            $form->addRule(array('pass1', 'pass2'), get_lang('PassTwo'), 'compare');
-            $form->registerRule('passwordlength','function','passwordlength');
-            $form->registerRule('passwordnumbers','function','passwordnumbers');
-            $form->registerRule('passwordcamelcase','function','passwordcamelcase');
-            $form->registerRule('passwordsymbols','function','passwordsymbols');
-            $form->addRule('pass1', get_lang('PasswordTooShort'), 'passwordlength');
-            $form->addRule('pass1', get_lang('PasswordMustContainSymbol'), 'passwordsymbols');
-            $form->addRule('pass1', get_lang('PasswordMustContainLowerUpper'), 'passwordcamelcase');
-            $form->addRule('pass1', get_lang('PasswordMustContainNumber'), 'passwordnumbers');
-            if (CHECK_PASS_EASY_TO_FIND)
-                    $form->addRule('password1', get_lang('PassTooEasy').': '.api_generate_password(), 'callback', 'api_check_password');
-        } else {
-            $form->addElement('password', 'pass1', get_lang('Pass'),         array('size' => 20, 'id'=> 'pass1'));
-            $form->addElement('password', 'pass2', get_lang('Confirmation'), array('size' => 20));
-            $form->addRule('pass1', get_lang('ThisFieldIsRequired'), 'required');
-            $form->addRule('pass2', get_lang('ThisFieldIsRequired'), 'required');
-            $form->addRule(array('pass1', 'pass2'), get_lang('PassTwo'), 'compare');
-        }
+	$form->addElement('password', 'pass1', get_lang('Pass'),         array('size' => 20, 'id'=> 'pass1'));
+	$form->addElement('password', 'pass2', get_lang('Confirmation'), array('size' => 20));
+	$form->addRule('pass1', get_lang('ThisFieldIsRequired'), 'required');
+	$form->addRule('pass2', get_lang('ThisFieldIsRequired'), 'required');
+	$form->addRule(array('pass1', 'pass2'), get_lang('PassTwo'), 'compare');
+	$form->registerRule('passwordlength','function','passwordlength');
+	$form->registerRule('passwordnumbers','function','passwordnumbers');
+	$form->registerRule('passwordcamelcase','function','passwordcamelcase');
+	$form->registerRule('passwordsymbols','function','passwordsymbols');
+	$form->addRule('pass1', get_lang('PasswordTooShort'), 'passwordlength');
+	$form->addRule('pass1', get_lang('PasswordMustContainSymbol'), 'passwordsymbols');
+	$form->addRule('pass1', get_lang('PasswordMustContainLowerUpper'), 'passwordcamelcase');
+	$form->addRule('pass1', get_lang('PasswordMustContainNumber'), 'passwordnumbers');
+	if (CHECK_PASS_EASY_TO_FIND)
+		$form->addRule('password1', get_lang('PassTooEasy').': '.api_generate_password(), 'callback', 'api_check_password');
 
 	//	PHONE
 	/*$form->addElement('text', 'phone', get_lang('Phone'), array('size' => 20));
@@ -411,7 +398,7 @@ if (api_get_setting('allow_terms_conditions') == 'true') {
 	}
 	if($term_preview['type'] == 1) {
 		$form->addElement('checkbox', 'legal_accept', null, get_lang('IHaveReadAndAgree').'&nbsp;<a href="inscription.php?legal" target="_blank">'.get_lang('TermsAndConditions').'</a>');
-		$form->addRule('legal_accept',  get_lang('ThisFieldIsRequired'), 'required');
+		$form->addRule('extra_legal_accept',  get_lang('ThisFieldIsRequired'), 'required');
 	} else {
 		if (!empty($term_preview['content'])) {
 			$preview = LegalManager::show_last_condition($term_preview);

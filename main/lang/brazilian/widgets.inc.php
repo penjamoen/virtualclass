@@ -1,7 +1,6 @@
 <?php /*
 for more information: see languages.txt in the lang folder. 
 */
-$SomeFieldsAreEmpty = "Alguns campos estão vazios";
 $ManageWidgets = "Gerenciar Widgets";
 $AddRSSAsWidget = "Adicione o feed do RSS como um widget";
 $Tools = "Ferramentas";
@@ -77,16 +76,5 @@ $LocationSidebarRight = "Barra lateral direita";
 $LocationHeader = "Cabeçalho";
 $LocationFooter = "Rodapé";
 $LocationMain = "Área principal";
-$Loading = "Carregando";
-$TabbedRss = "Com abas RSS";
-$AddTabbedRss = "Adicionar um feed RSS com abas";
-$EditTabbedRss = "Editar abas do feed RSS";
-$DeleteTabbedRss = "Excluir abas do feed RSS";
-$TabbedRssTitle = "Título";
-$TabbedRssUrl = "URL";
-$TabbedRssNumberItems = "Número de itens a serem exibidos";
-$TabbedRssStore = "Salvar abas do feed RSS";
-$TabbedRSSExplanation = "Este widget permite agrupar vários feeds RSS em um widget usando abas. Cada feed RSS será exibido em uma aba separada";
-$SelectWikiPage = "Selecione a página do wiki";
-$WikiExplanation = "Com esta widget pode exibir uma ou mais páginas wiki em sua página inicial do curso. O Widget sempre exibirá a versão mais recente da página. Usando esse widget que você pode fazer do seu curso um verdadeiro portal de colaboração";
+$ActivateInLocation = "Ative a localização";
 ?>

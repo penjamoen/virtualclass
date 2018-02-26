@@ -49,10 +49,4 @@ $langSaveCategory = "Shrani kategorijo";
 $BackToLinksOverview = "Nazaj na pregled povezav";
 $AddTargetOfLinkOnHomepage = "Izberite \'cilj\', ki predstavlja povezavo na domači strani tečaja";
 $Url = "Url";
-$Objective = "Cilj";
-$FolderName = "Ime mape";
-$Fold = "Pripni v mapo";
-$Unfold = "Odpni iz mape";
-$ThereAreNoLinksInThisFolder = "V tej mapi ni povezav";
-$IntegrateLinkInCourse = "Vgradi povezavo v ta modul";
 ?>

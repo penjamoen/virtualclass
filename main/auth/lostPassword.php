@@ -52,19 +52,22 @@ echo $tool_name;
 echo '</h3>';
 
 if (isset ($_GET['reset']) && isset ($_GET['id'])) {
-	$reset_message =  reset_password($_GET["reset"], $_GET["id"], true);
-        Display::display_confirmation_message($reset_message, true, true);
+
+	$msg = reset_password($_GET["reset"], $_GET["id"], true);
+	$msg1= '<a href="'.api_get_path(WEB_CODE_PATH).'auth/lostPassword.php" class="fake_button_back" >'.get_lang('Back').'</a>';
+	echo '<br /><br /><div>'.$msg1.'</div>';
+
 } else {
 
 	$form = new FormValidator('lost_password');
-	//$form->addElement('text', 'user', get_lang('User'), array('style'=>'width:370px'));
+	$form->addElement('text', 'user', get_lang('User'), array('style'=>'width:370px'));
 	$form->addElement('text', 'email', get_lang('Email'), array('style'=>'width:370px'));
 
 	$form->applyFilter('email','strtolower');
 	$form->addElement('style_submit_button', 'submit', get_lang('Send'),'class="save" style="margin-right: 55%;"');
 
 	// setting the rules
-	//$form->addRule('user', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');
+	$form->addRule('user', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');
 
 	if ($form->validate()) {
 		$values = $form->exportValues();
@@ -72,25 +75,17 @@ if (isset ($_GET['reset']) && isset ($_GET['id'])) {
 		$email = $values['email'];
 
 		$condition = '';
-		/*if (!empty($email)) {
+		if (!empty($email)) {
 			$condition = " AND LOWER(email) = '".Database::escape_string($email)."' ";
-		}*/
-                if (!empty($email)) {
-			$condition = "LOWER(email) = '".Database::escape_string($email)."' ";
-		} 
+		}
+
 		$tbl_user = Database :: get_main_table(TABLE_MAIN_USER);
-		/*$query = " SELECT user_id AS uid, lastname AS lastName, firstname AS firstName,
+		$query = " SELECT user_id AS uid, lastname AS lastName, firstname AS firstName,
 					username AS loginName, password, email, status AS status,
 					official_code, phone, picture_uri, creator_id
 					FROM ".$tbl_user."
 					WHERE ( username = '".Database::escape_string($user)."' $condition ) ";
-*/
-                $query = " SELECT user_id AS uid, lastname AS lastName, firstname AS firstName,
-					username AS loginName, password, email, status AS status,
-					official_code, phone, picture_uri, creator_id
-					FROM ".$tbl_user."
-					WHERE $condition";
-                
+
 		$result = Database::query($query, __FILE__, __LINE__);
 		$num_rows = Database::num_rows($result);
 
@@ -110,8 +105,12 @@ if (isset ($_GET['reset']) && isset ($_GET['id'])) {
 				send_password_to_user($user, $by_username);
 			}
 		} else {
-			Display::display_confirmation_message(get_lang('NoUserAccountWithThisEmailAddress'), true, true);
+			//Display::display_error_message(get_lang('NoUserAccountWithThisEmailAddress'));
+			echo get_lang('NoUserAccountWithThisEmailAddress');
 		}
+
+		$msg .= '<a href="'.api_get_path(WEB_CODE_PATH).'auth/lostPassword.php" class="fake_button_back" >'.get_lang('Back').'</a>';
+		echo '<br /><br /><div >'.$msg.'</div>';
 
 	} else {
 

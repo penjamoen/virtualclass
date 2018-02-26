@@ -6,7 +6,7 @@
 $language_file = 'document';
 
 // including the global dokeos file
-require_once '../inc/global.inc.php';
+require ('../inc/global.inc.php');
 
 // including additional libraries
 require_once (api_get_path ( LIBRARY_PATH ) . 'formvalidator/FormValidator.class.php');
@@ -22,18 +22,17 @@ $interbreadcrumb[]=array('url' => 'document.php','name' => get_lang('Document'))
 $interbreadcrumb[]=array('url' => 'search.php','name' => get_lang('DocumentSearch'));
 
 // Display the header
-Display :: display_tool_header();
+Display :: display_header();
 
 // tool introduction
 Display::display_introduction_section(TOOL_DOCUMENT);
-
-// actions
 echo '<div class="actions">';
-echo '<a href="document.php?'.api_get_cidreq().'">'.Display::return_icon('pixel.gif', get_lang('Documents'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('Documents').'</a>';
+echo '<a href="document.php?'.api_get_cidreq().'">'.Display::return_icon('go_previous_32.png',get_lang('Documents')).' '.get_lang('Documents').'</a>';
 echo '</div>';
-
 // Start main content
 echo '<div id="content">';
+// Display the tool title
+//api_display_tool_title(get_lang('Document'));
 
 // tracking
 event_access_tool(TOOL_DOCUMENT);
@@ -47,15 +46,14 @@ echo '</div>';
 // Actions bar
 echo '<div class="actions">';
 echo '</div>';
-
 // footer
 Display::display_footer();
 
 /**
  * Display the search form for the documents and display the search results
  *
- * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University, Belgium
- * @version May 2008
+* @author Patrick Cool <patrick.cool@UGent.be>, Ghent University, Belgium
+* @version May 2008
  */
 function document_search()
 {
@@ -76,6 +74,7 @@ function document_search()
 	if( $form->validate() )
 	{
 	   $values = $form->exportValues();
+	   //$form->setDefaults($values);
 	   $form->display();
 	   
 	   // display the search results
@@ -90,9 +89,10 @@ function document_search()
 /**
  * Display the search results
  *
- * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University, Belgium
- * @version May 2008
- * 
+* @author Patrick Cool <patrick.cool@UGent.be>, Ghent University, Belgium
+* @version May 2008
+* 
+* @todo take te g
  */
 function display_document_search_results($search_term)
 {

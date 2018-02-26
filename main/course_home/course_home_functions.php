@@ -60,7 +60,7 @@ function change_tool_visibility($tool_id,$requested_visible){
  */
 function get_tools_category($course_tool_category) {
 	global $_user;
-
+	$web_code_path = api_get_path(WEB_CODE_PATH);
 	$course_tool_table = Database::get_course_table(TABLE_TOOL_LIST);
 	$is_allowed_to_edit = api_is_allowed_to_edit(null,true);
 	$is_platform_admin = api_is_platform_admin();
@@ -75,7 +75,7 @@ function get_tools_category($course_tool_category) {
 		case TOOL_STUDENT_VIEW:
 
 				//$visibility_codition = !api_is_coach()?" visibility = '1' AND ":" ";
-				$sql = "SELECT * FROM $course_tool_table WHERE visibility = '1' AND (category = 'authoring' OR category = 'interaction') AND (name != 'author' AND name != 'oogie') $condition_session ORDER BY id";
+				$sql = "SELECT * FROM $course_tool_table WHERE visibility = '1' AND (category = 'authoring' OR category = 'interaction') AND name != 'author' $condition_session ORDER BY id";
 				$result = Database::query($sql,__FILE__,__LINE__);
 				$colLink ="##003399";
 				break;
@@ -109,21 +109,20 @@ function get_tools_category($course_tool_category) {
     $cont = 0;
 	while ($temp_row = Database::fetch_array($result)) {
 		$all_tools_list[]=$temp_row;
-
-        if ($temp_row['image'] == 'oogie.png' && api_get_setting('service_ppt2lp', 'active') !== 'true') {
+        // If you want to use Oogie feature you should comment the below code
+        // Start comment for enable Oogie tool
+        if ($temp_row['image'] == 'oogie.png') {
           unset($all_tools_list[$cont]);
         }
+        // End comment for enable Oogie tool
 
-        // Calendar course inside was dissabled
-        if ( $temp_row['name'] == 'calendar_event') {
-            if (!api_is_allowed_to_edit()) { // Only remove the calenda to students
-                unset($all_tools_list[$cont]);
-            }   
-        }
-        // No display search icon
-        if ($temp_row['name'] == 'search') {
+        // If you want to use Dropbox feature you should comment the below code
+        // Start comment for enable Dropbox tool
+        if ($temp_row['name'] == 'dropbox') {
           unset($all_tools_list[$cont]);
         }
+        // End comment for enable Dropbox tool
+
         $cont ++;
 	}
 
@@ -240,8 +239,8 @@ function get_tools_category($course_tool_category) {
 
 function show_tools_category($all_tools_list)
 {
-	global $_user, $course_home_visibility_type;
-
+	global $_user;
+	$web_code_path = api_get_path(WEB_CODE_PATH);
 	$course_tool_table = Database::get_course_table(TABLE_TOOL_LIST);
 	$is_allowed_to_edit = api_is_allowed_to_edit(null,true);
 	$is_platform_admin = api_is_platform_admin();
@@ -249,50 +248,37 @@ function show_tools_category($all_tools_list)
 	$j=1;
 	if (isset($all_tools_list)) {
 		$lnk = '';
-
-		// looping through all the tools
 		foreach ($all_tools_list as $toolsRow) {
 
-			// not displaying the course_maintenance and course_setting when no session id.
-			// WHY ?
+
 			if (api_get_session_id()!=0 && in_array($toolsRow['name'],array('course_maintenance','course_setting'))) {
 				continue;
 			}
 
-			// starting a new row in the table layout
 			if (!($i%3)) {
-				echo	'<tr valign="top">' . PHP_EOL;
-			}
-
-			// start a new table cell
-			echo '<td width="30%">' . PHP_EOL;
+				echo	"<tr valign=\"top\">\n";
+            }
 
 			// This part displays the links to hide or remove a tool.
 			// These links are only visible by the course manager.
 			unset($lnk);
-			if ($is_allowed_to_edit && !api_is_course_coach()) {
+			echo '<td width="30%">' . "\n";
+			if ($is_allowed_to_edit && !api_is_coach()) {
 
 				if ($toolsRow['visibility'] == '1' && $toolsRow['admin'] !='1') {
-					$link['name'] = Display::return_icon('visible_link.png', get_lang('Deactivate'),array('id'=>'linktool_'.$toolsRow['id']));
-                                        if ($course_home_visibility_type) {
-					  $link['name'] = Display::return_icon('pixel.gif', get_lang('Deactivate'),array('class' => 'actionplaceholderminiicon toolactionview','id'=>'linktool_'.$toolsRow['id']));
-                                        }
+					$link['name'] = Display::return_icon('visible_link.png', get_lang('Deactivate'),array('id'=>'linktool_'.$toolsRow["id"]));
 
 					$link['cmd'] = "hide=yes";
 					$lnk[] = $link;
 				}
 
 				if ($toolsRow['visibility'] == '0' && $toolsRow['admin'] !='1') {
-					$link['name'] = Display::return_icon('closedeye_tr.png', get_lang('Activate'),array('id'=>'linktool_'.$toolsRow['id']));
-                                        if ($course_home_visibility_type) {
-					  $link['name'] = Display::return_icon('pixel.gif', get_lang('Activate'),array('class' => 'actionplaceholderminiicon toolactionhide','id'=>'linktool_'.$toolsRow['id']));
-                                        }
-                                        $link['cmd'] = "restore=yes";
+					$link['name'] = Display::return_icon('closedeye_tr.png', get_lang('Activate'),array('id'=>'linktool_'.$toolsRow["id"]));
+					$link['cmd'] = "restore=yes";
 					$lnk[] = $link;
 				}
 				if (!empty($toolsRow['adminlink'])) {
-					   //echo	Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'toolactionplaceholdericon tool edit')).'</a>';
-                        echo	'<a href="'.$toolsRow['adminlink'].'">'.Display::return_icon('pixel.gif', get_lang('Edit'),array('class'=>'toolactionplaceholdericon tool edit')).'</a>';
+					echo	'<a href="'.$toolsRow['adminlink'].'">'.Display::return_icon('edit.png', get_lang('Edit')).'</a>';
 				}
 
 			}
@@ -300,110 +286,109 @@ function show_tools_category($all_tools_list)
 			// Both checks are necessary as is_platform_admin doesn't take student view into account
 			if ($is_platform_admin && $is_allowed_to_edit) {
  				if ($toolsRow['admin'] !='1') {
-					$link['cmd'] = 'hide=yes';
+					$link['cmd'] = "hide=yes";
 
 				}
 			}
-			
-			// display the link to show/hide/remove the tool
+
 			if (isset($lnk) && is_array($lnk)) {
 				foreach ($lnk as $this_link)	{
 					if (empty($toolsRow['adminlink'])) {
-							echo '<a class="make_visible_and_invisible"  href="' .api_get_self(). '?'.api_get_cidreq().'&amp;id=' . $toolsRow['id'] . '&amp;' . $this_link['cmd'] . '">' .	$this_link['name'] . '</a>';
+							echo "<a class=\"make_visible_and_invisible\"  href=\"" .api_get_self(). "?".api_get_cidreq()."&amp;id=" . $toolsRow["id"] . "&amp;" . $this_link['cmd'] . "\">" .	$this_link['name'] . "</a>";
 							//echo "<a  class=\"make_visible_and_invisible\" href=\"javascript:void(0)\" >" .	$this_link['name'] . "</a>";
 
 					}
 				}
-			} else { 
-				echo '&nbsp;&nbsp;&nbsp;&nbsp;';
-			}
+			} else { echo '&nbsp;&nbsp;&nbsp;&nbsp;';}
 
-			// setting the name (and class attribute) of the tool (for files, learningpaths, blogs, external links we do not need to translate the name of the tool
-			// but for other tools we do need to translate the name of the tool
-			if ($toolsRow['image'] == 'file_html.gif' || $toolsRow['image'] == 'file_html_na.gif'
-				|| $toolsRow['image'] == 'scormbuilder.gif' || $toolsRow['image'] == 'scormbuilder_na.gif'
-				|| $toolsRow['image'] == 'blog.png' || $toolsRow['image'] == 'blog_na.png'
-				|| $toolsRow['image'] == 'external.gif' || $toolsRow['image'] == 'external_na.gif')
-			{
-				switch ($toolsRow['image']){
-					case 'file_html.gif':
-					case 'file_html_na.gif':
-						$tool_class = 'file';
-						break;
-					case 'scormbuilder.gif':
-					case 'scormbuilder_na.gif':
-						$tool_class = 'learnpath';
-						break;
-					case 'blog.png':
-					case 'blog_na.png':
-						$tool_class = 'blog';
-						break;
-					case 'external.gif':
-					case 'external_na.gif':
-						$tool_class = 'external';
-						break;
-				}
-				$tool_name = stripslashes($toolsRow['name']);
-			} else {
-				$tool_class = $toolsRow['name'];
-				$tool_name = get_lang(ucfirst($toolsRow['name']));
-			}
-
-			// add the class 'invisible' when the tool is invisible
-			if ($toolsRow['visibility'] == '0' && $toolsRow['admin'] != '1') {
-				$tool_class .= ' invisible';
-			}
-
-			// setting the link. If there is no http, https or ftp in the link we prepend the web code path 
+			// NOTE : table contains only the image file name, not full path
 			if (!stristr($toolsRow['link'], 'http://')
                     && !stristr($toolsRow['link'], 'https://')
                     && !stristr($toolsRow['link'],'ftp://')) {
-				$toolsRow['link'] = api_get_path(WEB_CODE_PATH) . $toolsRow['link'];
+				$toolsRow['link'] = $web_code_path . $toolsRow['link'];
             }
+			if ($toolsRow['visibility'] == '0' && $toolsRow['admin'] != '1') {
+			  	$class="class=\"invisible\"";
+			  	$info = pathinfo($toolsRow['image']);
+			  	$basename = basename ($toolsRow['image'],'.'.$info['extension']); // $file is set to "index"
+				$toolsRow['image'] = $basename.'_na.'.$info['extension'];
+			} else {
+				$class='';
+			}
 
-			// determine if the link already contains a question mark (?). If this is the case we only need to &amp; to the url when we want to add parameters
 			$qm_or_amp = ((strpos($toolsRow['link'], '?') === FALSE) ? '?' : '&amp;');
-
-			// constructing the link. Special cases: link added to course homepage, visio, classroom
+			//If it's a link, we don't add the cidReq
 			if ($toolsRow['image'] == 'file_html.gif' || $toolsRow['image'] == 'file_html_na.gif') {
 				$toolsRow['link'] = $toolsRow['link'].$qm_or_amp;
 			} else {
 				$toolsRow['link'] = $toolsRow['link'].$qm_or_amp.api_get_cidreq();
 			}
 			if (strpos($toolsRow['name'],'visio_')!==false) {
-				$toollink 		= "\t" . '<a id="tooldesc_'.$toolsRow["id"].'"  ' . $class . ' href="javascript: void(0);" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']) . '\',\'window_visio'.$_SESSION['_cid'].'\',config=\'height=\'+1024+\', width=\'+1280+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
-				//$my_tool_link 	= "\t" . '<a id="istooldesc_'.$toolsRow["id"].'"  ' . $class . ' href="javascript: void(0);" onclick="window.open(\'' . Security::remove_XSS($toolsRow['link']) . '\',\'window_visio'.$_SESSION['_cid'].'\',config=\'height=\'+1024+\', width=\'+1280+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
+				/*
+				$toollink = "\t" . '<a ' . $class . ' href="#" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']) . '\',\'window_visio\',config=\'height=\'+1024+\', width=\'+1280+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
+				*/
+
+				$toollink = "\t" . '<a id="tooldesc_'.$toolsRow["id"].'"  ' . $class . ' href="javascript: void(0);" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']) . '\',\'window_visio'.$_SESSION['_cid'].'\',config=\'height=\'+1024+\', width=\'+1280+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
+				$my_tool_link = "\t" . '<a id="istooldesc_'.$toolsRow["id"].'"  ' . $class . ' href="javascript: void(0);" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']) . '\',\'window_visio'.$_SESSION['_cid'].'\',config=\'height=\'+1024+\', width=\'+1280+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
 			} elseif (strpos($toolsRow['name'],'chat')!==false && api_get_course_setting('allow_open_chat_window')==true) {
-				$toollink 		= "\t" . '<a id="tooldesc_'.$toolsRow["id"].'" ' . $class . ' href="javascript: void(0);" onclick="window.open(\'' . Security::remove_XSS($toolsRow['link']) . '\',\'window_chat'.$_SESSION['_cid'].'\',config=\'height=\'+500+\', width=\'+930+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
-				//$my_tool_link	= "\t" . '<a id="istooldesc_'.$toolsRow["id"].'" ' . $class . ' href="javascript: void(0);" onclick="window.open(\'' . Security::remove_XSS($toolsRow['link']) . '\',\'window_chat'.$_SESSION['_cid'].'\',config=\'height=\'+500+\', width=\'+930+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
+				/*
+				$toollink = "\t" . '<a ' . $class . ' href="#" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']) . '\',\'window_chat'.$_SESSION['_cid'].'\',config=\'height=\'+380+\', width=\'+625+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
+				*/
+				$toollink = "\t" . '<a id="tooldesc_'.$toolsRow["id"].'" ' . $class . ' href="javascript: void(0);" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']) . '\',\'window_chat'.$_SESSION['_cid'].'\',config=\'height=\'+500+\', width=\'+930+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
+				$my_tool_link="\t" . '<a id="istooldesc_'.$toolsRow["id"].'" ' . $class . ' href="javascript: void(0);" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']) . '\',\'window_chat'.$_SESSION['_cid'].'\',config=\'height=\'+500+\', width=\'+930+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
 
 			} else {
+
 				if (count(explode('type=classroom',$toolsRow['link']))==2 || count(explode('type=conference',$toolsRow['link']))==2) {
-					$toollink 		= "\t" . '<a id="tooldesc_'.$toolsRow['id'].'" ' . $class . ' href="' . $toolsRow['link'] . '" target="_blank">';
-					//$my_tool_link 	= "\t" . '<a id="istooldesc_'.$toolsRow["id"].'" ' . $class . ' href="' . $toolsRow['link'] . '" target="_blank">';
+					//$toollink = "\t" . '<a ' . $class . ' href="' . $toolsRow['link'] . '" target="_blank">';
+					$toollink = "\t" . '<a id="tooldesc_'.$toolsRow["id"].'" ' . $class . ' href="' . $toolsRow['link'] . '" target="_blank">';
+					$my_tool_link = "\t" . '<a id="istooldesc_'.$toolsRow["id"].'" ' . $class . ' href="' . $toolsRow['link'] . '" target="_blank">';
 
 				} else {
-					$toollink 		= "\t" . '<a id="tooldesc_'.$toolsRow["id"].'" ' . $class . ' href="' . Security::remove_XSS($toolsRow['link']) . '" target="' . $toolsRow['target'] . '">';
-					//$my_tool_link 	= "\t" . '<a id="istooldesc_'.$toolsRow["id"].'" ' . $class . ' href="' . Security::remove_XSS($toolsRow['link']) . '" target="' . $toolsRow['target'] . '">';
+					//$toollink = "\t" . '<a ' . $class . ' href="' . htmlspecialchars($toolsRow['link']) . '" target="' . $toolsRow['target'] . '">';
+					$toollink = "\t" . '<a id="tooldesc_'.$toolsRow["id"].'" ' . $class . ' href="' . htmlspecialchars($toolsRow['link']) . '" target="' . $toolsRow['target'] . '">';
+					$my_tool_link = "\t" . '<a id="istooldesc_'.$toolsRow["id"].'" ' . $class . ' href="' . htmlspecialchars($toolsRow['link']) . '" target="' . $toolsRow['target'] . '">';
+
 				}
+
 			}
-			
-			// when the tool belongs to a session? ????
+			echo $toollink;
+			//var_dump($toollink);
+			/*
+			Display::display_icon($toolsRow['image'], get_lang(ucfirst($toolsRow['name'])));
+			*/
+			if ($toolsRow['image'] == 'file_html.gif' || $toolsRow['image'] == 'file_html_na.gif'
+				|| $toolsRow['image'] == 'scormbuilder.gif' || $toolsRow['image'] == 'scormbuilder_na.gif'
+				|| $toolsRow['image'] == 'blog.png' || $toolsRow['image'] == 'blog_na.png'
+				|| $toolsRow['image'] == 'external.gif' || $toolsRow['image'] == 'external_na.gif')
+			{
+				$tool_name = stripslashes($toolsRow['name']);
+			} else {
+				$tool_name = get_lang(ucfirst($toolsRow['name']));
+			}
+			$tools_img = explode('.',$toolsRow['image']);
+			$toolsRow['image'] = $tools_img[0].'.png';
+			Display::display_icon($toolsRow['image'], $tool_name, array('class'=>'tool-icon','id'=>'toolimage_'.$toolsRow["id"]));
+
+			//validacion when belongs to a session
 			$session_img = api_get_session_image($toolsRow['session_id'], $_user['status']);
-                       
-			// Display the tool
-			echo '<div class="tool '.$tool_class.'"  id="tool_'.$toolsRow['id'].'">' . PHP_EOL;
-			echo '<div class="toolplaceholder">' . $toollink . Display::return_icon('pixel.gif', $toolsRow['name'], array('class' => 'placeholdericon')).'</a></div>' . PHP_EOL;
-			echo '<div class="tooltitle">' . $toollink . $tool_name.$session_img.'</a></div>' . PHP_EOL;
-			echo '</div>' . PHP_EOL;
 
-			// end the table cell
-			echo '</td>' . PHP_EOL;
+			echo '</a> ';
 
-			// end the row
+			echo $my_tool_link;
+			/*
+				echo ($toolsRow['image'] == 'file_html_na.gif' || $toolsRow['image'] == 'file_html.gif' || $toolsRow['image'] == 'scormbuilder.gif' || $toolsRow['image'] == 'scormbuilder_na.gif' || $toolsRow['image'] == 'blog.gif' || $toolsRow['image'] == 'blog_na.gif' || $toolsRow['image'] == 'external.gif' || $toolsRow['image'] == 'external_na.gif') ? '  '.stripslashes($toolsRow['name']) : '  '.get_lang(ucfirst($toolsRow['name']));
+			*/
+			echo "{$tool_name}$session_img";
+			echo "\t" . '</a>';
+			echo '</td>';
+		/*	if ($i%2) {
+				echo "</tr>";
+			}
+			$i++;*/
 			if($j == 3)
 			{
-				echo '</tr>' . PHP_EOL;
+				echo "</tr>";
 				$j = 0;
 			}
 
@@ -428,6 +413,7 @@ function show_tools_category($all_tools_list)
 function show_tools($course_tool_category)
 {
 	global $charset;
+	$web_code_path = api_get_path(WEB_CODE_PATH);
 	$course_tool_table = Database::get_course_table(TABLE_TOOL_LIST);
 
 	switch ($course_tool_category)
@@ -437,7 +423,7 @@ function show_tools($course_tool_category)
 				$sql = "SELECT * FROM $course_tool_table WHERE visibility=1 AND admin=0";
 				if(!api_is_allowed_to_edit())
 				{
-					$sql .= " AND (name != 'author' AND name != 'oogie')";
+					$sql .= " AND name != 'author'";
 				}
 				$sql .= " ORDER BY id";
 				$result = Database::query($sql,__FILE__,__LINE__);
@@ -473,13 +459,20 @@ function show_tools($course_tool_category)
 		}
 		$all_tools_list[]=$temp_row;
 
-        if ($temp_row['image'] == 'oogie.png' && api_get_setting('service_ppt2lp', 'active') !== 'true') {
+        // If you want to use Oogie feature you should comment the below code
+        // Start comment for enable Oogie tool
+        if ($temp_row['image'] == 'oogie.png') {
           unset($all_tools_list[$cont]);
         }
-        // No display search icon
-        if ($temp_row['name'] == 'search') {
+        // End comment for enable Oogie tool
+
+        // If you want to use Dropbox feature you should comment the below code
+        // Start comment for enable Dropbox tool
+        if ($temp_row['name'] == 'dropbox') {
           unset($all_tools_list[$cont]);
         }
+        // End comment for enable Dropbox tool
+
         $cont++;
 	}
 
@@ -537,20 +530,20 @@ function show_tools($course_tool_category)
 			// NOTE : table contains only the image file name, not full path
 			if(!stristr($toolsRow['link'],'http://') && !stristr($toolsRow['link'],'https://') && !stristr($toolsRow['link'],'ftp://'))
 			{
-				$toolsRow['link']=api_get_path(WEB_CODE_PATH).$toolsRow['link'];
+				$toolsRow['link']=$web_code_path.$toolsRow['link'];
 			}
 			if ($course_tool_category == TOOL_PUBLIC_BUT_HIDDEN)
 			{
 			    $class="class=\"invisible\"";
 			}
-			$qm_or_amp = ((strpos($toolsRow['link'],'?')===FALSE)?'?':'&');
+			$qm_or_amp = ((strpos($toolsRow['link'],'?')===FALSE)?'?':'&amp;');
 
 			$toolsRow['link'] = $toolsRow['link'];
 			echo	'<td width="50%" height="30">';
 
 			if(strpos($toolsRow['name'],'visio_')!==false)
 			{
-				echo '<a  '.$class.' href="javascript: void(0);" onclick="window.open(\'' . Security::remove_XSS($toolsRow['link']).(($toolsRow['image']=="external.gif" || $toolsRow['image']=="external_na.gif") ? '' : $qm_or_amp.api_get_cidreq()) . '\',\'window_visio'.$_SESSION['_cid'].'\',config=\'height=\'+1024+\', width=\'+1280+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
+				echo '<a  '.$class.' href="javascript: void(0);" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']).(($toolsRow['image']=="external.gif" || $toolsRow['image']=="external_na.gif") ? '' : $qm_or_amp.api_get_cidreq()) . '\',\'window_visio'.$_SESSION['_cid'].'\',config=\'height=\'+1024+\', width=\'+1280+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '">';
 			}
 
 			else if(strpos($toolsRow['name'],'chat')!==false && api_get_course_setting('allow_open_chat_window')==true)
@@ -558,11 +551,11 @@ function show_tools($course_tool_category)
 				/*
 				echo  '<a href="#" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']) .(($toolsRow['image']=="external.gif" || $toolsRow['image']=="external_na.gif") ? '' : $qm_or_amp.api_get_cidreq()). '\',\'window_chat'.$_SESSION['_cid'].'\',config=\'height=\'+380+\', width=\'+625+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '"'.$class.'>';
 				*/
-				echo  '<a href="javascript: void(0);" onclick="window.open(\'' . Security::remove_XSS($toolsRow['link']).$qm_or_amp.api_get_cidreq() . '\',\'window_chat'.$_SESSION['_cid'].'\',config=\'height=\'+500+\', width=\'+930+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '"'.$class.'>';
+				echo  '<a href="javascript: void(0);" onclick="window.open(\'' . htmlspecialchars($toolsRow['link']).$qm_or_amp.api_get_cidreq() . '\',\'window_chat'.$_SESSION['_cid'].'\',config=\'height=\'+500+\', width=\'+930+\', left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no\')" target="' . $toolsRow['target'] . '"'.$class.'>';
 			}
 			else
 			{
-				echo	'<a href="'. Security::remove_XSS($toolsRow['link']).(($toolsRow['image']=="external.gif" || $toolsRow['image']=="external_na.gif") ? '' : $qm_or_amp.api_get_cidreq()).'" target="' , $toolsRow['target'], '" '.$class.'>';
+				echo	'<a href="'. htmlspecialchars($toolsRow['link']).(($toolsRow['image']=="external.gif" || $toolsRow['image']=="external_na.gif") ? '' : $qm_or_amp.api_get_cidreq()).'" target="' , $toolsRow['target'], '" '.$class.'>';
 			}
 
 			/*
@@ -749,7 +742,7 @@ function showtools2($cat)
 									WHERE a.link=t.link AND t.position='basic'";
 			if(!api_is_allowed_to_edit())
 		    {
-				$sql .= " AND (a.name != 'author' AND a.name != 'oogie')";
+				$sql .= " AND a.name != 'author'";
 			}
             $sql .= " ORDER BY t.row, t.column";
 			break;
@@ -926,7 +919,7 @@ function showtools2($cat)
 		}
 
 		$lnk = array ();
-		if (api_is_allowed_to_edit(null,true) && $cat != "courseAdmin" && !strpos($toolsRow['link'], 'learnpath_handler.php?learnpath_id') && !api_is_course_coach())
+		if (api_is_allowed_to_edit(null,true) && $cat != "courseAdmin" && !strpos($toolsRow['link'], 'learnpath_handler.php?learnpath_id') && !api_is_coach())
 		{
 			if ($toolsRow["visibility"])
 			{

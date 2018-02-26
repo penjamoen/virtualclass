@@ -250,7 +250,7 @@ if (isset($_FILES['user_upload'])) {
     $upload_allowed = 'Y';
    }
   } elseif ($path == '/video' || $path == '/screencasts') {
-    if($ext[1] == 'flv' || $ext[1] == 'wmv' || $ext[1] == 'mpg' || $ext[1] == 'avi' || $ext[1] == 'zip'|| $ext[1] == 'mp4'|| $ext[1] == 'ogg'|| $ext[1] == 'ogv') {
+   if ($ext[1] == 'flv' || $ext[1] == 'wmv' || $ext[1] == 'mpg' ||  $ext[1] == 'zip') {
     $upload_allowed = 'Y';
    }
   } elseif ($path == '/mindmaps') {
@@ -345,7 +345,7 @@ if (isset($_FILES['user_upload'])) {
      $_SESSION['oLP']->add_item($parent, $previous, 'document', $docid, $title, '');
     }
 
-    if ((api_get_setting('search_enabled') == 'true') && ($docid = DocumentManager::get_document_id($_course, $new_path)) && extension_loaded('xapian')) {
+    if ((api_get_setting('search_enabled') == 'true') && ($docid = DocumentManager::get_document_id($_course, $new_path))) {
      $table_document = Database::get_course_table(TABLE_DOCUMENT);
      $result = Database::query("SELECT * FROM $table_document WHERE id = '$docid' LIMIT 1", __FILE__, __LINE__);
      if (Database::num_rows($result) == 1) {
@@ -543,10 +543,10 @@ $view_lang_var = api_convert_encoding(get_lang('ViewRight'), $charset, api_get_s
 echo '<div class="actions ">';
 $return = "";
 $lp_id = Security::remove_XSS($_GET['lp_id']);
-$return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', $author_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthor')) . $author_lang_var . '</a>';
-$return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $content_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorcontent')) . $content_lang_var . '</a>';
-$return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $scenario_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorscenario')) . $scenario_lang_var . '</a>';
-$return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $view_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorpreview')) . $view_lang_var . '</a>';
+$return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('author.png', $author_lang_var) . $author_lang_var . '</a>';
+$return.= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $lp_id . '">' . Display::return_icon('content.png', $content_lang_var) . $content_lang_var . '</a>';
+$return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $lp_id . '">' . Display::return_icon('organize.png', $scenario_lang_var) . $scenario_lang_var . '</a>';
+$return.= '<a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $lp_id . '">' . Display::return_icon('search.png', $view_lang_var) . $view_lang_var . '</a>';
 echo $return;
 echo '</div>';
 

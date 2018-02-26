@@ -218,8 +218,8 @@ if (!api_is_allowed_to_edit(null,true) AND $current_forum['allow_edit']==0) {
 if ($origin!='learnpath') {
 	echo '<div class="actions">';
 	echo '<span style="float:right;">'.search_link().'</span>';
-	echo '<a href="index.php?gradebook='.$gradebook.'">'.Display::return_icon('pixel.gif', get_lang('BackToForumOverview'), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackToForumOverview').'</a>';
-	echo '<a href="viewforum.php?forum='.Security::remove_XSS($_GET['forum']).'">'.Display::return_icon('pixel.gif', get_lang('BackToForum'), array('class' => 'toolactionplaceholdericon toolactionforum')).get_lang('BackToForum').'</a>';
+	echo '<a href="index.php?gradebook='.$gradebook.'">'.Display::return_icon('back.png').' '.get_lang('BackToForumOverview').'</a>';
+	echo '<a href="viewforum.php?forum='.Security::remove_XSS($_GET['forum']).'">'.Display::return_icon('forum.png').' '.get_lang('BackToForum').'</a>';
 	echo '</div>';
 }
 

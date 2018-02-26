@@ -28,16 +28,6 @@ if(defined('DOKEOS_INSTALL'))
 	copy('../inc/conf/course_info.conf.dist.php','../inc/conf/course_info.conf.php');
 	copy('../inc/conf/mail.conf.dist.php','../inc/conf/mail.conf.php');
 	copy('../inc/conf/profile.conf.dist.php','../inc/conf/profile.conf.php');
-
-  //Home files
-$d = opendir('../../home/');
-while ($file = readdir($d)){
-  if (strpos($file, '.dist.')){
-    $newfile = str_replace('.dist.', '.', $file);
-    copy('../../home/'.$file, '../../home/'.$newfile);
-  }
-}
-
 }
 else
 {

@@ -50,9 +50,9 @@ if (!defined('ALLOWED_TO_INCLUDE')) {
  * ******************* */
 if (isset($_GET['editQuestion'])) {
  $objQuestion = Question::read($_GET['editQuestion']);
- $action = api_get_self() . "?" . api_get_cidreq() . "&modifyQuestion=" . Security::remove_XSS($_GET['modifyQuestion']) . "&type=".$objQuestion->type."&editQuestion=" . $objQuestion->id . "&exerciseId=" . $exerciseId;
+ $action = api_get_self() . "?" . api_get_cidreq() . "&modifyQuestion=" . $_GET['modifyQuestion'] . "&type=".$objQuestion->type."&editQuestion=" . $objQuestion->id . "&exerciseId=" . $exerciseId;
  if ($_SESSION['fromTpl'] == '1') {
-  $action .= "&fromTpl=1&startPage=" . Security::remove_XSS($_GET['startPage']) . "&totTpl=" . Security::remove_XSS($_GET['totTpl']);
+  $action .= "&fromTpl=1&startPage=" . $_GET['startPage'] . "&totTpl=" . $_GET['totTpl'];
  }
 if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0) {
    $action .= "&lp_id=".Security::remove_XSS($_GET['lp_id']);
@@ -68,7 +68,6 @@ if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0) {
   }
  }
 } else {
-    
  $objQuestion = Question :: getInstance($_REQUEST['answerType']);
  //	&fromExercise=4&answerType=1
  $exercice_id = Security::remove_XSS($_REQUEST['fromExercise']);
@@ -208,7 +207,7 @@ if (is_object($objQuestion)) {
      $return.= '<a href="../newscorm/lp_controller.php?' . api_get_cidreq() . '&gradebook=&action=view">' . Display::return_icon('view.png', get_lang('ViewRight')).get_lang("ViewRight") . '</a>';
      echo $return;
    } else {
-  echo '<a href="exercice.php?show=result&' . api_get_cidreq() . '">' . Display :: return_icon('pixel.gif', get_lang('Tracking'),array('class'=>'actionplaceholdericon toolactionreporting22')) . get_lang('Tracking') . '</a>';
+  echo '<a href="exercice.php?show=result&' . api_get_cidreq() . '">' . Display :: return_icon('reporting22.png', get_lang('Tracking')) . get_lang('Tracking') . '</a>';
    }
   echo '</div>';
  }
@@ -216,6 +215,10 @@ if (is_object($objQuestion)) {
 
 if (isset($_GET['viewQuestion'])) {
  $TBL_QUESTIONS = Database::get_course_table(TABLE_QUIZ_QUESTION);
+ /*echo "<script>$(document).ready( function(){
+   $('.rounded').corners();
+   $('.rounded_inner').corners();
+   });</script>";*/
  $i = 1;
  $nbrQuestions = Security::remove_XSS($_GET["totTpl"]);
  $origin = 'fromgallery';

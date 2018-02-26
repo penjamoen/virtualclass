@@ -14,13 +14,9 @@ require_once api_get_path(LIBRARY_PATH) . 'document.lib.php';
 
 $this_section =  SECTION_COURSES;
 
-// Access restrictions
-if (api_is_anonymous()) {
-	api_not_allowed(true);
-}
 
 // Form init
-$form = new FormValidator('upload_search', 'POST', api_get_self().'?'.api_get_cidreq());
+$form = new FormValidator('upload_search', 'POST');
 $form->addElement('file', 'search_uploaded_file', get_lang('UploadFile'));
 $form -> add_real_progress_bar(uniqid(), 'search_uploaded_file');
 $form -> addElement ('textarea', 'search_terms', get_lang('Tags'), array('cols'=>100));
@@ -254,10 +250,10 @@ h3.orange {
 	
 //--- actions ---
 echo '<div class="actions">';
-		echo '<a class="" href="index.php?'.api_get_cidreq().'">'.Display::return_icon('navigation/renault/loupe.png').get_lang('NewSearch').'</a>';
-		/*echo '<a class="" href="#">'.Display::return_icon('navigation/renault/films.png').'VIDEO ONLY</a>';
-		echo '<a class="" href="#">'.Display::return_icon('navigation/renault/plus.png'). 'MORE CRITERIA</a>';*/
-		//echo '<a class="uploadbtn" href="upload.php?'.api_get_cidreq().'">'.Display::return_icon('navigation/renault/upload.png'). 'UPLOAD</a>';
+		echo '<a class="" href="index.php?'.api_get_cidreq().'">'.Display::return_icon('navigation/renault/loupe.png').'NEW SEARCH</a>';
+		echo '<a class="" href="#">'.Display::return_icon('navigation/renault/films.png').'VIDEO ONLY</a>';
+		echo '<a class="" href="#">'.Display::return_icon('navigation/renault/plus.png'). 'MORE CRITERIA</a>';
+		echo '<a class="uploadbtn" href="upload.php?'.api_get_cidreq().'">'.Display::return_icon('navigation/renault/upload.png'). 'UPLOAD</a>';
 echo '</div>';
 	
 	

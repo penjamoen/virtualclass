@@ -39,6 +39,7 @@ $langMe = "自己";
 $langSystemAnnouncements = "學校通知";
 $langHelpMaj = "幫助";
 $langNotRegistered = "未註冊";
+$langAdmin = "系統管理";
 $Login = "登入";
 $langRegisterForCourse = "註冊課程";
 $langUnregisterForCourse = "註銷課程";

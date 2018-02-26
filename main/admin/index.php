@@ -15,10 +15,10 @@ $cidReset=true;
 $help_content = 'platformadministration';
 
 // including the global Dokeos file
-require_once '../inc/global.inc.php';
+require '../inc/global.inc.php';
 
 // including additional libraries
-require_once api_get_path(LIBRARY_PATH).'security.lib.php';
+require_once(api_get_path(LIBRARY_PATH).'security.lib.php');
 
 // Section for the tabs
 $this_section=SECTION_PLATFORM_ADMIN;
@@ -68,7 +68,7 @@ echo '<div id="content">';
 if (api_is_platform_admin()) {
 	?>
 	<div class="admin_section section">
-	<div class="admin_section_title sectiontitle"><a href="user_list.php"><?php echo Display::return_icon('pixel.gif', get_lang('HomePage'), array('class' => 'toolactionplaceholdericon toolactionadminusers')); ?> <?php echo api_ucfirst(get_lang('Users')); ?></a></div>
+	<div class="admin_section_title sectiontitle"><?php Display::display_icon('adminUsers.png', get_lang('Users')); ?> <?php echo api_ucfirst(get_lang('Users')); ?></div>
 	<div class="admin_section_content sectioncontent">
 	<form method="get" action="user_list.php">
 			<input type="text" name="keyword" value="<?php echo $keyword_url; ?>"/>
@@ -79,12 +79,13 @@ if (api_is_platform_admin()) {
 		<li><a href="user_list.php?search=advanced"><?php echo api_ucfirst(get_lang('AdvancedSearch')); ?></a></li>
 		<li><a href="user_list.php">	<?php echo get_lang('UserList') ?></a></li>
 		<li><a href="user_add.php">		<?php echo get_lang('AddUsers') ?></a></li>
-		<?php 
-		//if (api_get_setting('allow_social_tool')=='true') { ?>
-		<!--<li><a href="group_add.php">	<?php echo get_lang('AddGroups') ?></a></li>
-			<li><a href="group_list.php">	<?php echo get_lang('GroupList') ?></a></li>-->
+		<li><a href="user_export.php">	<?php echo get_lang('ExportUserListXMLCSV') ?></a></li>
+		<li><a href="user_import.php">	<?php echo get_lang('ImportUserListXMLCSV') ?></a></li>
+		<?php if (api_get_setting('allow_social_tool')=='true') { ?>
+			<li><a href="group_add.php">	<?php echo get_lang('AddGroups') ?></a></li>
+			<li><a href="group_list.php">	<?php echo get_lang('GroupList') ?></a></li>
 		<?php
-		//}
+		}
 		if(isset($extAuthSource) && isset($extAuthSource['ldap']) && count($extAuthSource['ldap'])>0){
 			?>
 			<!-- dynamic ldap code -->
@@ -93,6 +94,7 @@ if (api_is_platform_admin()) {
 			<?php
 			}
 		?>
+		<li><a href="user_fields.php">	<?php echo get_lang('ManageUserFields'); ?></a></li>
 		</ul>
 	</div>
 	</div>
@@ -102,7 +104,7 @@ else
 {
 	?>
 	<div class="admin_section section">
-	<div class="admin_section_title sectiontitle"><a href="user_list.php"><?php echo Display::return_icon('pixel.gif', get_lang('HomePage'), array('class' => 'toolactionplaceholdericon toolactionadminusers')); ?> <?php echo api_ucfirst(get_lang('Users')); ?></a></div>
+	<div class="admin_section_title sectiontitle"><?php Display::display_icon('adminUsers.png', get_lang('Users')); ?> <?php echo api_ucfirst(get_lang('Users')); ?></div>
 	<div class="admin_section_content sectioncontent">
 	<ul>
 		<li><a href="user_list.php">	<?php echo get_lang('UserList') ?></a></li>
@@ -118,7 +120,7 @@ else
 if(api_is_platform_admin()) {
 ?>
 	<div class="admin_section section">
-	<div class="admin_section_title sectiontitle"><a href="course_list.php"><?php echo Display::return_icon('pixel.gif', get_lang('Courses'), array('class' => 'toolactionplaceholdericon toolactionadmincourses')); ?> <?php echo api_ucfirst(get_lang('Courses')); ?></a></div>
+	<div class="admin_section_title sectiontitle"><?php Display::display_icon('admincourse.png', get_lang('Courses')); ?> <?php echo api_ucfirst(get_lang('Courses')); ?></div>
 	<div class="admin_section_content sectioncontent">
 		<form method="get" action="course_list.php">
 		<input type="text" name="keyword" value="<?php echo $keyword_url; ?>"/>
@@ -133,12 +135,15 @@ if(api_is_platform_admin()) {
 	</li>
 	<li><a href="course_list.php"><?php echo get_lang('CourseList') ?></a></li>
 	<li><a href="course_add.php"><?php echo get_lang('AddCourse') ?></a></li>
-	<li><a href="course_enrolment.php"><?php echo get_lang('EnrolmentToCoursesAtRegistrationToPortal') ?></a></li>	
+	<li><a href="course_enrolment.php"><?php echo get_lang('EnrolmentToCoursesAtRegistrationToPortal') ?></a></li>
+	<li><a href="course_export.php"><?php echo get_lang('ExportCourses'); ?></a></li>
+	<li><a href="course_import.php"><?php echo get_lang('ImportCourses'); ?></a></li>
 	<!--<li><a href="course_virtual.php"><?php //echo get_lang('AdminManageVirtualCourses') ?></a></li>-->
-	<li><a href="course_category.php"><?php echo get_lang('AdminCategories'); ?></a></li>	
+	<li><a href="course_category.php"><?php echo get_lang('AdminCategories'); ?></a></li>
+	<li><a href="subscribe_user2course.php"><?php echo get_lang('AddUsersToACourse'); ?></a></li>
 	<li><a href="course_user_import.php"><?php echo get_lang('ImportUsersToACourse'); ?></a></li>
 	<?php if (api_get_setting('search_enabled')=='true') { ?>
-	  <!--<li><a href="specific_fields.php"><?php echo get_lang('SpecificSearchFields'); ?></a></li></li>-->
+	  <li><a href="specific_fields.php"><?php echo get_lang('SpecificSearchFields'); ?></a></li>
 	<?php } ?>
 	<?php
 		if(isset($extAuthSource) && isset($extAuthSource['ldap']) && count($extAuthSource['ldap'])>0){
@@ -156,7 +161,7 @@ if(api_is_platform_admin()) {
 
 
 	<div class="admin_section section">
-	<div class="admin_section_title sectiontitle"><a href="settings.php?category=Platform"><?php echo Display::return_icon('pixel.gif', get_lang('Platform'), array('class' => 'toolactionplaceholdericon toolactionhomepage')); ?> <?php echo api_ucfirst(get_lang('Platform')); ?></a></div>
+	<div class="admin_section_title sectiontitle"><?php Display::display_icon('adminportal.png', get_lang('Platform')); ?> <?php echo api_ucfirst(get_lang('Platform')); ?></div>
 	<div class="admin_section_content sectioncontent">
 	 <ul>
 	  <li><a href="settings.php?category=Platform"><?php echo get_lang('DokeosConfigSettings') ?></a></li>
@@ -197,34 +202,12 @@ if(api_is_platform_admin()) {
 	<?php
 }
 
-if(api_get_setting('show_catalogue')=='true' && api_get_setting('use_session_mode')=='true')
+if(api_get_setting('use_session_mode')=='true')
 {
 ?>
 
 	<div class="admin_section section">
-		<div class="admin_section_title sectiontitle"><a href="catalogue_management.php"><?php echo Display::return_icon('pixel.gif', get_lang('Catalogue'), array('class' => 'toolactionplaceholdericon toolactionadmincatalogue')); ?> <?php echo get_lang('Catalogue') ?></a></div>
-		<div class="admin_section_content sectioncontent">
- <ul>
-  <li><a href="catalogue_management.php"><?php echo get_lang('Catalogue') ?></a></li>
-  <li><a href="topic_list.php"><?php echo get_lang('Topics') ?></a></li>
-  <li><a href="programme_list.php"><?php echo get_lang('Programmes') ?></a></li>
-  <li><a href="session_list.php"><?php echo get_lang('Sessions') ?></a></li>
-  <li><a href="session_add.php"><?php echo get_lang('AddSession') ?></a></li>  
-				<?php	if(isset($extAuthSource) && isset($extAuthSource['ldap']) && count($extAuthSource['ldap'])>0){ ?>
-		 <li><a href="ldap_import_students_to_session.php"><?php echo get_lang('ImportLDAPUsersIntoSession');?></a></li>
-				<?php	} ?>  
-  </ul>
-	 	</div>
-	</div>
-
-<?php
-}
-else if(api_get_setting('use_session_mode')=='true' && api_get_setting('show_catalogue')!='true' )
-{
-?>
-
-	<div class="admin_section section">
-		<div class="admin_section_title sectiontitle"><a href="session_list.php"><?php echo Display::return_icon('pixel.gif', get_lang('Sessions'), array('class' => 'toolactionplaceholdericon toolactionadminsession')); ?> <?php echo get_lang('Sessions') ?></a></div>
+		<div class="admin_section_title sectiontitle"><?php Display::display_icon('adminsession.png', get_lang('Sessions')); ?> <?php echo get_lang('Sessions') ?></div>
 		<div class="admin_section_content sectioncontent">
  <form method="POST" action="session_list.php">
 	<input type="text" name="keyword_name" value="<?php echo $keyword_url; ?>"/>
@@ -232,12 +215,15 @@ else if(api_get_setting('use_session_mode')=='true' && api_get_setting('show_cat
 	</form>
  <ul>
   <li><a href="session_list.php?search=advanced"><?php echo api_ucfirst(get_lang('AdvancedSearch')); ?></a></li>
-  <li><a href="session_list.php"><?php echo get_lang('ListSession'); ?></a></li>
-  <li><a href="session_category_list.php"><?php echo get_lang('ListSessionCategory'); ?></a></li>
-  <li><a href="session_add.php"><?php echo get_lang('AddSession'); ?></a></li>
- <?php	if(isset($extAuthSource) && isset($extAuthSource['ldap']) && count($extAuthSource['ldap'])>0){ ?>
- <li><a href="ldap_import_students_to_session.php"><?php echo get_lang('ImportLDAPUsersIntoSession');?></a></li>
- <?php	} ?>  
+  <li><a href="session_list.php"><?php echo get_lang('ListSession') ?></a></li>
+  <li><a href="session_category_list.php"><?php echo get_lang('ListSessionCategory') ?></a></li>
+  <li><a href="session_add.php"><?php echo get_lang('AddSession') ?></a></li>
+  <li><a href="session_import.php"><?php echo get_lang('ImportSessionListXMLCSV') ?></a></li>
+				<?php	if(isset($extAuthSource) && isset($extAuthSource['ldap']) && count($extAuthSource['ldap'])>0){ ?>
+		 <li><a href="ldap_import_students_to_session.php"><?php echo get_lang('ImportLDAPUsersIntoSession');?></a></li>
+				<?php	} ?>
+  <li><a href="session_export.php"><?php echo get_lang('ExportSessionListXMLCSV') ?></a></li>
+  <li><a href="../coursecopy/copy_course_session.php"><?php echo get_lang('CopyFromCourseInSessionToAnotherSession') ?></a></li>
   </ul>
 	 	</div>
 	</div>
@@ -249,12 +235,12 @@ else if(api_is_platform_admin())
 ?>
 
 <div class="admin_section section">
-<div class="admin_section_title sectiontitle"><a href="class_list.php"><?php Display::return_icon('pixel.gif', get_lang('AdminClasses'), array('class' => 'toolactionplaceholdericon toolactionadminsession')); ?> <?php echo api_ucfirst(get_lang('AdminClasses')); ?></a></div>
+<div class="admin_section_title sectiontitle"><?php Display::display_icon('group.gif', get_lang('AdminClasses')); ?> <?php echo api_ucfirst(get_lang('AdminClasses')); ?></div>
 <div class="admin_section_content sectioncontent">
 <form method="get" action="class_list.php">
 
 	<input type="text" name="keyword" value="<?php echo $keyword_url; ?>"/>
-	<button class="search" type="submit"> <?php echo get_lang('Search');?></button>
+	<input class="search" type="submit" value="<?php echo get_lang('Search'); ?>"/>
 	</form>
 <ul>
 <!--<li style="list-style-type:none"></li>-->
@@ -271,113 +257,7 @@ else if(api_is_platform_admin())
 <?php
 }
 
-if(api_is_platform_admin()){
-?>
-<div class="admin_section section">
-<div class="admin_section_title sectiontitle"><a href="http://www.dokeos.com/forum/" target="_blank"><?php echo Display::return_icon('pixel.gif', 'Dokeos Community', array('class' => 'toolactionplaceholdericon toolactionadminsupport')); ?> Dokeos Community</a></div>
-<div class="admin_section_content sectioncontent">
- <ul>
-  <li><a href="http://www.dokeos.com/forum/" target="_blank"><?php echo get_lang('DokeosForum'); ?></a></li>
-  <li><a href="http://www.dokeos.com/wiki/index.php/Main_Page" target="_blank"><?php echo get_lang('TechnicalWiki'); ?></a></li>
-  <li><a href="http://www.dokeos.com/en/documentation.php" target="_blank"><?php echo get_lang('Documentation'); ?></a></li>
-  <li><a href="http://www.dokeos.com/en/mind" target="_blank"><?php echo get_lang('DokeosMind'); ?></a></li>
-  <li><a href="http://www.dokeos.com/DLTT/" target="_blank"><?php echo get_lang('TranslationTool'); ?></a></li>
-  <li><a href="http://www.dokeos.com/en/community.php" target="_blank"><?php echo get_lang('WorldwideMap'); ?></a></li>
-  <li><a href="http://www.dokeos.com/en/services/e-courses-production" target="_blank"><?php echo get_lang('AuthoringStudio'); ?></a></li>
-  <li>
-  <?php
-  //try to display a maximum before we check the dokeos version and all that
-  	//session_write_close(); //close session to avoid blocking concurrent access
-	flush(); //send data to client as much as allowed by the web server
-	//ob_flush();
-	echo get_lang('VersionCheck').': '.get_lang('SiteRegistered');
-  ?>
-  </li>
-  <!--<li><a href="configure_extensions.php?display=visio"><?php echo get_lang('Visioconf'); ?></a></li>
-	  <li><a href="configure_extensions.php?display=ppt2lp"><?php echo get_lang('Ppt2lp'); ?></a></li>  
-      <li><a href="configure_extensions.php?display=ephorus"><?php echo get_lang('EphorusPlagiarismPrevention'); ?></a></li> 
-  ?>
-  <li><a href="configure_extensions.php?display=search"><?php echo get_lang('SearchEngine'); ?></a></li>
-  <li><a href="configure_extensions.php?display=serverstats"><?php echo get_lang('ServerStatistics'); ?></a></li>
-  <li><a href="configure_extensions.php?display=bandwidthstats"><?php echo get_lang('BandWidthStatistics'); ?></a></li>-->
-  </ul>
-</div>
-</div>
-<?php
-	/*if(isset($extAuthSource) && isset($extAuthSource['ldap']) && count($extAuthSource['ldap'])>0){
-	?>
-	<!-- dynamic ldap code -->
-	<div class="admin_section">
-	 <h4><?php Display::display_icon('members.gif', 'LDAP'); ?> LDAP</h4>
-	 <ul>
-	  <li><a href="ldap_users_list.php"><?php echo get_lang('ImportLDAPUsersIntoPlatform');?></a></li>
-	  <!--<li><a href="ldap_import_students.php"><?php echo get_lang('ImportLDAPUsersIntoCourse');?></a></li>
-	  <li><a href="ldap_import_students_to_session.php"><?php echo get_lang('ImportLDAPUsersIntoSession');?></a></li> -->
-	  <li><a href="session_auto_import.php"><?php echo 'Table de correspondance des Sessions';?></a></li>
 
-	  <!--li><a href="ldap_users_synchro.php"><?php echo get_lang('LDAPSynchroImportUsersAndStepsInSessions');?></a></li-->
-	 </ul>
-	</div>
-	<!-- dynamic ldap code -->
-	<?php
-	}*/
-?>
-<!--<div class="admin_section section">
-<div class="admin_section_title sectiontitle"><?php Display::display_icon('dokeos.gif', 'Dokeos'); ?> Dokeos.com</div>
-<div class="admin_section_content sectioncontent">
- <ul>
-  <li><a href="http://www.dokeos.com/" target="_blank"><?php echo get_lang('DokeosHomepage'); ?></a></li>
-  <li><a href="http://www.dokeos.com/forum/" target="_blank"><?php echo get_lang('DokeosForum'); ?></a></li>
-  <li><a href="http://www.dokeos.com/extensions/" target="_blank"><?php echo get_lang('DokeosExtensions'); ?></a></li>
-  <li>-->
-  <?php
-  //try to display a maximum before we check the dokeos version and all that
-  	//session_write_close(); //close session to avoid blocking concurrent access
-	//flush(); //send data to client as much as allowed by the web server
-	//ob_flush();
-	//echo get_lang('VersionCheck').': '.version_check();
-  ?>
- <!-- </li>
- </ul>
-</div>
-</div>-->
-
-<div class="admin_section section">
-<div class="admin_section_title sectiontitle"><a href="http://www.dokeos.com/en/node/32"><?php echo Display::return_icon('pixel.gif', get_lang('ConfigureExtensions'), array('class' => 'toolactionplaceholdericon toolactionadminconfext')); ?> <?php echo api_ucfirst(get_lang('ConfigureExtensions')); ?></a></div>
-<div class="admin_section_content sectioncontent">
- <ul>
-     <?php if(api_get_setting('service_ppt2lp', 'active') == 'true') { ?>
-        <li><a href="configure_extensions.php?display=ppt2lp"><?php echo get_lang('Ppt2lp'); ?></a></li>
-     <?php } ?>
-     <?php if(api_get_setting('service_visio', 'active') == 'true') { ?>
-        <li><a href="configure_extensions.php?display=visio"><?php echo get_lang('Visioconf'); ?></a></li>
-     <?php } ?>
-     <?php if(api_get_setting('search_enabled') == 'true') { ?>
-        <li><a href="configure_extensions.php?display=search"><?php echo get_lang('SearchEngine'); ?></a></li>
-     <?php } ?>
- <!-- <li><a href="configure_extensions.php?display=visio"><?php echo get_lang('Visioconf'); ?></a></li>
-  <li><a href="configure_extensions.php?display=ephorus"><?php echo get_lang('EphorusPlagiarismPrevention'); ?></a></li>
-  <li><a href="configure_extensions.php?display=search"><?php echo get_lang('SearchEngine'); ?></a></li>
-  <li><a href="configure_extensions.php?display=serverstats"><?php echo get_lang('ServerStatistics'); ?></a></li>
-  <li><a href="configure_extensions.php?display=bandwidthstats"><?php echo get_lang('BandWidthStatistics'); ?></a></li>
-  <li><a href="http://www.dokeos.com/en/services/e-courses-production" target="_blank"><?php echo get_lang('CourseBuildingStudio'); ?></a></li>
-  <li><a href="http://www.dokeos.com/en/node/777" target="_blank"><?php echo get_lang('ContentShop'); ?></a></li>
-  <li><a href="http://www.dokeos.com/en/download.php" target="_blank"><?php echo get_lang('MedPro'); ?></a></li>
-  <li><a href="http://www.dokeos.com/en/services/technical-assistance" target="_blank"><?php echo get_lang('TechnicalAssistance'); ?></a></li>
-  <li><a href="configure_extensions.php?display=visio"><?php echo get_lang('Videoconferencing'); ?></a></li>
-  <li><a href="configure_extensions.php?display=ppt2lp"><?php echo get_lang('OogieRapidLearning'); ?></a></li>-->
-  <li><a href="http://www.dokeos.com/en/deployment/professional"><?php echo get_lang('DokeosProFeatures'); ?></a></li>
-  <li><a href="http://www.dokeos.com/en/services/certified-training"><?php echo get_lang('TrainersTraining'); ?></a></li>  
-  <li><a href="http://www.dokeos.com/en/services/hr-integration"><?php echo get_lang('HRIntegration'); ?></a></li>  
-  <li><a href="http://www.dokeos.com/en/node/32"><?php echo get_lang('TechnicalAssistance'); ?></a></li>
-  </ul>
-</div>
-</div>
-
-
-<div class="clear">&nbsp;</div>
-<?php
-}
 
 /**
  * Displays either the text for the registration or the message that the installation is (not) up to date

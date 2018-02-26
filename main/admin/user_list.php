@@ -7,7 +7,7 @@
 */
 
 // name of the language file that needs to be included
-$language_file = array ('registration', 'admin', 'tracking');
+$language_file = array ('registration','admin');
 
 // resetting the course id
 $cidReset = true;
@@ -16,47 +16,23 @@ $cidReset = true;
 $help_content = 'platformadministrationuserlist';
 
 // including the global Dokeos file
-require_once '../inc/global.inc.php';
+require ('../inc/global.inc.php');
 
 // including additional libraries
-require_once api_get_path(LIBRARY_PATH).'sortabletable.class.php';
-require_once api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php';
-require_once api_get_path(LIBRARY_PATH).'security.lib.php';
-require_once api_get_path(LIBRARY_PATH).'xajax/xajax.inc.php';
-require_once api_get_path(LIBRARY_PATH).'usermanager.lib.php';
-require_once api_get_path(LIBRARY_PATH).'tracking.lib.php';
+require_once (api_get_path(LIBRARY_PATH).'sortabletable.class.php');
+require_once (api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php');
+require_once (api_get_path(LIBRARY_PATH).'security.lib.php');
+require_once(api_get_path(LIBRARY_PATH).'xajax/xajax.inc.php');
+require_once (api_get_path(LIBRARY_PATH).'usermanager.lib.php');
 
 // setting the section (for the tabs)
 $this_section = SECTION_PLATFORM_ADMIN;
-
-// set additional profile field if its a string
-if (isset($_GET['additional_profile_field']) && !is_array($_GET['additional_profile_field'])) {
-    $_GET['additional_profile_field'] = explode(',', $_GET['additional_profile_field']);
-} else if (isset($_GET['additional_profile_field_search']) && !empty($_GET['additional_profile_field_search'])) { 
-    $_GET['additional_profile_field'] = explode(',', $_GET['additional_profile_field_search']);
-    unset($_GET['additional_profile_field_search']);
-}
 
 // Access restrictions
 api_protect_admin_script(true);
 
 // additional javascript
 //$htmlHeadXtra[] = '<script src="../inc/lib/javascript/jquery.js" type="text/javascript" language="javascript"></script>';
-$htmlHeadXtra[] = ' <script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.multiselect.js" type="text/javascript"></script>
-                    <link rel="stylesheet" type="text/css" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.multiselect.css"/>';
-$htmlHeadXtra[] = '<script>
-    $(document).ready(function(){
-       $("#additional_profile_field").multiselect({checkAllText: "'.get_lang('SelectAll').'", uncheckAllText: "'.get_lang('UnSelectAll').'", noneSelectedText: "'.get_lang('SelectOption').'", selectedText: "'.'# '.get_lang('SelectedOption').'"});       
-       $("#btn-search").click(function() {
-            if ($("#search").css("display") == "none") {
-                $("#keyword").val("");
-                $("#search").show();
-            } else {
-                $("#search").hide("slow")
-            }            
-       });
-    });
-</script>';
 $htmlHeadXtra[] = '<script type="text/javascript">
 function load_course_list (div_course,my_user_id) {
 	 $.ajax({
@@ -90,38 +66,6 @@ $htmlHeadXtra[] = '<style type="text/css" media="screen, projection">
 }
 .blackboard_hide {
 	display: none;
-}
-
-#additional_profile_field_form {
-  margin: 10px 0px;
-}
-
-.secondary-actions {
-    width:100%;
-    overflow:hidden;
-    height: 65px;
-}
-
-#secondary-actions-extra {
-    height: 65px;
-    overflow: hidden;
-    width: 490px;
-    float:left;
-}
-
-#search {
-    height: 40px;
-    margin-top: 10px;
-    overflow: hidden;
-    width: 442px;
-    float:left;
-    display:none;
-}
-
-#search input {
-    margin-right: 12px;
-    vertical-align: middle;
-    
 }
 ';
 // xajax
@@ -179,7 +123,7 @@ function empty_courses_of_user($arg)
 {
 	// do some stuff based on $arg like query data from a database and
 	// put it into a variable like $newContent
-        $newContent = '';
+    $newContent = '';
 	// Instantiate the xajaxResponse object
 	$objResponse = new xajaxResponse();
 	// add a command to the response to assign the innerHTML attribute of
@@ -201,6 +145,7 @@ $htmlHeadXtra[] = '<style>
 	text-decoration:none;
 }
 </style>';
+
 
 /**
 *	Make sure this function is protected because it does NOT check password!
@@ -330,8 +275,8 @@ function login_user($user_id) {
  */
 function get_number_of_users()
 {
-    $user_table = Database :: get_main_table(TABLE_MAIN_USER);
-    $sql = "SELECT COUNT(u.user_id) AS total_number_of_items FROM $user_table u";
+	$user_table = Database :: get_main_table(TABLE_MAIN_USER);
+	$sql = "SELECT COUNT(u.user_id) AS total_number_of_items FROM $user_table u";
 
 	// adding the filter to see the user's only of the current access_url
     global $_configuration;
@@ -340,49 +285,49 @@ function get_number_of_users()
     	$sql.= " INNER JOIN $access_url_rel_user_table url_rel_user ON (u.user_id=url_rel_user.user_id)";
     }
 
-        if ( isset ($_GET['keyword'])) {
-                $keyword = Database::escape_string($_GET['keyword']);
-                $sql .= " WHERE (u.firstname LIKE '%".$keyword."%' OR u.lastname LIKE '%".$keyword."%'  OR u.username LIKE '%".$keyword."%' OR u.email LIKE '%".$keyword."%'  OR u.official_code LIKE '%".$keyword."%') ";
-        } elseif (isset ($_GET['keyword_firstname'])) {
-                $admin_table = Database :: get_main_table(TABLE_MAIN_ADMIN);
-                $keyword_firstname = Database::escape_string($_GET['keyword_firstname']);
-                $keyword_lastname = Database::escape_string($_GET['keyword_lastname']);
-                $keyword_email = Database::escape_string($_GET['keyword_email']);
-                $keyword_officialcode = Database::escape_string($_GET['keyword_officialcode']);
-                $keyword_username = Database::escape_string($_GET['keyword_username']);
-                $keyword_status = Database::escape_string($_GET['keyword_status']);
-                $query_admin_table = '';
-                $keyword_admin = '';
-                if ($keyword_status == SESSIONADMIN) {
-                        $keyword_status = '%';
-                        $query_admin_table = " , $admin_table a ";
-                        $keyword_admin = ' AND a.user_id = u.user_id ';
-                }
-                $keyword_active = isset($_GET['keyword_active']);
-                $keyword_inactive = isset($_GET['keyword_inactive']);
-                $sql .= $query_admin_table .
-                                " WHERE (u.firstname LIKE '%".$keyword_firstname."%' " .
-                                "AND u.lastname LIKE '%".$keyword_lastname."%' " .
-                                "AND u.username LIKE '%".$keyword_username."%'  " .
-                                "AND u.email LIKE '%".$keyword_email."%'   " .
-                                "AND u.official_code LIKE '%".$keyword_officialcode."%'    " .
-                                "AND u.status LIKE '".$keyword_status."'" .
-                                $keyword_admin;
-                if($keyword_active && !$keyword_inactive) {
-                        $sql .= " AND u.active='1'";
-                } elseif($keyword_inactive && !$keyword_active) {
-                        $sql .= " AND u.active='0'";
-                }
-                $sql .= " ) ";
-        }
+	if ( isset ($_GET['keyword'])) {
+		$keyword = Database::escape_string($_GET['keyword']);
+		$sql .= " WHERE (u.firstname LIKE '%".$keyword."%' OR u.lastname LIKE '%".$keyword."%'  OR u.username LIKE '%".$keyword."%' OR u.email LIKE '%".$keyword."%'  OR u.official_code LIKE '%".$keyword."%') ";
+	} elseif (isset ($_GET['keyword_firstname'])) {
+		$admin_table = Database :: get_main_table(TABLE_MAIN_ADMIN);
+		$keyword_firstname = Database::escape_string($_GET['keyword_firstname']);
+		$keyword_lastname = Database::escape_string($_GET['keyword_lastname']);
+		$keyword_email = Database::escape_string($_GET['keyword_email']);
+		$keyword_officialcode = Database::escape_string($_GET['keyword_officialcode']);
+		$keyword_username = Database::escape_string($_GET['keyword_username']);
+		$keyword_status = Database::escape_string($_GET['keyword_status']);
+		$query_admin_table = '';
+		$keyword_admin = '';
+		if ($keyword_status == SESSIONADMIN) {
+			$keyword_status = '%';
+			$query_admin_table = " , $admin_table a ";
+			$keyword_admin = ' AND a.user_id = u.user_id ';
+		}
+		$keyword_active = isset($_GET['keyword_active']);
+		$keyword_inactive = isset($_GET['keyword_inactive']);
+		$sql .= $query_admin_table .
+				" WHERE (u.firstname LIKE '%".$keyword_firstname."%' " .
+				"AND u.lastname LIKE '%".$keyword_lastname."%' " .
+				"AND u.username LIKE '%".$keyword_username."%'  " .
+				"AND u.email LIKE '%".$keyword_email."%'   " .
+				"AND u.official_code LIKE '%".$keyword_officialcode."%'    " .
+				"AND u.status LIKE '".$keyword_status."'" .
+				$keyword_admin;
+		if($keyword_active && !$keyword_inactive) {
+			$sql .= " AND u.active='1'";
+		} elseif($keyword_inactive && !$keyword_active) {
+			$sql .= " AND u.active='0'";
+		}
+		$sql .= " ) ";
+	}
 
     // adding the filter to see the user's only of the current access_url
-        if ((api_is_platform_admin() || api_is_session_admin()) && $_configuration['multiple_access_urls']==true && api_get_current_access_url_id()!=-1) {
-                $sql.= " AND url_rel_user.access_url_id=".api_get_current_access_url_id();
+	if ((api_is_platform_admin() || api_is_session_admin()) && $_configuration['multiple_access_urls']==true && api_get_current_access_url_id()!=-1) {
+    		$sql.= " AND url_rel_user.access_url_id=".api_get_current_access_url_id();
     }
 
 	$res = Database::query($sql, __FILE__, __LINE__);
-	$obj = Database::fetch_object($res); 
+	$obj = Database::fetch_object($res);
 	return $obj->total_number_of_items;
 }
 /**
@@ -396,225 +341,106 @@ function get_number_of_users()
 function get_user_data($from, $number_of_items, $column, $direction)
 {
 	global $_configuration,$origin;
+	
 	$user_table = Database :: get_main_table(TABLE_MAIN_USER);
 	$admin_table = Database :: get_main_table(TABLE_MAIN_ADMIN);
-        $t_u_f_values = Database :: get_main_table(TABLE_MAIN_USER_FIELD_VALUES);
-        $tbl_user_field = Database :: get_main_table(TABLE_MAIN_USER_FIELD);
+	$sql = "SELECT
+                 u.user_id				AS col0,
+                 u.official_code		AS col1,
+				 ".(api_is_western_name_order()
+                 ? "u.firstname 			AS col2,
+                 u.lastname 			AS col3,"
+                 : "u.lastname 			AS col2,
+                 u.firstname 			AS col3,")."
+                 u.username				AS col4,
+                 u.email				AS col5,
+                 u.status				AS col6,
+                 u.active				AS col7,
+                 u.user_id				AS col8 ".
+                 ", u.expiration_date      AS exp ".
+            " FROM $user_table u ";
 
-        //number of column max = 8 
-        if( $column < 9 ) {
-                $sql = "SELECT
-                         u.user_id			AS col0,
-                         u.user_id			AS col1,
-                         u.official_code		AS col2,
-                         ".(api_is_western_name_order()
-                         ? "u.firstname 		AS col3,
-                         u.lastname 			AS col4,"
-                         : "u.lastname 			AS col3,
-                         u.firstname 			AS col4,")."
-                         u.username			AS col5,
-                         u.email			AS col6,
-                         u.status			AS col7,
-                         u.active			AS col8,
-                         u.user_id			AS col9 ".
-                         ", u.expiration_date      AS exp ".
-                    " FROM $user_table u   ";
+    // adding the filter to see the user's only of the current access_url    
+    if ((api_is_platform_admin() || api_is_session_admin()) && $_configuration['multiple_access_urls']==true && api_get_current_access_url_id()!=-1) {
+    	$access_url_rel_user_table= Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_USER);
+    	$sql.= " INNER JOIN $access_url_rel_user_table url_rel_user ON (u.user_id=url_rel_user.user_id)";
+    }
 
-            // adding the filter to see the user's only of the current access_url    
-            if ((api_is_platform_admin() || api_is_session_admin()) && $_configuration['multiple_access_urls']==true && api_get_current_access_url_id()!=-1) {
-                $access_url_rel_user_table= Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_USER);
-                $sql.= " INNER JOIN $access_url_rel_user_table url_rel_user ON (u.user_id=url_rel_user.user_id)";
-            }
+	if (isset ($_GET['keyword'])) {
+		$keyword = Database::escape_string($_GET['keyword']);
+		$sql .= " WHERE (u.firstname LIKE '%".$keyword."%' OR u.lastname LIKE '%".$keyword."%'  OR u.username LIKE '%".$keyword."%'  OR u.official_code LIKE '%".$keyword."%' OR u.email LIKE '%".$keyword."%' )";
+	} elseif (isset ($_GET['keyword_firstname'])) {
+		$keyword_firstname = Database::escape_string($_GET['keyword_firstname']);
+		$keyword_lastname = Database::escape_string($_GET['keyword_lastname']);
+		$keyword_email = Database::escape_string($_GET['keyword_email']);
+		$keyword_officialcode = Database::escape_string($_GET['keyword_officialcode']);
+		$keyword_username = Database::escape_string($_GET['keyword_username']);
+		$keyword_status = Database::escape_string($_GET['keyword_status']);
+		$query_admin_table = '';
+		$keyword_admin = '';
 
-            if (isset ($_GET['keyword'])) {
-                    $keyword = Database::escape_string($_GET['keyword']);
-                    $sql .= " WHERE (u.firstname LIKE '%".$keyword."%' OR u.lastname LIKE '%".$keyword."%'  OR u.username LIKE '%".$keyword."%'  OR u.official_code LIKE '%".$keyword."%' OR u.email LIKE '%".$keyword."%' )";
-            } elseif (isset ($_GET['keyword_firstname'])) {
-                    $keyword_firstname = Database::escape_string($_GET['keyword_firstname']);
-                    $keyword_lastname = Database::escape_string($_GET['keyword_lastname']);
-                    $keyword_email = Database::escape_string($_GET['keyword_email']);
-                    $keyword_officialcode = Database::escape_string($_GET['keyword_officialcode']);
-                    $keyword_username = Database::escape_string($_GET['keyword_username']);
-                    $keyword_status = Database::escape_string($_GET['keyword_status']);
-                    $query_admin_table = '';
-                    $keyword_admin = '';
+		if ($keyword_status == SESSIONADMIN) {
+			$keyword_status = '%';
+			$query_admin_table = " , $admin_table a ";
+			$keyword_admin = ' AND a.user_id = u.user_id ';
+		}
+		$keyword_active = isset($_GET['keyword_active']);
+		$keyword_inactive = isset($_GET['keyword_inactive']);
+		$sql .= $query_admin_table." WHERE (u.firstname LIKE '%".$keyword_firstname."%' " .
+				"AND u.lastname LIKE '%".$keyword_lastname."%' " .
+				"AND u.username LIKE '%".$keyword_username."%'  " .
+				"AND u.email LIKE '%".$keyword_email."%'   " .
+				"AND u.official_code LIKE '%".$keyword_officialcode."%'    " .
+				"AND u.status LIKE '".$keyword_status."'" .
+				$keyword_admin;
 
-                    if ($keyword_status == SESSIONADMIN) {
-                            $keyword_status = '%';
-                            $query_admin_table = " , $admin_table a ";
-                            $keyword_admin = ' AND a.user_id = u.user_id ';
-                    }
-                    $keyword_active = isset($_GET['keyword_active']);
-                    $keyword_inactive = isset($_GET['keyword_inactive']);
-                    $sql .= $query_admin_table." WHERE (u.firstname LIKE '%".$keyword_firstname."%' " .
-                                    "AND u.lastname LIKE '%".$keyword_lastname."%' " .
-                                    "AND u.username LIKE '%".$keyword_username."%'  " .
-                                    "AND u.email LIKE '%".$keyword_email."%'   " .
-                                    "AND u.official_code LIKE '%".$keyword_officialcode."%'    " .
-                                    "AND u.status LIKE '".$keyword_status."'" .
-                                    $keyword_admin;
+		if ($keyword_active && !$keyword_inactive) {
+			$sql .= " AND u.active='1'";
+		} elseif($keyword_inactive && !$keyword_active) {
+			$sql .= " AND u.active='0'";
+		}
+		$sql .= " ) ";
+	}
 
-                    if ($keyword_active && !$keyword_inactive) {
-                            $sql .= " AND u.active='1'";
-                    } elseif($keyword_inactive && !$keyword_active) {
-                            $sql .= " AND u.active='0'";
-                    }
-                    $sql .= " ) ";
-            }
+    // adding the filter to see the user's only of the current access_url
+	if ((api_is_platform_admin() || api_is_session_admin()) && $_configuration['multiple_access_urls']==true && api_get_current_access_url_id()!=-1) {
+    		$sql.= " AND url_rel_user.access_url_id=".api_get_current_access_url_id();
+    }
 
-            // adding the filter to see the user's only of the current access_url
-            if ((api_is_platform_admin() || api_is_session_admin()) && $_configuration['multiple_access_urls']==true && api_get_current_access_url_id()!=-1) {
-                        $sql.= " AND url_rel_user.access_url_id=".api_get_current_access_url_id();
-            }
+    if (!in_array($direction, array('ASC','DESC'))) {
+    	$direction = 'ASC';
+    }
+    $column = intval($column);
+    $from = intval($from);
+    $number_of_items = intval($number_of_items);
 
-            if (!in_array($direction, array('ASC','DESC'))) {
-                $direction = 'ASC';
-            }
-            $column = intval($column);
-            $from = intval($from);
-            $number_of_items = intval($number_of_items);
+	$sql .= " ORDER BY col$column $direction ";
+	$sql .= " LIMIT $from,$number_of_items";
+	$res = Database::query($sql, __FILE__, __LINE__);
 
-                $sql .= " ORDER BY col$column $direction ";
-                $sql .= " LIMIT $from,$number_of_items";    
-
-                $res = Database::query($sql, __FILE__, __LINE__);
-        
-        // Columns Extra Field        
-        } else {             
-                    //if (isset(additional_profile_field))
-                    //get column selected
-                    $id_column = $column;
-                    //default columns
-                    $def_column = 8;
-                    
-                    //Position Selected
-                    $position_id = $id_column - $def_column - 1;
-
-                    //Array Field actived
-                    $array_field_activate = array();        
-
-                    if (isset($_GET['additional_profile_field']) && count($_GET['additional_profile_field']) > 0) {
-                      $array_field_activate = UserManager::get_active_extra_fields($_GET['additional_profile_field']);
-                      $field_sort = $array_field_activate[$position_id];
-                    } 
-                    
-                    /*if ($field_sort < 9) {
-                        $field_sort = 9;
-                    }*/
-
-                    //id field to sort                    
-                    
-                    //type ASC, DESC
-                     if (!in_array($direction, array('ASC','DESC'))) {
-                        $direction = 'ASC';
-                    }
-
-                    /*Start recicled code*/        
-                    $sql_add = ""; 
-                    if (isset ($_GET['keyword'])) {
-                            $keyword = Database::escape_string($_GET['keyword']);
-                            $sql_add .= " WHERE (u.firstname LIKE '%".$keyword."%' OR u.lastname LIKE '%".$keyword."%'  OR u.username LIKE '%".$keyword."%'  OR u.official_code LIKE '%".$keyword."%' OR u.email LIKE '%".$keyword."%' )";
-                    } elseif (isset ($_GET['keyword_firstname'])) {
-                            $keyword_firstname = Database::escape_string($_GET['keyword_firstname']);
-                            $keyword_lastname = Database::escape_string($_GET['keyword_lastname']);
-                            $keyword_email = Database::escape_string($_GET['keyword_email']);
-                            $keyword_officialcode = Database::escape_string($_GET['keyword_officialcode']);
-                            $keyword_username = Database::escape_string($_GET['keyword_username']);
-                            $keyword_status = Database::escape_string($_GET['keyword_status']);
-                            $query_admin_table = '';
-                            $keyword_admin = '';
-
-                            if ($keyword_status == SESSIONADMIN) {
-                                    $keyword_status = '%';
-                                    $query_admin_table = " , $admin_table a ";
-                                    $keyword_admin = ' AND a.user_id = u.user_id ';
-                            }
-                            $keyword_active = isset($_GET['keyword_active']);
-                            $keyword_inactive = isset($_GET['keyword_inactive']);
-                            $sql_add .= $query_admin_table." WHERE (u.firstname LIKE '%".$keyword_firstname."%' " .
-                                            "AND u.lastname LIKE '%".$keyword_lastname."%' " .
-                                            "AND u.username LIKE '%".$keyword_username."%'  " .
-                                            "AND u.email LIKE '%".$keyword_email."%'   " .
-                                            "AND u.official_code LIKE '%".$keyword_officialcode."%'    " .
-                                            "AND u.status LIKE '".$keyword_status."'" .
-                                            $keyword_admin;
-
-                            if ($keyword_active && !$keyword_inactive) {
-                                    $sql_add .= " AND u.active='1'";
-                            } elseif($keyword_inactive && !$keyword_active) {
-                                    $sql_add .= " AND u.active='0'";
-                            }
-                            $sql_add .= " ) ";
-                    } else {
-                        if (!empty($array_field_activate) && !isset($_GET['users_page_nr'])) {                            
-                            $sql_add = ' WHERE u_f.id IN('.implode(',', $array_field_activate).')';
-                        }
-                    }
-                                                             
-                    if ((api_is_platform_admin() || api_is_session_admin()) && $_configuration['multiple_access_urls']==true && api_get_current_access_url_id()!=-1) {
-                        $sql_add .= " AND url_rel_user.access_url_id=".api_get_current_access_url_id();
-                    }
-
-                    /*End recicled code*/                    
-                    $from = intval($from);
-                    $number_of_items = intval($number_of_items);
-            
-                    $res = UserManager::get_active_sorted_extra_fields($field_sort, $direction,$from,$number_of_items,$keyword,$keyword_firstname,$keyword_lastname,$keyword_username,$keyword_email,$keyword_officialcode, $keyword_status,$keyword_admin, $keyword_active,$keyword_inactive,$sql_add,$from,$number_of_items);
-                   
-         }
-        // $res = Return an array of SQL query
-         
 	$users = array ();
-        $t = time();
-   
-        //Return an array active extra field 
-        if (isset($_GET['additional_profile_field']) && count($_GET['additional_profile_field']) > 0) {
-            $array_field_activate = UserManager::get_active_extra_fields($_GET['additional_profile_field']);
-        }
-        while ($user = Database::fetch_row($res)) {
+    $t = time();
+	while ($user = Database::fetch_row($res)) {
+
 		$image_path = UserManager::get_user_picture_path_by_id($user[0], 'web', false, true);
-                $image_info = explode('.', $image_path['file']);
-                if (strcmp($image_info['0'], 'unknown') === 0) {
-                   $image_tag = Display::return_icon('pixel.gif', api_get_person_name($user[3], $user[4]), array('class'=>'actionplaceholdericon actionunknown'));
-                } else {
-                            $user_profile = UserManager::get_picture_user($user[0], $image_path['file'], 22, 'small_', ' width="22" height="22" ');
-                    $image_tag = '<img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($user[3], $user[4]).'" title="'.api_get_person_name($user[3], $user[4]).'" />';
-                }
+		$user_profile = UserManager::get_picture_user($user[0], $image_path['file'], 22, 'small_', ' width="22" height="22" ');
+		if (!api_is_anonymous()) {
+			$photo = '<center><a href="'.api_get_path(WEB_PATH).'whoisonline.php?origin=user_list&id='.$user[0].'" title="'.get_lang('Info').'"  ><img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($user[2],$user[3]).'"  title="'.api_get_person_name($user[2], $user[3]).'" /></a></center>';
+		} else {
+			$photo = '<center><img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($user[2], $user[3]).'" title="'.api_get_person_name($user[2], $user[3]).'" /></center>';
+		}				
 
-                if (!api_is_anonymous()) {
-                                $photo = '<center><a href="'.api_get_path(WEB_PATH).'whoisonline.php?origin=user_list&id='.$user[0].'" title="'.get_lang('Info').'"  >'.$image_tag.'</a></center>';
-                        } else {
-                                $photo = '<center>'.$image_tag.'</center>';
-                        }				
-
-                if ($user[8] == 1 && $user[10] != '0000-00-00 00:00:00') {
-                    // check expiration date
-                    $expiration_time = convert_mysql_date($user[10]);
-                    // if expiration date is passed, store a special value for active field
-                    if ($expiration_time < $t) {
-                           $user[8] = '-1';
-                    }
-                }
-                         
-        $users[$i] = array($user[0],$photo,$user[2],$user[3],$user[4],$user[5],$user[6],$user[7],$user[8]);        
-                
-                //Return an array active extra field user
-                if (isset($_GET['additional_profile_field']) && count($_GET['additional_profile_field']) > 0) {
-                    $array_user_active = UserManager::get_active_user_extra_fields($user[0]);
-                    for($k = 0 ; $k < count($array_field_activate) ; $k++) {        
-                        if (in_array($array_field_activate[$k],$array_user_active )) {
-                            $field_value = UserManager::get_user_name_field($user[0] , $array_field_activate[$k]);                    
-                            array_push($users[$i], $field_value);                    
-                        } else {
-                            array_push($users[$i],'');
-                        }   
-                    }
-                }
-                
-            array_push($users[$i],$user[9]);
-           $i++;
+        if ($user[7] == 1 && $user[9] != '0000-00-00 00:00:00') {
+            // check expiration date
+            $expiration_time = convert_mysql_date($user[9]);
+            // if expiration date is passed, store a special value for active field
+            if ($expiration_time < $t) {
+        	   $user[7] = '-1';
+            }
         }
-
+        // forget about the expiration date field		      
+        $users[] = array($user[0],$photo,$user[1],$user[2],$user[3],$user[4],$user[5],$user[6],$user[7],$user[8]);
+	}
 	return $users;
 }
 /**
@@ -645,52 +471,50 @@ function modify_filter($user_id,$url_params,$row)
 		$user_is_anonymous =true;
 	}
 	if (!$user_is_anonymous) {
-	/*	$result .= '<a  href="javascript:void(0)" onclick="load_course_list(\'div_'.$user_id.'\','.$user_id.')">
+		$result .= '<a  href="javascript:void(0)" onclick="load_course_list(\'div_'.$user_id.'\','.$user_id.')">
 					<img onclick="load_course_list(\'div_'.$user_id.'\','.$user_id.')" onmouseout="clear_course_list (\'div_'.$user_id.'\')" src="../img/course_22.png" title="'.get_lang('Courses').'" alt="'.get_lang('Courses').'"/>
 					<div class="blackboard_hide" id="div_'.$user_id.'">&nbsp;&nbsp;</div>
-					</a>&nbsp;&nbsp;';*/
-		$result .= '<a  href="javascript:void(0)" onclick="load_course_list(\'div_'.$user_id.'\','.$user_id.')">'.Display::return_icon('pixel.gif', get_lang('Course'), array('class' => 'actionplaceholdericon actioncourse','onclick' => 'load_course_list(\'div_'.$user_id.'\','.$user_id.')','onmouseout' => 'clear_course_list (\'div_'.$user_id.'\')')).'<div class="blackboard_hide" id="div_'.$user_id.'">&nbsp;&nbsp;</div>
 					</a>&nbsp;&nbsp;';
 	} else {
-		$result .= Display::return_icon('pixel.gif', get_lang('Course'), array('class' => 'actionplaceholdericon actioncourse invisible')).'&nbsp;&nbsp;';
+		$result .= Display::return_icon('course_na_22.png',get_lang('Courses')).'&nbsp;&nbsp;';
 	}
 
 	if (api_is_platform_admin()) {
 		if (!$user_is_anonymous) {
-			$result .= '<a href="user_information.php?user_id='.$user_id.'">'.Display::return_icon('pixel.gif', get_lang('Info'), array('class' => 'actionplaceholdericon actioninfo')).'</a>&nbsp;&nbsp;';
+			$result .= '<a href="user_information.php?user_id='.$user_id.'">'.Display::return_icon('synthese_view.png', get_lang('Info')).'</a>&nbsp;&nbsp;';
 		} else {
-			$result .= Display::return_icon('pixel.gif', get_lang('Info'), array('class' => 'actionplaceholdericon actioninfo invisible')).'&nbsp;&nbsp;';
+			$result .= Display::return_icon('synthese_view_na.png', get_lang('Info')).'&nbsp;&nbsp;';
 		}
 	}
 
     //only allow platform admins to login_as, or session admins only for students (not teachers nor other admins)
     if (api_is_platform_admin() || (api_is_session_admin() && $row['6'] == $statusname[STUDENT])) {
     	if (!$user_is_anonymous) {
-        	$result .= '<a href="user_list.php?action=login_as&amp;user_id='.$user_id.'&amp;sec_token='.$_SESSION['sec_token'].'">'.Display::return_icon('pixel.gif', get_lang('LoginAs'), array('class' => 'actionplaceholdericon actionsloginas')).'</a>&nbsp;&nbsp;';
+        	$result .= '<a href="user_list.php?action=login_as&amp;user_id='.$user_id.'&amp;sec_token='.$_SESSION['sec_token'].'">'.Display::return_icon('login_as.png', get_lang('LoginAs')).'</a>&nbsp;&nbsp;';
     	} else {
-    		$result .= Display::return_icon('pixel.gif', get_lang('LoginAs'), array('class' => 'actionplaceholdericon actionsloginas invisible')).'&nbsp;&nbsp;';
+    		$result .= Display::return_icon('login_as_na.png', get_lang('LoginAs')).'&nbsp;&nbsp;';
     	}
     } else {
-    	$result .= Display::return_icon('pixel.gif', get_lang('LoginAs'), array('class' => 'actionplaceholdericon actionsloginas invisible')).'&nbsp;&nbsp;';
+    	$result .= Display::return_icon('login_as_na.png', get_lang('LoginAs')).'&nbsp;&nbsp;';
     }
-	if ($row['7'] != $statusname[STUDENT]) {
-		$result .= Display::return_icon('pixel.gif', get_lang('Reporting'),array("class" => "actionplaceholdericon actionstatistics_na")).'&nbsp;&nbsp;';
+	if ($row['6'] != $statusname[STUDENT]) {
+		$result .= Display::return_icon('statistics_na.gif', get_lang('Reporting')).'&nbsp;&nbsp;';
 	} else {
-		$result .= '<a href="../mySpace/myStudents.php?student='.$user_id.'">'.Display::return_icon('pixel.gif', get_lang('Reporting'), array('class' => 'actionplaceholdericon actiontracking')).'</a>&nbsp;&nbsp;';
+		$result .= '<a href="../mySpace/myStudents.php?student='.$user_id.'">'.Display::return_icon('statistics.png', get_lang('Reporting')).'</a>&nbsp;&nbsp;';
 	}
 
 	if (api_is_platform_admin()) {
 		if (!$user_is_anonymous) {
-			$result .= '<a href="user_edit.php?user_id='.$user_id.'">'.Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')).'</a>&nbsp;&nbsp;';
+			$result .= '<a href="user_edit.php?user_id='.$user_id.'">'.Display::return_icon('edit_link.png', get_lang('Edit')).'</a>&nbsp;&nbsp;';
 		} else {
-				$result .= Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit invisible')).'</a>&nbsp;&nbsp;';
+				$result .= Display::return_icon('edit_link_na.png', get_lang('Edit')).'</a>&nbsp;&nbsp;';
 		}
 
 		if ($row[0]<>$_user['user_id'] && $user_is_anonymous == false) {
 			// you cannot lock yourself out otherwise you could disable all the accounts including your own => everybody is locked out and nobody can change it anymore.
-			$result .= '<a href="user_list.php?action=delete_user&amp;user_id='.$user_id.'&amp;'.$url_params.'&amp;sec_token='.$_SESSION['sec_token'].'"  onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset))."'".')) return false;">'.Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')).'</a>'.'&nbsp;&nbsp;';
+			$result .= '<a href="user_list.php?action=delete_user&amp;user_id='.$user_id.'&amp;'.$url_params.'&amp;sec_token='.$_SESSION['sec_token'].'"  onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset))."'".')) return false;">'.Display::return_icon('delete.png', get_lang('Delete')).'</a>'.'&nbsp;&nbsp;';
 		} else {
-			$result .= Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete invisible')).'&nbsp;&nbsp;&nbsp;&nbsp;';
+			$result .= Display::return_icon('delete_na.png', get_lang('Delete')).'&nbsp;&nbsp;&nbsp;&nbsp;';
 		}
 	}
 		if ($is_admin) {
@@ -714,24 +538,22 @@ function modify_filter($user_id,$url_params,$row)
  */
 function active_filter($active, $url_params, $row) {
 	global $_user;
+
 	if ($active=='1') {
 		$action='lock';
-	//	$image='right.png';
-		$class = 'actionplaceholdericon actionsvalidate';
+		$image='right.png';
 	} elseif ($active=='-1') {
     	$action='edit';
-     // $image='expired.gif';
-		$class = 'actionplaceholdericon actionsuserexpired';
+        $image='expired.gig';
     } elseif ($active=='0') {
 		$action='unlock';
-	//	$image='wrong.png';
-		$class = 'actionplaceholdericon actionslook';
+		$image='wrong.png';
 	}
 
     if ($action=='edit') {
-        $result = Display::return_icon('pixel.gif',get_lang('AccountExpired'), array('class' => $class));
+        $result = Display::return_icon($image, get_lang('AccountExpired'));
     }elseif ($row['0']<>$_user['user_id']) { // you cannot lock yourself out otherwise you could disable all the accounts including your own => everybody is locked out and nobody can change it anymore.
-		$result = '<a href="user_list.php?action='.$action.'&amp;user_id='.$row['0'].'&amp;'.$url_params.'&amp;sec_token='.$_SESSION['sec_token'].'">'.Display::return_icon('pixel.gif',get_lang(ucfirst($action)), array('class' => $class)).'</a>';
+		$result = '<a href="user_list.php?action='.$action.'&amp;user_id='.$row['0'].'&amp;'.$url_params.'&amp;sec_token='.$_SESSION['sec_token'].'">'.Display::return_icon($image, get_lang(ucfirst($action))).'</a>';
 	}
 	return '<center>'.$result.'</center>';
 }
@@ -748,13 +570,11 @@ function lock_unlock_user($status,$user_id)
 	$user_table = Database :: get_main_table(TABLE_MAIN_USER);
 	if ($status=='lock')
 	{
-                $log = LOG_USER_LOCK;
 		$status_db='0';
 		$return_message=get_lang('UserLocked');
 	}
 	if ($status=='unlock')
 	{
-                $log = LOG_USER_UNLOCK;
 		$status_db='1';
 		$return_message=get_lang('UserUnlocked');
 	}
@@ -765,11 +585,6 @@ function lock_unlock_user($status,$user_id)
 		$result = Database::query($sql, __FILE__, __LINE__);
 	}
 
-        $time = time();
-        $user_id_manager = api_get_user_id();
-        event_system($log, LOG_USER_ID, $user_id, $time, $user_id_manager);
-        
-        
 	if ($result)
 	{
 		return $return_message;
@@ -812,15 +627,6 @@ if (isset ($_GET['search']) && $_GET['search'] == 'advanced')
 	$interbreadcrumb[] = array ("url" => 'user_list.php', "name" => get_lang('UserList'));
 	$tool_name = get_lang('SearchAUser');
 	Display :: display_header($tool_name);
-
-	//Actions
-	echo '<div class="actions">';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_add.php">'.Display::return_icon('pixel.gif',get_lang('AddUsers'), array('class' => 'toolactionplaceholdericon toolactionaddusertocourse')).get_lang('AddUsers').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_export.php">'.Display::return_icon('pixel.gif',get_lang('Export'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('Export').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_import.php">'.Display::return_icon('pixel.gif',get_lang('Import'), array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('Import').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_fields.php">'.Display::return_icon('pixel.gif',get_lang('ManageUserFields'), array('class' => 'toolactionplaceholdericon toolactionsprofile')).get_lang('ManageUserFields').'</a>';
-	echo '</div>';
-
 	echo '<div id="content">';
 	//api_display_tool_title($tool_name);
 	$form = new FormValidator('advanced_search','get');
@@ -840,7 +646,7 @@ if (isset ($_GET['search']) && $_GET['search'] == 'advanced')
 	$active_group[] = $form->createElement('checkbox','keyword_active','',get_lang('Active'));
 	$active_group[] = $form->createElement('checkbox','keyword_inactive','',get_lang('Inactive'));
 	$form->addGroup($active_group,'',get_lang('ActiveAccount'),'<br/>',false);
-	$form->addElement('style_submit_button', 'submit',get_lang('SearchUsers'),'style="float:none; margin-right:10px;" class="search"');
+	$form->addElement('style_submit_button', 'submit',get_lang('SearchUsers'),'style="float:none;" class="search"');
 	$defaults['keyword_active'] = 1;
 	$defaults['keyword_inactive'] = 1;
 	$form->setDefaults($defaults);
@@ -852,16 +658,6 @@ else
 	$interbreadcrumb[] = array ("url" => 'index.php', "name" => get_lang('PlatformAdmin'));
 	$tool_name = get_lang('UserList');
 	Display :: display_header($tool_name, "");
-
-	//Actions
-	echo '<div class="actions">';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_add.php">'.Display::return_icon('pixel.gif',get_lang('AddUsers'), array('class' => 'toolactionplaceholdericon toolactionaddusertocourse')).get_lang('AddUsers').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_export.php">'.Display::return_icon('pixel.gif',get_lang('Export'), array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('Export').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_import.php">'.Display::return_icon('pixel.gif',get_lang('Import'), array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('Import').'</a>';
-	echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_fields.php">'.Display::return_icon('pixel.gif',get_lang('ManageUserFields'), array('class' => 'toolactionplaceholdericon toolactionsprofile')).get_lang('ManageUserFields').'</a>';
-        
-        echo '<a href="javascript:void(0)" id="btn-search">'.Display::return_icon('pixel.gif',get_lang('Search'), array('class' => 'toolactionplaceholdericon toolactionsearch')).get_lang('Search').'</a>';
-	echo '</div>';
 
 	//api_display_tool_title($tool_name);
 	if (isset ($_GET['action'])) {
@@ -939,35 +735,24 @@ else
 			Security::clear_token();
 		}
 	}
-	
-	echo '<div id="content">';	
+	echo '<div class="actions">';
+	// Create a search-box
+	$form = new FormValidator('search_simple','get','','',null,false);
+	$renderer =& $form->defaultRenderer();
+	$renderer->setElementTemplate('<span>{element}</span>');
+	$form->addElement('text','keyword',get_lang('keyword'));
+	$form->addElement('style_submit_button', 'submit',get_lang('Search'),'class="search" style="float: none;"');
+	$form->addElement('static','search_advanced_link',null,'<a href="user_list.php?search=advanced">'.get_lang('AdvancedSearch').'</a>');
 
-        echo '<div class="secondary-actions">';
-            // extra field options
-            echo '<div id="secondary-actions-extra">';
-                echo Tracking::display_additional_profile_fields(true, true, true);
-            echo '</div>';
-            // search form
-            echo '<div id="search" style="'.(isset($_GET['keyword'])?'display:block;':'display:none').'" >';
-                // Create a search-box
-                $form = new FormValidator('search_simple','get','','',null,false);
-
-                if (isset($_GET['additional_profile_field']) && count($_GET['additional_profile_field']) > 0) {
-                    $form->addElement('hidden', 'additional_profile_field_search');
-                    $defaults['additional_profile_field_search'] = implode(',', $_GET['additional_profile_field']);  
-                    $form->setDefaults($defaults);
-                }
-
-                $renderer =& $form->defaultRenderer();
-                $renderer->setElementTemplate('<span>{element}</span>');
-
-                $form->addElement('text','keyword',get_lang('keyword'), 'id="keyword"');
-                $form->addElement('style_submit_button', 'submit',get_lang('Search'),'class="search" style="float: none;margin-right:5px;"');
-                $form->addElement('static','search_advanced_link',null,'<a href="user_list.php?search=advanced">'.get_lang('AdvancedSearch').'</a>');	        
-                $form->display();
-            echo '</div>';
-        echo '</div>';
-                
+	if (api_is_platform_admin()) {
+		$form->addElement('html','<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_add.php" style="float:right;">'.Display::return_icon('addLearners.png',get_lang('AddUsers')).get_lang('AddUsers').'</a>');
+		//echo '<span style="float:right;">'.
+		//	 '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_add.php">'.Display::return_icon('add_user_big.gif',get_lang('AddUsers')).get_lang('AddUsers').'</a>'.
+		//	 '</span>';
+	}
+	$form->display();
+	echo '</div>';
+	echo '<div id="content">';
 	if (isset ($_GET['keyword'])) {
 		$parameters = array ('keyword' => Security::remove_XSS($_GET['keyword']));
 	} elseif (isset ($_GET['keyword_firstname'])) {
@@ -979,11 +764,6 @@ else
 		$parameters['keyword_active'] 		= Security::remove_XSS($_GET['keyword_active']);
 		$parameters['keyword_inactive'] 	= Security::remove_XSS($_GET['keyword_inactive']);
 	}
-
-        if (isset($_GET['additional_profile_field']) && count($_GET['additional_profile_field']) > 0) {
-            $parameters['additional_profile_field'] = implode(',', $_GET['additional_profile_field']);
-        }
-        
 	// Create a sortable table with user-data
 	$parameters['sec_token'] = Security::get_token();
 
@@ -996,17 +776,15 @@ else
 		$_admins_list[] = $row_admin[0];
 	}
 
-        $image_path = UserManager::get_user_picture_path_by_id($user_id, 'web', false, true);
-        $user_profile = UserManager::get_picture_user($user_id, $image_path['file'], 22, 'small_', ' width="22" height="22" ');
-        if (!api_is_anonymous()) {
-                $photo = '<center><a href="userInfo.php?'.api_get_cidreq().'&origin='.$origin.'&amp;uInfo='.$user_id.'" title="'.get_lang('Info').'"  ><img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'"  title="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'" /></a></center>';
-        } else {
-                $photo = '<center><img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'" title="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'" /></center>';
-        }
+				$image_path = UserManager::get_user_picture_path_by_id($user_id, 'web', false, true);
+				$user_profile = UserManager::get_picture_user($user_id, $image_path['file'], 22, 'small_', ' width="22" height="22" ');
+				if (!api_is_anonymous()) {
+					$photo = '<center><a href="userInfo.php?'.api_get_cidreq().'&origin='.$origin.'&amp;uInfo='.$user_id.'" title="'.get_lang('Info').'"  ><img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'"  title="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'" /></a></center>';
+				} else {
+					$photo = '<center><img src="'.$user_profile['file'].'" '.$user_profile['style'].' alt="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'" title="'.api_get_person_name($o_course_user['firstname'], $o_course_user['lastname']).'" /></center>';
+				}
 
-        
-        $count = get_number_of_users();
-	$table = new SortableTable('users', 'get_number_of_users', 'get_user_data', (api_is_western_name_order() xor api_sort_by_first_name()) ? 4 : 3);
+	$table = new SortableTable('users', 'get_number_of_users', 'get_user_data', (api_is_western_name_order() xor api_sort_by_first_name()) ? 3 : 2);
 	$table->set_additional_parameters($parameters);
 	$table->set_header(0, '', false);
 	$table->set_header(1, get_lang('Photo'));	
@@ -1021,28 +799,18 @@ else
 	$table->set_header(5, get_lang('LoginName'));
 	$table->set_header(6, get_lang('Email'));
 	$table->set_header(7, get_lang('Status'));
-	$table->set_header(8, get_lang('Active'));        
-
-        $band = 9;
-        if (isset($_GET['additional_profile_field']) && count($_GET['additional_profile_field']) > 0) {
-           foreach ($_GET['additional_profile_field'] as $field_id) {
-               $field_info = UserManager::get_extra_field_information($field_id);               
-               $table->set_header($band, $field_info['field_display_text'], true);               
-               $band++;
-           }
-        }              
-       
-        $table->set_header($band, get_lang('Action'), false,'width="200px"');
-        $table->set_column_filter(6, 'email_filter');
-	$table->set_column_filter(7, 'status_filter');               
+	$table->set_header(8, get_lang('Active'));
+	$table->set_header(9, get_lang('Action'), false,'width="200px"');
+	$table->set_column_filter(6, 'email_filter');
+	$table->set_column_filter(7, 'status_filter');
 	$table->set_column_filter(8, 'active_filter');
-	$table->set_column_filter($band, 'modify_filter');        
+	$table->set_column_filter(9, 'modify_filter');
 	if (api_is_platform_admin())
 		$table->set_form_actions(array ('delete' => get_lang('DeleteFromPlatform')));
 	$table->display();
 	echo '</div>';
 }
-      
+
 echo '<div class="actions">';
 echo '&nbsp;';
 echo '</div>';

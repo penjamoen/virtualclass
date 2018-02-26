@@ -9,4 +9,5 @@ $langReg = "登録";
 $langMenu  = "メニュ";
 $langCourseDoesntExist = "警告：このコースは存在しません。";
 $langHelpMaj = "へルプ";
+$langAdmin = "管理者";
 ?>

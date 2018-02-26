@@ -17,7 +17,8 @@ api_protect_admin_script();
 //$htmlHeadXtra[] = '<script src="../inc/lib/javascript/jquery.js" type="text/javascript" language="javascript"></script>'; //jQuery
 $htmlHeadXtra[] ='<script type="text/javascript">
  $(document).ready(function() {
-	$(".upgrade_link").click(function() {
+
+	$(".save").click(function() {
 		button_name=$(this).attr("name");
 		button_array=button_name.split("|");
 		button_name=button_array[1];
@@ -26,8 +27,8 @@ $htmlHeadXtra[] ='<script type="text/javascript">
 
 		is_new_language=$("#txtid_"+button_name).attr("value");
    		if (is_new_language=="undefined") {
-     		  is_new_language="_";
-    	        }
+     			is_new_language="_";
+    	}
 
 		if (is_new_language.length>0 && is_new_language!="_" && file_id!="" && button_name!="") {
 			$.ajax({
@@ -47,8 +48,7 @@ $htmlHeadXtra[] ='<script type="text/javascript">
 			$("#div_message_information_id").html("<div class=\"error-message\">'.get_lang('FormHasErrorsPleaseComplete').'</div>");
 		}
 	});
-
-});
+ 		});
 </script>';
 /*
 ==============================================================================
@@ -88,9 +88,13 @@ if (!is_dir($dokeos_path_folder) || strlen($all_data_of_language['dokeos_folder'
 
 Display :: display_header($language_name);
 
+echo '<div class="actions-message" >';
+echo $language_name;
+echo '</div>';
+echo '<br />';
 
 $txt_search_word = Security::remove_XSS($_REQUEST['txt_search_word']);
-$html.='<div class="actions">';
+$html.='<div style="float:left" class="actions">';
 $html.='<form style="float:left"  id="Searchlanguage" name="Searchlanguage" method="GET" action="sub_language.php">';
 $html.='&nbsp;'.get_lang('OriginalName').'&nbsp; :&nbsp;';
 
@@ -102,12 +106,9 @@ $html.="&nbsp;".'<button name="SubmitSearchLanguage" class="search" type="submit
 $html.='</form>';
 $html.='</div>';
 echo $html;
-
-echo '<div id="content">';
+echo '<br /><br /><br /><br />';
 echo '<div id="div_message_information_id">&nbsp;</div>';
-echo '<h3>';
-echo $language_name;
-echo '</h3>';
+
 /**
  * Search a term in the language
  * @param string the term to search
@@ -137,7 +138,6 @@ function search_language_term($term, $search_in_variable = true , $search_in_eng
 	//echo '<pre>';
 	//print_r($language_files_to_load);
 	$term='/'.Security::remove_XSS(trim($_REQUEST['txt_search_word'])).'/i';
-        $lang_founds = array();
 	//@todo optimize this foreach
 	foreach ($language_files_to_load as $lang_file) {
 		//searching in parent language of the sub language
@@ -158,7 +158,7 @@ function search_language_term($term, $search_in_variable = true , $search_in_eng
 					$sub_language_name_variable = $sub_language_array[$lang_file][$parent_name_variable];
 					//loading variable from the english array
 					$english_name_variable = $english_language_array[$lang_file][$parent_name_variable];
-                                        $lang_founds[] = $parent_name_variable;
+
 					//config buttons
 					/*if (strlen($english_name_variable)>1500) {
 						$size =20;
@@ -166,15 +166,13 @@ function search_language_term($term, $search_in_variable = true , $search_in_eng
 						$size =4;
 					}*/
 
-					$obj_text='<textarea rows="6" cols="25" name="txt|'.$parent_name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="txtid_'.$parent_name_variable.'" >'.$sub_language_name_variable.'</textarea>';
-					//$obj_text= api_return_html_area("txt_".$parent_name_variable.'_'.$language_files_to_load_keys[$lang_file],$sub_language_name_variable,null,null,null,array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '200px', 'Height' => '100px'));
-					$obj_button='<button class="upgrade_link" type="button" name="btn|'.$parent_name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="btnid_'.$parent_name_variable.'"  />'.get_lang('Save').'</button>';
+					$obj_text='<textarea rows="10" cols="40" name="txt|'.$parent_name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="txtid_'.$parent_name_variable.'" >'.$sub_language_name_variable.'</textarea>';
+					$obj_button='<button class="save" type="button" name="btn|'.$parent_name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="btnid_'.$parent_name_variable.'"  />'.get_lang('Save').'</button>';
 
 					$list_info[]=array($lang_file.'.inc.php',
-									   '<div class="scroll_sublanguage">'.$parent_name_variable.'</div>',
-									   '<div class="scroll_sublanguage">'.$english_name_variable.'</div>',
-									   '<div class="scroll_sublanguage">'.$parent_variable_value.'</div>',
-                                                                           $obj_text,$obj_button);
+									   $parent_name_variable,
+									   $english_name_variable,
+									   $parent_variable_value,$obj_text,$obj_button);
 				}
 			}
 		}
@@ -206,22 +204,21 @@ function search_language_term($term, $search_in_variable = true , $search_in_eng
 					}
 				}
 
-				if ($founded && !in_array($name_variable, $lang_founds)) {
+				if ($founded) {
 					//loading variable from the english array
 					$sub_language_name_variable = $sub_language_array[$lang_file][$name_variable];
 					$parent_variable_value 		= $parent_language_array[$lang_file][$name_variable];
 					//config buttons
-					$obj_text='<textarea rows="6" cols="25" name="txt|'.$name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="txtid_'.$name_variable.'" >'.$sub_language_name_variable.'</textarea>';
-					//$obj_text= api_return_html_area("txt_".$name_variable.'_'.$language_files_to_load_keys[$lang_file],html_entity_decode($sub_language_name_variable),null,null,null,array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '200px', 'Height' => '100px'));
-                                        $obj_button='<button class="upgrade_link" type="button" name="btn|'.$name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="btnid_'.$name_variable.'"  />'.get_lang('Save').'</button>';
+					$obj_text='<textarea rows="10" cols="40" name="txt|'.$name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="txtid_'.$name_variable.'" >'.$sub_language_name_variable.'</textarea>';
+					$obj_button='<button class="save" type="button" name="btn|'.$name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="btnid_'.$name_variable.'"  />'.get_lang('Save').'</button>';
 
 					//loading variable from the english array
 					$english_name_variable = $english_language_array[$lang_file][$name_variable];
 
 					$list_info[]=array($lang_file.'.inc.php',
-									   '<div class="scroll_sublanguage">'.$name_variable.'</div>',
-									   '<div class="scroll_sublanguage">'.$english_name_variable.'</div>',
-									   '<div class="scroll_sublanguage">'.$parent_variable_value.'</div>',$obj_text,$obj_button);
+									   $name_variable,
+									   $english_name_variable,
+									   $parent_variable_value,$obj_text,$obj_button);
 				}
 			}
 		}
@@ -245,17 +242,15 @@ function search_language_term($term, $search_in_variable = true , $search_in_eng
 					$sub_language_name_variable = $sub_language_array[$lang_file][$name_variable];
 					$parent_variable_value 		= $parent_language_array[$lang_file][$name_variable];
 					//config buttons
-					$obj_text='<textarea rows="6" cols="25" name="txt|'.$name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="txtid_'.$name_variable.'" >'.$sub_language_name_variable.'</textarea>';
-					//$obj_text= api_return_html_area("txt_".$name_variable.'_'.$language_files_to_load_keys[$lang_file],html_entity_decode($sub_language_name_variable),null,null,null,array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '200px', 'Height' => '100px'));
-					$obj_button='<button class="upgrade_link" type="button" name="btn|'.$name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="btnid_'.$name_variable.'"  />'.get_lang('Save').'</button>';
+					$obj_text='<textarea rows="10" cols="40" name="txt|'.$name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="txtid_'.$name_variable.'" >'.$sub_language_name_variable.'</textarea>';
+					$obj_button='<button class="save" type="button" name="btn|'.$name_variable.'|'.$language_files_to_load_keys[$lang_file].'" id="btnid_'.$name_variable.'"  />'.get_lang('Save').'</button>';
 
 					//loading variable from the english array
 					$english_name_variable = $english_language_array[$lang_file][$name_variable];
 					$list_info[]=array($lang_file.'.inc.php',
-									   '<div class="scroll_sublanguage">'.$name_variable.'</div>',
-									   '<div class="scroll_sublanguage">'.$english_name_variable.'</div>',
-									   '<div class="scroll_sublanguage">'.$parent_variable_value.'</div>',
-                                                                           $obj_text,$obj_button);
+									   $name_variable,
+									   $english_name_variable,
+									   $parent_variable_value,$obj_text,$obj_button);
 				}
 			}
 		}
@@ -291,6 +286,6 @@ $table->display();
 		FOOTER
 ==============================================================================
 */
-echo '</div>';
+
 Display :: display_footer();
 ?>

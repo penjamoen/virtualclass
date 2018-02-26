@@ -30,7 +30,6 @@ $langLinkURL = "URL Link";
 $langWelcomeToOnlineConf = "Selamat datang di  <b>Konfrensi Online</b>";
 $langNoLinkAvailable = "Tidak ada Link";
 $langChat_reset_by = "reset chat";
-$langAdmin = "Admin Platform";
 $OrFile = "Or file";
 $langCallSent = "Panggilan Chat  telah dikirim. Menunggu jawaban patner anda.";
 $langChatDenied = "Panggilan anda ditolak patner anda.";

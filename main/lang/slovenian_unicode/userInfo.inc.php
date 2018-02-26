@@ -192,6 +192,4 @@ $AddModerator = "Dodaj kot moderatorja";
 $DenyEntry = "Onemogoči dostop";
 $YouNeedToHaveFriendsInYourSocialNetwork = "Imeti morate prijatelje v vašem socialnem omrežju";
 $SeeAllMyGroups = "Poglej vse moje skupine";
-$EditGroup = "Uredi skupino";
-$YouAlreadyInviteAllYourContacts = "Povabili ste že vse svoje kontakte";
 ?>

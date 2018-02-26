@@ -1,4 +1,4 @@
-<?php
+<?php // $Id: upload.php 22201 2009-07-17 19:57:03Z cfasanando $
 
 /* For licensing terms, see /dokeos_license.txt */
 
@@ -240,7 +240,7 @@ if(isset($_FILES['user_upload'])) {
 			$upload_allowed = 'Y';
 		}
 	} elseif ($path == '/video' || $path == '/screencasts') {
-		if($ext[1] == 'flv' || $ext[1] == 'wmv' || $ext[1] == 'mpg' || $ext[1] == 'avi' || $ext[1] == 'zip'|| $ext[1] == 'mp4'|| $ext[1] == 'ogg'|| $ext[1] == 'ogv') {
+		if($ext[1] == 'flv' || $ext[1] == 'wmv' || $ext[1] == 'mpg' || $ext[1] == 'avi' || $ext[1] == 'zip') {
 			$upload_allowed = 'Y';
 		}
 	} elseif ($path == '/mindmaps') {
@@ -576,37 +576,38 @@ if(isset($_POST['create_dir']) && $_POST['dirname']!='') {
 <?php
 
 if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0) {
-  $add_class = "sectiontitle";
+  $add_clase = "sectiontitle";
 }
-
 // actions
-echo '<div class="actions '.$add_class.'">';
+echo '<div class="actions '.$add_clase.'">';
+
 if (!isset($_GET['lp_id'])) {
-	// link back to the documents overview
-	if ($is_certificate_mode) {
-		echo '<a href="document.php?'.api_get_cidreq().'&curdirpath='.$path.'&selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('pixel.gif', get_lang('Back'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('Back').'</a>';
-	} else {
-		echo '<a href="document.php?'.api_get_cidreq().'&curdirpath='.$path.'">'.Display::return_icon('pixel.gif', get_lang('Back'), array('class' => 'toolactionplaceholdericon toolactionback')).' '.get_lang('Back').'</a>';
-	}
+  // link back to the documents overview
+  if ($is_certificate_mode)
+   echo '<a href="document.php?'.api_get_cidreq().'&curdirpath='.$path.'&selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('go_previous_32.png',get_lang('Back'),array('style'=>'vertical-align:middle;')).'&nbsp;&nbsp;'.get_lang('Back').'</a>';
+  else
+   echo '<a href="document.php?'.api_get_cidreq().'&curdirpath='.$path.'">'.Display::return_icon('go_previous_32.png',get_lang('Back'),array('style'=>'vertical-align:middle;')).get_lang('Back').'&nbsp;&nbsp;'.'</a>';
 
-	// link to create a folder
-	if(!isset($_GET['createdir']) && !$is_certificate_mode) {
-		echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&path='.$path.'&amp;createdir=1">'.Display::return_icon('pixel.gif', get_lang('CreateDir'), array('class' => 'toolactionplaceholdericon toolactioncreatefolder')).' '.get_lang('CreateDir').'</a>';
-	}
+  // link to create a folder
+  if(!isset($_GET['createdir']) && !$is_certificate_mode) {
+    echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&path='.$path.'&amp;createdir=1">'.Display::return_icon('folder_new1.png', get_lang('CreateDir'),array('style'=>'vertical-align:middle;')).'&nbsp;&nbsp;'.get_lang('CreateDir').'</a>';
+  }
 }
-
-echo '</div>';
-
-echo '<div id="content">';
 
 //form to select directory
 $folders = DocumentManager::get_all_document_folders($_course,$to_group_id,$is_allowed_to_edit);
-if (!$is_certificate_mode) {
-	echo '<div>'.(build_directory_selector($folders,$path,$group_properties['directory'], false, $into_lp)).'</div><br/>';
-}
+if (!$is_certificate_mode)
+	echo(build_directory_selector($folders,$path,$group_properties['directory'], false, $into_lp));
+
+echo '</div>';
+
+
+echo '<div id="content">';
+
+echo '<br/>';
 
 if(!empty($error_message)){
-	echo '<br/><br/><div align="center"><div class="sectiontitle">'.$error_message.'</div></div>';
+echo '<div align="center"><div class="sectiontitle">'.$error_message.'</div></div>';
 }
 
 //=======================================//
@@ -639,6 +640,8 @@ if (isset($_GET['lp_id']) && $_GET['lp_id'] > 0) {
 
 <?php
 
+echo '<br/>';
+
 $form = new FormValidator('upload','POST',api_get_self().'?'.api_get_cidreq(),'','enctype="multipart/form-data"');
 
 // form title
@@ -646,7 +649,8 @@ $form = new FormValidator('upload','POST',api_get_self().'?'.api_get_cidreq(),''
 
 $form->addElement('hidden','curdirpath',$path);
 //Dynamic file upload 
-$form->addElement('html','<div id="dynamicInput"><div class="row"><div class="label">'.get_lang('File').'</div><div class="formw"><input type="file" name="user_upload[]" id="user_upload[]" size="45">&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" onClick="addInput();">'.Display::return_icon('pixel.gif', get_lang('Add'), array('class' => 'toolactionplaceholdericon toolactionadd')).' '.get_lang('Add').'</a></div></div></div>');
+//$form->addElement('file','user_upload',get_lang('File'),'id="user_upload" size="45"');
+$form->addElement('html','<div id="dynamicInput"><div class="row"><div class="label">'.get_lang('File').'</div><div class="formw"><input type="file" name="user_upload[]" id="user_upload[]" size="45">&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" onClick="addInput();">'.Display::return_icon('add_32.png',get_lang('Add'),array('style'=>'height:16px;width:16px')).' '.get_lang('Add').'</a></div></div></div>');
 
 if(api_get_setting('use_document_title')=='true')
 {
@@ -670,12 +674,10 @@ if(api_get_setting('search_enabled')=='true')
 {
 	//TODO: include language file
 	$supported_formats = 'Supported formats for index: Text plain, PDF, Postscript, MS Word, HTML, RTF, MS Power Point';
-    //$form -> addElement ('checkbox', 'index_document','', get_lang('SearchFeatureDoIndexDocument') . '<div style="font-size: 80%" >'. $supported_formats .'</div>');
-    $form->addElement ('hidden','index_document', 1);
-    $form->addElement('hidden','language', api_get_setting('platformLanguage'));
+    $form -> addElement ('checkbox', 'index_document','', get_lang('SearchFeatureDoIndexDocument') . '<div style="font-size: 80%" >'. $supported_formats .'</div>');
     $form -> addElement ('html','<br /><div class="row">');
-    //$form -> addElement ('html', '<div class="label">'. get_lang('SearchFeatureDocumentLanguage') .'</div>');
-    //$form -> addElement ('html', '<div class="formw">'. api_get_languages_combo() .'</div>');
+    $form -> addElement ('html', '<div class="label">'. get_lang('SearchFeatureDocumentLanguage') .'</div>');
+    $form -> addElement ('html', '<div class="formw">'. api_get_languages_combo() .'</div>');
     $form -> addElement ('html','</div><div class="sub-form">');
     $specific_fields = get_specific_field_list();
     foreach ($specific_fields as $specific_field) {
@@ -700,7 +702,7 @@ $form->addElement('style_submit_button', 'submitDocument', get_lang('SendDocumen
 //$form->add_real_progress_bar('DocumentUpload','user_upload');
 $form->add_progress_bar();
 
-//$defaults = array('index_document'=>'checked="checked"');
+$defaults = array('index_document'=>'checked="checked"');
 $form->setDefaults($defaults);
 $form->display();
 

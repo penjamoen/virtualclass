@@ -30,7 +30,6 @@ $langLinkURL = "URL";
 $langWelcomeToOnlineConf = "Benvenuti nella <b>Videoconferenza</b>";
 $langNoLinkAvailable = "Non ci sono collegamenti disponibili";
 $langChat_reset_by = "Fai ripartire la chat";
-$langAdmin = "Amministratore della piattaforma";
 $OrFile = "O importa";
 $langCallSent = "La chiamata in chat è stata inviata: sono in attesa di consenso da parte della persona che hai chiamato";
 $langChatDenied = "Il consenso alla chat è stato negato da parte della persona che hai chiamato";

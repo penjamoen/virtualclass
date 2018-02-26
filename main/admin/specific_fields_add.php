@@ -43,19 +43,19 @@ $form->addElement('text','field_name',get_lang('FieldName'));
 $form->applyFilter('field_name','html_filter');
 $form->applyFilter('field_name','trim');
 $form->addRule('field_name', get_lang('ThisFieldIsRequired'), 'required');
-$form->addRule('field_name', get_lang('OnlyLettersAndNumbersAllowed'), 'username');
-$form->addRule('field_name', '', 'maxlength',20);
+$form->addRule('fieldname', get_lang('OnlyLettersAndNumbersAllowed'), 'username');
+$form->addRule('fieldname', '', 'maxlength',20);
 
 // Set default values (only not empty when editing)
 $defaults = array();
 if (is_numeric($_REQUEST['field_id']))
 {
   $form_information = get_specific_field_list(array( 'id' => (int)$_GET['field_id'] ));
-  //$defaults['field_name'] = $form_information[0]['name'];
+  $defaults['field_name'] = $form_information[0]['name'];
 }
 $form->setDefaults($defaults);
 // Submit button
-$form->addElement('style_submit_button', 'submit', get_lang('Add') ,'class="save"');
+$form->addElement('submit', 'submit', get_lang('Add'));
 
 // Validate form
 if ($form->validate()) {
@@ -77,7 +77,7 @@ if ($form->validate()) {
 
 // Display form
 Display::display_header($tool_name);
-echo '<div id="content">';
+
 $form->display();
-echo '</div>';
+
 Display::display_footer();

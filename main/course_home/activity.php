@@ -35,7 +35,6 @@
 */
 
 // header
-$GLOBALS['display_learner_view'] = true;
 Display::display_header($course_title, "Home");
 
 
@@ -107,7 +106,7 @@ if (api_is_platform_admin()) {
 	Tools for course admin only
 -----------------------------------------------------------
 */
-if(api_is_allowed_to_edit(null,true) && !api_is_course_coach()) {
+if(api_is_allowed_to_edit(null,true) && !api_is_coach()) {
 
     $current_protocol  = $_SERVER['SERVER_PROTOCOL'];
     $current_host      = $_SERVER['HTTP_HOST'];
@@ -164,7 +163,7 @@ if(api_is_allowed_to_edit(null,true) && !api_is_course_coach()) {
 	</div>
 
 	<?php
-} elseif (api_is_course_coach()) {
+} elseif (api_is_coach()) {
 
 	if (api_get_setting('show_session_data') === 'true' && $id_session > 0) {
 	?>
@@ -193,7 +192,7 @@ if(api_is_allowed_to_edit(null,true) && !api_is_course_coach()) {
     $my_list = get_tools_category(TOOL_STUDENT_VIEW);
     if (count($my_list)>0) {
 ?>
-	<div class="section main_activity">
+	<div class="actions main_activity">
 		<table>
 			<?php show_tools_category($my_list);?>
 		</table>

@@ -37,18 +37,14 @@ require_once (api_get_path ( LIBRARY_PATH ) . 'formvalidator/FormValidator.class
 require ('functions.php');
 
 // including additional javascripts
-$htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path ( WEB_CODE_PATH ) . 'inc/lib/javascript/fullcalendar-1.4.5/fullcalendar.min.js" language="javascript"></script>';
+$htmlHeadXtra [] = '<script type="text/javascript" src="' . api_get_path ( WEB_CODE_PATH ) . 'inc/lib/javascript/fullcalendar-1.4.5/fullcalendar.min.js" language="javascript"></script>';
 $htmlHeadXtra[] = '<script type="text/javascript" src="' . api_get_path ( WEB_CODE_PATH ) . 'inc/lib/javascript/jquery.expander.js" language="javascript"></script>';
-$htmlHeadXtra[] = '<link rel="stylesheet" type="text/css" href="' . api_get_path ( WEB_CODE_PATH ) . 'inc/lib/javascript/fullcalendar-1.4.5/fullcalendar-dokeos.css" />';
+$htmlHeadXtra [] = '<link rel="stylesheet" type="text/css" href="' . api_get_path ( WEB_CODE_PATH ) . 'inc/lib/javascript/fullcalendar-1.4.5/fullcalendar-dokeos.css" />';
 
 // javascript code for teachers... and students
 if ($_GET['action'] <> 'detail' AND $_GET['action'] <> 'add' AND $_GET['action'] <> 'edit')
 {
-	$htmlHeadXtra[] = calendar_javascript();
-}
-// google calendar import
-if (api_get_setting('calendar_google_import')=='true'){
-	$htmlHeadXtra[] = google_calendar_additional_js_libraries();
+	$htmlHeadXtra [] = calendar_javascript();
 }
 
 // the toolbar set that has to be used
@@ -85,7 +81,7 @@ switch ($_GET['action']){
 handle_header_calendar_actions();
 
 // Displaying the header
-Display::display_tool_header ();
+Display::display_header ();
 //Display::display_tool_header ();
 
 // Tool introduction

@@ -10,7 +10,7 @@ define('DOKEOS_GLOSSARY', true);
 // including the global dokeos file
 require_once('../inc/global.inc.php');
 require_once('../inc/lib/events.lib.inc.php');
-//$htmlHeadXtra[] = '<script src="' . api_get_path(WEB_LIBRARY_PATH) . 'jwplayer/jwplayer.min.js" type="text/javascript"></script>';
+
 // notice for unauthorized people.
 api_protect_course_script(true);
 
@@ -29,14 +29,11 @@ function convert_encoding($str = ""){
 if(isset($_GET['action']) && $_GET['action'] == 'list')
 {	
 	$current_glossary = $_GET['q'];	
-	echo '<div style="height:370px;">
-            <table align="left" width="100%">
-            <tr><td valign="top" align="left">
-            <div align="center" style="margin:0px;width:80%;" class="quiz_content_actions">'.Security::remove_XSS($_GET['q']).'</div></td>';
+	echo '<div style="height:370px;"><table align="left" width="100%"><tr><td align="left"><div class="squarebox_white">'.Security::remove_XSS($_GET['q']).'</div></td></tr><tr><td>&nbsp;</td></tr>';
 	
 	$t_glossary = Database :: get_course_table(TABLE_GLOSSARY);
 	$t_item_propery = Database :: get_course_table(TABLE_ITEM_PROPERTY);	
-	$from = Security::remove_XSS($_GET['start']);
+	$from = $_GET['start'];
 	$inc_cnt = 10;
 	$number_of_items = $from + $inc_cnt;	
 
@@ -88,7 +85,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'list')
 		{	
 			$id = $data->id;
 			$name = convert_encoding($data->name);
-			echo '<tr ><td><span style="font-size:14px;font-weight:normal;font-family:verdana;color:#557EB8;padding-left:0px;"><a class="glossary" href="javascript:void(0)" onclick="showDefintion(\''.$id.'\')">'.$name.'</a></span></td></tr>';
+			echo '<tr><td><span style="font-size:14px;font-weight:normal;font-family:verdana;color:#557EB8;padding-left:0px;"><a class="glossary" href="javascript:void(0)" onclick="showDefintion(\''.$id.'\')">'.$name.'</a></span></td></tr>';
 		}	
 	}
 	else
@@ -139,26 +136,12 @@ elseif(isset($_GET['action']) && $_GET['action'] == 'showterm')
 		$glossary_description = convert_encoding($data->glossary_comment);
 	}
 
-    // Wrapper for add edit form + image map
-    echo '<div id="wrapper_glossary_form">';
-    //To show Add and Edit Definition form
-    echo '<div id="glossary_form">';
-    echo '<div align="center" class="quiz_content_actions">'.$glossary_name.'</div>';
-    echo '<div align="center" class="quiz_content_actions glossary_description_height" style="overflow:auto;text-align:left;">'.$glossary_description.'</div>';
-    if (api_is_allowed_to_edit(null,true)) {
-        echo '<div align="right" class="quiz_content_actions" style="border:none;"><a href="index.php?'.api_get_cidReq().'&action=editterm&glossary_id='.$id.'">'.Display::return_icon('pixel.gif', get_lang('Edit'), array('class' => 'actionplaceholdericon actionedit')).'&nbsp;&nbsp;<a onclick="return confirmation(\''.$glossary_name.'\');" href="index.php?action=delete_glossary&glossary_id='.$id.'">'.Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')).'</a></div>';
-    } 
-    // Close add/edit form
-    echo '</div>';
- 
-    // Add image map
-    echo '<div id="glossary_image_map">';
-    echo '<a href="index.php?'.api_get_cidReq().'"><img class="abs" src="../img/imagemap90.png" style="margin:30px 30px 0 0; right:0; top:0;"></a>';
-    
-    // Close "image map"
-    echo '</div>';
-
-   // Close glossary wrapper form
-    echo '</div>';
+	echo '<table width="100%" border="0"><tr><td width="70%" align="center" valign="top"><div style="border: 1px solid #ccc;text-align:center;background-color:#FFF;padding:10px;font-size:18px;font-weight:bold;color:#A7A4AD;">'.$glossary_name.'</div><br/><div style="border: 1px solid #ccc;text-align:left;background-color:#FFF;width:90%;height:290px;overflow:auto;padding:5px 20px 20px 20px;font-size:14px;font-weight:normal;color:#000;">'.$glossary_description.'</div><br/>';
+	if (api_is_allowed_to_edit(null,true))
+	{	
+	echo '<div style="padding-left:86%;"><a href="index.php?'.api_get_cidReq().'&action=editterm&glossary_id='.$id.'"><img src="../img/edit_link.png">&nbsp;&nbsp;<a href="index.php?action=delete_glossary&glossary_id='.$id.'"><img src="../img/delete.png"></a></div>';
+	}	
+	echo '</td><td width="30%"><table width="100%"><tr><td align="center"></td></tr></table></td></tr></table>';
+	echo '<a href="index.php?'.api_get_cidReq().'"><img class="abs" src="../img/imagemap90.png" style="margin:30px 30px 0 0; right:0; top:0;"></a>';
 }
 ?>

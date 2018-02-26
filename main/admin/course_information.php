@@ -120,7 +120,7 @@ if (Database::num_rows($res) > 0)
 		}
 		$user[] = Display :: encrypted_mailto_link($obj->email, $obj->email);
 		$user[] = $obj->course_status == 5 ? get_lang('Student') : get_lang('Teacher');
-		$user[] = '<a href="user_information.php?user_id='.$obj->user_id.'">'.Display::return_icon('pixel.gif',get_lang('UserInfo'),array('class'=>'actionplaceholdericon actioninfo')).'</a>';
+		$user[] = '<a href="user_information.php?user_id='.$obj->user_id.'">'.Display::return_icon('synthese_view.gif',get_lang('UserInfo')).'</a>';
 		$users[] = $user;
 	}
 	$table = new SortableTableFromArray($users,0,20,'user_table');

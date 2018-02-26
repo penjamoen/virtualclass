@@ -58,5 +58,4 @@ $ButtonPublishAnnouncement = "Duyuruyu gönder";
 $SaveAnnouncement = "Duyuruyu kaydet";
 $DeleteAnnouncement = "Duyuruyu sil";
 $EditAnnouncement = "Duyuruyu düzenle";
-$AnnouncementAdd = "Duyuru ekle";
 ?>

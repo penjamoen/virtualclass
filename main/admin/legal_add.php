@@ -227,8 +227,9 @@ if (isset ($_GET['action'])) {
 	}
 }
 
+
+//var_dump($defaults);
+
 $form->setDefaults($defaults);
-echo '<div id="content">';
 $form->display();
-echo '</div>';
 ?>

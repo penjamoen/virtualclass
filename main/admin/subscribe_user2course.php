@@ -35,16 +35,6 @@ api_protect_admin_script();
 // Setting the breadcrumbs
 $interbreadcrumb[] = array ("url" => 'index.php', "name" => get_lang('PlatformAdmin'));
 
-$htmlHeadXtra[] = '
-<script type="text/javascript">
-function validate_filter() {
-	
-		document.formulaire.form_sent.value=0;				
-		document.formulaire.submit();
-		
-}	
-</script>';
-
 // Database table definititions
 $tbl_course = Database :: get_main_table(TABLE_MAIN_COURSE);
 $tbl_user 	= Database :: get_main_table(TABLE_MAIN_USER);
@@ -64,18 +54,8 @@ Display :: display_header(get_lang('AddUsersToACourse'));
 // displaying the tool title
 // api_display_tool_title(get_lang('AddUsersToACourse'));
 
-//Actions
-echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_list.php">'.Display::return_icon('pixel.gif',get_lang('CourseList'), array('class' => 'toolactionplaceholdericon toolactionadmincourse')).get_lang('CourseList').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_add.php">'.Display::return_icon('pixel.gif',get_lang('AddCourse'), array('class' => 'toolactionplaceholdericon toolactioncreatecourse')).get_lang('AddCourse').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_enrolment.php">'.Display::return_icon('pixel.gif',get_lang('EnrolmentToCoursesAtRegistrationToPortal'),array('class' => 'toolactionplaceholdericon toolactionautomaticenrollment')).get_lang('EnrolmentToCoursesAtRegistrationToPortal').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_export.php">'.Display::return_icon('pixel.gif',get_lang('ExportCourses'),array('class' => 'toolactionplaceholdericon toolactionexportcourse')).get_lang('ExportCourses').'</a>';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'admin/course_import.php">'.Display::return_icon('pixel.gif',get_lang('ImportCourses'),array('class' => 'toolactionplaceholdericon toolactionimportcourse')).get_lang('ImportCourses').'</a>';	
-echo '</div>';
-
 // start the content div
 echo '<div id="content" class="maxcontent">';
-
 
 $form = new FormValidator('subscribe_user2course');
 $form->addElement('header', '', get_lang('AddUsersToACourse'));
@@ -288,7 +268,7 @@ if (is_array($extra_field_list)) {
 				?>
 			</select>
 			<div class="list">
-				<select name="UserList[]" multiple="multiple" size="20" class="focus" style="width:375px;">
+				<select name="UserList[]" multiple="multiple" size="20" class="focus" style="width:300px;">
 					<?php
 					foreach ($db_users as $user) {
 					?>
@@ -308,7 +288,7 @@ if (is_array($extra_field_list)) {
 				?>
 			</select>
 			<div class="list">
-				<select name="CourseList[]" multiple="multiple" size="20" class="columnselect" style="width:375px;">
+				<select name="CourseList[]" multiple="multiple" size="20" class="columnselect">
 					<?php
 					foreach ($db_courses as $course) {
 					?>
@@ -321,10 +301,8 @@ if (is_array($extra_field_list)) {
 			<button type="submit" class="add margin" value="<?php echo get_lang('AddUsersToTrainings'); ?> &gt;&gt;"><?php echo get_lang('AddUsersToTrainings'); ?></button>
 		</div>
 		<div class="columncenter columncenterbuttons" id="arrow">
-           <?php 
-             echo Display::return_icon('pixel.gif','',array('class'=>'toolactionplaceholdericon toolactionarrow'));
-           ?>
-	    </div>
+			<img alt="" src="<?php echo api_get_path(WEB_IMG_PATH)."media_playback_start_32.png";?>">
+		</div>
 	</div>
 </div>
 

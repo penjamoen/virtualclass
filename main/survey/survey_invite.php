@@ -50,7 +50,7 @@ $survey_data = survey_manager::get_survey($survey_id);
 if (empty($survey_data)) {
 //	Display :: display_header(get_lang('Survey'));
 	Display::display_tool_header();
-	echo '<div class="confirmation-message">'.get_lang('InvallidSurvey').'</div>';
+	Display :: display_error_message(get_lang('InvallidSurvey'), false);
 //	Display :: display_footer();
 	Display::display_tool_footer();
 	exit;
@@ -78,7 +78,7 @@ Display::display_tool_header();
 
 // actions bar
 echo '<div class="actions">';
-echo '<a href="survey.php?'.  api_get_cidreq().'&survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('pixel.gif', get_lang('BackTo').' '.strtolower(get_lang('Survey')), array('class' => 'toolactionplaceholdericon toolactionback')).get_lang('BackTo').' '.strtolower(get_lang('Survey')).'</a>';
+echo '<a href="survey.php?survey_id='.Security::remove_XSS($_GET['survey_id']).'">'.Display::return_icon('go_previous_32.png',get_lang('BackTo').' '.strtolower(get_lang('Survey'))).' '.get_lang('BackTo').' '.strtolower(get_lang('Survey')).'</a>';
 echo '</div>';
 
 // start the content div
@@ -90,7 +90,7 @@ $sql = "SELECT * FROM $table_survey WHERE code='".Database::escape_string($surve
 $result = Database::query($sql, __FILE__, __LINE__);
 if (Database::num_rows($result) > 1)
 {
-	echo '<div class="confirmation-message">'.get_lang('IdenticalSurveycodeWarning').'</div>';
+	Display::display_warning_message(get_lang('IdenticalSurveycodeWarning'));
 }
 
 // invited / answered message
@@ -100,7 +100,7 @@ if ($survey_data['invited'] > 0)
 	$message .= get_lang('HaveAnswered').' ';
 	$message .= '<a href="survey_invitation.php?view=invited&amp;survey_id='.$survey_data['survey_id'].'">'.$survey_data['invited'].'</a> ';
 	$message .= get_lang('WereInvited');
-	echo '<div class="confirmation-message">'.$message.'</div>';
+	Display::display_normal_message($message, false);
 }
 
 // building the form for publishing the survey
@@ -165,14 +165,13 @@ if ($_configuration['multiple_access_urls']==true) {
 
 // show the URL that can be used by users to fill a survey without invitation
 $auto_survey_link = $portal_url.$_configuration['code_append'].
-            'survey/'.'fillsurvey.php?course='.$_course['sysCode'].'&cidReq='.$_course['sysCode'].
+            'survey/'.'fillsurvey.php?course='.$_course['sysCode'].
             '&invitationcode=auto&scode='.$survey_data['survey_code'];
 $form->addElement('static',null, null, '<br \><br \>' . get_lang('AutoInviteLink'));
 $form->addElement('static',null, null, $auto_survey_link);
 if ($form->validate())
 {
 	$values = $form->exportValues();
-	
 	// save the invitation mail
 	SurveyUtil::save_invite_mail($values['mail_text'], $values['mail_title'], !empty($survey_data['invite_mail']));
 	// saving the invitations for the course users
@@ -191,7 +190,7 @@ if ($form->validate())
 	// updating the invited field in the survey table
 	SurveyUtil::update_count_invited($survey_data['code']);
 	$total_count = $count_course_users + $counter_additional_users;
-	echo '<div class="confirmation-message">'.$total_count.' '.get_lang('InvitationsSend').'</div>';
+	Display :: display_confirmation_message($total_count.' '.get_lang('InvitationsSend'));
 }
 else
 {

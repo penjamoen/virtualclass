@@ -23,7 +23,6 @@ define(MATCHING,		4);
 define(FREE_ANSWER,     5);
 define(HOT_SPOT, 		6);
 define(HOT_SPOT_ORDER, 	7);
-define(REASONING, 	8);
 /**
  * A SCORM item. It corresponds to a single question. 
  * This class allows export from Dokeos SCORM 1.2 format of a single question.
@@ -98,13 +97,13 @@ class ScormAssessmentItem
 		{
 			$css = '<style type="text/css" media="screen, projection">'."\n";
 			$css .= '/*<![CDATA[*/'."\n";
-			$css .= '@import "'.api_get_path(WEB_PATH).'main/css/dokeos2_orange/default.css";'."\n";
+			$css .= '@import "'.api_get_path(WEB_PATH).'main/css/public_admin/default.css";'."\n";
 			//$css .= '@import "'.api_get_path(WEB_PATH).'main/css/public_admin/course.css";'."\n";
 			$css .= '/*]]>*/'."\n";
 			$css .= '</style>'."\n";
 			$css .= '<style type="text/css" media="print">'."\n";
 			$css .= '/*<![CDATA[*/'."\n";
-			$css .= '@import "'.api_get_path(WEB_PATH).'main/css/dokeos2_orange/print.css";'."\n";
+			$css .= '@import "'.api_get_path(WEB_PATH).'main/css/public_admin/print.css";'."\n";
 			$css .= '/*]]>*/'."\n";
 			$css .= '</style>'."\n";
 			return $css;
@@ -314,13 +313,13 @@ class ScormSection
 
 		$css = '<style type="text/css" media="screen, projection">'."\n";
 		$css .= '/*<![CDATA[*/'."\n";
-		$css .= '@import "'.api_get_path(WEB_PATH).'main/css/dokeos2_orange/default.css";'."\n";
-		$css .= '@import "'.api_get_path(WEB_PATH).'main/css/dokeos2_orange/course.css";'."\n";
+		$css .= '@import "'.api_get_path(WEB_PATH).'main/css/public_admin/default.css";'."\n";
+		$css .= '@import "'.api_get_path(WEB_PATH).'main/css/public_admin/course.css";'."\n";
 		$css .= '/*]]>*/'."\n";
 		$css .= '</style>'."\n";
 		$css .= '<style type="text/css" media="print">'."\n";
 		$css .= '/*<![CDATA[*/'."\n";
-		$css .= '@import "'.api_get_path(WEB_PATH).'main/css/dokeos2_orange/print.css";'."\n";
+		$css .= '@import "'.api_get_path(WEB_PATH).'main/css/public_admin/print.css";'."\n";
 		$css .= '/*]]>*/'."\n";
 		$css .= '</style>'."\n";
 		return $css;

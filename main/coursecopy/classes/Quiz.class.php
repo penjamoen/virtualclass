@@ -117,7 +117,7 @@ class Quiz extends Resource
 	function add_question($id, $question_order = null)
 	{
         if (!is_null($question_order)) {
-		  $this->question_ids[] = array('id' => $id, 'position' => $question_order);
+		  $this->question_ids[$question_order] = $id;
         } else {
 		  $this->question_ids[] = $id;
         }

@@ -16,8 +16,8 @@
  *
  *	See the GNU General Public License for more details.
  *
- *      Contact address: Dokeos, rue du Corbeau, 108, B-1030 Brussels, Belgium
- *      Mail: info@dokeos.com
+ * Contact address: Dokeos, rue du Corbeau, 108, B-1030 Brussels, Belgium
+ * Mail: info@dokeos.com
  */
 
 /*
@@ -108,7 +108,4 @@ FCKConfig.VideoUploadDeniedExtensions	= '' ;
 // for video (flv) files.
 FCKConfig.MediaUploadAllowedExtensions	= '.(flv|mp4)$' ;
 FCKConfig.MediaUploadDeniedExtensions	= '' ;
-// for video files.
-FCKConfig.VideoFilesUploadAllowedExtensions	= '.(flv|mp4|mpg|mpeg|avi|wmv|mov|asf)$' ;
-FCKConfig.VideoFilesUploadDeniedExtensions	= '' ;
 // Note: These lists get combined with the platform's white and black lists.

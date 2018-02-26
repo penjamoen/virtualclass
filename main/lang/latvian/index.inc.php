@@ -40,6 +40,7 @@ $langMe = "es";
 $langSystemAnnouncements = "Sist&#275;mas pazi&#326;ojumi";
 $langHelpMaj = "Pal&#299;dz&#299;ba";
 $langNotRegistered = "Nav re&#291;istr&#275;ts";
+$langAdmin = "Platformas administrators";
 $Login = "Login";
 $langRegisterForCourse = "Pieteikties kursam";
 $langUnregisterForCourse = "Atteikties no kursa";

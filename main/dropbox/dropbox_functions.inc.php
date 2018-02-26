@@ -167,7 +167,7 @@ function delete_category($action, $id)
 function display_move_form($part, $id, $target=array())
 {
 	echo '<div class="row"><div class="form_header">'.get_lang('MoveFileTo').'</div></div>';
-	echo '<form class="outer_form" name="form1" method="post" action="'.api_get_self().'?view_received_category='.$_GET['view_received_category'].'&view_sent_category='.Security::remove_XSS($_GET['view_sent_category']).'&view='.Security::remove_XSS($_GET['view']).'">';
+	echo '<form name="form1" method="post" action="'.api_get_self().'?view_received_category='.$_GET['view_received_category'].'&view_sent_category='.$_GET['view_sent_category'].'&view='.$_GET['view'].'">';
 	echo '<input type="hidden" name="id" value="'.Security::remove_XSS($id).'">';
 	echo '<input type="hidden" name="part" value="'.Security::remove_XSS($part).'">';
 	echo '
@@ -419,7 +419,7 @@ function store_addcategory()
 */
 function display_addcategory_form($category_name='', $id='',$action)
 {
-        global $dropbox_cnf;
+	global $dropbox_cnf;
 
 	$title=get_lang('AddNewCategory');
 
@@ -462,7 +462,7 @@ function display_addcategory_form($category_name='', $id='',$action)
 	}
 
 
-	echo "<form class=\"outer_form\"  name=\"add_new_category\" method=\"post\" action=\"".api_get_self()."?view=".Security::remove_XSS($_GET['view'])."\">\n";
+	echo "<form name=\"add_new_category\" method=\"post\" action=\"".api_get_self()."?view=".Security::remove_XSS($_GET['view'])."\">\n";
 	if (isset($id) AND $id<>'')
 	{
 		echo '<input name="edit_id" type="hidden" value="'.Security::remove_XSS($id).'">';
@@ -520,11 +520,6 @@ function display_add_form()
 	$token = Security::get_token();
 	$dropbox_person = new Dropbox_Person( $_user['user_id'], $is_courseAdmin, $is_courseTutor);
 	?>
-<div class="actions">
-  <?php  echo '<a href="index.php?'.api_get_cidreq().'&view=sent">'.Display::return_icon('pixel.gif',get_lang('Back'),array('class'=>'toolactionplaceholdericon toolactionback')).get_lang('Back').'&nbsp;&nbsp;'.'</a>'; ?>
-</div> 
-
-<div id="content">
 	<form method="post" action="index.php?view_received_category=<?php echo Security::remove_XSS($_GET['view_received_category']); ?>&view_sent_category=<?php echo Security::remove_XSS($_GET['view_sent_category']); ?>&view=<?php echo Security::remove_XSS($_GET['view']); ?>&<?php echo "origin=$origin"."&".api_get_cidreq(); ?>" enctype="multipart/form-data" onsubmit="return checkForm(this)">
 
 	<div class="row"><div class="form_header"><?php echo get_lang('UploadNewFile'); ?></div></div>
@@ -683,7 +678,7 @@ function display_add_form()
 		</div>
 	';
 
-	echo "</form>";echo "</div>";
+	echo "</form>";
 }
 
 /**
@@ -771,7 +766,7 @@ function removeUnusedFiles( )
 * Mailing content files have uploader_id == mailing pseudo_id, a normal recipient,
 * and are visible initially to recipient and pseudo_id.
 *
-* @author René Haentjens, Ghent University
+* @author RenÃ© Haentjens, Ghent University
 *
 * @todo check if this function is still necessary.
 */
@@ -794,7 +789,7 @@ function getUserOwningThisMailing($mailingPseudoId, $owner = 0, $or_die = '')
     die(dropbox_lang("generalError")." (code ".$or_die.")");
 }
 /**
-* @author Ren? Haentjens, Ghent University
+* @author Renï¿½ Haentjens, Ghent University
 * @todo check if this function is still necessary.
 */
 function removeMoreIfMailing($file_id)
@@ -830,7 +825,7 @@ function removeMoreIfMailing($file_id)
 *
 * @todo check if this function is still necessary.
 *
-* @author René Haentjens, Ghent University
+* @author RenÃ© Haentjens, Ghent University
 */
 function dropbox_lang($variable, $notrans = 'DLTT')
 {
@@ -842,7 +837,7 @@ function dropbox_lang($variable, $notrans = 'DLTT')
 /**
 * Function that finds a given config setting
 *
-* @author René Haentjens, Ghent University
+* @author RenÃ© Haentjens, Ghent University
 */
 function dropbox_cnf($variable)
 {

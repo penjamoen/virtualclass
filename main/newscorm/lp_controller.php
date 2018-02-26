@@ -56,9 +56,9 @@ if ($is_allowed_in_course == false){
 //Setting imagebox width, height dynamically.
 if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'course')
 {	
-	$imgbox_width = "226px";
+	$imgbox_width = "230px";
 	$imgbox_height = "165px";
-	$imgboximg_width = "226px";
+	$imgboximg_width = "230px";
 	$imgboximg_height = "125px";
 	$marker_height = "135px";
 }
@@ -72,7 +72,6 @@ else
 }
 
 require_once api_get_path(LIBRARY_PATH).'fckeditor/fckeditor.php';
-require_once api_get_path(LIBRARY_PATH).'searchengine.lib.php';
 $lpfound = false;
 
 //if (!ereg("MSIE", $_SERVER["HTTP_USER_AGENT"])) {
@@ -81,14 +80,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'view') {
 }
 
 //$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.js" type="text/javascript" language="javascript"></script>'; //jQuery
-//$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/js/jquery-ui-1.8.1.custom.min.js" type="text/javascript"></script>';
+$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/js/jquery-ui-1.8.1.custom.min" type="text/javascript"></script>';
 //$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.corners.min.js" type="text/javascript"></script>';
 //}
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/dhtmlwindow.js" type="text/javascript"></script>';
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/modal.js" type="text/javascript"></script>';
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/csspopup.js" type="text/javascript"></script>';
 if (api_is_allowed_to_edit ()) { // Student no must be allowed to drag&drop things
-//$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/floating-gallery.js" type="text/javascript"></script>';
+$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/floating-gallery.js" type="text/javascript"></script>';
 }
 $htmlHeadXtra[] = '<script src="dtree.js" type="text/javascript"></script>';
 $htmlHeadXtra[] = '<style type="text/css" media="all">@import"dtree.css"</style>';
@@ -199,13 +198,16 @@ $htmlHeadXtra[] = '<style type="text/css">
 	}
 	</style>';
 
-$htmlHeadXtra[] = '<style type="text/css">#popUpDiv {
+for($i=0;$i<=6;$i++)
+	{
+	$htmlHeadXtra[] = '<style type="text/css">#popUpDiv'.$i.' {
 	position:absolute;
 	background-color:#eeeeee;
 	width:auto;
 	height:auto;
 	z-index: 9002;	
 	}</style>';
+	}
 
 $htmlHeadXtra[] = '<script>
   $(document).ready(function (){
@@ -216,6 +218,11 @@ $htmlHeadXtra[] = '<script>
     $("#idTitle").focus();
   });
 </script>';
+
+if ($_GET['type'] == 'step') { // This code was commented by Isaac,the code below fails with IE8
+  //echo '<style type="text/css" media="all">@import "' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/modal.css";</style>';
+  //echo '<style type="text/css" media="all">@import "' . api_get_path(WEB_LIBRARY_PATH) . 'javascript/dhtmlwindow.css";</style>';
+}
   
 $myrefresh = 0;
 $myrefresh_id = 0;
@@ -246,16 +253,19 @@ $updateRecordsArray 	= $_REQUEST['order'];
 $tbl_lp_item = Database :: get_course_table(TABLE_LP_ITEM);
 $lp_table = Database::get_course_table(TABLE_LP_MAIN);
 
-if ($dispaction == "updateRecordsListings") {	
+if ($dispaction == "updateRecordsListings"){	
+
 	$listingCounter = 1;
 	$disp = explode(",",$updateRecordsArray);
 	$cntdispid = sizeof($disp);
-	for ($i=0;$i<$cntdispid;$i++)	{	
+	for($i=0;$i<$cntdispid;$i++)	{
+	
 		$dispid = substr($disp[$i],8,strlen($disp[$i]));
 		$query = "UPDATE $tbl_lp_item SET display_order = " . $listingCounter . " WHERE id = " . $dispid;
 		$result = api_sql_query($query, __FILE__, __LINE__);		
 		$listingCounter = $listingCounter + 1;
 	}
+	echo '<script type="text/javascript">window.location.href="lp_controller.php?'.api_get_cidReq().'&action=admin_view&lp_id='.$_REQUEST['lp_id'].'"</script>';
 }
 elseif($dispaction == "sortlp"){
 	
@@ -434,7 +444,7 @@ switch($action)
 		break;
 
 	case 'add_lp':
-                
+
 		if(!$is_allowed_to_edit){
 			api_not_allowed(true);
 		}
@@ -457,11 +467,7 @@ switch($action)
 
 				//Kevin Van Den Haute: changed $_REQUEST['learnpath_description'] by '' because it's not used
 				//old->$new_lp_id = learnpath::add_lp(api_get_course_id(), $_REQUEST['learnpath_name'], $_REQUEST['learnpath_description'], 'dokeos', 'manual', '');
-                                $keyword = "";
-                                if(api_get_setting('search_enabled') == 'true' && extension_loaded('xapian')) {
-                                    $keyword = Security::remove_XSS($_REQUEST['search_terms']);
-                                }
-				$new_lp_id = learnpath::add_lp(api_get_course_id(), Security::remove_XSS($_REQUEST['learnpath_name']), '', 'dokeos', 'manual', '',$keyword);
+				$new_lp_id = learnpath::add_lp(api_get_course_id(), Security::remove_XSS($_REQUEST['learnpath_name']), '', 'dokeos', 'manual', '');
 				//learnpath::toggle_visibility($new_lp_id,'v');
 				//Kevin Van Den Haute: only go further if learnpath::add_lp has returned an id
 				if(is_numeric($new_lp_id))
@@ -494,7 +500,7 @@ switch($action)
 		{
 			$_SESSION['refresh'] = 1;
 
-                       	require('lp_admin_view.php');
+			require('lp_admin_view.php');
 		}
 
 		break;
@@ -692,16 +698,6 @@ switch($action)
 			//remove lp from homepage if it is there
 			//$_SESSION['oLP']->toggle_visibility((int)$_GET['lp_id'],'i');
 			$_SESSION['oLP']->delete(null,(int)$_GET['lp_id'],'remove');
-                        if (api_get_setting('search_enabled') === 'true' && extension_loaded('xapian')) {
-                            //delete from keyword
-                            $searchkey = new SearchEngineManager();
-                            $searchkey->idobj = $_GET['lp_id'];
-                            $searchkey->course_code = api_get_course_id();
-                            $searchkey->tool_id = TOOL_LEARNPATH;
-                            $searchkey->deleteKeyWord();
-                            
-                            $_SESSION['oLP']->delete_engine();
-                        }
 			api_session_unregister('oLP');
 			require('lp_list.php');
 		}
@@ -779,7 +775,7 @@ switch($action)
 		if(!$lp_found){ error_log('New LP - No learnpath given for edit',0); require('lp_list.php'); }
 		else{
 			$_SESSION['refresh'] = 1;
-			$lp_name = $_REQUEST['lp_name'];
+			$lp_name=Security::remove_XSS($_REQUEST['lp_name']);
 			$_SESSION['oLP']->set_name(api_convert_encoding($lp_name, api_get_system_encoding(), $_SESSION['oLP']->encoding));
 			$author=$_REQUEST['lp_author'];
 			//fixing the author name (no body or html tags)
@@ -795,26 +791,15 @@ switch($action)
 
 			$author_fixed=substr($author,$auth_init, $len);*/
 			$author_fixed = $author;
-			$_SESSION['oLP']->set_author(api_convert_encoding($author_fixed, api_get_system_encoding(), $_SESSION['oLP']->encoding));
-		//	$_SESSION['oLP']->set_author($author_fixed);
+
+			$_SESSION['oLP']->set_author($author_fixed);
 			$_SESSION['oLP']->set_encoding($_REQUEST['lp_encoding']);
 			$_SESSION['oLP']->set_maker($_REQUEST['lp_maker']);
 			$_SESSION['oLP']->set_proximity($_REQUEST['lp_proximity']);
 			$_SESSION['oLP']->set_interface($_REQUEST['lp_interface']);
 			$_SESSION['oLP']->set_theme($_REQUEST['lp_theme']);
 			$_SESSION['oLP']->update_scorm_debug($_REQUEST['enable_debug']);
-                        if (api_get_setting('search_enabled') === 'true' && extension_loaded('xapian')) {
-                            //save search engine keyword                            
-                            $searchkey = new SearchEngineManager();
-                            $searchkey->idobj = $_SESSION['oLP']->get_id();
-                            $searchkey->course_code = api_get_course_id();
-                            $searchkey->tool_id = TOOL_LEARNPATH;
-                            $searchkey->value = $_REQUEST['search_terms'];
-                            $searchkey->updateKeyWord();                                                        
-                            
-                            
-                            $_SESSION['oLP']->search_engine_edit();
-                        }
+			
 			if ($_REQUEST['remove_picture'])
 			{
 				$_SESSION['oLP']->delete_lp_image();
@@ -832,7 +817,7 @@ switch($action)
 				}
 			}
 
-			if (api_get_setting('search_enabled') === 'true' && extension_loaded('xapian'))
+			if (api_get_setting('search_enabled') === 'true')
 			{
 				require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
 				$specific_fields = get_specific_field_list();

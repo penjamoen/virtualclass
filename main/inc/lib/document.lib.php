@@ -339,11 +339,11 @@ class DocumentManager {
 			header('Content-length: '.$len);
 			if (preg_match("/MSIE 5.5/", $_SERVER['HTTP_USER_AGENT']))
 			{
-				header('Content-Disposition: filename= "'.$filename.'"');
+				header('Content-Disposition: filename= '.$filename);
 			}
 			else
 			{
-				header('Content-Disposition: attachment; filename= "'.$filename.'"');
+				header('Content-Disposition: attachment; filename= '.$filename);
 			}
 			if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE'))
 			{
@@ -351,7 +351,7 @@ class DocumentManager {
 				header('Cache-Control: ');
 				header('Cache-Control: public'); // IE cannot download from sessions without a cache
 			}
-			header('Content-Description: "'.$filename.'"');
+			header('Content-Description: '.$filename);
 			header('Content-transfer-encoding: binary');
 
 			$fp = fopen($full_file_name, 'r');
@@ -370,15 +370,14 @@ class DocumentManager {
 			//header('Pragma: no-cache');
 			header('Content-type: '.$content_type);
 			header('Content-Length: '.$len);
-	
 			$user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
 			if (strpos($user_agent, 'msie'))
 			{
-				header('Content-Disposition: ; filename= "'.$filename.'"');
+				header('Content-Disposition: ; filename= '.$filename);
 			}
 			else
 			{
-				header('Content-Disposition: inline; filename= "'.$filename.'"');
+				header('Content-Disposition: inline; filename= '.$filename);
 			}
 			readfile($full_file_name);
 			return true;
@@ -477,17 +476,15 @@ class DocumentManager {
 
 		//if to_user_id = NULL -> change query (IS NULL)
 		//$to_user_id = (is_null($to_user_id))?'IS NULL':'= '.$to_user_id;
-		$to_group_is_null = '';
-		if (!is_null($to_user_id)) {
+		if (!is_null($to_user_id))
+		{
 			$to_field = 'last.to_user_id';
 			$to_value = $to_user_id;
-		} else {
+		}
+		else
+		{
 			$to_field = 'last.to_group_id';
 			$to_value = $to_group_id;
-			// Olds training has NULL value in the to_group_id field
-			if ($to_group_id == 0) {
-			  $to_group_is_null = " OR $to_field IS NULL";
-			}
 		}
 
 		//escape underscores in the path so they don't act as a wildcard
@@ -498,7 +495,8 @@ class DocumentManager {
 		//if they can't see invisible files, they can only see files with visibility 1
 		$visibility_bit = ' = 1';
 		//if they can see invisible files, only deleted files (visibility 2) are filtered out
-		if ($can_see_invisible) {
+		if ($can_see_invisible)
+		{
 			$visibility_bit = ' <> 2';
 		}
 
@@ -508,21 +506,27 @@ class DocumentManager {
 		
 		//condition for the session		
 		$current_session_id = api_get_session_id();
-                $condition_session = " AND (id_session = '$current_session_id' OR id_session = '0')";
-                //$condition_session = " AND (id_session = '$current_session_id' OR (id_session = '0' AND insert_date <= (SELECT creation_date FROM $TABLE_COURSE WHERE code = '{$_course[id]}')))";
-        
+		$condition_session = " AND (id_session = '$current_session_id' OR (id_session = '0' AND insert_date <= (SELECT creation_date FROM $TABLE_COURSE WHERE code = '{$_course[id]}')))";
+
 		$sql = "SELECT *
 						FROM  ".$TABLE_ITEMPROPERTY."  AS last, ".$TABLE_DOCUMENT."  AS docs
 						WHERE docs.id = last.ref
 						AND docs.path LIKE '".$path.$added_slash."%'
 						AND docs.path NOT LIKE '".$path.$added_slash."%/%'
 						AND last.tool = '".TOOL_DOCUMENT."'
-						AND (".$to_field." = ".$to_value." $to_group_is_null)
+						AND ".$to_field." = ".$to_value."
 						AND last.visibility".$visibility_bit . $condition_session;								
+
 		$result = Database::query($sql,__FILE__,__LINE__);
-		if ($result && Database::num_rows($result) != 0) {
-			while ($row = Database::fetch_array($result,'ASSOC')) {
-				if($row['filetype']=='file' && pathinfo($row['path'],PATHINFO_EXTENSION) == 'html') {
+		
+		if ($result && Database::num_rows($result) != 0)
+		{
+			while ($row = Database::fetch_array($result,'ASSOC'))
+				//while ($row = Database::fetch_array($result,MYSQL_NUM))
+			{
+
+				if($row['filetype']=='file' && pathinfo($row['path'],PATHINFO_EXTENSION)=='html'){
+
 					//Templates management
 					$table_template = Database::get_main_table(TABLE_MAIN_TEMPLATES);
 					$sql_is_template = "SELECT id FROM $table_template
@@ -530,9 +534,10 @@ class DocumentManager {
 										AND user_id='".api_get_user_id()."'
 										AND ref_doc='".$row['id']."'";
 					$template_result = Database::query($sql_is_template);
-					if (Database::num_rows($template_result)>0) {
+					if(Database::num_rows($template_result)>0){
 						$row['is_template'] = 1;
-					} else {
+					}
+					else{
 						$row['is_template'] = 0;
 					}
 				}
@@ -565,6 +570,7 @@ class DocumentManager {
 		} else {
 			$to_group_id = Database::escape_string($to_group_id);
 		}*/
+
 		if (!empty($to_group_id)) {
 		   $to_group_id = intval($to_group_id);
 		}
@@ -583,6 +589,7 @@ class DocumentManager {
 								AND last.visibility <> 2 $condition_session";
 
 			$result = Database::query($sql, __FILE__, __LINE__);
+
 			if ($result && Database::num_rows($result) != 0)
 			{
 				while ($row = Database::fetch_array($result,'ASSOC'))
@@ -1087,6 +1094,7 @@ class DocumentManager {
 	 	}
 	 	$sql='UPDATE '.$tbl_category.' SET document_id="'.Database::escape_string($document_id).'" 
 	 	WHERE course_code="'.Database::escape_string($course_id).'" '.$sql_session;
+        error_log($sql);
 	 	$rs=Database::query($sql,__FILE__,__LINE__);
 	 }
 	 /**
@@ -1217,42 +1225,38 @@ class DocumentManager {
 	   		}
 	   }
 	   /**
-	    * Create specific folders according to folder name
+	    * Create directory certificate
 	    * @param string The course id
 	    * @return void() 
 	    */
-	    function create_specifics_folder_in_course ($course_id, $folder_name='certificates') {
+	    function create_directory_certificate_in_course ($course_id) {
 	    	
 	    	global $_course;
 	    	global $_user;
 	    	$to_group_id=0;
 	    	$to_user_id=null;
 	    	$course_dir   = $_course['path']."/document/";
-		$sys_course_path = api_get_path(SYS_COURSE_PATH);
+			$sys_course_path = api_get_path(SYS_COURSE_PATH);
 	    	$base_work_dir=$sys_course_path.$course_dir;
-	    	$base_work_dir_test=$base_work_dir.$folder_name;
-	    	if ($folder_name == 'certificates') {
-	    	  $dir_name='/'.$folder_name;
-	    	} elseif ($folder_name == 'mindmaps') {
-	    	  $dir_name=$folder_name;
-	    	}
-	    	$post_dir_name=$folder_name;
+	    	$base_work_dir_test=$base_work_dir.'certificates';
+	    	$dir_name='/certificates';
+	    	$post_dir_name='certificates';
 	    	$visibility_command='invisible';
 	    	if (!is_dir($base_work_dir_test)) {
 				$created_dir = create_unexisting_directory($_course,$_user['user_id'],$to_group_id,$to_user_id,$base_work_dir,$dir_name,$post_dir_name);
-	    		$update_id=DocumentManager::get_document_id_of_specifics_folder($folder_name);
+	    		$update_id=DocumentManager::get_document_id_of_directory_certificate();
 	    		api_item_property_update($_course, TOOL_DOCUMENT, $update_id, $visibility_command, $_user['user_id']);
 	    	}
 	    }
 	    /**
-	     * Get the document id of a scpefic folder
+	     * Get the document id of the directory certificate
 	     * @param string The course id
 	     * @return int The document id of the directory certificate
 	     */
-	    function get_document_id_of_specifics_folder ($folder_name = 'certificates') {
+	    function get_document_id_of_directory_certificate () {
 	    	global $_course;
-	  	$tbl_document=Database::get_course_table(TABLE_DOCUMENT);
-	    	$sql='SELECT id FROM '.$tbl_document.' WHERE path="/'.$folder_name.'" ';
+	  		$tbl_document=Database::get_course_table(TABLE_DOCUMENT);
+	    	$sql='SELECT id FROM '.$tbl_document.' WHERE path="/certificates" ';
 	    	$rs=Database::query($sql,__FILE__,__LINE__);
 	    	$row=Database::fetch_array($rs);
 	    	return $row['id'];
@@ -1351,83 +1355,7 @@ class DocumentManager {
    } else {
     return FALSE;
    }
-  } 
-  
-  public static function check_if_folder_exists($path) {
-  	global $_course;
-	$propTable = Database::get_course_table(TABLE_ITEM_PROPERTY, $_course['dbName']);
-	$tbl_documents = Database::get_course_table(TABLE_DOCUMENT, $_course['dbName']);
-	$sql_count = "SELECT count(*) AS count FROM $tbl_documents doc,$propTable prop WHERE doc.id = prop.ref AND prop.tool = '".TOOL_DOCUMENT."' AND prop.to_group_id = 0 AND prop.visibility <> 2 AND doc.filetype = 'folder' AND doc.path LIKE '".$path."' AND prop.lastedit_type !='DocumentDeleted'";
-	$rs_count = Database::query($sql_count, __FILE__,__LINE__);
-	$row_count = Database::fetch_array($rs_count,'ASSOC');
-	$count_if_folder_exists = $row_count['count'];
-
-	return $count_if_folder_exists;
   }
-  
-  public static function search_engine_save($doc_id, $title, $content, $doc_path) {
-
-    $courseid = api_get_course_id();
-    isset($_POST['language'])? $lang=Database::escape_string($_POST['language']): $lang = 'english';
-
-   require_once(api_get_path(LIBRARY_PATH) . 'search/DokeosIndexer.class.php');
-   require_once(api_get_path(LIBRARY_PATH) . 'search/IndexableChunk.class.php');
-   require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
-
-   $specific_fields = get_specific_field_list();
-   $ic_slide = new IndexableChunk();
-
-   $all_specific_terms = '';
-   foreach ($specific_fields as $specific_field) {
-    if (isset($_REQUEST[$specific_field['code']])) {
-     $sterms = trim($_REQUEST[$specific_field['code']]);
-     if (!empty($sterms)) {
-      $all_specific_terms .= ' ' . $sterms;
-      $sterms = explode(',', $sterms);
-      foreach ($sterms as $sterm) {
-       $ic_slide->addTerm(trim($sterm), $specific_field['code']);
-       add_specific_field_value($specific_field['id'], $course_id, TOOL_DOCUMENT, $doc_id, $sterm);
-      }
-     }
-    }
-   }
-
-    $ic_slide->addValue("title", $title);
-    $ic_slide->addCourseId($courseid);
-    $ic_slide->addToolId(TOOL_DOCUMENT);
-    $xapian_data = array(
-      SE_COURSE_ID => $courseid,
-      SE_TOOL_ID => TOOL_DOCUMENT,
-      SE_DATA => array('doc_id' => (int)$doc_id),
-      SE_USER => (int)api_get_user_id(),
-    );
-    $ic_slide->xapian_data = serialize($xapian_data);
-
-    if (isset($_POST['search_terms'])) {
-    $add_extra_terms = Security::remove_XSS($_POST['search_terms']).' ';
-    }
-
-    $file_content = $add_extra_terms.$content;
-    $ic_slide->addValue("content", $file_content);
-
-    $di = new DokeosIndexer();
-    $di->connectDb(NULL, NULL, $lang);
-    $di->addChunk($ic_slide);
-
-    //index and return search engine document id
-   $did = $di->index();
-
-   if ($did) {
-    // save it to db
-    $tbl_se_ref = Database::get_main_table(TABLE_MAIN_SEARCH_ENGINE_REF);
-    $sql = 'INSERT INTO %s (id, course_code, tool_id, ref_id_high_level, search_did)
-          VALUES (NULL , \'%s\', \'%s\', %s, %s)';
-    $sql = sprintf($sql, $tbl_se_ref, $courseid, TOOL_DOCUMENT, $doc_id, $did);
-    api_sql_query($sql, __FILE__, __LINE__);
-
-   }
-  }
-  
 }
 //end class DocumentManager
 ?>

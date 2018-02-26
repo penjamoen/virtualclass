@@ -17,8 +17,6 @@ $help_content = 'learnpath';
 require_once '../inc/global.inc.php';
 require_once 'learnpath.class.php';
 require_once 'learnpathItem.class.php';
-require_once api_get_path(LIBRARY_PATH).'fileUpload.lib.php';
-require_once api_get_path(LIBRARY_PATH).'document.lib.php';
 
 // including additional libraries
 //include_once(api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php');
@@ -80,27 +78,6 @@ if (empty($charset)) {
 	$charset = 'ISO-8859-1';
 }
 
-// create css folder if it doesn't exist
-$css_name = api_get_setting('stylesheets');    
-$perm = api_get_setting('permissions_for_new_directories');
-$perm = octdec(!empty($perm)?$perm:'0770');
-$css_folder = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document/css'; 
-if (!is_dir($css_folder)) {
-        mkdir($css_folder);
-        chmod($css_folder, $perm);
-        $doc_id = add_document($_course, '/css', 'folder', 0, 'css');
-        api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'FolderCreated', $_user['user_id']);
-        api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id']);
-}
-
-if (!file_exists($css_folder.'/templates.css')) {
-    if(file_exists(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css')) {
-        $template_content = str_replace('../../img/', api_get_path(REL_CODE_PATH).'img/', file_get_contents(api_get_path(SYS_PATH).'main/css/'.$css_name.'/templates.css'));
-        $template_content = str_replace('images/', api_get_path(REL_CODE_PATH).'css/'.$css_name.'/images/', $template_content);            
-        file_put_contents($css_folder.'/templates.css', $template_content);
-    }
-}
-
 // Add additional javascript, css
 //$htmlHeadXtra[] = '<script type="text/javascript" language="javascript">$("#actions").click(function(){ alert("You clicked an action")});</script>';
 $htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.2.min.js" language="javascript"></script>';
@@ -113,12 +90,12 @@ $htmlHeadXtra[] = '<script type="text/javascript" src="'.api_get_path(WEB_LIBRAR
 //Display::display_header(get_lang('Gallery'));
 Display::display_tool_header();
 // display the actions
-echo '<div class="actions">';
+echo '<div class="actions" style="padding:3px;" >';
 echo lp_template_actions();
 echo '</div>';
 
 // start the content div
-echo '<div id="content">';
+echo '<div id="content_with_secondary_actions">';
 
 // the main content
 lp_template_main();
@@ -128,7 +105,7 @@ echo '</div>';
 
 
 // display the actions
-echo '<div class="actions">';
+echo '<div class="actions" style="padding:3px;">';
 echo lp_template_secondary_actions();
 echo '</div>';
 
@@ -144,10 +121,10 @@ function lp_template_actions(){
 
   $lp_id = Security::remove_XSS($_GET['lp_id']);
   $return.= '<table style="font-size:12px;font-face:verdana;"><tr>';
-  $return.= '<td ><a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('pixel.gif', $author_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthor')).$author_lang_var . '</a></td>';
-  $return.= '<td ><a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $content_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorcontent')).$content_lang_var . '</a></td>';
-  $return.= '<td ><a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $scenario_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorscenario')).$scenario_lang_var . '</a></td>';
-  $return.= '<td ><a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $lp_id . '">' . Display::return_icon('pixel.gif', $view_lang_var, array('class' => 'toolactionplaceholdericon toolactionauthorpreview')).$view_lang_var . '</a></td>';
+  $return.= '<td ><a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '">' . Display::return_icon('author.png', $author_lang_var).$author_lang_var . '</a></td>';
+  $return.= '<td ><a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $lp_id . '">' . Display::return_icon('content.png', $content_lang_var).$content_lang_var . '</a></td>';
+  $return.= '<td ><a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=admin_view&lp_id=' . $lp_id . '">' . Display::return_icon('organize.png', $scenario_lang_var).$scenario_lang_var . '</a></td>';
+  $return.= '<td ><a href="lp_controller?' . api_get_cidreq() . '&gradebook=&action=view&lp_id=' . $lp_id . '">' . Display::return_icon('search.png', $view_lang_var).$view_lang_var . '</a></td>';
 
 //  $return.= '<td ><a href="lp_gallery.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=step&lp_id=' . $lp_id . '">' . Display::return_icon('tools_wizard_32.png', get_lang('Templates')).get_lang("Templates") . '</a></td>';
 //  $return.= '<td ><a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&action=add_item&type=document&lp_id=' . $lp_id . '">' . Display::return_icon('create_doc.png', get_lang('Page')).get_lang("Page") . '</a></td>';

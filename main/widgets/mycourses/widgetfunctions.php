@@ -55,13 +55,13 @@ function mycourses_get_content(){
 	foreach ($personal_course_list as $key=>$personal_course_info){
 		$s_htlm_status_icon = "";
 	
-		if ($personal_course_info['s'] == 1) {
+		if ($personal_course_info['status'] == 1) {
 			$status_icon=Display::return_icon('teachers.gif', get_lang('Teacher'));
 		}
-		if ($personal_course_info['s'] == 2 || ($is_coach && $course['s'] != 1)) {
+		if ($personal_course_info['status'] == 2 || ($is_coach && $course['s'] != 1)) {
 			$status_icon=Display::return_icon('coachs.gif', get_lang('GeneralCoach'));
 		}
-		if ($personal_course_info['s'] == 5 && !$is_coach) {
+		if ($personal_course_info['status'] == 5 && !$is_coach) {
 			$status_icon=Display::return_icon('students.gif', get_lang('Student'));
 		}
 	

@@ -122,13 +122,6 @@ function addlinkcategory($type)
 			Database::query($sql, __FILE__, __LINE__);
 			$link_id = Database::insert_id();
 
-			if (isset($_SESSION['oLP']) && $link_id > 0) {			
-			  // Get the previous item ID
-			  $parent = 0;
-			  $previous = $_SESSION['oLP']->select_previous_item_id();
-			  // Add quiz as Lp Item
-			  $_SESSION['oLP']->add_item($parent, $previous, TOOL_LINK, $link_id, $title, '');
-			}
 
 			if ( (api_get_setting('search_enabled')=='true') && $link_id && extension_loaded('xapian')) {
 				require_once(api_get_path(LIBRARY_PATH) .'search/DokeosIndexer.class.php');
@@ -140,7 +133,7 @@ function addlinkcategory($type)
 				$ic_slide = new IndexableChunk();
 
 				// add all terms to db
-				/*$all_specific_terms = '';
+				$all_specific_terms = '';
 				foreach ($specific_fields as $specific_field) {
 					if (isset($_REQUEST[$specific_field['code']])) {
 						$sterms = trim($_REQUEST[$specific_field['code']]);
@@ -153,7 +146,7 @@ function addlinkcategory($type)
 							}
 						}
 					}
-				}*/
+				}
 
 				// build the chunk to index
 				$ic_slide->addValue("title", $title);
@@ -166,7 +159,7 @@ function addlinkcategory($type)
 					SE_USER => (int)api_get_user_id(),
 				);
 				$ic_slide->xapian_data = serialize($xapian_data);
-				$description = $description;
+				$description = $all_specific_terms .' '. $description;
 				$ic_slide->addValue("content", $description);
 
 				// add category name if set
@@ -602,26 +595,26 @@ function showlinksofcategory($catid)
 			if ($myrow['visibility'] == '1')
 			{
                 $draggable_class = api_is_allowed_to_edit() ? 'draggable' : '';
-				echo "<li id='recordsArray_".$myrow[0]."' class='$drag'>
+				echo "<li id='recordsArray_".$myrow[0]."' class='$draggable_class $drag'>
 						<table class='data_table' width='100%'>
 							<tr class='".$css_class."'>";
                 if (api_is_allowed_to_edit ()) {
-                  echo "<td align=\"left\" valign=\"center\" width=\"6%\" class='$draggable_class'>
-                      ".Display::return_icon('pixel.gif', null, array('class' => 'actionplaceholdericon actionsdraganddrop'))."
+                  echo "<td align=\"left\" valign=\"top\" width=\"6%\">
+                      <img align='top' src='../img/drag-and-drop.png'><span style='display: inline-block; margin-top: 5px;margin-left: 2px;'>".$linkCounter."</span>.
                   </td>";
                 }
 				if(! api_is_allowed_to_edit(null,true)){
 
-					echo "<td class='nodrag' width=\"94%\" align=\"left\" valign=\"top\">";
+					echo "<td width=\"94%\" align=\"left\" valign=\"top\">";
 				}
 				else{
 					if($catid == 0)
 					{
-					echo "<td class='nodrag' width=\"54%\" align=\"left\" style=\"".$paddingLeftSubLinks."\" valign=\"bottom\">";
+					echo "<td width=\"54%\" align=\"left\" style=\"".$paddingLeftSubLinks."\" valign=\"bottom\">";
 					}
 					else
 					{
-					echo "<td class='nodrag' width=\"52%\" align=\"left\" style=\"".$paddingLeftSubLinks."\" valign=\"bottom\">";
+					echo "<td width=\"52%\" align=\"left\" style=\"".$paddingLeftSubLinks."\" valign=\"bottom\">";
 					}
 				}
 				echo "<a href=\"link_goto.php?".api_get_cidreq()."&link_id=".$myrow[0]."&amp;link_url=".urlencode($myrow[1])."\" target=\"_blank\">".api_htmlentities($myrow[2],ENT_QUOTES,$charset)."</a>".$session_img."<br/>".$myrow[3]."
@@ -635,9 +628,9 @@ function showlinksofcategory($catid)
 							<table class='data_table' width='100%'>
 								<tr class='".$css_class."'>
 									<td align=\"left\" valign=\"top\" width=\"6%\">
-										".Display::return_icon('pixel.gif', null, array('class' => 'actionplaceholdericon actionsdraganddrop'))."<span style='display: inline-block; margin-top: 5px;margin-left: 2px;'>".$linkCounter."</span>.
+										<img align='top' src='../img/drag-and-drop.png'><span style='display: inline-block; margin-top: 5px;margin-left: 2px;'>".$linkCounter."</span>.
 									</td>
-									<td class='nodrag' width=\"54%\" align=\"left\" style=\"".$paddingLeftSubLinks."\" valign=\"top\">
+									<td width=\"48%\" align=\"left\" style=\"".$paddingLeftSubLinks."\" valign=\"top\">
 										<a href=\"link_goto.php?".api_get_cidreq()."&link_id=".$myrow[0]."&amp;link_url=".urlencode($myrow[1])."\" target=\"_blank\"  class=\"invisible\">".api_htmlentities($myrow[2],ENT_QUOTES,$charset)."</a>\n", $session_img , "<br />", $myrow[3]."
 									</td>";
 				}
@@ -645,24 +638,24 @@ function showlinksofcategory($catid)
 	
 			if (api_is_allowed_to_edit(null,true))
 			{
-				echo '<td class="nodrag" style="text-align:center; width: 10%;">';
-					echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&action=editlink&amp;category=".(!empty($category)?$category:'')."&amp;id=".$myrow[0]." &amp;urlview=$urlview \"  title=\"".get_lang('Modify')."\"  >", Display::return_icon('pixel.gif', get_lang('Modify'), array('class' => 'actionplaceholdericon actionedit')), "</a>";
+				echo '<td style="text-align:center; width: 10%;">';
+					echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&action=editlink&amp;category=".(!empty($category)?$category:'')."&amp;id=".$myrow[0]." &amp;urlview=$urlview \"  title=\"".get_lang('Modify')."\"  >", "<img src=\"../img/edit_link.png\" border=\"0\" alt=\"", get_lang('Modify'), "\" />", "</a>";
 				echo '</td>';
-				echo '<td class="nodrag" style="text-align:center; width: 10%;">';
-					echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&action=deletelink&amp;id=", $myrow[0], "&amp;urlview=", $urlview, "\" onclick=\"javascript:if(!confirm('".get_lang('LinkDelconfirm')."')) return false;\"  title=\"".get_lang('Delete')."\" >", Display::return_icon('pixel.gif', get_lang('Delete'), array('class' => 'actionplaceholdericon actiondelete')), "</a>";
+				echo '<td style="text-align:center; width: 10%;">';
+					echo "<a href=\"".api_get_self()."?".api_get_cidreq()."&action=deletelink&amp;id=", $myrow[0], "&amp;urlview=", $urlview, "\" onclick=\"javascript:if(!confirm('".get_lang('LinkDelconfirm')."')) return false;\"  title=\"".get_lang('Delete')."\" >", "<img src=\"../img/delete_link.png\" border=\"0\" alt=\"", get_lang('Delete'), "\" />", "</a>";
 				echo '</td>';
-				echo '<td class="nodrag" style="text-align:center; width: 10%;">';
+				echo '<td style="text-align:center; width: 10%;">';
 					if ($myrow['visibility'] == "1")
 					{
-						echo '<a href="link.php?'.api_get_cidreq().'&action=invisible&amp;id='.$myrow['id'].'&amp;scope=link&amp;urlview='.$urlview.'" title="'.get_lang('Hide').'">'.Display::return_icon('pixel.gif', get_lang('Hide'), array('class' => 'actionplaceholdericon actionvisible')).'</a>';
+						echo '<a href="link.php?'.api_get_cidreq().'&action=invisible&amp;id='.$myrow['id'].'&amp;scope=link&amp;urlview='.$urlview.'" title="'.get_lang('Hide').'"><img src="../img/visible_link.png" border="0" /></a>';
 					}
 					if ($myrow['visibility'] == "0")
 					{
-		 				echo '<a href="link.php?'.api_get_cidreq().'&action=visible&amp;id='.$myrow['id'].'&amp;scope=link&amp;urlview='.$urlview.'" title="'.get_lang('Show').'">'.Display::return_icon('pixel.gif', get_lang('Show'), array('class' => 'actionplaceholdericon actioninvisible')).'</a>';
+		 				echo '<a href="link.php?'.api_get_cidreq().'&action=visible&amp;id='.$myrow['id'].'&amp;scope=link&amp;urlview='.$urlview.'" title="'.get_lang('Show').'"><img src="../img/invisible_22.png" border="0" /></a>';
 					}
 				echo '</td>';
-				echo '<td class="nodrag" style="text-align:center; width: 10%;">';
-					echo '<a class="thickbox" href="integrate_link_in_course.php?linkId='.$myrow[0].'&urlview='.$urlview.api_get_cidreq().'&height=180&width=500" title="'.get_lang('IntegrateLinkInCourse').'">'.Display::return_icon('pixel.gif', get_lang('IntegrateLinkInCourse'), array('class' => 'actionplaceholdericon actioncourseadd')).'</a>';
+				echo '<td style="text-align:center; width: 10%;">';
+					echo '<a class="thickbox" href="integrate_link_in_course.php?linkId='.$myrow[0].'&urlview='.$urlview.api_get_cidreq().'&height=180&width=500" title="'.get_lang('IntegrateLinkInCourse').'"><img src="../img/in-course.png" border="0" alt="'.get_lang('AddToCourse').' "/></a>';
 				echo '</td>';
 			}
 			echo '</td>';
@@ -687,8 +680,8 @@ function showcategoryadmintools($categoryid)
 	global $urlview;
 	global $aantalcategories;
 	global $catcounter;
-	echo '<th style="text-align:center; width: 10%;padding-right: 0px; vertical-align: top;"><a href="'.api_get_self().'?'.api_get_cidreq().'&action=editcategory&amp;id='.$categoryid.'&amp;urlview='.$urlview.'"  title="'.get_lang('Modify').' ">'.Display::return_icon('pixel.gif',get_lang('Modify'),array('class'=>'actionplaceholdericon actionedit','border'=>'0','align'=>'top')).'</a></th>';
-	echo "<th style='text-align:center; width: 10%;padding-right: 0px; vertical-align: top;'><a href=\"".api_get_self()."?".api_get_cidreq()."&action=deletecategory&amp;id=", $categoryid, "&amp;urlview=$urlview\" onclick=\"javascript:if(!confirm('".get_lang('CategoryDelconfirm')."')) return false;\">&nbsp;&nbsp;",Display::return_icon('pixel.gif',get_lang('Delete'),array('class'=>'actionplaceholdericon actiondelete','border'=>'0','alt'=>'','align'=>'top')), "</a></th>";
+	echo '<th style="text-align:center; width: 10%;padding-right: 0px; vertical-align: top;"><a href="'.api_get_self().'?'.api_get_cidreq().'&action=editcategory&amp;id='.$categoryid.'&amp;urlview='.$urlview.'"  title="'.get_lang('Modify').' "><img src="../img/edit_link.png" border="0" alt="'.get_lang('Modify').'" align="top"/></a></th>';
+	echo "<th style='text-align:center; width: 10%;padding-right: 0px; vertical-align: top;'><a href=\"".api_get_self()."?".api_get_cidreq()."&action=deletecategory&amp;id=", $categoryid, "&amp;urlview=$urlview\" onclick=\"javascript:if(!confirm('".get_lang('CategoryDelconfirm')."')) return false;\">&nbsp;&nbsp;", "<img src=\"../img/delete_link.png\" border=\"0\" alt=\"", get_lang('Delete'), "\" align=\"top\"/>", "</a></th>";
 	$catcounter ++;
 }
 

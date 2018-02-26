@@ -1,4 +1,4 @@
-<div class="actions"><a href="../exercice.php?<?php echo api_get_cidReq();?>"><?php echo Display::return_icon('pixel.gif', get_lang('List'), array('class' => 'toolactionplaceholdericon toolactionback')). get_lang('Quiz');?></a></div>
+<div class="actions"><a href="../exercice.php?<?php echo api_get_cidReq();?>"><img src="../../img/go_previous_32.png"><?php echo get_lang('Quiz');?></a></div>
 <div id="content_with_secondary_actions">
  <div class="sectiontitle" style="width:98%;padding:0px;margin:10px 10px 10px">
 <table width="100%">
